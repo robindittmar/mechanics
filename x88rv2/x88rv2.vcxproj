@@ -149,15 +149,23 @@
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="VFTableHook.cpp" />
+    <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="BaseClientDLL.h" />
+    <ClInclude Include="ClientClass.h" />
+    <ClInclude Include="ClientEntity.h" />
+    <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CreateInterface.h" />
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="SourceEngine.h" />
+    <ClInclude Include="Vector.h" />
+    <ClInclude Include="VEngineClient.h" />
     <ClInclude Include="VFTableHook.h" />
+    <ClInclude Include="XorString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

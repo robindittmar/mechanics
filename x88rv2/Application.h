@@ -1,15 +1,23 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
+//
 #include "Console.h"
-#include "CreateInterface.h"
 #include "Pattern.h"
 
+// Source Engine
+#include "CreateInterface.h"
+#include "VEngineClient.h"
+#include "BaseClientDLL.h"
+#include "ClientEntity.h"
+#include "ClientEntityList.h"
+
+// DirectX
 #include "d3d9.h"
 #include "d3dx9.h"
 
 // TODO: Pending to be removed once reworked
-#include "SourceEngine.h"
+//#include "SourceEngine.h"
 #include "VFTableHook.h"
 
 #pragma comment(lib, "d3d9.lib")

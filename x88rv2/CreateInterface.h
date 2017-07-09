@@ -1,3 +1,8 @@
+/// 
+/// Source Engine declarations
+///
+
+
 #ifndef __CREATEINTERFACE_H__
 #define __CREATEINTERFACE_H__
 
