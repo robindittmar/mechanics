@@ -1,17 +1,9 @@
 #include "Application.h"
 
-EndScene_t p_EndScene;
-
-IVEngineClient* pEngineClient;
-IBaseClientDLL* pClientDll;
-IClientEntityList* pEntityList;
-
-CApplication::CApplication()
+CApplication* CApplication::Instance()
 {
-}
-
-CApplication::~CApplication()
-{
+	static CApplication inst;
+	return &inst;
 }
 
 void CApplication::Run()
@@ -22,6 +14,11 @@ void CApplication::Run()
 
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
+	CApplication* pApp = CApplication::Instance();
+
+	IVEngineClient* pEngineClient = pApp->EngineClient();
+	IClientEntityList* pEntityList = pApp->EntityList();
+
 	static CConsole console;
 
 	if (pEngineClient->IsInGame())
@@ -52,7 +49,7 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 		}
 	}
 
-	return p_EndScene(device);
+	return m_pEndScene(device);
 }
 
 void CApplication::Setup()
@@ -60,9 +57,9 @@ void CApplication::Setup()
 	CreateInterfaceFn CreateClientInterface = GetCreateInterfaceFn("client.dll");
 	CreateInterfaceFn CreateEngineInterface = GetCreateInterfaceFn("engine.dll");
 
-	pEngineClient = (IVEngineClient*)CreateEngineInterface("VEngineClient014", NULL);
-	pClientDll = (IBaseClientDLL*)CreateClientInterface("VClient018", NULL);
-	pEntityList = (IClientEntityList*)CreateClientInterface("VClientEntityList003", NULL);
+	m_pEngineClient = (IVEngineClient*)CreateEngineInterface("VEngineClient014", NULL);
+	m_pClientDll = (IBaseClientDLL*)CreateClientInterface("VClient018", NULL);
+	m_pEntityList = (IClientEntityList*)CreateClientInterface("VClientEntityList003", NULL);
 }
 
 void CApplication::Hook()
@@ -78,5 +75,18 @@ void CApplication::Hook()
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 
-	p_EndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
+	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
+}
+
+// Singleton
+CApplication::CApplication()
+{
+}
+
+CApplication::CApplication(CApplication const&)
+{
+}
+
+CApplication::~CApplication()
+{
 }

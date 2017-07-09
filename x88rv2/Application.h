@@ -17,31 +17,50 @@
 #include "d3dx9.h"
 
 // TODO: Pending to be removed once reworked
-//#include "SourceEngine.h"
 #include "VFTableHook.h"
 
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9* device);
-extern EndScene_t p_EndScene;
 
-extern IVEngineClient* pEngineClient;
-extern IBaseClientDLL* pClientDll;
-extern IClientEntityList* pEntityList;
-
+// Singleton
 class CApplication
 {
 public:
-	CApplication();
-	~CApplication();
-
+	static CApplication* Instance();
 	void Run();
+
+	IVEngineClient* EngineClient() {
+		return m_pEngineClient;
+	}
+
+	IBaseClientDLL* BaseClientDLL() {
+		return m_pClientDll;
+	}
+
+	IClientEntityList* EntityList() {
+		return m_pEntityList;
+	}
 
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
 private:
 	void Setup();
 	void Hook();
+
+	// TODO: CreateMove, UpdateCmd(?)
+	static EndScene_t m_pEndScene;
+
+	IVEngineClient* m_pEngineClient;
+	IBaseClientDLL* m_pClientDll;
+	IClientEntityList* m_pEntityList;
+
+	// Singleton 
+	CApplication();
+	CApplication(CApplication const&);
+	~CApplication();
+
+	void operator=(CApplication const&) {}
 };
 
 #endif // __APPLICATION_H__

@@ -13,15 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Engine">
+      <UniqueIdentifier>{19c773f1-7d27-441a-b95e-ae373f1dd5e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Engine\Header Files">
+      <UniqueIdentifier>{e4b6bfd1-bb2a-4fc7-8f56-efa01165ac53}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Engine\Source Files">
+      <UniqueIdentifier>{138f7110-e7c4-44f4-b80e-d08e28507f54}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateInterface.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VFTableHook.cpp">
@@ -36,18 +42,21 @@
     <ClCompile Include="XorString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CreateInterface.cpp">
+      <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Aimbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bhop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Feature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SourceEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngineTrace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CreateInterface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VFTableHook.h">
@@ -59,25 +68,43 @@
     <ClInclude Include="Console.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ClientEntity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientClass.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientEntityList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VEngineClient.h">
+    <ClInclude Include="XorString.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseClientDLL.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientClass.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientEntity.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientEntityList.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateInterface.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngineTrace.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SourceEngine.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VEngineClient.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Aimbot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="XorString.h">
+    <ClInclude Include="Bhop.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Feature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

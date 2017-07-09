@@ -143,22 +143,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Aimbot.cpp" />
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="Bhop.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CreateInterface.cpp" />
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="Feature.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="VFTableHook.cpp" />
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Aimbot.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseClientDLL.h" />
+    <ClInclude Include="Bhop.h" />
     <ClInclude Include="ClientClass.h" />
     <ClInclude Include="ClientEntity.h" />
     <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CreateInterface.h" />
+    <ClInclude Include="Feature.h" />
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="SourceEngine.h" />
