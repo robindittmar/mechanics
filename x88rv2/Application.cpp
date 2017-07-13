@@ -1,5 +1,7 @@
 #include "Application.h"
 
+EndScene_t CApplication::m_pEndScene;
+
 CApplication* CApplication::Instance()
 {
 	static CApplication inst;
@@ -17,36 +19,10 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	CApplication* pApp = CApplication::Instance();
 
 	IVEngineClient* pEngineClient = pApp->EngineClient();
-	IClientEntityList* pEntityList = pApp->EntityList();
-
-	static CConsole console;
 
 	if (pEngineClient->IsInGame())
 	{
-		int iCountClients = pEntityList->GetMaxEntities();
-		IClientEntity* pLocalEntity = pEntityList->GetClientEntity(pEngineClient->GetLocalPlayer());
-		IClientEntity* pEntity;
-		for (int i = 1; i < iCountClients; i++)
-		{
-			pEntity = pEntityList->GetClientEntity(i);
-
-			if (!pEntity)
-				continue;
-
-			if (i == pEngineClient->GetLocalPlayer())
-				continue;
-
-			bool isDormant = *(bool*)((DWORD)pEntity + 0xE9);
-			if (!isDormant)
-				continue;
-
-			int iHealth = *(int*)((DWORD)pEntity + 0xFC);
-			if (iHealth == 0)
-				continue;
-
-			// ...
-			//console.Write("%d\n", iHealth);
-		}
+		pApp->m_Bhop.Update();
 	}
 
 	return m_pEndScene(device);
@@ -54,12 +30,17 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 
 void CApplication::Setup()
 {
-	CreateInterfaceFn CreateClientInterface = GetCreateInterfaceFn("client.dll");
-	CreateInterfaceFn CreateEngineInterface = GetCreateInterfaceFn("engine.dll");
+	this->m_dwClientDll = (DWORD)GetModuleHandle("client.dll");
+	this->m_dwEngineDll = (DWORD)GetModuleHandle("engine.dll");
+	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, "CreateInterface");
+	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, "CreateInterface");
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface("VEngineClient014", NULL);
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface("VClient018", NULL);
 	m_pEntityList = (IClientEntityList*)CreateClientInterface("VClientEntityList003", NULL);
+
+	this->m_Bhop.Setup();
+	this->m_Misc.Setup();
 }
 
 void CApplication::Hook()
@@ -76,6 +57,8 @@ void CApplication::Hook()
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
+
+	//VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
 }
 
 // Singleton

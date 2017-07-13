@@ -5,6 +5,11 @@
 #include "Console.h"
 #include "Pattern.h"
 
+// Features
+#include "Aimbot.h"
+#include "Bhop.h"
+#include "Misc.h"
+
 // Source Engine
 #include "CreateInterface.h"
 #include "VEngineClient.h"
@@ -43,6 +48,14 @@ public:
 		return m_pEntityList;
 	}
 
+	DWORD ClientDll() {
+		return m_dwClientDll;
+	}
+
+	DWORD EngineDll() {
+		return m_dwEngineDll;
+	}
+
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
 private:
 	void Setup();
@@ -54,6 +67,12 @@ private:
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
 	IClientEntityList* m_pEntityList;
+
+	DWORD m_dwClientDll;
+	DWORD m_dwEngineDll;
+
+	CBhop m_Bhop;
+	CMisc m_Misc;
 
 	// Singleton 
 	CApplication();
