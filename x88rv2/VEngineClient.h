@@ -267,4 +267,5 @@ public:
 	virtual bool                  IsReplay(void) = 0;
 };
 
+
 #endif // __VENGINECLIENT_H__

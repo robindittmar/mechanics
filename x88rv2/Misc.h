@@ -15,7 +15,7 @@ public:
 
 	virtual void Setup();
 	virtual void Update();
-	virtual void ToggleNoFlash(bool enable, int flashPercentage);
+	virtual void NoFlash(int flashPercentage);
 private:
 	CApplication* m_pApp;
 };

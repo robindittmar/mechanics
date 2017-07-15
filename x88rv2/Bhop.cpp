@@ -12,25 +12,25 @@ CBhop::~CBhop()
 void CBhop::Setup()
 {
 	m_pApp = CApplication::Instance();
-	// Setup code here
 }
 
 void CBhop::Update()
 {
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 
-	DWORD* jump = (DWORD*)(m_pApp->ClientDll() + JUMP_ADDRESS_OFFSET);
+	DWORD* dwForceJump = (DWORD*)(m_pApp->ClientDll() + FORCEJUMP_OFFSET);
 	DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
-	if (GetAsyncKeyState(0x20))
+	if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
+		!m_pApp->EngineClient()->Con_IsVisible() &&
+		GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
 		if ((flag & 1) == 1)
 		{
-			*jump = 5;
+			*dwForceJump = 5;
 		}
 		else
 		{
-			*jump = 4;
+			*dwForceJump = 4;
 		}
 	}
-	// Update code (once per in-game loop)
 }

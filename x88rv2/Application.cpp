@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Vector.h"
 
 EndScene_t CApplication::m_pEndScene;
 
@@ -19,14 +20,75 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	CApplication* pApp = CApplication::Instance();
 
 	IVEngineClient* pEngineClient = pApp->EngineClient();
-
+	int i = 0;
 	if (pEngineClient->IsInGame())
 	{
-		pApp->m_Bhop.Update();
+		if (true) //todo: bhop active
+		{
+			pApp->m_Bhop.Update();
+		}
+
+		if (i == 0) //todo: remove | workaround only 1 time
+		{
+			pApp->m_Misc.NoFlash(10);
+			i++;
+		}
 	}
 
 	return m_pEndScene(device);
 }
+
+QAngle oldAimPunchAngle;
+void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	if (curStage == FRAME_RENDER_START)
+	{
+		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+
+		if (true) //todo: NoRecoil active
+		{
+			//todo: maybe move mouse back to starting point
+			if (GetAsyncKeyState(0x01)) {
+				int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
+				if (shotsFired > 1) {
+					QAngle viewAngle;
+					pApp->EngineClient()->GetViewAngles(viewAngle);
+					Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+
+					viewAngle.x += (oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
+					viewAngle.y += (oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+
+					//todo: if NoVisRecoil active -> SetViewAngles in CreateMove (cmd)
+					pApp->EngineClient()->SetViewAngles(viewAngle);
+
+					oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+					oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+				}
+				else {
+					oldAimPunchAngle.x = 0;
+					oldAimPunchAngle.y = 0;
+				}
+			}
+			else {
+				oldAimPunchAngle.x = 0;
+				oldAimPunchAngle.y = 0;
+			}
+		}
+
+		if (true) //todo: NoVisRecoil active
+		{
+			Vector3 aimPunch = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+			aimPunch = { 0, 0, 0 };
+
+			Vector3* viewPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
+			*viewPunch = { 0, 0, 0 };
+		}
+	}
+	pApp->fnFrameStageNotify()(ecx, curStage);
+}
+
 
 void CApplication::Setup()
 {
@@ -47,18 +109,18 @@ void CApplication::Hook()
 {
 	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)((
 		(DWORD)CPattern::FindPattern(
-			(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
+		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
 			"a----abcdefghasdfaa"
 		)
-	) + 1);
+		) + 1);
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
-
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
 
-	//VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
+	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
+	m_fnFrameStageNotify = (tFrameStageNotify)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);
 }
 
 // Singleton

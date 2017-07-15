@@ -3,8 +3,9 @@
 
 #include "Feature.h"
 
-#define JUMP_ADDRESS_OFFSET 0x4F236BC
+#define FORCEJUMP_OFFSET 0x4F236BC
 #define JUMP_FLAG_OFFSET 0x100
+#define VELOCITY_OFFSET 0x110
 
 class CApplication;
 
