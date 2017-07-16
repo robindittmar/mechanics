@@ -45,13 +45,6 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	return m_pEndScene(device);
 }
 
-struct GlowStruct
-{
-	float r, g, b, a;
-	bool rwo, rwuo;
-};
-
-QAngle oldAimPunchAngle;
 void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -66,29 +59,28 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 				if (GetAsyncKeyState(0x01)) {
 					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
 					if (shotsFired > 1) {
-						QAngle viewAngle;
-						pApp->EngineClient()->GetViewAngles(viewAngle);
+						pApp->EngineClient()->GetViewAngles(pApp->m_ViewAngle);
 						Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-						viewAngle.x += (oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
-						viewAngle.y += (oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+						pApp->m_ViewAngle.x += (pApp->m_OldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
+						pApp->m_ViewAngle.y += (pApp->m_OldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
 
 						if (true)//todo: NoVisRecoil inactive sons SetViewAngles in CreateMove (cmd)
 						{
-							pApp->EngineClient()->SetViewAngles(viewAngle);
+							pApp->EngineClient()->SetViewAngles(pApp->m_ViewAngle);
 						}
 
-						oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-						oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+						pApp->m_OldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+						pApp->m_OldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 					}
 					else {
-						oldAimPunchAngle.x = 0;
-						oldAimPunchAngle.y = 0;
+						pApp->m_OldAimPunchAngle.x = 0;
+						pApp->m_OldAimPunchAngle.y = 0;
 					}
 				}
 				else {
-					oldAimPunchAngle.x = 0;
-					oldAimPunchAngle.y = 0;
+					pApp->m_OldAimPunchAngle.x = 0;
+					pApp->m_OldAimPunchAngle.y = 0;
 				}
 			}
 

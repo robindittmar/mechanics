@@ -94,6 +94,9 @@ public:
 		return m_fnFrameStageNotify;
 	}
 
+	QAngle m_OldAimPunchAngle;
+	QAngle m_ViewAngle;
+
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
 private:
 	void Setup();
