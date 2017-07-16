@@ -17,7 +17,7 @@ void CAimbot::Setup()
 	// Setup code here
 }
 
-void CAimbot::Update()
+void CAimbot::Update(void* pParameters)
 {
 	// Update code here
 	CApplication* pApp = CApplication::Instance();

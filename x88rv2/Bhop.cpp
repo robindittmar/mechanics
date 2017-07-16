@@ -14,7 +14,7 @@ void CBhop::Setup()
 	m_pApp = CApplication::Instance();
 }
 
-void CBhop::Update()
+void CBhop::Update(void* pParameters)
 {
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 

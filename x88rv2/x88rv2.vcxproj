@@ -152,6 +152,7 @@
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CreateInterface.cpp" />
     <ClCompile Include="DllMain.cpp" />
+    <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="Pattern.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CreateInterface.h" />
+    <ClInclude Include="ESP.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="Misc.h" />

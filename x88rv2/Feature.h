@@ -10,7 +10,7 @@ public:
 	// TODO: Setup & Update will probably need parameters
 	//		 sooner or later (config class, CApplication* or something)
 	virtual void Setup() = 0;
-	virtual void Update() = 0;
+	virtual void Update(void* pParameters = 0) = 0;
 
 	void IsEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool IsEnabled()				{ return m_bIsEnabled; }

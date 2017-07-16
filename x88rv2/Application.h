@@ -8,6 +8,7 @@
 // Features
 #include "Aimbot.h"
 #include "Bhop.h"
+#include "ESP.h"
 #include "Misc.h"
 
 // Source Engine
@@ -111,6 +112,7 @@ private:
 
 	CBhop m_Bhop;
 	CMisc m_Misc;
+	CEsp m_Esp;
 
 	// Singleton 
 	CApplication();

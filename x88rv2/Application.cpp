@@ -15,12 +15,12 @@ void CApplication::Run()
 	this->Hook();
 }
 
+int iFlash = 0;
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
 	CApplication* pApp = CApplication::Instance();
 
 	IVEngineClient* pEngineClient = pApp->EngineClient();
-	int i = 0;
 	if (pEngineClient->IsInGame())
 	{
 		if (true) //todo: bhop active
@@ -28,15 +28,28 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 			pApp->m_Bhop.Update();
 		}
 
-		if (i == 0) //todo: remove | workaround only 1 time
+		// this needs to go into paintTraverse hook because of flickering because of multirendering
+		// maybe w2s function broken
+		if (true) //todo: esp active
 		{
-			pApp->m_Misc.NoFlash(10);
-			i++;
+			pApp->m_Esp.Update(device);
+		}
+
+		if (iFlash == 0) //todo: remove | workaround only 1 time
+		{
+			pApp->m_Misc.NoFlash(30);
+			iFlash++;
 		}
 	}
 
 	return m_pEndScene(device);
 }
+
+struct GlowStruct
+{
+	float r, g, b, a;
+	bool rwo, rwuo;
+};
 
 QAngle oldAimPunchAngle;
 void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
@@ -46,49 +59,51 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 	if (curStage == FRAME_RENDER_START)
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-
-		if (true) //todo: NoRecoil active
+		if (pApp->EngineClient()->IsInGame())
 		{
-			//todo: maybe move mouse back to starting point
-			if (GetAsyncKeyState(0x01)) {
-				int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
-				if (shotsFired > 1) {
-					QAngle viewAngle;
-					pApp->EngineClient()->GetViewAngles(viewAngle);
-					Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+			if (true) //todo: NoRecoil active
+			{
+				if (GetAsyncKeyState(0x01)) {
+					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
+					if (shotsFired > 1) {
+						QAngle viewAngle;
+						pApp->EngineClient()->GetViewAngles(viewAngle);
+						Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-					viewAngle.x += (oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
-					viewAngle.y += (oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+						viewAngle.x += (oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
+						viewAngle.y += (oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
 
-					//todo: if NoVisRecoil active -> SetViewAngles in CreateMove (cmd)
-					pApp->EngineClient()->SetViewAngles(viewAngle);
+						if (true)//todo: NoVisRecoil inactive sons SetViewAngles in CreateMove (cmd)
+						{
+							pApp->EngineClient()->SetViewAngles(viewAngle);
+						}
 
-					oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-					oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+						oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+						oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+					}
+					else {
+						oldAimPunchAngle.x = 0;
+						oldAimPunchAngle.y = 0;
+					}
 				}
 				else {
 					oldAimPunchAngle.x = 0;
 					oldAimPunchAngle.y = 0;
 				}
 			}
-			else {
-				oldAimPunchAngle.x = 0;
-				oldAimPunchAngle.y = 0;
+
+			if (true) //todo: NoVisRecoil active
+			{
+				Vector3 aimPunch = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+				aimPunch = { 0, 0, 0 };
+
+				Vector3* viewPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
+				*viewPunch = { 0, 0, 0 };
 			}
-		}
-
-		if (true) //todo: NoVisRecoil active
-		{
-			Vector3 aimPunch = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
-			aimPunch = { 0, 0, 0 };
-
-			Vector3* viewPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
-			*viewPunch = { 0, 0, 0 };
 		}
 	}
 	pApp->fnFrameStageNotify()(ecx, curStage);
 }
-
 
 void CApplication::Setup()
 {
@@ -102,6 +117,7 @@ void CApplication::Setup()
 	m_pEntityList = (IClientEntityList*)CreateClientInterface("VClientEntityList003", NULL);
 
 	this->m_Bhop.Setup();
+	this->m_Esp.Setup();
 	this->m_Misc.Setup();
 }
 

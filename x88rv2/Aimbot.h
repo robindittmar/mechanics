@@ -20,7 +20,7 @@ public:
 	~CAimbot();
 
 	virtual void Setup();
-	virtual void Update();
+	virtual void Update(void* pParameters = 0);
 private:
 	TargetCriteria_t m_tTargetCriteria;
 	float m_fSpeed;

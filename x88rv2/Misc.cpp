@@ -21,7 +21,7 @@ void CMisc::NoFlash(int flashPercentage)
 	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - ((float)flashPercentage / 100.0f)));
 }
 
-void CMisc::Update()
+void CMisc::Update(void* pParameters)
 {
 	// Update code (once per in-game loop)
 }

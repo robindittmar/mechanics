@@ -14,7 +14,7 @@ public:
 	~CMisc();
 
 	virtual void Setup();
-	virtual void Update();
+	virtual void Update(void* pParameters);
 	virtual void NoFlash(int flashPercentage);
 private:
 	CApplication* m_pApp;

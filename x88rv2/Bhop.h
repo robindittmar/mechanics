@@ -16,7 +16,7 @@ public:
 	~CBhop();
 
 	virtual void Setup();
-	virtual void Update();
+	virtual void Update(void* pParameters = 0);
 private:
 	CApplication* m_pApp;
 };
