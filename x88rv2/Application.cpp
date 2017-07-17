@@ -15,7 +15,6 @@ void CApplication::Run()
 	this->Hook();
 }
 
-int iFlash = 0;
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -29,22 +28,19 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 		}
 
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		// maybe w2s function broken
 		if (true) //todo: esp active
 		{
 			pApp->m_Esp.Update(device);
 		}
 
-		if (iFlash == 0) //todo: remove | workaround only 1 time
+		if (true) //todo: remove | workaround only 1 time
 		{
 			pApp->m_Misc.NoFlash(30);
-			iFlash++;
 		}
 	}
 
 	return m_pEndScene(device);
 }
-
 void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -111,6 +107,8 @@ void CApplication::Setup()
 	this->m_Bhop.Setup();
 	this->m_Esp.Setup();
 	this->m_Misc.Setup();
+
+	while (!m_pEngineClient->IsInGame()) { }
 }
 
 void CApplication::Hook()
