@@ -15,6 +15,8 @@ void CApplication::Run()
 	this->Hook();
 }
 
+bool enable = false;
+int wait = 0;
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -22,21 +24,12 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	IVEngineClient* pEngineClient = pApp->EngineClient();
 	if (pEngineClient->IsInGame())
 	{
-		if (true) //todo: bhop active
-		{
-			pApp->m_Bhop.Update();
-		}
+		pApp->m_Bhop.Update();
 
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		if (true) //todo: esp active
-		{
-			pApp->m_Esp.Update(device);
-		}
+		pApp->m_Esp.Update(device);
 
-		if (true) //todo: remove | workaround only 1 time
-		{
-			pApp->m_Misc.NoFlash(30);
-		}
+		pApp->m_Misc.NoFlash(40);
 	}
 
 	return m_pEndScene(device);
@@ -45,12 +38,27 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 {
 	CApplication* pApp = CApplication::Instance();
 
+	if (wait == 0 && GetAsyncKeyState(VK_INSERT))
+	{
+		enable = !enable;
+		wait++;
+	}
+	
+	if (wait > 0)
+	{
+		wait++;
+		if (wait == 600)
+		{
+			wait = 0;
+		}
+	}
+
 	if (curStage == FRAME_RENDER_START)
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 		if (pApp->EngineClient()->IsInGame())
 		{
-			if (true) //todo: NoRecoil active
+			if (enable) //todo: NoRecoil active
 			{
 				if (GetAsyncKeyState(0x01)) {
 					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
@@ -80,10 +88,10 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 				}
 			}
 
-			if (true) //todo: NoVisRecoil active
+			if (false) //todo: NoVisRecoil active
 			{
-				Vector3 aimPunch = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
-				aimPunch = { 0, 0, 0 };
+				Vector3* aimPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+				*aimPunch = { 0, 0, 0 };
 
 				Vector3* viewPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
 				*viewPunch = { 0, 0, 0 };
@@ -95,19 +103,38 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 
 void CApplication::Setup()
 {
-	this->m_dwClientDll = (DWORD)GetModuleHandle("client.dll");
-	this->m_dwEngineDll = (DWORD)GetModuleHandle("engine.dll");
-	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, "CreateInterface");
-	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, "CreateInterface");
+	CXorString clientDll("tgì§y«¦{g");
+	CXorString engineDll("reâ«yn«¦{g");
+	CXorString createInterface("Tyà£cnÌ¬cn÷¤vhà");
+	CXorString VEngineClient("ANë¥~eà{bà¬c;´ö");
+	CXorString VClient("AHé«reñò&3");
+	CXorString VClientEntityList("AHé«reñ‡yì¶nGì±c;µñ");
 
-	m_pEngineClient = (IVEngineClient*)CreateEngineInterface("VEngineClient014", NULL);
-	m_pClientDll = (IBaseClientDLL*)CreateClientInterface("VClient018", NULL);
-	m_pEntityList = (IClientEntityList*)CreateClientInterface("VClientEntityList003", NULL);
+	clientDll.Xor();
+	engineDll.Xor();
+	createInterface.Xor();
+	VEngineClient.Xor();
+	VClient.Xor();
+	VClientEntityList.Xor();
+
+	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
+	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
+	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
+
+	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
+	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
+	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
 
 	this->m_Bhop.Setup();
 	this->m_Esp.Setup();
 	this->m_Misc.Setup();
 
+	this->m_Bhop.IsEnabled(true);
+	this->m_Esp.IsEnabled(true);
+	//this->m_Misc.IsEnabled(true);
+
+	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) { }
 }
 
@@ -118,7 +145,7 @@ void CApplication::Hook()
 		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
-			"a----abcdefghasdfaa"
+			"a----abcdefghasdfta"
 		)
 		) + 1);
 

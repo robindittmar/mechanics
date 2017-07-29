@@ -14,7 +14,7 @@ public:
 
 	void IsEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool IsEnabled()				{ return m_bIsEnabled; }
-private:
+protected:
 	bool m_bIsEnabled;
 };
 

@@ -4,6 +4,7 @@
 //
 #include "Console.h"
 #include "Pattern.h"
+#include "XorString.h"
 
 // Features
 #include "Aimbot.h"

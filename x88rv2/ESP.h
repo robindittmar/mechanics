@@ -15,7 +15,10 @@
 #define SPOTTED_OFFSET 0x939
 #define TEAM_OFFSET 0xF0
 
-#define MODELINDEX_OFFSET 0x254
+#define JUMP_FLAG_OFFSET 0x100
+
+#define EnableHealthbar true
+#define EnableArmorbar false
 
 #define CT_TEAMID 3
 #define T_TEAMID 2
@@ -38,6 +41,8 @@ private:
 
 	bool ScreenTransform(const Vector& point, Vector& screen);
 	bool WorldToScreen(const Vector &origin, Vector &screen);
+
+	bool m_DrawArmorbar;
 
 	CApplication* m_pApp;
 };

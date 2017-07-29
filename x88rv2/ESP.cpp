@@ -16,66 +16,86 @@ void CEsp::Setup()
 
 void CEsp::Update(void* pParameters)
 {
-	IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	int localTeam = *(int*)((DWORD)localEntity + TEAM_OFFSET);
-
-	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
+	if (m_bIsEnabled)
 	{
-		IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
+		IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+		int localTeam = *(int*)((DWORD)localEntity + TEAM_OFFSET);
 
-		if (!pEntity)
-			continue;
-		if (pEntity->IsDormant())
-			continue;
-
-		if (m_pApp->EngineClient()->GetLocalPlayer() == i)
-			continue;
-
-		int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
-		if (false && entityTeam == localTeam) //todo: same team
-			continue;
-
-		bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
-		if (false && entityTeam == localTeam && !isSpotted) //todo: isSpotted
-			continue;
-
-		Vector screenOrigin, screenHead;
-		Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
-		Vector origin = headPos;
-
-		D3DCOLOR color;
-		if (entityTeam == CT_TEAMID)
+		for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
 		{
-			color = D3DCOLOR_ARGB(200, 0, 0, 255);
-			headPos.z += 71;
-		}
-		else if (entityTeam == T_TEAMID)
-		{
-			color = D3DCOLOR_ARGB(200, 255, 0, 0);
-			headPos.z += 72;
-		}
+			IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
 
-		int health = *(int*)((DWORD)pEntity + HEALTH_OFFSET);
-		if (health == 0)
-			continue;
+			if (!pEntity)
+				continue;
+			if (pEntity->IsDormant())
+				continue;
 
-		//todo: both interesting for knifebot
-		int armor = *(int*)((DWORD)pEntity + ARMOR_OFFSET);
-		bool hasHelmet = *(bool*)((DWORD)pEntity + HELMET_OFFSET);
+			if (m_pApp->EngineClient()->GetLocalPlayer() == i)
+				continue;
 
-		if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
-		{
-			float height = abs(screenHead.y - screenOrigin.y);
-			float width = height * 0.65f;
+			int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
+			if (true && entityTeam == localTeam) //todo: same team
+				continue;
 
-			if(true) //todo: check if bounding box
-				DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
-			if (true) //todo: check if healthbar
-				DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
-			if (false && armor > 0) //todo: check if armorbar
-				DrawArmorBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, armor);
-			if (false && hasHelmet) //todo: check if hasHelmet
-				DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
+			bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
+			if (false && entityTeam == localTeam && !isSpotted) //todo: isSpotted
+				continue;
+
+			Vector screenOrigin, screenHead;
+			Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
+			Vector origin = headPos;
+
+			D3DCOLOR color;
+			if (entityTeam == CT_TEAMID)
+			{
+				color = D3DCOLOR_ARGB(200, 0, 0, 255);
+				headPos.z += 71;
+			}
+			else if (entityTeam == T_TEAMID)
+			{
+				color = D3DCOLOR_ARGB(200, 255, 0, 0);
+				headPos.z += 72;
+			}
+
+			if (isSpotted)
+			{
+				color = D3DCOLOR_ARGB(200, 255, 255, 255);
+			}
+
+			int health = *(int*)((DWORD)pEntity + HEALTH_OFFSET);
+			if (health == 0)
+				continue;
+
+			DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
+			if (flag == 775)
+			{
+				//todo: richtige höhe!
+				headPos.z -= 17;
+			}
+
+			//todo: both interesting for knifebot
+			int armor = *(int*)((DWORD)pEntity + ARMOR_OFFSET);
+			bool hasHelmet = *(bool*)((DWORD)pEntity + HELMET_OFFSET);
+
+			if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
+			{
+				float height = abs(screenHead.y - screenOrigin.y);
+				float width = height * 0.65f;
+
+				if (EnableArmorbar && armor > 0) //todo: check if armorbar
+				{
+					DrawArmorBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, armor);
+					m_DrawArmorbar = true;
+				}
+				else
+					m_DrawArmorbar = false;
+				if (true) //todo: check if bounding box
+					DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
+				if (EnableHealthbar) //todo: check if healthbar
+					DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
+				if (false && hasHelmet) //todo: check if hasHelmet
+					DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
+			}
 		}
 	}
 }
@@ -84,14 +104,14 @@ void CEsp::DrawArmorBar(IDirect3DDevice9* pDevice, int posX, int posY, int heigh
 {
 	float armorpercentage = (100 - armor) / 100.0f;
 	D3DRECT armorbackground = {
-		posX + width / 2 + 1,
+		posX - width / 2 - 7,
 		posY - height - 5,
-		posX + width / 2 + 4,
+		posX - width / 2 - 3,
 		posY + 6 };
 	D3DRECT armorbar = {
-		posX + width / 2 + 1,
+		posX - width / 2 - 7,
 		posY - (height - (height * armorpercentage)) - 5,
-		posX + width / 2 + 4,
+		posX - width / 2 - 3,
 		posY + 6 };
 
 	pDevice->Clear(1, &armorbackground, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 0, 0, 0), 0, 0);
@@ -158,15 +178,22 @@ void CEsp::DrawBoundingBox(IDirect3DDevice9* pDevice, int posX, int posY, int he
 void CEsp::DrawHealthBar(IDirect3DDevice9* pDevice, int posX, int posY, int height, int width, int health)
 {
 	float healthpercentage = (100 - health) / 100.0f;
+	int x1 = posX - width / 2 - 7;
+	int x2 = posX - width / 2 - 3;
+	if (m_DrawArmorbar)
+	{
+		x1 -= 6;
+		x2 -= 6;
+	}
 	D3DRECT healthbackground = {
-		posX - width / 2 - 4,
+		x1,
 		posY - height - 5,
-		posX - width / 2 - 1,
+		x2,
 		posY + 6 };
 	D3DRECT healthbar = {
-		posX - width / 2 - 4,
+		x1,
 		posY - (height - (height * healthpercentage)) - 5,
-		posX - width / 2 - 1,
+		x2,
 		posY + 6 };
 
 	pDevice->Clear(1, &healthbackground, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 0, 0, 0), 0, 0);

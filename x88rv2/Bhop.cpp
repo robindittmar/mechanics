@@ -16,21 +16,24 @@ void CBhop::Setup()
 
 void CBhop::Update(void* pParameters)
 {
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-
-	DWORD* dwForceJump = (DWORD*)(m_pApp->ClientDll() + FORCEJUMP_OFFSET);
-	DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
-	if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
-		!m_pApp->EngineClient()->Con_IsVisible() &&
-		GetAsyncKeyState(VK_SPACE) & 0x8000)
+	if (m_bIsEnabled)
 	{
-		if ((flag & 1) == 1)
+		IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+
+		DWORD* dwForceJump = (DWORD*)(m_pApp->ClientDll() + FORCEJUMP_OFFSET);
+		DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
+		if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
+			!m_pApp->EngineClient()->Con_IsVisible() &&
+			GetAsyncKeyState(VK_SPACE) & 0x8000)
 		{
-			*dwForceJump = 5;
-		}
-		else
-		{
-			*dwForceJump = 4;
+			if ((flag & 1) == 1)
+			{
+				*dwForceJump = 5;
+			}
+			else
+			{
+				*dwForceJump = 4;
+			}
 		}
 	}
 }

@@ -16,9 +16,12 @@ void CMisc::Setup()
 
 void CMisc::NoFlash(int flashPercentage)
 {
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (m_bIsEnabled)
+	{
+		IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 
-	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - ((float)flashPercentage / 100.0f)));
+		*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - ((float)flashPercentage / 100.0f)));
+	}
 }
 
 void CMisc::Update(void* pParameters)
