@@ -34,7 +34,7 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 
 	return m_pEndScene(device);
 }
-void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
+void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
 
@@ -98,7 +98,7 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 			}
 		}
 	}
-	pApp->fnFrameStageNotify()(ecx, curStage);
+	pApp->FrameStageNotify()(ecx, curStage);
 }
 
 void CApplication::Setup()
@@ -149,11 +149,20 @@ void CApplication::Hook()
 		)
 		) + 1);
 
+	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
+	DWORD createMove = (DWORD)(CPattern::FindPattern(
+		(BYTE*)GetModuleHandle("client.dll"),
+		0xFFFF, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
+		(BYTE*)"\xA3\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x59\xC3\x6A\x00",
+		"g----gf--------e----abc-"
+	) + 1); // +1 weil wegen \xA3
+	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
+
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
 
 	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
-	m_fnFrameStageNotify = (tFrameStageNotify)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);
+	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);
 }
 
 // Singleton

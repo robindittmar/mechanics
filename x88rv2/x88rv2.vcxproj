@@ -169,6 +169,7 @@
     <ClInclude Include="ClientClass.h" />
     <ClInclude Include="ClientEntity.h" />
     <ClInclude Include="ClientEntityList.h" />
+    <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CreateInterface.h" />
     <ClInclude Include="ESP.h" />

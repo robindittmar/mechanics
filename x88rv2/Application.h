@@ -18,6 +18,7 @@
 #include "BaseClientDLL.h"
 #include "ClientEntity.h"
 #include "ClientEntityList.h"
+#include "ClientFrameStage.h"
 
 // DirectX
 #include "d3d9.h"
@@ -36,33 +37,12 @@
 
 #define RECOIL_COMPENSATION 2
 
-enum ClientFrameStage_t
-{
-	FRAME_UNDEFINED = -1,            // (haven't run any frames yet)
-	FRAME_START,
-
-	// A network packet is being recieved
-	FRAME_NET_UPDATE_START,
-	// Data has been received and we're going to start calling PostDataUpdate
-	FRAME_NET_UPDATE_POSTDATAUPDATE_START,
-	// Data has been received and we've called PostDataUpdate on all data recipients
-	FRAME_NET_UPDATE_POSTDATAUPDATE_END,
-	// We've received all packets, we can now do interpolation, prediction, etc..
-	FRAME_NET_UPDATE_END,
-
-	// We're about to start rendering the scene
-	FRAME_RENDER_START,
-	// We've finished rendering the scene.
-	FRAME_RENDER_END
-};
-
 struct Vector3 {
 	float x, y, z;
 };
 
-
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9* device);
-typedef void(__thiscall *tFrameStageNotify)(void*, ClientFrameStage_t curStage);
+typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t curStage);
 
 // Singleton
 class CApplication
@@ -91,21 +71,22 @@ public:
 		return m_dwEngineDll;
 	}
 
-	tFrameStageNotify fnFrameStageNotify() {
-		return m_fnFrameStageNotify;
+	FrameStageNotify_t FrameStageNotify() {
+		return m_pFrameStageNotify;
 	}
 
 	QAngle m_OldAimPunchAngle;
 	QAngle m_ViewAngle;
 
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
+	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 private:
 	void Setup();
 	void Hook();
 
 	// TODO: CreateMove, UpdateCmd(?)
 	static EndScene_t m_pEndScene;
-	tFrameStageNotify m_fnFrameStageNotify;
+	static FrameStageNotify_t m_pFrameStageNotify;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
