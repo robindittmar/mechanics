@@ -38,6 +38,9 @@ void CAimbot::Update(void* pParameters)
 		if (!pCurEntity)
 			continue;
 
+		if (pCurEntity->IsDormant())
+			continue;
+
 		// is dormant?
 		// same team?
 		// hp > 0?

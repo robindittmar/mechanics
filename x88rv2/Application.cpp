@@ -34,6 +34,14 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 
 	return m_pEndScene(device);
 }
+
+HRESULT __stdcall CApplication::hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount)
+{
+	// TODO: Maybe Use IVModelRender::DrawModelExecute(...)
+
+	return m_pDrawIndexedPrimitive(pDevice, Type, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, PrimitiveCount);
+}
+
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -160,6 +168,7 @@ void CApplication::Hook()
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
+	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (PDWORD)hk_);
 
 	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);

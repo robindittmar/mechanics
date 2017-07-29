@@ -42,6 +42,7 @@ struct Vector3 {
 };
 
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9* device);
+typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t curStage);
 
 // Singleton
@@ -79,6 +80,7 @@ public:
 	QAngle m_ViewAngle;
 
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
+	static HRESULT __stdcall hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 private:
 	void Setup();
@@ -86,6 +88,7 @@ private:
 
 	// TODO: CreateMove, UpdateCmd(?)
 	static EndScene_t m_pEndScene;
+	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
 	static FrameStageNotify_t m_pFrameStageNotify;
 
 	IVEngineClient* m_pEngineClient;
