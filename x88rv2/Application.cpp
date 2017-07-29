@@ -2,6 +2,7 @@
 #include "Vector.h"
 
 EndScene_t CApplication::m_pEndScene;
+FrameStageNotify_t CApplication::m_pFrameStageNotify;
 
 CApplication* CApplication::Instance()
 {
@@ -150,13 +151,20 @@ void CApplication::Hook()
 		) + 1);
 
 	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
-	DWORD createMove = (DWORD)(CPattern::FindPattern(
-		(BYTE*)GetModuleHandle("client.dll"),
-		0xFFFF, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
-		(BYTE*)"\xA3\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x59\xC3\x6A\x00",
-		"g----gf--------e----abc-"
-	) + 1); // +1 weil wegen \xA3
+	//DWORD createMove = (DWORD)(CPattern::FindPattern(
+	//	(BYTE*)GetModuleHandle("client.dll"),
+	//	0xFFFF, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
+	//	(BYTE*)"\xA3\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x59\xC3\x6A\x00",
+	//	"g----gf--------e----abc-"
+	//) + 1); // +1 weil wegen \xA3
 	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
+
+	DWORD ClientMode = (DWORD)(CPattern::FindPattern(
+		(BYTE*)GetModuleHandle("client.dll"),
+		0x50ED000, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
+		(BYTE*)"\x8B\x0D\x00\x00\x00\x00\x8B\x01\xFF\x50\x04\x85\xF6",
+		"za----dgehdez"
+	) + 1);
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
