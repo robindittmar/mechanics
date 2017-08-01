@@ -77,6 +77,23 @@
 #define IN_GRENADE2		(1 << 24)	// grenade 2
 #define	IN_LOOKSPIN		(1 << 25)
 
+enum MoveType_t
+{
+	MOVETYPE_NONE = 0,
+	MOVETYPE_ISOMETRIC,
+	MOVETYPE_WALK,
+	MOVETYPE_STEP,
+	MOVETYPE_FLY,
+	MOVETYPE_FLYGRAVITY,
+	MOVETYPE_VPHYSICS,
+	MOVETYPE_PUSH,
+	MOVETYPE_NOCLIP,
+	MOVETYPE_LADDER,
+	MOVETYPE_OBSERVER,
+	MOVETYPE_CUSTOM,
+	MOVETYPE_LAST = MOVETYPE_CUSTOM,
+	MOVETYPE_MAX_BITS = 4
+};
 
 struct SpatializationInfo_t;
 class ICollideable;
@@ -125,7 +142,7 @@ typedef unsigned char uint8;
 
 class Vector;
 typedef Vector QAngle;
-class model_t;
+struct model_t;
 class matrix3x4_t;
 
 class IClientRenderable {

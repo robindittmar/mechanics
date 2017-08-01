@@ -25,6 +25,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 	CApplication* pApp = CApplication::Instance();
 
+	pApp->Aimbot()->Update(pUserCmd);
 	pApp->m_Bhop.Update(pUserCmd);
 
 	return rtn;
@@ -132,6 +133,7 @@ void CApplication::Setup()
 	CXorString VEngineClient("ANë¥~eà{bà¬c;´ö");
 	CXorString VClient("AHé«reñò&3");
 	CXorString VClientEntityList("AHé«reñ‡yì¶nGì±c;µñ");
+	CXorString VModelInfo("ü˜…‘Ï¹£›Ìº©™Ã°„šåÞ", 0x1235AFAA);
 
 	clientDll.Xor();
 	engineDll.Xor();
@@ -139,6 +141,7 @@ void CApplication::Setup()
 	VEngineClient.Xor();
 	VClient.Xor();
 	VClientEntityList.Xor();
+	VModelInfo.Xor();
 
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
@@ -148,11 +151,14 @@ void CApplication::Setup()
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
 	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
+	m_pModelInfo = (IVModelInfo*)CreateClientInterface(VModelInfo.ToCharArray(), NULL);
 
+	this->m_aimbot.Setup();
 	this->m_Bhop.Setup();
 	this->m_Esp.Setup();
 	this->m_Misc.Setup();
 
+	this->m_aimbot.IsEnabled(true);
 	this->m_Bhop.IsEnabled(true);
 	this->m_Esp.IsEnabled(true);
 	//this->m_Misc.IsEnabled(true);
@@ -168,9 +174,9 @@ void CApplication::Hook()
 		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
-			"a----abcdefghasdfta"
+			"f----fbcdefghasdfta"
 		)
-		) + 1);
+	) + 1);
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
 

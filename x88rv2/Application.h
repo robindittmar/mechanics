@@ -20,6 +20,7 @@
 #include "ClientEntityList.h"
 #include "ClientFrameStage.h"
 #include "UserCmd.h"
+#include "IVModelInfo.h"
 
 // DirectX
 #include "d3d9.h"
@@ -66,6 +67,10 @@ public:
 		return m_pEntityList;
 	}
 
+	IVModelInfo* ModelInfo() {
+		return m_pModelInfo;
+	}
+
 	DWORD ClientDll() {
 		return m_dwClientDll;
 	}
@@ -76,6 +81,10 @@ public:
 
 	FrameStageNotify_t FrameStageNotify() {
 		return m_pFrameStageNotify;
+	}
+
+	CAimbot* Aimbot() {
+		return (CAimbot*)&m_aimbot;
 	}
 
 	QAngle m_OldAimPunchAngle;
@@ -99,10 +108,12 @@ private:
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
 	IClientEntityList* m_pEntityList;
+	IVModelInfo* m_pModelInfo;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 
+	CAimbot m_aimbot;
 	CBhop m_Bhop;
 	CMisc m_Misc;
 	CEsp m_Esp;
