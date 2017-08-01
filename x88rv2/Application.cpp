@@ -6,6 +6,7 @@ CreateMove_t CApplication::m_pCreateMove;
 EndScene_t CApplication::m_pEndScene;
 DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
+OverrideView_t CApplication::m_pOverrideView;
 
 CApplication* CApplication::Instance()
 {
@@ -66,37 +67,33 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	float view_right = 10;
 
 	CApplication* pApp = CApplication::Instance();
+	pApp->m_bSetClientViewAngles = false;
+	pApp->m_bAimbotNoRecoil = false;
 
 	pApp->Aimbot()->Update(pUserCmd);
-	pApp->m_Bhop.Update(pUserCmd);
+	pApp->m_bhop.Update(pUserCmd);
 
 
-	// simple AA
-	if (!(pUserCmd->buttons & IN_ATTACK))
+	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	DWORD moveType = *(DWORD*)((DWORD)pLocalEntity + 0x258);
+
+	if (pUserCmd->buttons & IN_ATTACK)
 	{
-		QAngle angles;
-		pApp->EngineClient()->GetViewAngles(angles);
-		angles.y -= 180;
-		while(angles.y > 180.0f)
-		{
-			angles.y -= 360.0f;
-		}
-		while (angles.y < -180.0f)
-		{
-			angles.y += 360.0f;
-		}
-		pUserCmd->viewangles[0] = 89;
-		pUserCmd->viewangles[1] = angles.y;
+		pApp->m_misc.NoRecoil(pUserCmd);
+	}
+	else if (!(pUserCmd->buttons & IN_USE) &&
+		!(moveType & MOVETYPE_LADDER))
+	{
+		Antiaim antiaim = { DOWN, BACKWARDS, pUserCmd };
+		pApp->m_antiaim.Update(&antiaim);
 	}
 
 	FixMovement(pUserCmd);
 
-	return false;
-	//return rtn;
+
+	return pApp->m_bSetClientViewAngles;
 }
 
-bool enable = false;
-int wait = 0;
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -104,12 +101,10 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	IVEngineClient* pEngineClient = pApp->EngineClient();
 	if (pEngineClient->IsInGame())
 	{
-		//pApp->m_Bhop.Update();
-
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		pApp->m_Esp.Update(device);
+		pApp->m_esp.Update(device);
 
-		pApp->m_Misc.NoFlash(40);
+		pApp->m_misc.NoFlash(20);
 	}
 
 	return m_pEndScene(device);
@@ -124,69 +119,26 @@ HRESULT __stdcall CApplication::hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice,
 
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
+	m_pFrameStageNotify(ecx, curStage);
+}
+
+void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup) {
 	CApplication* pApp = CApplication::Instance();
 
-	if (wait == 0 && GetAsyncKeyState(VK_INSERT))
-	{
-		enable = !enable;
-		wait++;
-	}
-	
-	if (wait > 0)
-	{
-		wait++;
-		if (wait == 600)
-		{
-			wait = 0;
-		}
-	}
+	//todo: FOV changer ;)
+	//pViewSetup->fov = 105;
 
-	if (curStage == FRAME_RENDER_START)
+	if (ENABLE_NOVISRECOIL)
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-		if (pApp->EngineClient()->IsInGame())
-		{
-			if (enable) //todo: NoRecoil active
-			{
-				if (GetAsyncKeyState(0x01)) {
-					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
-					if (shotsFired > 1) {
-						pApp->EngineClient()->GetViewAngles(pApp->m_ViewAngle);
-						Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+		QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-						pApp->m_ViewAngle.x += (pApp->m_OldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
-						pApp->m_ViewAngle.y += (pApp->m_OldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+		QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
 
-						if (true)//todo: NoVisRecoil inactive sons SetViewAngles in CreateMove (cmd)
-						{
-							pApp->EngineClient()->SetViewAngles(pApp->m_ViewAngle);
-						}
-
-						pApp->m_OldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-						pApp->m_OldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
-					}
-					else {
-						pApp->m_OldAimPunchAngle.x = 0;
-						pApp->m_OldAimPunchAngle.y = 0;
-					}
-				}
-				else {
-					pApp->m_OldAimPunchAngle.x = 0;
-					pApp->m_OldAimPunchAngle.y = 0;
-				}
-			}
-
-			if (false) //todo: NoVisRecoil active
-			{
-				Vector3* aimPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
-				*aimPunch = { 0, 0, 0 };
-
-				Vector3* viewPunch = (Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
-				*viewPunch = { 0, 0, 0 };
-			}
-		}
+		pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
+		pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING); 
 	}
-	m_pFrameStageNotify(ecx, curStage);
+	return m_pOverrideView(ecx, pViewSetup);
 }
 
 void CApplication::Setup()
@@ -218,17 +170,18 @@ void CApplication::Setup()
 	m_pModelInfo = (IVModelInfo*)CreateClientInterface(VModelInfo.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
-	this->m_Bhop.Setup();
-	this->m_Esp.Setup();
-	this->m_Misc.Setup();
+	this->m_antiaim.Setup();
+	this->m_bhop.Setup();
+	this->m_esp.Setup();
+	this->m_misc.Setup();
 
 	this->m_aimbot.IsEnabled(true);
-	this->m_Bhop.IsEnabled(true);
-	this->m_Esp.IsEnabled(true);
-	//this->m_Misc.IsEnabled(true);
+	this->m_bhop.IsEnabled(true);
+	this->m_esp.IsEnabled(true);
+	this->m_misc.IsEnabled(true);
 
 	// Wait for the game to be ingame before hooking
-	while (!m_pEngineClient->IsInGame()) { }
+	while (!m_pEngineClient->IsInGame()) {}
 }
 
 void CApplication::Hook()
@@ -240,19 +193,20 @@ void CApplication::Hook()
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
 			"f----fbcdefghasdfta"
 		)
-	) + 1);
+		) + 1);
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
 
 	VFTableHook clientModeHook((DWORD*)dwClientMode, true);
 	m_pCreateMove = (CreateMove_t)clientModeHook.Hook(24, (DWORD*)hk_CreateMove);
+	m_pOverrideView = (OverrideView_t)clientModeHook.Hook(18, (PDWORD)hk_OverrideView);
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
 	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
 
-	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
-	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);
+	/*VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
+	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);*/
 }
 
 // Singleton

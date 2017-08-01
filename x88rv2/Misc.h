@@ -6,6 +6,7 @@
 #define NOFLASH_OFFSET 0xA304
 
 class CApplication;
+class CUserCmd;
 
 class CMisc : public IFeature
 {
@@ -16,6 +17,7 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 	virtual void NoFlash(int flashPercentage);
+	virtual void NoRecoil(CUserCmd* pUserCmd);
 private:
 	CApplication* m_pApp;
 };

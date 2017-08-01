@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Aimbot.cpp" />
+    <ClCompile Include="Antiaim.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bhop.cpp" />
     <ClCompile Include="Console.cpp" />
@@ -163,6 +164,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aimbot.h" />
+    <ClInclude Include="Antiaim.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseClientDLL.h" />
     <ClInclude Include="Bhop.h" />

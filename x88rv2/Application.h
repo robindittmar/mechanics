@@ -8,6 +8,7 @@
 
 // Features
 #include "Aimbot.h"
+#include "Antiaim.h"
 #include "Bhop.h"
 #include "ESP.h"
 #include "Misc.h"
@@ -38,15 +39,60 @@
 #define SHOTSFIRED_OFFSET 0x0A2C0
 
 #define RECOIL_COMPENSATION 2
+#define RECOIL_TRACKING 0.4499999f
 
-struct Vector3 {
-	float x, y, z;
+#define DOWN 0
+#define BACKWARDS 1
+#define JITTER_BACKWARDS 2
+
+#define ENABLE_SILENTAIM true
+#define ENABLE_NOVISRECOIL true
+
+
+struct Antiaim {
+	int pitch, yaw;
+	CUserCmd* pUserCmd;
 };
+
+struct CViewSetup
+{
+	char _0x0000[16];
+	__int32 x;
+	__int32 x_old;
+	__int32 y;
+	__int32 y_old;
+	__int32 width;
+	__int32    width_old;
+	__int32 height;
+	__int32    height_old;
+	char _0x0030[128];
+	float fov;
+	float fovViewmodel;
+	Vector origin;
+	Vector angles;
+	float zNear;
+	float zFar;
+	float zNearViewmodel;
+	float zFarViewmodel;
+	float m_flAspectRatio;
+	float m_flNearBlurDepth;
+	float m_flNearFocusDepth;
+	float m_flFarFocusDepth;
+	float m_flFarBlurDepth;
+	float m_flNearBlurRadius;
+	float m_flFarBlurRadius;
+	float m_nDoFQuality;
+	__int32 m_nMotionBlurMode;
+	char _0x0104[68];
+	__int32 m_EdgeBlur;
+};
+class IClientMode;
 
 typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9*);
 typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
+typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 
 // Singleton
 class CApplication
@@ -87,13 +133,16 @@ public:
 		return (CAimbot*)&m_aimbot;
 	}
 
-	QAngle m_OldAimPunchAngle;
-	QAngle m_ViewAngle;
+	QAngle m_oldAimPunchAngle;
+	QAngle m_viewAngle;
+	bool m_bSetClientViewAngles;
+	bool m_bAimbotNoRecoil;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
 	static HRESULT __stdcall hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
+	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 private:
 	void Setup();
 	void Hook();
@@ -105,6 +154,8 @@ private:
 	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
 	static FrameStageNotify_t m_pFrameStageNotify;
 
+	static OverrideView_t m_pOverrideView;
+
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
 	IClientEntityList* m_pEntityList;
@@ -114,9 +165,10 @@ private:
 	DWORD m_dwEngineDll;
 
 	CAimbot m_aimbot;
-	CBhop m_Bhop;
-	CMisc m_Misc;
-	CEsp m_Esp;
+	CAntiaim m_antiaim;
+	CBhop m_bhop;
+	CMisc m_misc;
+	CEsp m_esp;
 
 	// Singleton 
 	CApplication();
