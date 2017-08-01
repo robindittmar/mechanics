@@ -90,6 +90,7 @@ public:
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
 	bool m_bSetClientViewAngles;
+	bool m_bAimbotNoRecoil;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);

@@ -67,6 +67,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 	CApplication* pApp = CApplication::Instance();
 	pApp->m_bSetClientViewAngles = false;
+	pApp->m_bAimbotNoRecoil = false;
 
 	pApp->Aimbot()->Update(pUserCmd);
 	pApp->m_bhop.Update(pUserCmd);
@@ -148,7 +149,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 		if (pApp->EngineClient()->IsInGame())
 		{
-			if (enable) //todo: NoRecoil active
+			if (enable && !pApp->m_bAimbotNoRecoil) //todo: NoRecoil active
 			{
 				if (GetAsyncKeyState(0x01)) {
 					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);

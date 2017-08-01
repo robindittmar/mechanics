@@ -108,7 +108,7 @@ void CAimbot::Update(void* pParameters)
 		yaw = (yaw * 180.0f) / 3.1415f;
 		pitch = (pitch * 180.0f) / 3.1415f;
 
-		
+
 		// Normalize angles
 		while (yaw > 180.0f)
 		{
@@ -132,14 +132,28 @@ void CAimbot::Update(void* pParameters)
 		//pUserCmd->viewangles[0] = pitch;
 		if (pUserCmd->buttons & IN_ATTACK)
 		{
+			pApp->m_bAimbotNoRecoil = true;
+			int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
+			if (shotsFired > 1) {
+				pApp->EngineClient()->GetViewAngles(pApp->m_viewAngle);
+				QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+
+				pitch -= aimPunchAngle.x * RECOIL_COMPENSATION;
+				yaw -= aimPunchAngle.y * RECOIL_COMPENSATION;
+
+				pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+				pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+			}
+
 			pUserCmd->viewangles[0] = pitch;
 			pUserCmd->viewangles[1] = yaw;
-			if (false) //todo: check if silentaim
+
+			if (true) //todo: check if silentaim
 			{
 				pApp->m_bSetClientViewAngles = true;
 			}
 		}
-		
+
 		break;
 		// is dormant?
 		// same team?
