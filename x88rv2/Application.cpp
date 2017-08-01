@@ -3,6 +3,8 @@
 
 EndScene_t CApplication::m_pEndScene;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
+DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
+CreateMove_t CApplication::m_pCreateMove;
 
 CApplication* CApplication::Instance()
 {
@@ -107,8 +109,15 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			}
 		}
 	}
-	pApp->FrameStageNotify()(ecx, curStage);
+	m_pFrameStageNotify(ecx, curStage);
 }
+
+bool __stdcall CApplication::hk_CreateMove(float flInputSampleTime, CUserCmd *cmd) {
+	m_pCreateMove(flInputSampleTime, cmd);
+	return true;
+}
+
+
 
 void CApplication::Setup()
 {
@@ -167,19 +176,25 @@ void CApplication::Hook()
 	//) + 1); // +1 weil wegen \xA3
 	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
 
+	/*CXorString clientDll("tgì§y«¦{g");
+	clientDll.Xor();
 	DWORD ClientMode = (DWORD)(CPattern::FindPattern(
-		(BYTE*)GetModuleHandle("client.dll"),
-		0x50ED000, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
+		(BYTE*)GetModuleHandle(clientDll.ToCharArray()),
+		0x50ED000,
 		(BYTE*)"\x8B\x0D\x00\x00\x00\x00\x8B\x01\xFF\x50\x04\x85\xF6",
 		"za----dgehdez"
-	) + 1);
+	) + 0x2 + 1);*/
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
-	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (PDWORD)hk_);
+	//m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (PDWORD)hk_);
 
 	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);
+
+	//VFTableHook clientModeHook((DWORD*)ClientMode, true);
+	//m_pCreateMove = (CreateMove_t)clientModeHook.Hook(21, (PDWORD)hk_CreateMove);
+	//todo: not working
 }
 
 // Singleton
