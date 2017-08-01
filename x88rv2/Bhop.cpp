@@ -16,24 +16,30 @@ void CBhop::Setup()
 
 void CBhop::Update(void* pParameters)
 {
-	if (m_bIsEnabled)
-	{
-		IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (!m_bIsEnabled)
+		return;
 
-		DWORD* dwForceJump = (DWORD*)(m_pApp->ClientDll() + FORCEJUMP_OFFSET);
-		DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
-		if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
-			!m_pApp->EngineClient()->Con_IsVisible() &&
-			GetAsyncKeyState(VK_SPACE) & 0x8000)
+	CUserCmd* pUserCmd = (CUserCmd*)pParameters;
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+
+	if (!pParameters)
+		return;
+
+	if (!pLocalEntity)
+		return;
+		
+	DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
+	if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
+		!m_pApp->EngineClient()->Con_IsVisible() &&
+		GetAsyncKeyState(VK_SPACE) & 0x8000)
+	{
+		if (flag & FL_ONGROUND || flag & FL_INWATER)
 		{
-			if ((flag & 1) == 1)
-			{
-				*dwForceJump = 5;
-			}
-			else
-			{
-				*dwForceJump = 4;
-			}
+			pUserCmd->buttons |= IN_JUMP;
+		}
+		else
+		{
+			pUserCmd->buttons &= ~IN_JUMP;
 		}
 	}
 }

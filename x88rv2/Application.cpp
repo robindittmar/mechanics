@@ -1,7 +1,10 @@
 #include "Application.h"
 #include "Vector.h"
 
+CreateMove_t CApplication::m_pCreateMove;
 EndScene_t CApplication::m_pEndScene;
+DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
+FrameStageNotify_t CApplication::m_pFrameStageNotify;
 
 CApplication* CApplication::Instance()
 {
@@ -12,7 +15,19 @@ CApplication* CApplication::Instance()
 void CApplication::Run()
 {
 	this->Setup();
+	//Sleep(5000);
 	this->Hook();
+}
+
+bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
+{
+	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
+
+	CApplication* pApp = CApplication::Instance();
+
+	pApp->m_Bhop.Update(pUserCmd);
+
+	return rtn;
 }
 
 bool enable = false;
@@ -24,7 +39,7 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	IVEngineClient* pEngineClient = pApp->EngineClient();
 	if (pEngineClient->IsInGame())
 	{
-		pApp->m_Bhop.Update();
+		//pApp->m_Bhop.Update();
 
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
 		pApp->m_Esp.Update(device);
@@ -157,21 +172,17 @@ void CApplication::Hook()
 		)
 		) + 1);
 
-	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
-	DWORD createMove = (DWORD)(CPattern::FindPattern(
-		(BYTE*)GetModuleHandle("client.dll"),
-		0xFFFF, // TODO: Keine Ahnung wie groß client.dll ist, kannste @ollydbg z.B. in der modulübersicht nachgucken afaik
-		(BYTE*)"\xA3\x00\x00\x00\x00\xC7\x05\x00\x00\x00\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x59\xC3\x6A\x00",
-		"g----gf--------e----abc-"
-	) + 1); // +1 weil wegen \xA3
-	// TODO: TEMPORARY, NOT FINISHED CODE, UNTESTED, NOT COMPILED
+	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
+
+	VFTableHook clientModeHook((DWORD*)dwClientMode, true);
+	m_pCreateMove = (CreateMove_t)clientModeHook.Hook(24, (DWORD*)hk_CreateMove);
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
-	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (PDWORD)hk_);
+	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
 
 	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
-	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (PDWORD)hk_FrameStageNotify);
+	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);
 }
 
 // Singleton

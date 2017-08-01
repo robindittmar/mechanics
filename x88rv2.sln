@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Injector", "Injector\Inject
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "x88rv2", "x88rv2\x88rv2.vcxproj", "{B75186D0-9571-4AE3-A692-774F0DB75184}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XorStrings", "XorStrings\XorStrings.vcxproj", "{E6E580F0-32DF-4CC1-A48A-201749A98060}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{B75186D0-9571-4AE3-A692-774F0DB75184}.Release|x64.Build.0 = Release|x64
 		{B75186D0-9571-4AE3-A692-774F0DB75184}.Release|x86.ActiveCfg = Release|Win32
 		{B75186D0-9571-4AE3-A692-774F0DB75184}.Release|x86.Build.0 = Release|Win32
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Debug|x64.ActiveCfg = Debug|x64
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Debug|x64.Build.0 = Debug|x64
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Debug|x86.ActiveCfg = Debug|Win32
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Debug|x86.Build.0 = Debug|Win32
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Release|x64.ActiveCfg = Release|x64
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Release|x64.Build.0 = Release|x64
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Release|x86.ActiveCfg = Release|Win32
+		{E6E580F0-32DF-4CC1-A48A-201749A98060}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

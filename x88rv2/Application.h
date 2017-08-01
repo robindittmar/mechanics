@@ -19,6 +19,7 @@
 #include "ClientEntity.h"
 #include "ClientEntityList.h"
 #include "ClientFrameStage.h"
+#include "UserCmd.h"
 
 // DirectX
 #include "d3d9.h"
@@ -41,9 +42,10 @@ struct Vector3 {
 	float x, y, z;
 };
 
-typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9* device);
+typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
+typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9*);
 typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
-typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t curStage);
+typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 
 // Singleton
 class CApplication
@@ -79,6 +81,7 @@ public:
 	QAngle m_OldAimPunchAngle;
 	QAngle m_ViewAngle;
 
+	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
 	static HRESULT __stdcall hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
@@ -87,6 +90,8 @@ private:
 	void Hook();
 
 	// TODO: CreateMove, UpdateCmd(?)
+
+	static CreateMove_t m_pCreateMove;
 	static EndScene_t m_pEndScene;
 	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
 	static FrameStageNotify_t m_pFrameStageNotify;
