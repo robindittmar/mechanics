@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "Vector.h"
+#include <math.h>
 
 CreateMove_t CApplication::m_pCreateMove;
 EndScene_t CApplication::m_pEndScene;
@@ -19,16 +20,79 @@ void CApplication::Run()
 	this->Hook();
 }
 
+double DEG2RAD(double degrees) {
+	return degrees * 4.0 * atan(1.0) / 180.0;
+}
+void FixMovement(CUserCmd* pUserCmd)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	QAngle oldAngles;
+	pApp->EngineClient()->GetViewAngles(oldAngles);
+
+	float oldForwardmove = pUserCmd->forwardmove;
+	float oldSidemove = pUserCmd->sidemove;
+	float deltaView = pUserCmd->viewangles[1] - oldAngles.y;
+
+	float f1;
+	float f2;
+
+	if (oldAngles.y < 0.f)
+		f1 = 360.0f + oldAngles.y;
+	else
+		f1 = oldAngles.y;
+
+	if (pUserCmd->viewangles[1] < 0.0f)
+		f2 = 360.0f + pUserCmd->viewangles[1];
+	else
+		f2 = pUserCmd->viewangles[1];
+
+	if (f2 < f1)
+		deltaView = abs(f2 - f1);
+	else
+		deltaView = 360.0f - abs(f1 - f2);
+	deltaView = 360.0f - deltaView;
+
+	pUserCmd->forwardmove = cos(DEG2RAD(deltaView)) * oldForwardmove + cos(DEG2RAD(deltaView + 90.f)) * oldSidemove;
+	pUserCmd->sidemove = sin(DEG2RAD(deltaView)) * oldForwardmove + sin(DEG2RAD(deltaView + 90.f)) * oldSidemove;
+	if (pUserCmd->viewangles[0] >= 180 && pUserCmd->viewangles[0] <= 270) pUserCmd->forwardmove = -pUserCmd->forwardmove;
+}
+
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
+
+	float view_forward = 0;
+	float view_right = 10;
 
 	CApplication* pApp = CApplication::Instance();
 
 	pApp->Aimbot()->Update(pUserCmd);
 	pApp->m_Bhop.Update(pUserCmd);
 
-	return rtn;
+
+	// simple AA
+	if (!(pUserCmd->buttons & IN_ATTACK))
+	{
+		QAngle angles;
+		pApp->EngineClient()->GetViewAngles(angles);
+		angles.y -= 180;
+		while(angles.y > 180.0f)
+		{
+			angles.y -= 360.0f;
+		}
+		while (angles.y < -180.0f)
+		{
+			angles.y += 360.0f;
+		}
+		pUserCmd->viewangles[0] = 89;
+		pUserCmd->viewangles[1] = angles.y;
+	}
+
+	FixMovement(pUserCmd);
+
+	return false;
+	//return rtn;
 }
 
 bool enable = false;
@@ -122,7 +186,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			}
 		}
 	}
-	pApp->FrameStageNotify()(ecx, curStage);
+	m_pFrameStageNotify(ecx, curStage);
 }
 
 void CApplication::Setup()

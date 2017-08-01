@@ -67,9 +67,8 @@ void CEsp::Update(void* pParameters)
 				continue;
 
 			DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
-			if (flag == 775)
+			if (flag & IN_DUCK)
 			{
-				//todo: richtige höhe!
 				headPos.z -= 17;
 			}
 
