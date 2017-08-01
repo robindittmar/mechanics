@@ -66,13 +66,17 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	float view_right = 10;
 
 	CApplication* pApp = CApplication::Instance();
+	pApp->m_bSetClientViewAngles = false;
 
 	pApp->Aimbot()->Update(pUserCmd);
-	pApp->m_Bhop.Update(pUserCmd);
+	pApp->m_bhop.Update(pUserCmd);
 
-
+	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	DWORD moveType = *(DWORD*)((DWORD)pLocalEntity + 0x258);
 	// simple AA
-	if (!(pUserCmd->buttons & IN_ATTACK))
+	if (!(pUserCmd->buttons & IN_ATTACK) &&
+		!(pUserCmd->buttons & IN_USE) &&
+		!(moveType & MOVETYPE_LADDER))
 	{
 		QAngle angles;
 		pApp->EngineClient()->GetViewAngles(angles);
@@ -91,7 +95,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 	FixMovement(pUserCmd);
 
-	return false;
+	return pApp->m_bSetClientViewAngles;
 	//return rtn;
 }
 
@@ -104,12 +108,10 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	IVEngineClient* pEngineClient = pApp->EngineClient();
 	if (pEngineClient->IsInGame())
 	{
-		//pApp->m_Bhop.Update();
-
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		pApp->m_Esp.Update(device);
+		pApp->m_esp.Update(device);
 
-		pApp->m_Misc.NoFlash(40);
+		pApp->m_misc.NoFlash(40);
 	}
 
 	return m_pEndScene(device);
@@ -151,28 +153,28 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				if (GetAsyncKeyState(0x01)) {
 					int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
 					if (shotsFired > 1) {
-						pApp->EngineClient()->GetViewAngles(pApp->m_ViewAngle);
+						pApp->EngineClient()->GetViewAngles(pApp->m_viewAngle);
 						Vector3 aimPunchAngle = *(Vector3*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-						pApp->m_ViewAngle.x += (pApp->m_OldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
-						pApp->m_ViewAngle.y += (pApp->m_OldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+						pApp->m_viewAngle.x += (pApp->m_oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
+						pApp->m_viewAngle.y += (pApp->m_oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
 
 						if (true)//todo: NoVisRecoil inactive sons SetViewAngles in CreateMove (cmd)
 						{
-							pApp->EngineClient()->SetViewAngles(pApp->m_ViewAngle);
+							pApp->EngineClient()->SetViewAngles(pApp->m_viewAngle);
 						}
 
-						pApp->m_OldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-						pApp->m_OldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+						pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+						pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 					}
 					else {
-						pApp->m_OldAimPunchAngle.x = 0;
-						pApp->m_OldAimPunchAngle.y = 0;
+						pApp->m_oldAimPunchAngle.x = 0;
+						pApp->m_oldAimPunchAngle.y = 0;
 					}
 				}
 				else {
-					pApp->m_OldAimPunchAngle.x = 0;
-					pApp->m_OldAimPunchAngle.y = 0;
+					pApp->m_oldAimPunchAngle.x = 0;
+					pApp->m_oldAimPunchAngle.y = 0;
 				}
 			}
 
@@ -218,13 +220,13 @@ void CApplication::Setup()
 	m_pModelInfo = (IVModelInfo*)CreateClientInterface(VModelInfo.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
-	this->m_Bhop.Setup();
-	this->m_Esp.Setup();
-	this->m_Misc.Setup();
+	this->m_bhop.Setup();
+	this->m_esp.Setup();
+	this->m_misc.Setup();
 
 	this->m_aimbot.IsEnabled(true);
-	this->m_Bhop.IsEnabled(true);
-	this->m_Esp.IsEnabled(true);
+	this->m_bhop.IsEnabled(true);
+	this->m_esp.IsEnabled(true);
 	//this->m_Misc.IsEnabled(true);
 
 	// Wait for the game to be ingame before hooking

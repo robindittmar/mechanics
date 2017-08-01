@@ -87,8 +87,9 @@ public:
 		return (CAimbot*)&m_aimbot;
 	}
 
-	QAngle m_OldAimPunchAngle;
-	QAngle m_ViewAngle;
+	QAngle m_oldAimPunchAngle;
+	QAngle m_viewAngle;
+	bool m_bSetClientViewAngles;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
@@ -114,9 +115,9 @@ private:
 	DWORD m_dwEngineDll;
 
 	CAimbot m_aimbot;
-	CBhop m_Bhop;
-	CMisc m_Misc;
-	CEsp m_Esp;
+	CBhop m_bhop;
+	CMisc m_misc;
+	CEsp m_esp;
 
 	// Singleton 
 	CApplication();
