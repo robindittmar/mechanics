@@ -67,7 +67,7 @@ void CEsp::Update(void* pParameters)
 				continue;
 
 			DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
-			if (flag & (1<<4))
+			if (flag & IN_DUCK)
 			{
 				headPos.z -= 17;
 			}
