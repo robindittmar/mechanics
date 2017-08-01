@@ -1,6 +1,8 @@
 #ifndef __USERCMD_H__
 #define __USERCMD_H__
 
+#include "Vector.h"
+
 struct CUserCmd {
 	virtual ~CUserCmd() {};
 	int command_number;
