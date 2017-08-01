@@ -148,7 +148,7 @@ void CAimbot::Update(void* pParameters)
 			pUserCmd->viewangles[0] = pitch;
 			pUserCmd->viewangles[1] = yaw;
 
-			if (true) //todo: check if silentaim
+			if (!ENABLE_SILENTAIM)
 			{
 				pApp->m_bSetClientViewAngles = true;
 			}

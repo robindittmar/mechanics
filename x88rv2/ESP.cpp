@@ -16,85 +16,85 @@ void CEsp::Setup()
 
 void CEsp::Update(void* pParameters)
 {
-	if (m_bIsEnabled)
+	if (!m_bIsEnabled)
+		return;
+
+	IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	int localTeam = *(int*)((DWORD)localEntity + TEAM_OFFSET);
+
+	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
 	{
-		IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-		int localTeam = *(int*)((DWORD)localEntity + TEAM_OFFSET);
+		IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
 
-		for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
+		if (!pEntity)
+			continue;
+		if (pEntity->IsDormant())
+			continue;
+
+		if (m_pApp->EngineClient()->GetLocalPlayer() == i)
+			continue;
+
+		int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
+		if (true && entityTeam == localTeam) //todo: same team
+			continue;
+
+		bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
+		if (false && entityTeam == localTeam && !isSpotted) //todo: isSpotted
+			continue;
+
+		Vector screenOrigin, screenHead;
+		Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
+		Vector origin = headPos;
+
+		D3DCOLOR color;
+		if (entityTeam == CT_TEAMID)
 		{
-			IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
+			color = D3DCOLOR_ARGB(200, 0, 0, 255);
+			headPos.z += 71;
+		}
+		else if (entityTeam == T_TEAMID)
+		{
+			color = D3DCOLOR_ARGB(200, 255, 0, 0);
+			headPos.z += 72;
+		}
 
-			if (!pEntity)
-				continue;
-			if (pEntity->IsDormant())
-				continue;
+		if (isSpotted)
+		{
+			color = D3DCOLOR_ARGB(200, 255, 255, 255);
+		}
 
-			if (m_pApp->EngineClient()->GetLocalPlayer() == i)
-				continue;
+		int health = *(int*)((DWORD)pEntity + HEALTH_OFFSET);
+		if (health == 0)
+			continue;
 
-			int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
-			if (true && entityTeam == localTeam) //todo: same team
-				continue;
+		DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
+		if (flag & IN_DUCK)
+		{
+			headPos.z -= 17;
+		}
 
-			bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
-			if (false && entityTeam == localTeam && !isSpotted) //todo: isSpotted
-				continue;
+		//todo: both interesting for knifebot
+		int armor = *(int*)((DWORD)pEntity + ARMOR_OFFSET);
+		bool hasHelmet = *(bool*)((DWORD)pEntity + HELMET_OFFSET);
 
-			Vector screenOrigin, screenHead;
-			Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
-			Vector origin = headPos;
+		if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
+		{
+			float height = abs(screenHead.y - screenOrigin.y);
+			float width = height * 0.65f;
 
-			D3DCOLOR color;
-			if (entityTeam == CT_TEAMID)
+			if (EnableArmorbar && armor > 0) //todo: check if armorbar
 			{
-				color = D3DCOLOR_ARGB(200, 0, 0, 255);
-				headPos.z += 71;
+				DrawArmorBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, armor);
+				m_DrawArmorbar = true;
 			}
-			else if (entityTeam == T_TEAMID)
-			{
-				color = D3DCOLOR_ARGB(200, 255, 0, 0);
-				headPos.z += 72;
-			}
-
-			if (isSpotted)
-			{
-				color = D3DCOLOR_ARGB(200, 255, 255, 255);
-			}
-
-			int health = *(int*)((DWORD)pEntity + HEALTH_OFFSET);
-			if (health == 0)
-				continue;
-
-			DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
-			if (flag & IN_DUCK)
-			{
-				headPos.z -= 17;
-			}
-
-			//todo: both interesting for knifebot
-			int armor = *(int*)((DWORD)pEntity + ARMOR_OFFSET);
-			bool hasHelmet = *(bool*)((DWORD)pEntity + HELMET_OFFSET);
-
-			if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
-			{
-				float height = abs(screenHead.y - screenOrigin.y);
-				float width = height * 0.65f;
-
-				if (EnableArmorbar && armor > 0) //todo: check if armorbar
-				{
-					DrawArmorBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, armor);
-					m_DrawArmorbar = true;
-				}
-				else
-					m_DrawArmorbar = false;
-				if (true) //todo: check if bounding box
-					DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
-				if (EnableHealthbar) //todo: check if healthbar
-					DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
-				if (false && hasHelmet) //todo: check if hasHelmet
-					DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
-			}
+			else
+				m_DrawArmorbar = false;
+			if (true) //todo: check if bounding box
+				DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
+			if (EnableHealthbar) //todo: check if healthbar
+				DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
+			if (false && hasHelmet) //todo: check if hasHelmet
+				DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
 		}
 	}
 }
