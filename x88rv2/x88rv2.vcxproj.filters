@@ -122,5 +122,8 @@
     <ClInclude Include="ClientFrameStage.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="UserCmd.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

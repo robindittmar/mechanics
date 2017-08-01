@@ -2,6 +2,7 @@
 #define __BHOP_H__
 
 #include "Feature.h"
+#include "UserCmd.h"
 
 #define FORCEJUMP_OFFSET 0x4F2379C
 #define JUMP_FLAG_OFFSET 0x100
