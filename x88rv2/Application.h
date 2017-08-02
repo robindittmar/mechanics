@@ -24,6 +24,7 @@
 #include "IVModelInfo.h"
 #include "IEngineTrace.h"
 #include "IVModelRender.h"
+#include "IMaterialSystem.h"
 
 // DirectX
 #include "d3d9.h"
@@ -130,12 +131,20 @@ public:
 		return m_pEngineTrace;
 	}
 
+	IMaterialSystem* MaterialSystem() {
+		return m_pMaterialSystem;
+	}
+
 	DWORD ClientDll() {
 		return m_dwClientDll;
 	}
 
 	DWORD EngineDll() {
 		return m_dwEngineDll;
+	}
+
+	DWORD MaterialSystemDll() {
+		return m_dwMaterialSystemDll;
 	}
 
 	FrameStageNotify_t FrameStageNotify() {
@@ -161,8 +170,6 @@ private:
 	void Setup();
 	void Hook();
 
-	// TODO: CreateMove, UpdateCmd(?)
-
 	static CreateMove_t m_pCreateMove;
 	static EndScene_t m_pEndScene;
 	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
@@ -176,9 +183,11 @@ private:
 	IVModelInfo* m_pModelInfo;
 	IVModelRender* m_pModelRender;
 	IEngineTrace* m_pEngineTrace;
+	IMaterialSystem* m_pMaterialSystem;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
+	DWORD m_dwMaterialSystemDll;
 
 	CAimbot m_aimbot;
 	CAntiaim m_antiaim;

@@ -1,11 +1,16 @@
 #include "XorString.h"
 
-CXorString::CXorString(const char* p, unsigned long xor)
+CXorString::CXorString(const char* p, unsigned long xor, bool xorInstantly)
 {
 	m_pBuffer = NULL;
 
 	this->String(p);
 	m_iXorKey = xor;
+
+	if (xorInstantly)
+	{
+		this->Xor();
+	}
 }
 
 CXorString::~CXorString()

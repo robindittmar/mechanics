@@ -9,11 +9,10 @@ void printByteString(const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("client.dll"),
-		CXorString("engine.dll"),
-		CXorString("ANë¥~eà{bà¬c;´ö"),
-		CXorString("EngineTraceClient004", 0x1A),
-		CXorString("_cajthRq{nc@vdcmn=67", 0x1A)
+		CXorString("vyè±"),
+		CXorString("Zdá§{+ñ§oğ°rx"),
+		CXorString("AFä¶ryì£{Xü±cnèò/;"),
+		CXorString("zjñ§ebä®drö¶rf«¦{g")
 	};
 
 	CXorString byteStrings[] {
@@ -28,7 +27,7 @@ int main(int argc, char** argv)
 	int countstr = sizeof(strings) / sizeof(CXorString);
 	for (int i = 0; i < countstr; i++)
 	{
-		printf("%s\n", strings[i].Xor());
+		printf("%s\n", strings[i]);
 	}
 
 	int countbytestr = sizeof(byteStrings) / sizeof(CXorString);

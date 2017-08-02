@@ -144,17 +144,22 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	return m_pOverrideView(ecx, pViewSetup);
 }
 
-void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx,IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
+void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
 {
 	CApplication* pApp = CApplication::Instance();
+
+	static CXorString pArms("vyè±");
+	static CXorString pModelTextures("Zdá§{+ñ§oğ°rx");
 
 	if (pInfo.pModel)
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
-		if (strstr(pszModelName, "arms") != NULL &&
+		if (strstr(pszModelName, pArms.ToCharArray()) != NULL &&
 			true) //todo: check if nohands
 		{
-			
+			IMaterial* pMat = pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			pApp->ModelRender()->ForcedMaterialOverride(pMat);
 		}
 	}
 
@@ -165,6 +170,7 @@ void CApplication::Setup()
 {
 	CXorString clientDll("tgì§y«¦{g");
 	CXorString engineDll("reâ«yn«¦{g");
+	CXorString materialSystemDll("zjñ§ebä®drö¶rf«¦{g");
 	CXorString createInterface("Tyà£cnÌ¬cn÷¤vhà");
 	CXorString VEngineClient("ANë¥~eà{bà¬c;´ö");
 	CXorString VClient("AHé«reñò&3");
@@ -172,21 +178,14 @@ void CApplication::Setup()
 	CXorString VModelInfo("ü˜…‘Ï¹£›Ìº©™Ã°„šåŞ", 0x1235AFAA);
 	CXorString VModelRender("ANë¥~eàxoà®':³");
 	CXorString EngineTraceClient("_cajthRq{nc@vdcmn=67", 0x1A);
-
-	clientDll.Xor();
-	engineDll.Xor();
-	createInterface.Xor();
-	VEngineClient.Xor();
-	VClient.Xor();
-	VClientEntityList.Xor();
-	VModelInfo.Xor();
-	VModelRender.Xor();
-	EngineTraceClient.Xor();
+	CXorString VMaterialSystem("AFä¶ryì£{Xü±cnèò/;");
 
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
+	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
 	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -194,6 +193,7 @@ void CApplication::Setup()
 	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
 	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
+	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
 	this->m_antiaim.Setup();

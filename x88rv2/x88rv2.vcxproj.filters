@@ -63,6 +63,9 @@
     <ClCompile Include="Antiaim.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IMaterialSystem.cpp">
+      <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -141,6 +144,12 @@
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ray.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaterialSystem.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaterial.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

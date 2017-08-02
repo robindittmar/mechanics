@@ -58,6 +58,9 @@ void CAimbot::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 
+	if (!(pUserCmd->buttons & IN_ATTACK))
+		return;
+
 	// Get position + add relative eye position
 	Vector myHeadPos = *(Vector*)((DWORD)pLocalEntity + 0x134);
 	myHeadPos += *(Vector*)((DWORD)pLocalEntity + 0x104);
@@ -99,7 +102,7 @@ void CAimbot::Update(void* pParameters)
 		//studiohdr_t* pModel = pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
 
 		// TODO
-		int boneIdx = 12;
+		int boneIdx = 8;
 		mat3x4* boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx));
 		Vector headPos;
 		headPos.x = boneMatrix->c[0][3];
@@ -164,7 +167,7 @@ void CAimbot::Update(void* pParameters)
 			pUserCmd->viewangles[0] = pitch;
 			pUserCmd->viewangles[1] = yaw;
 
-			pUserCmd->buttons |= IN_ATTACK;
+			//pUserCmd->buttons |= IN_ATTACK;
 
 			if (!ENABLE_SILENTAIM)
 			{
