@@ -126,7 +126,7 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	CApplication* pApp = CApplication::Instance();
 
 	//todo: FOV changer ;)
-	//pViewSetup->fov = 105;
+	pViewSetup->fov = 105;
 
 	if (ENABLE_NOVISRECOIL)
 	{
@@ -136,7 +136,7 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 		QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
 
 		pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
-		pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING); 
+		pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
 	}
 	return m_pOverrideView(ecx, pViewSetup);
 }
@@ -150,6 +150,7 @@ void CApplication::Setup()
 	CXorString VClient("AHé«reñò&3");
 	CXorString VClientEntityList("AHé«reñ‡yì¶nGì±c;µñ");
 	CXorString VModelInfo("ü˜…‘Ï¹£›Ìº©™Ã°„šåŞ", 0x1235AFAA);
+	CXorString EngineTraceClient("_cajthRq{nc@vdcmn=67", 0x1A);
 
 	clientDll.Xor();
 	engineDll.Xor();
@@ -158,6 +159,7 @@ void CApplication::Setup()
 	VClient.Xor();
 	VClientEntityList.Xor();
 	VModelInfo.Xor();
+	EngineTraceClient.Xor();
 
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
@@ -167,7 +169,8 @@ void CApplication::Setup()
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
 	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
-	m_pModelInfo = (IVModelInfo*)CreateClientInterface(VModelInfo.ToCharArray(), NULL);
+	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
+	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
 	this->m_antiaim.Setup();

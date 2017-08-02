@@ -22,6 +22,7 @@
 #include "ClientFrameStage.h"
 #include "UserCmd.h"
 #include "IVModelInfo.h"
+#include "IEngineTrace.h"
 
 // DirectX
 #include "d3d9.h"
@@ -45,7 +46,7 @@
 #define BACKWARDS 1
 #define JITTER_BACKWARDS 2
 
-#define ENABLE_SILENTAIM true
+#define ENABLE_SILENTAIM false
 #define ENABLE_NOVISRECOIL true
 
 
@@ -117,6 +118,10 @@ public:
 		return m_pModelInfo;
 	}
 
+	IEngineTrace* EngineTrace() {
+		return m_pEngineTrace;
+	}
+
 	DWORD ClientDll() {
 		return m_dwClientDll;
 	}
@@ -160,6 +165,7 @@ private:
 	IBaseClientDLL* m_pClientDll;
 	IClientEntityList* m_pEntityList;
 	IVModelInfo* m_pModelInfo;
+	IEngineTrace* m_pEngineTrace;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;

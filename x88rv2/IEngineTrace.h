@@ -1,9 +1,4 @@
-/// 
-/// Source Engine declarations
-///
-
-
-/*//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -11,24 +6,20 @@
 //
 //=============================================================================//
 
-#ifndef ENGINE_IENGINETRACE_H
-#define ENGINE_IENGINETRACE_H
-#ifdef _WIN32
-#pragma once
-#endif
+#ifndef __IENGINETRACE_H__
+#define __IENGINETRACE_H__
 
-#include "basehandle.h"
+/*#include "basehandle.h"
 #include "utlvector.h" //need CUtlVector for IEngineTrace::GetBrushesIn*()
 #include "mathlib/vector4d.h"
-#include "bspflags.h"
+#include "bspflags.h"*/
+#include "Vector.h"
 
-class Vector;
 class IHandleEntity;
 struct Ray_t;
 class CGameTrace;
 typedef CGameTrace trace_t;
 class ICollideable;
-class QAngle;
 class ITraceListData;
 class CPhysCollide;
 struct cplane_t;
@@ -45,7 +36,7 @@ enum TraceType_t
 	TRACE_EVERYTHING_FILTER_PROPS,	// NOTE: This version will pass the IHandleEntity for props through the filter, unlike all other filters
 };
 
-abstract_class ITraceFilter
+class ITraceFilter
 {
 public:
 	virtual bool ShouldHitEntity(IHandleEntity *pEntity, int contentsMask) = 0;
@@ -115,6 +106,24 @@ public:
 	}
 };
 
+class CTraceFilterSkipEntity : public ITraceFilter
+{
+public:
+	CTraceFilterSkipEntity(IHandleEntity* pEntityHandle)
+	{
+		pSkip = pEntityHandle;
+	}
+
+	bool ShouldHitEntity(IHandleEntity* pEntityHandle, int /*contentsMask*/)
+	{
+		return !(pEntityHandle == pSkip);
+	}
+	virtual TraceType_t GetTraceType() const
+	{
+		return TRACE_EVERYTHING;
+	}
+	void* pSkip;
+};
 
 enum DebugTraceCounterBehavior_t
 {
@@ -125,7 +134,7 @@ enum DebugTraceCounterBehavior_t
 //-----------------------------------------------------------------------------
 // Enumeration interface for EnumerateLinkEntities
 //-----------------------------------------------------------------------------
-abstract_class IEntityEnumerator
+class IEntityEnumerator
 {
 public:
 	// This gets called with each handle
@@ -135,7 +144,8 @@ public:
 
 struct BrushSideInfo_t
 {
-	Vector4D plane;			// The plane of the brush side
+	Vector plane;			// The plane of the brush side
+	float planec;
 	unsigned short bevel;	// Bevel plane?
 	unsigned short thin;	// Thin?
 };
@@ -143,16 +153,15 @@ struct BrushSideInfo_t
 //-----------------------------------------------------------------------------
 // Interface the engine exposes to the game DLL
 //-----------------------------------------------------------------------------
-#define INTERFACEVERSION_ENGINETRACE_SERVER	"EngineTraceServer004"
-#define INTERFACEVERSION_ENGINETRACE_CLIENT	"EngineTraceClient004"
-abstract_class IEngineTrace
+
+class IEngineTrace
 {
 public:
 	// Returns the contents mask + entity at a particular world-space position
-	virtual int		GetPointContents(const Vector &vecAbsPosition, int contentsMask = MASK_ALL, IHandleEntity** ppEntity = NULL) = 0;
+	virtual int		GetPointContents(const Vector &vecAbsPosition, int contentsMask/* = MASK_ALL*/, IHandleEntity** ppEntity = NULL) = 0;
 
 	// Returns the contents mask of the world only @ the world-space position (static props are ignored)
-	virtual int		GetPointContents_WorldOnly(const Vector &vecAbsPosition, int contentsMask = MASK_ALL) = 0;
+	virtual int		GetPointContents_WorldOnly(const Vector &vecAbsPosition, int contentsMask/* = MASK_ALL*/) = 0;
 
 	// Get the point contents, but only test the specific entity. This works
 	// on static props and brush models.
@@ -196,7 +205,7 @@ public:
 
 
 	//finds brushes in an AABB, prone to some false positives
-	virtual void GetBrushesInAABB(const Vector &vMins, const Vector &vMaxs, CUtlVector<int> *pOutput, int iContentsMask = 0xFFFFFFFF) = 0;
+	virtual void GetBrushesInAABB(const Vector &vMins, const Vector &vMaxs, /*CUtlVector<int>*/void *pOutput, int iContentsMask = 0xFFFFFFFF) = 0;
 
 	//Creates a CPhysCollide out of all displacements wholly or partially contained in the specified AABB
 	virtual CPhysCollide* GetCollidableFromDisplacementsInAABB(const Vector& vMins, const Vector& vMaxs) = 0;
@@ -208,7 +217,7 @@ public:
 	virtual void GetDisplacementMesh(int nIndex, virtualmeshlist_t *pMeshTriList) = 0;
 
 	//retrieve brush planes and contents, returns true if data is being returned in the output pointers, false if the brush doesn't exist
-	virtual bool GetBrushInfo(int iBrush, CUtlVector<BrushSideInfo_t> *pBrushSideInfoOut, int *pContentsOut) = 0;
+	virtual bool GetBrushInfo(int iBrush, /*CUtlVector<BrushSideInfo_t>*/void *pBrushSideInfoOut, int *pContentsOut) = 0;
 
 	virtual bool PointOutsideWorld(const Vector &ptTest) = 0; //Tests a point to see if it's outside any playable area
 
@@ -222,17 +231,4 @@ public:
 	virtual int GetSetDebugTraceCounter(int value, DebugTraceCounterBehavior_t behavior) = 0;
 };
 
-/// IEngineTrace::GetSetDebugTraceCounter
-/// SET to a negative number to disable. SET to a positive number to reset the counter; it'll tick down by
-/// one for each trace, and break into the debugger on hitting zero. INC lets you add or subtract from the 
-/// counter. In each case it will return the value of the counter BEFORE you set or incremented it. INC 0 
-/// to query.  This end-around approach is necessary for security: because only the engine knows when we
-/// are in a trace, and only the server knows when we are in a think, data must somehow be shared between
-/// them. Simply returning a pointer to an address inside the engine in a retail build is unacceptable,
-/// and in the PC there is no way to distinguish between retail and non-retail builds at compile time
-/// (there is no #define for it).
-/// This may seem redundant with the VPROF_INCREMENT_COUNTER( "TraceRay" ), but it's not, because while
-/// that's readable across DLLs, there's no way to trap on its exceeding a certain value, nor can we reset
-/// it for each think. 
-
-#endif // ENGINE_IENGINETRACE_H*/
+#endif // __IENGINETRACE_H__

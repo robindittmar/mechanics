@@ -168,6 +168,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseClientDLL.h" />
     <ClInclude Include="Bhop.h" />
+    <ClInclude Include="CGameTrace.h" />
     <ClInclude Include="ClientClass.h" />
     <ClInclude Include="ClientEntity.h" />
     <ClInclude Include="ClientEntityList.h" />
@@ -180,6 +181,7 @@
     <ClInclude Include="IVModelInfo.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="Pattern.h" />
+    <ClInclude Include="ray.h" />
     <ClInclude Include="SourceEngine.h" />
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Vector.h" />

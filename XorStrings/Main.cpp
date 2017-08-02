@@ -8,11 +8,12 @@ void printByteString(const char* p, int len)
 
 int main(int argc, char** argv)
 {
-	CXorString strings[] {
+	CXorString strings[]{
 		CXorString("client.dll"),
 		CXorString("engine.dll"),
-		CXorString("ü˜…‘Ï¹£›Ìº©™Ã°„šåŞ", 0x1235AFAA),
-		CXorString("usw")
+		CXorString("ANë¥~eà{bà¬c;´ö"),
+		CXorString("EngineTraceClient004", 0x1A),
+		CXorString("_cajthRq{nc@vdcmn=67", 0x1A)
 	};
 
 	CXorString byteStrings[] {

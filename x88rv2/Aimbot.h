@@ -2,7 +2,6 @@
 #define __AIMBOT_H__
 
 #include "Feature.h"
-#include "Vector.h"
 
 // Defines how to choose the next target for the aimbot
 // -> Origin: Chooses the target that's standing closest to you

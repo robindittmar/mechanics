@@ -134,5 +134,11 @@
     <ClInclude Include="Antiaim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CGameTrace.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ray.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

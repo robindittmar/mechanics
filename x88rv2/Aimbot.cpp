@@ -1,5 +1,9 @@
 #include "Aimbot.h"
 #include "Application.h"
+#include "Vector.h"
+#include "IEngineTrace.h"
+#include "CGameTrace.h"
+#include "ray.h"
 
 CAimbot::CAimbot()
 {
@@ -60,6 +64,10 @@ void CAimbot::Update(void* pParameters)
 
 	int localTeam = *(int*)((DWORD)pLocalEntity + TEAM_OFFSET);
 
+	Ray_t ray;
+	trace_t trace;
+	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+
 	// Start at i=1 since 0 is usually (always as of now) the local player
 	int iMaxEntities = pEntityList->GetMaxEntities();
 	for (int i = 1; i < iMaxEntities; i++)
@@ -88,14 +96,24 @@ void CAimbot::Update(void* pParameters)
 
 		// Bone ID: 8 (maybe 7=neck)
 		// 10 ca chest
+		//studiohdr_t* pModel = pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
 
 		// TODO
-		int boneIdx = 8;
+		int boneIdx = 12;
 		mat3x4* boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx));
 		Vector headPos;
 		headPos.x = boneMatrix->c[0][3];
 		headPos.y = boneMatrix->c[1][3];
 		headPos.z = boneMatrix->c[2][3];
+
+		// IS VISIBLE?
+		ray.Init(myHeadPos, headPos);
+		pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
+
+		if (!trace.IsVisible())
+			continue;
+
+		// IS VISIBLE?
 
 		//Vector headPos = *(Vector*)((DWORD)pCurEntity + 0x134);
 		headPos -= myHeadPos;
@@ -130,36 +148,30 @@ void CAimbot::Update(void* pParameters)
 
 		//pEngineClient->SetViewAngles(ang);
 		//pUserCmd->viewangles[0] = pitch;
-		if (pUserCmd->buttons & IN_ATTACK)
-		{
+		//if (pUserCmd->buttons & IN_ATTACK)
+		//{
 			pApp->m_bAimbotNoRecoil = true;
-			int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
-			if (shotsFired > 1) {
-				pApp->EngineClient()->GetViewAngles(pApp->m_viewAngle);
-				QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-				pitch -= aimPunchAngle.x * RECOIL_COMPENSATION;
-				yaw -= aimPunchAngle.y * RECOIL_COMPENSATION;
+			pApp->EngineClient()->GetViewAngles(pApp->m_viewAngle);
+			QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-				pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-				pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
-			}
+			pitch -= aimPunchAngle.x * RECOIL_COMPENSATION;
+			yaw -= aimPunchAngle.y * RECOIL_COMPENSATION;
+
+			pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+			pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
 			pUserCmd->viewangles[0] = pitch;
 			pUserCmd->viewangles[1] = yaw;
+
+			pUserCmd->buttons |= IN_ATTACK;
 
 			if (!ENABLE_SILENTAIM)
 			{
 				pApp->m_bSetClientViewAngles = true;
 			}
-		}
+		//}
 
 		break;
-		// is dormant?
-		// same team?
-		// hp > 0?
-		// is visible?
-		// ----------
-		// => Aim
 	}
 }
