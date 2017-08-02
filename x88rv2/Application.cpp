@@ -7,6 +7,7 @@ EndScene_t CApplication::m_pEndScene;
 DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
 OverrideView_t CApplication::m_pOverrideView;
+DrawModelExecute_t CApplication::m_pDrawModelExecute;
 
 CApplication* CApplication::Instance()
 {
@@ -128,17 +129,36 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	//todo: FOV changer ;)
 	pViewSetup->fov = 105;
 
-	if (ENABLE_NOVISRECOIL)
+	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	if (pApp->EngineClient()->IsInGame())
 	{
-		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-		QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+		if (ENABLE_NOVISRECOIL)
+		{
+			QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+			QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
 
-		QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
-
-		pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
-		pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
+			pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
+			pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
+		}
 	}
 	return m_pOverrideView(ecx, pViewSetup);
+}
+
+void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx,IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	if (pInfo.pModel)
+	{
+		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
+		if (strstr(pszModelName, "arms") != NULL &&
+			true) //todo: check if nohands
+		{
+			
+		}
+	}
+
+	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 }
 
 void CApplication::Setup()
@@ -150,6 +170,7 @@ void CApplication::Setup()
 	CXorString VClient("AHé«reñò&3");
 	CXorString VClientEntityList("AHé«reñ‡yì¶nGì±c;µñ");
 	CXorString VModelInfo("ü˜…‘Ï¹£›Ìº©™Ã°„šåÞ", 0x1235AFAA);
+	CXorString VModelRender("ANë¥~eàxoà®':³");
 	CXorString EngineTraceClient("_cajthRq{nc@vdcmn=67", 0x1A);
 
 	clientDll.Xor();
@@ -159,6 +180,7 @@ void CApplication::Setup()
 	VClient.Xor();
 	VClientEntityList.Xor();
 	VModelInfo.Xor();
+	VModelRender.Xor();
 	EngineTraceClient.Xor();
 
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
@@ -170,6 +192,7 @@ void CApplication::Setup()
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
 	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
 	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
+	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
@@ -202,11 +225,14 @@ void CApplication::Hook()
 
 	VFTableHook clientModeHook((DWORD*)dwClientMode, true);
 	m_pCreateMove = (CreateMove_t)clientModeHook.Hook(24, (DWORD*)hk_CreateMove);
-	m_pOverrideView = (OverrideView_t)clientModeHook.Hook(18, (PDWORD)hk_OverrideView);
+	m_pOverrideView = (OverrideView_t)clientModeHook.Hook(18, (DWORD*)hk_OverrideView);
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
-	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (PDWORD)hk_EndScene);
+	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (DWORD*)hk_EndScene);
 	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
+
+	VFTableHook engineModelHook((DWORD*)this->ModelRender(), true);
+	m_pDrawModelExecute = (DrawModelExecute_t)engineModelHook.Hook(21, (DWORD*)hk_DrawModelExecute);
 
 	/*VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);*/

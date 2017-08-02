@@ -23,6 +23,7 @@
 #include "UserCmd.h"
 #include "IVModelInfo.h"
 #include "IEngineTrace.h"
+#include "IVModelRender.h"
 
 // DirectX
 #include "d3d9.h"
@@ -88,12 +89,15 @@ struct CViewSetup
 	__int32 m_EdgeBlur;
 };
 class IClientMode;
+class IMatRenderContext;
+class DrawModelState_t;
 
 typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9*);
 typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
+typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
 
 // Singleton
 class CApplication
@@ -116,6 +120,10 @@ public:
 
 	IVModelInfo* ModelInfo() {
 		return m_pModelInfo;
+	}
+
+	IVModelRender* ModelRender() {
+		return m_pModelRender;
 	}
 
 	IEngineTrace* EngineTrace() {
@@ -148,6 +156,7 @@ public:
 	static HRESULT __stdcall hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
+	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
 private:
 	void Setup();
 	void Hook();
@@ -158,13 +167,14 @@ private:
 	static EndScene_t m_pEndScene;
 	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
 	static FrameStageNotify_t m_pFrameStageNotify;
-
 	static OverrideView_t m_pOverrideView;
+	static DrawModelExecute_t m_pDrawModelExecute;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
 	IClientEntityList* m_pEntityList;
 	IVModelInfo* m_pModelInfo;
+	IVModelRender* m_pModelRender;
 	IEngineTrace* m_pEngineTrace;
 
 	DWORD m_dwClientDll;
