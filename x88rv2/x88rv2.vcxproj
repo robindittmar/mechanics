@@ -178,6 +178,7 @@
     <ClInclude Include="Feature.h" />
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="IVModelInfo.h" />
+    <ClInclude Include="IVModelRender.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="SourceEngine.h" />

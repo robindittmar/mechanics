@@ -134,5 +134,8 @@
     <ClInclude Include="Antiaim.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IVModelRender.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
