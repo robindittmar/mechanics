@@ -39,6 +39,9 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	if (m_pApp->m_bAimbotNoRecoil)
 		return;
 
+	if (!(pUserCmd->buttons & IN_ATTACK))
+		return;
+
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	int shotsFired = *(int*)((DWORD)pLocalEntity + SHOTSFIRED_OFFSET);
 	if (ENABLE_NOVISRECOIL)

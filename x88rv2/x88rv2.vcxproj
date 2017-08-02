@@ -149,26 +149,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Aimbot.cpp" />
-    <ClCompile Include="Antiaim.cpp" />
+    <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bhop.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CreateInterface.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Feature.cpp" />
+    <ClCompile Include="IControl.cpp" />
     <ClCompile Include="IMaterialSystem.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="Pattern.cpp" />
+    <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VFTableHook.cpp" />
+    <ClCompile Include="Window.cpp" />
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Aimbot.h" />
-    <ClInclude Include="Antiaim.h" />
+    <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="BaseClientDLL.h" />
     <ClInclude Include="Bhop.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CGameTrace.h" />
     <ClInclude Include="ClientClass.h" />
     <ClInclude Include="ClientEntity.h" />
@@ -178,6 +183,8 @@
     <ClInclude Include="CreateInterface.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="Feature.h" />
+    <ClInclude Include="Gui.h" />
+    <ClInclude Include="IControl.h" />
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="IMaterial.h" />
     <ClInclude Include="IMaterialSystem.h" />
@@ -191,6 +198,7 @@
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VEngineClient.h" />
     <ClInclude Include="VFTableHook.h" />
+    <ClInclude Include="Window.h" />
     <ClInclude Include="XorString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

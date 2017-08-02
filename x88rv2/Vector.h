@@ -23,7 +23,11 @@ public:
 		this->y = 0;
 		this->z = 0;
 	}
-	Vector(vec_t X, vec_t Y, vec_t Z);
+	Vector(vec_t X, vec_t Y, vec_t Z) {
+		this->x = X;
+		this->y = Y;
+		this->z = Z;
+	}
 	Vector(vec_t* clr);
 
 	// Initialization
@@ -46,7 +50,7 @@ public:
 	void Random(vec_t minVal, vec_t maxVal);
 	void Zero(); ///< zero out a vector
 
-				 // equality
+	// equality
 	bool operator==(const Vector& v) const;
 	bool operator!=(const Vector& v) const;
 
@@ -158,7 +162,12 @@ public:
 	vec_t	Dot(const Vector& vOther) const;
 
 	// assignment
-	Vector& operator=(const Vector &vOther);
+	Vector& operator=(const Vector &vOther) {
+		this->x = vOther.x;
+		this->y = vOther.y;
+		this->z = vOther.z;
+		return *this;
+	}
 
 	// 2d
 	vec_t	Length2D(void) const {
@@ -175,12 +184,30 @@ public:
 	// arithmetic operations
 	Vector	operator-(void) const;
 
-	Vector	operator+(const Vector& v) const;
-	Vector	operator-(const Vector& v) const;
+	Vector	operator+(const Vector& v) const {
+		Vector n;
+		n.x = this->x + v.x;
+		n.y = this->y + v.y;
+		n.z = this->z + v.z;
+		return n;
+	}
+	Vector	operator-(const Vector& v) const {
+		Vector n;
+		n.x = this->x - v.x;
+		n.y = this->y - v.y;
+		n.z = this->z - v.z;
+		return n;
+	}
 	Vector	operator*(const Vector& v) const;
 	Vector	operator/(const Vector& v) const;
 	Vector	operator*(float fl) const;
-	Vector	operator/(float fl) const;
+	Vector	operator/(float fl) const {
+		Vector n;
+		n.x = this->x / fl;
+		n.y = this->y / fl;
+		n.z = this->z / fl;
+		return n;
+	}
 
 	// Cross product between two vectors.
 	Vector	Cross(const Vector &vOther) const;
@@ -395,5 +422,7 @@ public:
 	// The matrix.
 	vec_t		m[4][4];
 };
+
+void VectorAngles(const float *forward, float *angles);
 
 #endif // __VECTOR_H__

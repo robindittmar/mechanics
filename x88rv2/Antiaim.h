@@ -5,11 +5,11 @@
 
 class CApplication;
 
-class CAntiaim : public IFeature
+class CAntiAim : public IFeature
 {
 public:
-	CAntiaim();
-	~CAntiaim();
+	CAntiAim();
+	~CAntiAim();
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);

@@ -22,77 +22,41 @@ void CApplication::Run()
 	this->Hook();
 }
 
-double DEG2RAD(double degrees) {
-	return degrees * 4.0 * atan(1.0) / 180.0;
-}
-void FixMovement(CUserCmd* pUserCmd)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	QAngle oldAngles;
-	pApp->EngineClient()->GetViewAngles(oldAngles);
-
-	float oldForwardmove = pUserCmd->forwardmove;
-	float oldSidemove = pUserCmd->sidemove;
-	float deltaView = pUserCmd->viewangles[1] - oldAngles.y;
-
-	float f1;
-	float f2;
-
-	if (oldAngles.y < 0.f)
-		f1 = 360.0f + oldAngles.y;
-	else
-		f1 = oldAngles.y;
-
-	if (pUserCmd->viewangles[1] < 0.0f)
-		f2 = 360.0f + pUserCmd->viewangles[1];
-	else
-		f2 = pUserCmd->viewangles[1];
-
-	if (f2 < f1)
-		deltaView = abs(f2 - f1);
-	else
-		deltaView = 360.0f - abs(f1 - f2);
-	deltaView = 360.0f - deltaView;
-
-	pUserCmd->forwardmove = cos(DEG2RAD(deltaView)) * oldForwardmove + cos(DEG2RAD(deltaView + 90.f)) * oldSidemove;
-	pUserCmd->sidemove = sin(DEG2RAD(deltaView)) * oldForwardmove + sin(DEG2RAD(deltaView + 90.f)) * oldSidemove;
-	if (pUserCmd->viewangles[0] >= 180 && pUserCmd->viewangles[0] <= 270) pUserCmd->forwardmove = -pUserCmd->forwardmove;
-}
-
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
+	CApplication* pApp = CApplication::Instance();
 	float view_forward = 0;
 	float view_right = 10;
 
-	CApplication* pApp = CApplication::Instance();
-	pApp->m_bSetClientViewAngles = false;
+	// Save Viewangles before doing stuff
+	pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
+	QAngle old = pApp->ClientViewAngles();
+
+	//pApp->m_bSetClientViewAngles = false;
 	pApp->m_bAimbotNoRecoil = false;
 
+	// Update Aimbot
 	pApp->Aimbot()->Update(pUserCmd);
-	pApp->m_bhop.Update(pUserCmd);
 
+	// Update Bunnyhop
+	pApp->Bhop()->Update(pUserCmd);
 
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-	DWORD moveType = *(DWORD*)((DWORD)pLocalEntity + 0x258);
+	// Update NoRecoil
+	pApp->Misc()->NoRecoil(pUserCmd);
 
-	if (pUserCmd->buttons & IN_ATTACK)
-	{
-		pApp->m_misc.NoRecoil(pUserCmd);
-	}
-	else if (!(pUserCmd->buttons & IN_USE) &&
-		!(moveType & MOVETYPE_LADDER))
-	{
-		Antiaim antiaim = { DOWN, BACKWARDS, pUserCmd };
-		pApp->m_antiaim.Update(&antiaim);
-	}
+	// Update AntiAim
+	pApp->AntiAim()->Update(pUserCmd);
 
-	FixMovement(pUserCmd);
+	// Fix movement & angles
+	FixMovement(pUserCmd, old);
+	FixViewAngles(pUserCmd);
 
+	// Set ViewAngles we prepared for display
+	pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
-	return pApp->m_bSetClientViewAngles;
+	return false;
 }
 
 HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
@@ -103,11 +67,13 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	if (pEngineClient->IsInGame())
 	{
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		pApp->m_esp.Update(device);
-
-		pApp->m_misc.NoFlash(20);
+		pApp->Esp()->Update(device);
+		pApp->Misc()->NoFlash(20);
 	}
 
+	//CButton btn(100, 100);
+	//btn.Draw(device, 10, 10);
+	pApp->m_pWindow->Draw(device);
 	return m_pEndScene(device);
 }
 
@@ -168,6 +134,14 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 
 void CApplication::Setup()
 {
+	// Create GUI (Window + all controls)
+	m_pWindow = new CWindow(30, 30, 500, 400, "I'm a title lel");
+	m_pWindow->AddChild(
+		new CButton(10, 10)
+	);
+	//m_pWindow->IsVisible(true);
+
+	// Setup engine stuff
 	CXorString clientDll("tgì§y«¦{g");
 	CXorString engineDll("reâ«yn«¦{g");
 	CXorString materialSystemDll("zjñ§ebä®drö¶rf«¦{g");
@@ -196,13 +170,13 @@ void CApplication::Setup()
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
 
 	this->m_aimbot.Setup();
-	this->m_antiaim.Setup();
+	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
 	this->m_misc.Setup();
 
 	this->m_aimbot.IsEnabled(true);
-	this->m_antiaim.IsEnabled(true);
+	this->m_antiAim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
 	this->m_esp.IsEnabled(true);
 	this->m_misc.IsEnabled(true);
@@ -213,14 +187,14 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
-	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)((
+	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)(
 		(DWORD)CPattern::FindPattern(
-		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
+			(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
 			"f----fbcdefghasdfta"
-		)
-		) + 1);
+		) + 1
+	);
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
 
@@ -242,6 +216,7 @@ void CApplication::Hook()
 // Singleton
 CApplication::CApplication()
 {
+	m_pWindow = NULL;
 }
 
 CApplication::CApplication(CApplication const&)
@@ -250,4 +225,63 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pWindow)
+		delete m_pWindow;
+}
+
+// TODO: This is not working :c
+void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	float oldForwardmove = pUserCmd->forwardmove;
+	float oldSidemove = pUserCmd->sidemove;
+	float deltaView = pUserCmd->viewangles[1] - qOrigAngles.y;
+
+	float f1;
+	float f2;
+
+	if (qOrigAngles.y < 0.f)
+		f1 = 360.0f + qOrigAngles.y;
+	else
+		f1 = qOrigAngles.y;
+
+	if (pUserCmd->viewangles[1] < 0.0f)
+		f2 = 360.0f + pUserCmd->viewangles[1];
+	else
+		f2 = pUserCmd->viewangles[1];
+
+	if (f2 < f1)
+		deltaView = abs(f2 - f1);
+	else
+		deltaView = 360.0f - abs(f1 - f2);
+	deltaView = 360.0f - deltaView;
+
+	pUserCmd->forwardmove = cos(DEG2RAD(deltaView)) * oldForwardmove + cos(DEG2RAD(deltaView + 90.f)) * oldSidemove;
+	pUserCmd->sidemove = -(sin(DEG2RAD(deltaView)) * oldForwardmove + sin(DEG2RAD(deltaView + 90.f)) * oldSidemove);
+}
+
+void FixViewAngles(CUserCmd* pUserCmd)
+{
+	// Normalize pitch
+	while (pUserCmd->viewangles[0] > 89.0f)
+	{
+		pUserCmd->viewangles[0] -= 178.0f;
+	}
+	while (pUserCmd->viewangles[0] < -89.0f)
+	{
+		pUserCmd->viewangles[0] += 178.0f;
+	}
+
+	// Normalize yaw
+	while (pUserCmd->viewangles[1] > 179.9999f)
+	{
+		pUserCmd->viewangles[1] -= 360.0f;
+	}
+	while (pUserCmd->viewangles[1] < -179.9999f)
+	{
+		pUserCmd->viewangles[1] += 360.0f;
+	}
+
+	pUserCmd->viewangles[2] = 0.0f;
 }

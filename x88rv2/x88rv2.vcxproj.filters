@@ -22,6 +22,15 @@
     <Filter Include="Source Engine\Source Files">
       <UniqueIdentifier>{138f7110-e7c4-44f4-b80e-d08e28507f54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GUI">
+      <UniqueIdentifier>{9c935323-6d08-4687-8c98-d024acd8d6c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Source Files">
+      <UniqueIdentifier>{2cc3c37e-293d-41c2-b245-91508fb4c8cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GUI\Header Files">
+      <UniqueIdentifier>{55c81309-c1b9-45d6-a2fb-d1d2fa842a61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
@@ -60,11 +69,23 @@
     <ClCompile Include="ESP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Antiaim.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IMaterialSystem.cpp">
       <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AntiAim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector.cpp">
+      <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IControl.cpp">
+      <Filter>GUI\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -134,9 +155,6 @@
     <ClInclude Include="IVModelInfo.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Antiaim.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IVModelRender.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
@@ -151,6 +169,21 @@
     </ClInclude>
     <ClInclude Include="IMaterial.h">
       <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AntiAim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Gui.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IControl.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>GUI\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

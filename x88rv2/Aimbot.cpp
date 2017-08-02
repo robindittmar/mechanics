@@ -50,6 +50,7 @@ void CAimbot::Update(void* pParameters)
 	int iLocalPlayerIdx = pEngineClient->GetLocalPlayer();
 	IClientEntity* pLocalEntity = pEntityList->GetClientEntity(iLocalPlayerIdx);
 	IClientEntity* pCurEntity;
+	QAngle qAimAngles, qLocalViewAngles = pApp->ClientViewAngles();
 	CUserCmd* pUserCmd = (CUserCmd*)pParameters;
 
 	if (!pUserCmd)
@@ -76,6 +77,8 @@ void CAimbot::Update(void* pParameters)
 	for (int i = 1; i < iMaxEntities; i++)
 	{
 		pCurEntity = pEntityList->GetClientEntity(i);
+
+		// TODO: Check if entity invincible (after spawn in warmup for example)
 
 		// Filter entites
 		if (!pCurEntity)
@@ -109,45 +112,26 @@ void CAimbot::Update(void* pParameters)
 		headPos.y = boneMatrix->c[1][3];
 		headPos.z = boneMatrix->c[2][3];
 
-		// IS VISIBLE?
+		// IsVisible check
 		ray.Init(myHeadPos, headPos);
 		pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
-
 		if (!trace.IsVisible())
 			continue;
 
-		// IS VISIBLE?
-
-		//Vector headPos = *(Vector*)((DWORD)pCurEntity + 0x134);
+		// Get relative position to ourselves
 		headPos -= myHeadPos;
-
 		float vecLen = sqrtf(headPos.x * headPos.x + headPos.y * headPos.y + headPos.z * headPos.z);
 
-		float yaw = atan2f(headPos.y, headPos.x);
-		float pitch = -asinf(headPos.z / vecLen);
+		// Calculate our viewangles to aim at the enemy
+		QAngle aimAngles(
+			-asinf(headPos.z / vecLen),
+			atan2f(headPos.y, headPos.x),
+			0.0f
+		);
 
-		yaw = (yaw * 180.0f) / 3.1415f;
-		pitch = (pitch * 180.0f) / 3.1415f;
-
-
-		// Normalize angles
-		while (yaw > 179.9999f)
-		{
-			yaw -= 360.0f;
-		}
-		while (yaw < -179.9999f)
-		{
-			yaw += 360.0f;
-		}
-
-		while (pitch > 89.0f)
-		{
-			pitch -= 178.0f;
-		}
-		while (pitch < -89.0f)
-		{
-			pitch += 178.0f;
-		}
+		// Get the angles in degrees (for the game)
+		aimAngles.x = RAD2DEG(aimAngles.x);
+		aimAngles.y = RAD2DEG(aimAngles.y);
 
 		//pEngineClient->SetViewAngles(ang);
 		//pUserCmd->viewangles[0] = pitch;
@@ -155,24 +139,24 @@ void CAimbot::Update(void* pParameters)
 		//{
 			pApp->m_bAimbotNoRecoil = true;
 
-			pApp->EngineClient()->GetViewAngles(pApp->m_viewAngle);
+			
 			QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
 
-			pitch -= aimPunchAngle.x * RECOIL_COMPENSATION;
-			yaw -= aimPunchAngle.y * RECOIL_COMPENSATION;
+			if (!ENABLE_SILENTAIM)
+			{
+				pApp->ClientViewAngles(aimAngles);
+			}
+
+			aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
+			aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
 
 			pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
 			pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
-			pUserCmd->viewangles[0] = pitch;
-			pUserCmd->viewangles[1] = yaw;
+			pUserCmd->viewangles[0] = aimAngles.x;
+			pUserCmd->viewangles[1] = aimAngles.y;
 
 			//pUserCmd->buttons |= IN_ATTACK;
-
-			if (!ENABLE_SILENTAIM)
-			{
-				pApp->m_bSetClientViewAngles = true;
-			}
 		//}
 
 		break;

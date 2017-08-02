@@ -5,6 +5,7 @@
 #include "Console.h"
 #include "Pattern.h"
 #include "XorString.h"
+#include "Gui.h"
 
 // Features
 #include "Aimbot.h"
@@ -48,9 +49,12 @@
 #define BACKWARDS 1
 #define JITTER_BACKWARDS 2
 
-#define ENABLE_SILENTAIM true
+#define ENABLE_SILENTAIM false
 #define ENABLE_NOVISRECOIL true
 
+#define PI_F		3.1415f
+#define DEG2RAD(x)	((x / 180.0f) * PI_F)
+#define RAD2DEG(x)	((x * 180.0f) / PI_F)
 
 struct Antiaim {
 	int pitch, yaw;
@@ -99,6 +103,9 @@ typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITI
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
+
+void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
+void FixViewAngles(CUserCmd* pUserCmd);
 
 // Singleton
 class CApplication
@@ -155,9 +162,33 @@ public:
 		return (CAimbot*)&m_aimbot;
 	}
 
+	CAntiAim* AntiAim() {
+		return (CAntiAim*)&m_antiAim;
+	}
+
+	CBhop* Bhop() {
+		return (CBhop*)&m_bhop;
+	}
+
+	CEsp* Esp() {
+		return (CEsp*)&m_esp;
+	}
+
+	CMisc* Misc() {
+		return (CMisc*)&m_misc;
+	}
+
+	QAngle& ClientViewAngles() {
+		return m_qClientViewAngles;
+	}
+
+	void ClientViewAngles(QAngle& q) {
+		m_qClientViewAngles = q;
+	}
+
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
-	bool m_bSetClientViewAngles;
+	//bool m_bSetClientViewAngles;
 	bool m_bAimbotNoRecoil;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
@@ -189,11 +220,15 @@ private:
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
 
+	QAngle m_qClientViewAngles;
+
 	CAimbot m_aimbot;
-	CAntiaim m_antiaim;
+	CAntiAim m_antiAim;
 	CBhop m_bhop;
-	CMisc m_misc;
 	CEsp m_esp;
+	CMisc m_misc;
+
+	CWindow* m_pWindow;
 
 	// Singleton 
 	CApplication();
