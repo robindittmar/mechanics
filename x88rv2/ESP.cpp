@@ -57,6 +57,10 @@ void CEsp::Update(void* pParameters)
 			color = D3DCOLOR_ARGB(200, 255, 0, 0);
 			headPos.z += 72;
 		}
+		else
+		{
+			continue;
+		}
 
 		if (isSpotted)
 		{
