@@ -202,6 +202,7 @@ void CApplication::Setup()
 	this->m_misc.Setup();
 
 	this->m_aimbot.IsEnabled(true);
+	this->m_antiaim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
 	this->m_esp.IsEnabled(true);
 	this->m_misc.IsEnabled(true);
