@@ -47,7 +47,7 @@
 #define BACKWARDS 1
 #define JITTER_BACKWARDS 2
 
-#define ENABLE_SILENTAIM false
+#define ENABLE_SILENTAIM true
 #define ENABLE_NOVISRECOIL true
 
 
