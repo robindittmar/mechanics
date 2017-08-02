@@ -110,22 +110,22 @@ void CAimbot::Update(void* pParameters)
 
 
 		// Normalize angles
-		while (yaw > 180.0f)
+		while (yaw > 179.9999f)
 		{
 			yaw -= 360.0f;
 		}
-		while (yaw < -180.0f)
+		while (yaw < -179.9999f)
 		{
 			yaw += 360.0f;
 		}
 
-		while (pitch > 90.0f)
+		while (pitch > 89.0f)
 		{
-			pitch -= 180.0f;
+			pitch -= 178.0f;
 		}
-		while (pitch < -90.0f)
+		while (pitch < -89.0f)
 		{
-			pitch += 180.0f;
+			pitch += 178.0f;
 		}
 
 		//pEngineClient->SetViewAngles(ang);
