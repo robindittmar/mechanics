@@ -31,11 +31,12 @@ void CEsp::Update(void* pParameters)
 		if (pEntity->IsDormant())
 			continue;
 
-		if (m_pApp->EngineClient()->GetLocalPlayer() == i)
+		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
+		if (isLocalPlayer && (true && !ENABLE_THIRDPERSON)) //todo: check if render himself
 			continue;
 
 		int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
-		if (true && entityTeam == localTeam) //todo: same team
+		if (true && entityTeam == localTeam && ( isLocalPlayer && true && !ENABLE_THIRDPERSON)) //todo: check if render himself in thirdperson and same team
 			continue;
 
 		bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);

@@ -9,10 +9,11 @@ void printByteString(const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("vyè±"),
-		CXorString("Zdá§{+ñ§oð°rx"),
-		CXorString("AFä¶ryì£{Xü±cnèò/;"),
-		CXorString("zjñ§ebä®drö¶rf«¦{g")
+		CXorString("Other textures"),
+		CXorString("particle/vistasmokev1/vistasmokev1_smokegrenade"),
+		CXorString("particle/vistasmokev1/vistasmokev1_emods"),
+		CXorString("particle/vistasmokev1/vistasmokev1_emods_impactdust"),
+		CXorString("particle/vistasmokev1/vistasmokev1_fire")
 	};
 
 	CXorString byteStrings[] {

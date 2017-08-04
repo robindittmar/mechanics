@@ -34,34 +34,33 @@ void CAntiAim::Update(void* pParameters)
 	if (moveType & MOVETYPE_LADDER)
 		return;
 
-	static bool bToggle = false;
-	Antiaim antiAimInitizalize = { DOWN, BACKWARDS };
+	AntiAim aa = { DOWN, BACKWARDS };
 	QAngle angles = m_pApp->ClientViewAngles();
 
 	// Pitch
-	switch (antiAimInitizalize.pitch)
+	switch (aa.pitchAA)
 	{
 	case DOWN:
 		angles.x = 89.0f;
 		break;
 	}
 
+
 	// Yaw
-	switch (antiAimInitizalize.yaw)
+	static float trigger = 0.0f;
+	switch (aa.yawAA)
 	{
 	case BACKWARDS:
 		angles.y -= 180.0f;
 		break;
-	case JITTER_BACKWARDS:
-		if (bToggle)
+	case STATIC_JITTER_BACKWARDS:
+		trigger += 20.0f;
+		angles.y -= trigger > 60.0f ? -145.0f : 145.0f;
+
+		if (trigger > 120.0f)
 		{
-			angles.y -= 145.0f;
+			trigger = 0.0f;
 		}
-		else
-		{
-			angles.y -= 215.0f;
-		}
-		bToggle = !bToggle;
 		break;
 	}
 

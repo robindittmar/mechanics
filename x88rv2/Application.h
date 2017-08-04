@@ -41,24 +41,50 @@
 #define AIMPUNCHANGLE_OFFSET 0x70
 #define VIEWPUNCHANGLE_OFFSET 0x64
 #define SHOTSFIRED_OFFSET 0x0A2C0
+#define DEADFLAG_OFFSET 0x31C4
 
 #define RECOIL_COMPENSATION 2
 #define RECOIL_TRACKING 0.4499999f
 
-#define DOWN 0
-#define BACKWARDS 1
-#define JITTER_BACKWARDS 2
-
-#define ENABLE_SILENTAIM false
+#define ENABLE_SILENTAIM true
 #define ENABLE_NOVISRECOIL true
+#define ENABLE_THIRDPERSON true
 
 #define PI_F		3.1415f
 #define DEG2RAD(x)	((x / 180.0f) * PI_F)
 #define RAD2DEG(x)	((x * 180.0f) / PI_F)
 
-struct Antiaim {
-	int pitch, yaw;
-	CUserCmd* pUserCmd;
+class CVerifiedUserCmd;
+class CInput
+{
+public:
+	void*               pvftable;                     //0x00
+	bool                m_fTrackIRAvailable;          //0x04
+	bool                m_fMouseInitialized;          //0x05
+	bool                m_fMouseActive;               //0x06
+	bool                m_fJoystickAdvancedInit;      //0x07
+	char                pad_0x08[0x2C];               //0x08
+	void*               m_pKeys;                      //0x34
+	char                pad_0x38[0x64];               //0x38
+	int					pad_0x41;
+	int					pad_0x42;
+	bool                m_fCameraInterceptingMouse;   //0x9C
+	bool                m_fCameraInThirdPerson;       //0x9D
+	bool                m_fCameraMovingWithMouse;     //0x9E
+	Vector				m_vecCameraOffset;            //0xA0
+	bool                m_fCameraDistanceMove;        //0xAC
+	int                 m_nCameraOldX;                //0xB0
+	int                 m_nCameraOldY;                //0xB4
+	int                 m_nCameraX;                   //0xB8
+	int                 m_nCameraY;                   //0xBC
+	bool                m_CameraIsOrthographic;       //0xC0
+	Vector              m_angPreviousViewAngles;      //0xC4
+	Vector              m_angPreviousViewAnglesTilt;  //0xD0
+	float               m_flLastForwardMove;          //0xDC
+	int                 m_nClearInputState;           //0xE0
+	char                pad_0xE4[0x8];                //0xE4
+	CUserCmd*           m_pCommands;                  //0xEC
+	CVerifiedUserCmd*   m_pVerifiedCommands;          //0xF0
 };
 
 struct CViewSetup
@@ -105,7 +131,8 @@ typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
 
 void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
-void FixViewAngles(CUserCmd* pUserCmd);
+void NormalizeAngles(CUserCmd* pUserCmd);
+void ClampAngles(CUserCmd* pUserCmd);
 
 // Singleton
 class CApplication
@@ -215,12 +242,14 @@ private:
 	IVModelRender* m_pModelRender;
 	IEngineTrace* m_pEngineTrace;
 	IMaterialSystem* m_pMaterialSystem;
+	CInput* m_pInput;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
 
 	QAngle m_qClientViewAngles;
+	QAngle m_qLastTickAngles;
 
 	CAimbot m_aimbot;
 	CAntiAim m_antiAim;
