@@ -175,6 +175,7 @@
     <ClInclude Include="Bhop.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CGameTrace.h" />
+    <ClInclude Include="CInput.h" />
     <ClInclude Include="ClientClass.h" />
     <ClInclude Include="ClientEntity.h" />
     <ClInclude Include="ClientEntityList.h" />

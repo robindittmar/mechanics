@@ -185,5 +185,8 @@
     <ClInclude Include="Button.h">
       <Filter>GUI\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CInput.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

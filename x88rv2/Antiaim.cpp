@@ -54,10 +54,10 @@ void CAntiAim::Update(void* pParameters)
 		angles.y -= 180.0f;
 		break;
 	case STATIC_JITTER_BACKWARDS:
-		trigger += 20.0f;
-		angles.y -= trigger > 60.0f ? -145.0f : 145.0f;
+		trigger += 15.0f;
+		angles.y -= trigger > 50.0f ? -145.0f : 145.0f;
 
-		if (trigger > 120.0f)
+		if (trigger > 100.0f)
 		{
 			trigger = 0.0f;
 		}

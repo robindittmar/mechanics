@@ -140,13 +140,16 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup) {
 	CApplication* pApp = CApplication::Instance();
-
-	//todo: FOV changer ;)
-	pViewSetup->fov = 105;
-
 	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+
 	if (pApp->EngineClient()->IsInGame())
 	{
+		//todo: FOV changer ;)
+		if (!*(bool*)((DWORD)pLocalEntity + ISSCOPED_OFFSET)) //todo: check if fov change should happen while scoping
+		{
+			pViewSetup->fov = 105;
+		}
+
 		int health = *(int*)((DWORD)pLocalEntity + HEALTH_OFFSET);
 		if (health > 0)
 		{
@@ -258,12 +261,12 @@ void CApplication::Hook()
 {
 	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)(
 		(DWORD)CPattern::FindPattern(
-			(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
+		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
 			"f----fbcdefghasdfta"
 		) + 1
-	);
+		);
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClientDll))[15] + 0x1);
@@ -274,7 +277,7 @@ void CApplication::Hook()
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (DWORD*)hk_EndScene);
-	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
+	//m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
 
 	VFTableHook engineModelHook((DWORD*)this->ModelRender(), true);
 	m_pDrawModelExecute = (DrawModelExecute_t)engineModelHook.Hook(21, (DWORD*)hk_DrawModelExecute);
