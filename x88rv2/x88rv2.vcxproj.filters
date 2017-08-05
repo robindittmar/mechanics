@@ -87,6 +87,9 @@
     <ClCompile Include="IControl.cpp">
       <Filter>GUI\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CWeapon.cpp">
+      <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -186,6 +189,9 @@
       <Filter>GUI\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CInput.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CWeapon.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

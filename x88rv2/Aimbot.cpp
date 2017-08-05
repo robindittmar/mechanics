@@ -84,12 +84,12 @@ void CAimbot::Update(void* pParameters)
 		if (!pCurEntity)
 			continue;
 
-		// Self-killing aimbot :D
-		if (i == iLocalPlayerIdx)
-			continue;
-
 		// Skip dormant entities
 		if (pCurEntity->IsDormant())
+			continue;
+
+		// Self-killing aimbot :D
+		if (i == iLocalPlayerIdx)
 			continue;
 
 		int health = *(int*)((DWORD)pCurEntity + HEALTH_OFFSET);
@@ -97,6 +97,7 @@ void CAimbot::Update(void* pParameters)
 			continue;
 
 		//todo: check if knife or nades
+		//CWeapon activeWeapon = 
 
 		int entityTeam = *(int*)((DWORD)pCurEntity + TEAM_OFFSET);
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
@@ -138,7 +139,7 @@ void CAimbot::Update(void* pParameters)
 
 		pApp->m_bAimbotNoRecoil = true;
 
-		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 
 		if (!ENABLE_SILENTAIM)
 		{
@@ -156,7 +157,7 @@ void CAimbot::Update(void* pParameters)
 
 
 		//todo: autoshoot not working cause no check ifsniper
-		if (ENABLE_AUTOSHOOT && false) //todo: check if issniper
+		if (ENABLE_AUTOSHOOT) //todo: check if issniper
 		{
 			if (ENABLE_AUTOSCOPE)
 			{
@@ -168,6 +169,10 @@ void CAimbot::Update(void* pParameters)
 				{
 					pUserCmd->buttons |= IN_ATTACK2;
 				}
+			}
+			else
+			{
+				pUserCmd->buttons |= IN_ATTACK;
 			}
 		}
 		else if (ENABLE_AUTOSHOOT && false) // todo check if !issniper

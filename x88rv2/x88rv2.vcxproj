@@ -155,6 +155,7 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CreateInterface.cpp" />
+    <ClCompile Include="CWeapon.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Feature.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="CreateInterface.h" />
+    <ClInclude Include="CWeapon.h" />
     <ClInclude Include="ESP.h" />
     <ClInclude Include="Feature.h" />
     <ClInclude Include="Gui.h" />
