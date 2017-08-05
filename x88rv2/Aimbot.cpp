@@ -90,7 +90,7 @@ void CAimbot::Update(void* pParameters)
 		if (i == iLocalPlayerIdx)
 			continue;
 
-		if (pCurEntity->IsAlive())
+		if (!pCurEntity->IsAlive())
 			continue;
 
 		//todo: check if knife or nades

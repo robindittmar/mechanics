@@ -105,7 +105,7 @@ typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, co
 
 void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
-void ClampAngles(CUserCmd* pUserCmd);
+void ClampMovement(CUserCmd* pUserCmd);
 
 // Singleton
 class CApplication

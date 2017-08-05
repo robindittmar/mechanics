@@ -319,16 +319,17 @@ void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
 	float fOldForwardmove = pUserCmd->forwardmove;
 	float fOldSidemove = pUserCmd->sidemove;
 
-	//float fAngle = qNewAngles.Dot(qOrigAngles) / (qNewAngles.Length() * qOrigAngles.Length());
+	float fAngle = qNewAngles.Dot(qOrigAngles) / (qNewAngles.Length() * qOrigAngles.Length());
 
 	QAngle qDelta = qOrigAngles - qNewAngles;
 	QAngle qDeltaAngled;
 
 	VectorAngles((float*)&qDelta, (float*)&qDeltaAngled);
 
-	console.Write("(%f,%f,%f) -> (%f,%f%,%f)\n",
-		qDelta.x, qDelta.y, qDelta.z,
-		qDeltaAngled.x, qDeltaAngled.y, qDeltaAngled.z
+	console.Write("%f (%f) (%f)\n",
+		fAngle,
+		acosf(fAngle),
+		RAD2DEG(acosf(fAngle))
 	);
 
 	//pUserCmd->forwardmove = fAngle * fOldForwardmove;
@@ -358,25 +359,26 @@ void NormalizeAngles(CUserCmd* pUserCmd)
 
 	pUserCmd->viewangles[2] = 0.0f;
 }
-void ClampAngles(CUserCmd* pUserCmd)
+
+void ClampMovement(CUserCmd* pUserCmd)
 {
 	// Clamp forward
-	if (pUserCmd->forwardmove > 450)
+	if (pUserCmd->forwardmove > 450.0f)
 	{
-		pUserCmd->forwardmove = 450;
+		pUserCmd->forwardmove = 450.0f;
 	}
-	else if (pUserCmd->forwardmove < -450)
+	else if (pUserCmd->forwardmove < -450.0f)
 	{
-		pUserCmd->forwardmove = -450;
+		pUserCmd->forwardmove = -450.0f;
 	}
 
 	// Clamp sidemove
-	if (pUserCmd->sidemove > 450)
+	if (pUserCmd->sidemove > 450.0f)
 	{
-		pUserCmd->sidemove = 450;
+		pUserCmd->sidemove = 450.0f;
 	}
-	else if (pUserCmd->sidemove < -450)
+	else if (pUserCmd->sidemove < -450.0f)
 	{
-		pUserCmd->sidemove = -450;
+		pUserCmd->sidemove = -450.0f;
 	}
 }
