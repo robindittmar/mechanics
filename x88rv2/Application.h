@@ -50,7 +50,7 @@
 #define RECOIL_TRACKING 0.4499999f
 
 #define ENABLE_AUTOSCOPE true
-#define ENABLE_AUTOSHOOT true
+#define ENABLE_AUTOSHOOT false
 #define ENABLE_SILENTAIM true
 #define ENABLE_NOVISRECOIL true
 #define ENABLE_THIRDPERSON true

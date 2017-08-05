@@ -39,8 +39,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle old = pApp->ClientViewAngles();
-			float fOldForward = pUserCmd->forwardmove;
-			float fOldSidemove = pUserCmd->sidemove;
 
 			//pApp->m_bSetClientViewAngles = false;
 			pApp->m_bAimbotNoRecoil = false;
@@ -58,7 +56,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->AntiAim()->Update(pUserCmd);
 
 			// Fix movement & angles
-			FixMovement(pUserCmd, old);
+			FixMovement(pUserCmd, old); //todo: not working
 			NormalizeAngles(pUserCmd);
 
 			// Set ViewAngles we prepared for display

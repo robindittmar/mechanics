@@ -32,11 +32,14 @@ void CEsp::Update(void* pParameters)
 			continue;
 
 		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
-		if (isLocalPlayer && (true && !ENABLE_THIRDPERSON)) //todo: check if render himself
-			continue;
-
 		int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
-		if (true && entityTeam == localTeam && ( isLocalPlayer && true && !ENABLE_THIRDPERSON)) //todo: check if render himself in thirdperson and same team
+
+		bool shouldDrawOwnTeam = false;
+		bool shouldDrawHimselfWhileThirdperson = true;
+
+		if (!(isLocalPlayer && ENABLE_THIRDPERSON && shouldDrawHimselfWhileThirdperson ||
+			!isLocalPlayer && shouldDrawOwnTeam && entityTeam == localTeam ||
+			entityTeam != localTeam))
 			continue;
 
 		bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
@@ -93,13 +96,21 @@ void CEsp::Update(void* pParameters)
 				m_DrawArmorbar = true;
 			}
 			else
+			{
 				m_DrawArmorbar = false;
+			}
 			if (true) //todo: check if bounding box
+			{
 				DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
+			}
 			if (EnableHealthbar) //todo: check if healthbar
+			{
 				DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
+			}
 			if (false && hasHelmet) //todo: check if hasHelmet
+			{
 				DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
+			}
 		}
 	}
 }

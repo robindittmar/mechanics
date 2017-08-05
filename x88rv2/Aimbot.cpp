@@ -155,6 +155,7 @@ void CAimbot::Update(void* pParameters)
 		pUserCmd->viewangles[1] = aimAngles.y;
 
 
+		//todo: autoshoot not working cause no check ifsniper
 		if (ENABLE_AUTOSHOOT && false) //todo: check if issniper
 		{
 			if (ENABLE_AUTOSCOPE)
@@ -169,7 +170,7 @@ void CAimbot::Update(void* pParameters)
 				}
 			}
 		}
-		else if (ENABLE_AUTOSHOOT) // todo check if !issniper
+		else if (ENABLE_AUTOSHOOT && false) // todo check if !issniper
 		{
 			pUserCmd->buttons |= IN_ATTACK;
 		}
