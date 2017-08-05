@@ -143,7 +143,7 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	if (pApp->EngineClient()->IsInGame())
 	{
 		//todo: FOV changer ;)
-		if (!*(bool*)((DWORD)pLocalEntity + ISSCOPED_OFFSET)) //todo: check if fov change should happen while scoping
+		if (!pLocalEntity->IsScoped()) //todo: check if fov change should happen while scoping
 		{
 			pViewSetup->fov = 105;
 		}

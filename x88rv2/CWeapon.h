@@ -68,6 +68,8 @@ public:
 	bool IsSniper();
 	bool IsNade();
 	bool IsC4();
+	bool IsPistol();
+	bool IsTaser();
 	int Clip1();
 	int Clip2();
 private:
