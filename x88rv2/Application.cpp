@@ -27,34 +27,46 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
 	CApplication* pApp = CApplication::Instance();
-	float view_forward = 0;
-	float view_right = 10;
+	if (pApp->EngineClient()->IsInGame())
+	{
+		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+		int health = *(int*)((DWORD)pLocalEntity + HEALTH_OFFSET);
+		if (health > 0) //todo: in IsAlive() funktion umwandeln
+		{
+			float view_forward = 0;
+			float view_right = 10;
 
-	// Save Viewangles before doing stuff
-	pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
-	QAngle qOldAngles = pApp->ClientViewAngles();
+			// Save Viewangles before doing stuff
+			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
+			QAngle qOldAngles = pApp->ClientViewAngles();
 
-	//pApp->m_bSetClientViewAngles = false;
-	pApp->m_bAimbotNoRecoil = false;
+			//pApp->m_bSetClientViewAngles = false;
+			pApp->m_bAimbotNoRecoil = false;
 
-	// Update Aimbot
-	pApp->Aimbot()->Update(pUserCmd);
+			// Update Aimbot
+			pApp->Aimbot()->Update(pUserCmd);
 
-	// Update Bunnyhop
-	pApp->Bhop()->Update(pUserCmd);
+			// Update Bunnyhop
+			pApp->Bhop()->Update(pUserCmd);
 
-	// Update NoRecoil
-	pApp->Misc()->NoRecoil(pUserCmd);
+			// Update NoRecoil
+			pApp->Misc()->NoRecoil(pUserCmd);
 
-	// Update AntiAim
-	pApp->AntiAim()->Update(pUserCmd);
+			// Update AntiAim
+			pApp->AntiAim()->Update(pUserCmd);
 
-	// Fix movement & angles
-	FixMovement(pUserCmd, qOldAngles);
-	FixViewAngles(pUserCmd);
+			// Fix movement & angles
+			FixMovement(pUserCmd, qOldAngles);
+			NormalizeAngles(pUserCmd);
 
-	// Set ViewAngles we prepared for display
-	pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
+			// Set ViewAngles we prepared for display
+			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
+
+			pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
+			pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
+			pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+		}
+	}
 
 	return false;
 }
@@ -68,7 +80,7 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 	{
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
 		pApp->Esp()->Update(device);
-		pApp->Misc()->NoFlash(20);
+		//pApp->Misc()->NoFlash(80);
 	}
 
 	//CButton btn(100, 100);
@@ -86,25 +98,83 @@ HRESULT __stdcall CApplication::hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice,
 
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
+	CApplication* pApp = CApplication::Instance();
+
+	if (curStage == FRAME_RENDER_START)
+	{
+		if (pApp->EngineClient()->IsInGame())
+		{
+			IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+			int health = *(int*)((DWORD)pLocalEntity + HEALTH_OFFSET);
+			if (health > 0) //todo: in IsAlive() funktion umwandeln
+			{
+				if (true)//todo: check for nosmoke
+				{
+					static CXorString smoke_materials[] = {
+						CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"),
+						CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú±zdî§pyà¬voà"),
+						CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±"),
+						CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±Hbè²vhñ¦bxñ")
+					};
+					static CXorString pOtherTextures("Xí§e+ñ§oð°rx");
+
+					for (int i = 0; i < sizeof(smoke_materials) / sizeof(*smoke_materials); i++)
+					{
+						IMaterial* pMat = pApp->MaterialSystem()->FindMaterial(smoke_materials[i].ToCharArray(), pOtherTextures.ToCharArray());
+						pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+					}
+				}
+
+				if (pApp->m_pInput->m_fCameraInThirdPerson)
+				{
+					*(Vector*)((DWORD)pLocalEntity + DEADFLAG_OFFSET + 0x4) = pApp->m_qLastTickAngles;
+				}
+			}
+		}
+	}
+
 	m_pFrameStageNotify(ecx, curStage);
 }
 
 void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup) {
 	CApplication* pApp = CApplication::Instance();
-
-	//todo: FOV changer ;)
-	pViewSetup->fov = 105;
-
 	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+
 	if (pApp->EngineClient()->IsInGame())
 	{
-		if (ENABLE_NOVISRECOIL)
+		//todo: FOV changer ;)
+		if (!*(bool*)((DWORD)pLocalEntity + ISSCOPED_OFFSET)) //todo: check if fov change should happen while scoping
 		{
-			QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
-			QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
+			pViewSetup->fov = 105;
+		}
 
-			pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
-			pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
+		int health = *(int*)((DWORD)pLocalEntity + HEALTH_OFFSET);
+		if (health > 0)
+		{
+			static Vector vecAngles;
+			pApp->EngineClient()->GetViewAngles(vecAngles);
+			if (ENABLE_THIRDPERSON)
+			{
+				if (!pApp->m_pInput->m_fCameraInThirdPerson)
+				{
+					pApp->m_pInput->m_fCameraInThirdPerson = true;
+					pApp->m_pInput->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 120); //todo: value
+				}
+			}
+			else
+			{
+				pApp->m_pInput->m_fCameraInThirdPerson = false;
+				pApp->m_pInput->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);
+			}
+
+			if (ENABLE_NOVISRECOIL)
+			{
+				QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+				QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
+
+				pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
+				pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
+			}
 		}
 	}
 	return m_pOverrideView(ecx, pViewSetup);
@@ -124,7 +194,7 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 			true) //todo: check if nohands
 		{
 			IMaterial* pMat = pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
-			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 			pApp->ModelRender()->ForcedMaterialOverride(pMat);
 		}
 	}
@@ -189,14 +259,15 @@ void CApplication::Hook()
 {
 	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)(
 		(DWORD)CPattern::FindPattern(
-			(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
+		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
 			0xC1000,
 			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
 			"f----fbcdefghasdfta"
 		) + 1
-	);
+		);
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
+	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClientDll))[15] + 0x1);
 
 	VFTableHook clientModeHook((DWORD*)dwClientMode, true);
 	m_pCreateMove = (CreateMove_t)clientModeHook.Hook(24, (DWORD*)hk_CreateMove);
@@ -204,13 +275,13 @@ void CApplication::Hook()
 
 	VFTableHook d3dHook((DWORD*)dwDevice, true);
 	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (DWORD*)hk_EndScene);
-	m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
+	//m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
 
 	VFTableHook engineModelHook((DWORD*)this->ModelRender(), true);
 	m_pDrawModelExecute = (DrawModelExecute_t)engineModelHook.Hook(21, (DWORD*)hk_DrawModelExecute);
 
-	/*VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
-	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);*/
+	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
+	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);
 }
 
 // Singleton
@@ -263,7 +334,7 @@ void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
 	//pUserCmd->forwardmove = fAngle * fOldForwardmove;
 }
 
-void FixViewAngles(CUserCmd* pUserCmd)
+void NormalizeAngles(CUserCmd* pUserCmd)
 {
 	// Normalize pitch
 	while (pUserCmd->viewangles[0] > 89.0f)
@@ -286,4 +357,26 @@ void FixViewAngles(CUserCmd* pUserCmd)
 	}
 
 	pUserCmd->viewangles[2] = 0.0f;
+}
+void ClampAngles(CUserCmd* pUserCmd)
+{
+	// Clamp forward
+	if (pUserCmd->forwardmove > 450)
+	{
+		pUserCmd->forwardmove = 450;
+	}
+	else if (pUserCmd->forwardmove < -450)
+	{
+		pUserCmd->forwardmove = -450;
+	}
+
+	// Clamp sidemove
+	if (pUserCmd->sidemove > 450)
+	{
+		pUserCmd->sidemove = 450;
+	}
+	else if (pUserCmd->sidemove < -450)
+	{
+		pUserCmd->sidemove = -450;
+	}
 }

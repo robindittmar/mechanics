@@ -59,7 +59,7 @@ void CAimbot::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 
-	if (!(pUserCmd->buttons & IN_ATTACK))
+	if (!ENABLE_AUTOSHOOT && !(pUserCmd->buttons & IN_ATTACK))
 		return;
 
 	// Get position + add relative eye position
@@ -95,6 +95,8 @@ void CAimbot::Update(void* pParameters)
 		int health = *(int*)((DWORD)pCurEntity + HEALTH_OFFSET);
 		if (health == 0)
 			continue;
+
+		//todo: check if knife or nades
 
 		int entityTeam = *(int*)((DWORD)pCurEntity + TEAM_OFFSET);
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
@@ -133,31 +135,45 @@ void CAimbot::Update(void* pParameters)
 		aimAngles.x = RAD2DEG(aimAngles.x);
 		aimAngles.y = RAD2DEG(aimAngles.y);
 
-		//pEngineClient->SetViewAngles(ang);
-		//pUserCmd->viewangles[0] = pitch;
-		//if (pUserCmd->buttons & IN_ATTACK)
-		//{
-			pApp->m_bAimbotNoRecoil = true;
 
-			
-			QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+		pApp->m_bAimbotNoRecoil = true;
 
-			if (!ENABLE_SILENTAIM)
+		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
+
+		if (!ENABLE_SILENTAIM)
+		{
+			pApp->ClientViewAngles(aimAngles);
+		}
+
+		aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
+		aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
+
+		pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+		pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+
+		pUserCmd->viewangles[0] = aimAngles.x;
+		pUserCmd->viewangles[1] = aimAngles.y;
+
+
+		//todo: autoshoot not working cause no check ifsniper
+		if (ENABLE_AUTOSHOOT && false) //todo: check if issniper
+		{
+			if (ENABLE_AUTOSCOPE)
 			{
-				pApp->ClientViewAngles(aimAngles);
+				if (*(bool*)((DWORD)pLocalEntity + ISSCOPED_OFFSET))
+				{
+					pUserCmd->buttons |= IN_ATTACK;
+				}
+				else
+				{
+					pUserCmd->buttons |= IN_ATTACK2;
+				}
 			}
-
-			aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
-			aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
-
-			pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-			pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
-
-			pUserCmd->viewangles[0] = aimAngles.x;
-			pUserCmd->viewangles[1] = aimAngles.y;
-
-			//pUserCmd->buttons |= IN_ATTACK;
-		//}
+		}
+		else if (ENABLE_AUTOSHOOT && false) // todo check if !issniper
+		{
+			pUserCmd->buttons |= IN_ATTACK;
+		}
 
 		break;
 	}
