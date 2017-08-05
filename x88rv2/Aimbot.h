@@ -8,9 +8,9 @@
 // -> Viewangle: Choose the target that's closest to your crosshair
 enum TargetCriteria_t
 {
-	TargetCriteriaUnspecified = 0,
-	TargetCriteriaOrigin = 1,
-	TargetCriteriaViewangle = 2
+	TargetCriteriaUnspecified		= 0,
+	TargetCriteriaOrigin			= 1,
+	TargetCriteriaViewangle			= 2
 };
 
 class CAimbot : public IFeature

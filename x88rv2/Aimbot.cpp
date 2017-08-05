@@ -63,10 +63,9 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	// Get position + add relative eye position
-	Vector myHeadPos = *(Vector*)((DWORD)pLocalEntity + 0x134);
-	myHeadPos += *(Vector*)((DWORD)pLocalEntity + 0x104);
-
-	int localTeam = *(int*)((DWORD)pLocalEntity + TEAM_OFFSET);
+	Vector myHeadPos = *pLocalEntity->Origin();
+	myHeadPos += *pLocalEntity->EyeOffset();
+	int localTeam = pLocalEntity->TeamNum();
 
 	Ray_t ray;
 	trace_t trace;
@@ -92,13 +91,12 @@ void CAimbot::Update(void* pParameters)
 		if (pCurEntity->IsDormant())
 			continue;
 
-		int health = *(int*)((DWORD)pCurEntity + HEALTH_OFFSET);
-		if (health == 0)
+		if (pCurEntity->IsAlive() == 0)
 			continue;
 
 		//todo: check if knife or nades
 
-		int entityTeam = *(int*)((DWORD)pCurEntity + TEAM_OFFSET);
+		int entityTeam = pCurEntity->TeamNum();
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
 			continue;
 

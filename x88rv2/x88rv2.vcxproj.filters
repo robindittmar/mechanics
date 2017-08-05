@@ -87,6 +87,9 @@
     <ClCompile Include="IControl.cpp">
       <Filter>GUI\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ClientEntity.cpp">
+      <Filter>Source Engine\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">

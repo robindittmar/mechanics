@@ -6,6 +6,14 @@
 #ifndef __CLIENTENTITY_H__
 #define __CLIENTENTITY_H__
 
+#define OFFSET_HEALTH			0xFC
+#define OFFSET_TEAM				0xF0
+#define OFFSET_FLAGS			0x100
+#define OFFSET_EYEPOS			0x104
+#define OFFSET_ORIGIN			0x134
+#define OFFSET_ACTIVEWEAPON		0x2EE8
+#define OFFSET_ISSCOPED			0x389C
+
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
 #define FL_DUCKING				(1<<1)	// Player flag -- Player is fully crouched
@@ -206,7 +214,7 @@ public:
 	virtual ICollideable*              GetCollideable() = 0;
 	virtual IClientNetworkable*        GetClientNetworkable() = 0;
 	virtual IClientRenderable*         GetClientRenderable() = 0;
-	virtual IClientEntity*             GetIClientEntity() = 0;
+	virtual IClientEntity*			   GetIClientEntity() = 0;
 	virtual C_BaseEntity*              GetBaseEntity() = 0;
 	virtual IClientThinkable*          GetClientThinkable() = 0;
 	//virtual IClientModelRenderable*  GetClientModelRenderable() = 0;
@@ -222,6 +230,15 @@ public:
 	virtual void*            GetMouth(void) = 0;
 	virtual bool             GetSoundSpatialization(SpatializationInfo_t info) = 0;
 	virtual bool             IsBlurred(void) = 0;
+
+	bool IsAlive();
+	int Health();
+	int TeamNum();
+	unsigned long Flags();
+	Vector* Origin();
+	Vector* EyeOffset();
+	bool IsScoped();
+	void* ActiveWeapon();
 };
 
 #endif // __CLIENTENTITY_H__

@@ -153,6 +153,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bhop.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="ClientEntity.cpp" />
     <ClCompile Include="Console.cpp" />
     <ClCompile Include="CreateInterface.cpp" />
     <ClCompile Include="DllMain.cpp" />
