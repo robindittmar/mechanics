@@ -51,7 +51,13 @@ public:
 	void Zero(); ///< zero out a vector
 
 	// equality
-	bool operator==(const Vector& v) const;
+	bool operator==(const Vector& v) const {
+		return (
+			this->x == v.x &&
+			this->y == v.y &&
+			this->z == v.z
+		);
+	}
 	bool operator!=(const Vector& v) const;
 
 	// arithmetic operations
@@ -112,7 +118,9 @@ public:
 	void	Negate();
 
 	// Get the vector's magnitude.
-	vec_t	Length() const;
+	vec_t	Length() const {
+		return sqrtf(LengthSqr());
+	}
 
 	// Get the vector's magnitude squared.
 	vec_t LengthSqr(void) const {
@@ -159,7 +167,9 @@ public:
 	void	MulAdd(const Vector& a, const Vector& b, float scalar);
 
 	// Dot product.
-	vec_t	Dot(const Vector& vOther) const;
+	vec_t	Dot(const Vector& vOther) const {
+		return (this->x * vOther.x + this->y * vOther.y + this->z * vOther.z);
+	}
 
 	// assignment
 	Vector& operator=(const Vector &vOther) {

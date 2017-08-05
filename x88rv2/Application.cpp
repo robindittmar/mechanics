@@ -32,7 +32,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 	// Save Viewangles before doing stuff
 	pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
-	QAngle old = pApp->ClientViewAngles();
+	QAngle qOldAngles = pApp->ClientViewAngles();
 
 	//pApp->m_bSetClientViewAngles = false;
 	pApp->m_bAimbotNoRecoil = false;
@@ -50,7 +50,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	pApp->AntiAim()->Update(pUserCmd);
 
 	// Fix movement & angles
-	FixMovement(pUserCmd, old);
+	FixMovement(pUserCmd, qOldAngles);
 	FixViewAngles(pUserCmd);
 
 	// Set ViewAngles we prepared for display
@@ -232,33 +232,35 @@ CApplication::~CApplication()
 // TODO: This is not working :c
 void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
 {
-	CApplication* pApp = CApplication::Instance();
+	static CConsole console;
 
-	float oldForwardmove = pUserCmd->forwardmove;
-	float oldSidemove = pUserCmd->sidemove;
-	float deltaView = pUserCmd->viewangles[1] - qOrigAngles.y;
+	QAngle qNewAngles(
+		pUserCmd->viewangles[0],
+		pUserCmd->viewangles[1],
+		pUserCmd->viewangles[2]
+	);
 
-	float f1;
-	float f2;
+	float fDelta = qOrigAngles.y - pUserCmd->viewangles[1];
 
-	if (qOrigAngles.y < 0.f)
-		f1 = 360.0f + qOrigAngles.y;
-	else
-		f1 = qOrigAngles.y;
+	if (fDelta == 0.0f)
+		return;
 
-	if (pUserCmd->viewangles[1] < 0.0f)
-		f2 = 360.0f + pUserCmd->viewangles[1];
-	else
-		f2 = pUserCmd->viewangles[1];
+	float fOldForwardmove = pUserCmd->forwardmove;
+	float fOldSidemove = pUserCmd->sidemove;
 
-	if (f2 < f1)
-		deltaView = abs(f2 - f1);
-	else
-		deltaView = 360.0f - abs(f1 - f2);
-	deltaView = 360.0f - deltaView;
+	//float fAngle = qNewAngles.Dot(qOrigAngles) / (qNewAngles.Length() * qOrigAngles.Length());
 
-	pUserCmd->forwardmove = cos(DEG2RAD(deltaView)) * oldForwardmove + cos(DEG2RAD(deltaView + 90.f)) * oldSidemove;
-	pUserCmd->sidemove = -(sin(DEG2RAD(deltaView)) * oldForwardmove + sin(DEG2RAD(deltaView + 90.f)) * oldSidemove);
+	QAngle qDelta = qOrigAngles - qNewAngles;
+	QAngle qDeltaAngled;
+
+	VectorAngles((float*)&qDelta, (float*)&qDeltaAngled);
+
+	console.Write("(%f,%f,%f) -> (%f,%f%,%f)\n",
+		qDelta.x, qDelta.y, qDelta.z,
+		qDeltaAngled.x, qDeltaAngled.y, qDeltaAngled.z
+	);
+
+	//pUserCmd->forwardmove = fAngle * fOldForwardmove;
 }
 
 void FixViewAngles(CUserCmd* pUserCmd)
