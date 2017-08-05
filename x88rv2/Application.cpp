@@ -108,7 +108,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			int health = *(int*)((DWORD)pLocalEntity + HEALTH_OFFSET);
 			if (health > 0) //todo: in IsAlive() funktion umwandeln
 			{
-				if (true)//todo: check for nosmoke
+				if (false)//todo: check for nosmoke
 				{
 					static CXorString smoke_materials[] = {
 						CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"),
@@ -127,7 +127,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 				if (pApp->m_pInput->m_fCameraInThirdPerson)
 				{
-					*(Vector*)((DWORD)pLocalEntity + DEADFLAG_OFFSET + 0x4) = pApp->m_qLastTickAngles;
+					*(Vector*)((DWORD)pLocalEntity + OFFSET_DEADFLAG + 0x4) = pApp->m_qLastTickAngles;
 				}
 			}
 		}
@@ -169,8 +169,8 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 
 			if (ENABLE_NOVISRECOIL)
 			{
-				QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + AIMPUNCHANGLE_OFFSET));
-				QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (LOCAL_OFFSET + VIEWPUNCHANGLE_OFFSET));
+				QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
+				QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_VIEWPUNCHANGLE));
 
 				pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
 				pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
