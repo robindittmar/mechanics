@@ -59,7 +59,7 @@ void CAimbot::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 
-	if (!ENABLE_AUTOSHOOT && !(pUserCmd->buttons & IN_ATTACK))
+	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
 		return;
 
 	// Get position + add relative eye position
@@ -94,7 +94,13 @@ void CAimbot::Update(void* pParameters)
 			continue;
 
 		//todo: check if knife or nades
-		//CWeapon* pActiveWeapon = 
+		CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+
+		if (pActiveWeapon->IsKnife() ||
+			pActiveWeapon->IsNade() ||
+			pActiveWeapon->IsC4() ||
+			pActiveWeapon->Clip1() == 0)
+			continue;
 
 		int entityTeam = pCurEntity->TeamNum();
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
@@ -153,12 +159,11 @@ void CAimbot::Update(void* pParameters)
 		pUserCmd->viewangles[1] = aimAngles.y;
 
 
-		//todo: autoshoot not working cause no check ifsniper
-		if (ENABLE_AUTOSHOOT) //todo: check if issniper
+		if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 		{
 			if (ENABLE_AUTOSCOPE)
 			{
-				if (*(bool*)((DWORD)pLocalEntity + ISSCOPED_OFFSET))
+				if (pLocalEntity->IsScoped())
 				{
 					pUserCmd->buttons |= IN_ATTACK;
 				}
@@ -172,7 +177,7 @@ void CAimbot::Update(void* pParameters)
 				pUserCmd->buttons |= IN_ATTACK;
 			}
 		}
-		else if (ENABLE_AUTOSHOOT && false) // todo check if !issniper
+		else if (this->m_bAutoshoot && !pActiveWeapon->IsPistol() && !pActiveWeapon->IsTaser())
 		{
 			pUserCmd->buttons |= IN_ATTACK;
 		}

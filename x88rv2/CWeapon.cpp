@@ -52,6 +52,28 @@ bool CWeapon::IsC4()
 	return (this->WeaponId() == WEAPON_C4);
 }
 
+bool CWeapon::IsPistol()
+{
+	int weaponId = this->WeaponId();
+	if (weaponId == WEAPON_DEAGLE ||
+		weaponId == WEAPON_REVOLVER ||
+		weaponId == WEAPON_FIVESEVEN ||
+		weaponId == WEAPON_USP_SILENCER ||
+		weaponId == WEAPON_GLOCK ||
+		weaponId == WEAPON_TEC9 ||
+		weaponId == WEAPON_CZ75A ||
+		weaponId == WEAPON_P250 ||
+		weaponId == WEAPON_HKP2000 ||
+		weaponId == WEAPON_ELITE)
+		return true;
+	return false;
+}
+
+bool CWeapon::IsTaser()
+{
+	return (this->WeaponId() == WEAPON_TASER);
+}
+
 int CWeapon::Clip1()
 {
 	return *(int*)((unsigned long)this + OFFSET_CLIP1);
