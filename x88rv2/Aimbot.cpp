@@ -18,7 +18,7 @@ CAimbot::~CAimbot()
 
 void CAimbot::Setup()
 {
-	// Setup code here
+	m_pApp = CApplication::Instance();
 }
 
 int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
@@ -43,20 +43,26 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	// Update code here
-	CApplication* pApp = CApplication::Instance();
-	IVEngineClient* pEngineClient = pApp->EngineClient();
-	IClientEntityList* pEntityList = pApp->EntityList();
+	IVEngineClient* pEngineClient = m_pApp->EngineClient();
+	IClientEntityList* pEntityList = m_pApp->EntityList();
 
 	int iLocalPlayerIdx = pEngineClient->GetLocalPlayer();
 	IClientEntity* pLocalEntity = pEntityList->GetClientEntity(iLocalPlayerIdx);
 	IClientEntity* pCurEntity;
-	QAngle qAimAngles, qLocalViewAngles = pApp->ClientViewAngles();
+	QAngle qAimAngles, qLocalViewAngles = m_pApp->ClientViewAngles();
 	CUserCmd* pUserCmd = (CUserCmd*)pParameters;
 
 	if (!pUserCmd)
 		return;
 
 	if (!pLocalEntity)
+		return;
+
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	if (pActiveWeapon->IsKnife() ||
+		pActiveWeapon->IsNade() ||
+		pActiveWeapon->IsC4() ||
+		pActiveWeapon->Clip1() == 0)
 		return;
 
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
@@ -93,22 +99,13 @@ void CAimbot::Update(void* pParameters)
 		if (!pCurEntity->IsAlive())
 			continue;
 
-		//todo: check if knife or nades
-		CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-
-		if (pActiveWeapon->IsKnife() ||
-			pActiveWeapon->IsNade() ||
-			pActiveWeapon->IsC4() ||
-			pActiveWeapon->Clip1() == 0)
-			continue;
-
 		int entityTeam = pCurEntity->TeamNum();
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
 			continue;
 
 		// Bone ID: 8 (maybe 7=neck)
 		// 10 ca chest
-		//studiohdr_t* pModel = pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
+		//studiohdr_t* pModel = m_pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
 
 		// TODO
 		int boneIdx = 8;
@@ -120,7 +117,7 @@ void CAimbot::Update(void* pParameters)
 
 		// IsVisible check
 		ray.Init(myHeadPos, headPos);
-		pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
+		m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
 		if (!trace.IsVisible())
 			continue;
 
@@ -140,20 +137,20 @@ void CAimbot::Update(void* pParameters)
 		aimAngles.y = RAD2DEG(aimAngles.y);
 
 
-		pApp->m_bAimbotNoRecoil = true;
+		m_pApp->m_bAimbotNoRecoil = true;
 
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 
-		if (!ENABLE_SILENTAIM)
+		if (!this->m_bSilentAim)
 		{
-			pApp->ClientViewAngles(aimAngles);
+			m_pApp->ClientViewAngles(aimAngles);
 		}
 
 		aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
 		aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
 
-		pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-		pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
 		pUserCmd->viewangles[0] = aimAngles.x;
 		pUserCmd->viewangles[1] = aimAngles.y;
@@ -161,7 +158,7 @@ void CAimbot::Update(void* pParameters)
 
 		if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 		{
-			if (ENABLE_AUTOSCOPE)
+			if (this->m_bAutoscope)
 			{
 				if (pLocalEntity->IsScoped())
 				{

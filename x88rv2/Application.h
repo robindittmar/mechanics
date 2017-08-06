@@ -13,6 +13,7 @@
 #include "Bhop.h"
 #include "ESP.h"
 #include "Misc.h"
+#include "Visuals.h"
 
 // Source Engine
 #include "CreateInterface.h"
@@ -45,11 +46,6 @@
 #define OFFSET_SHOTSFIRED 0x0A2C0
 #define OFFSET_DEADFLAG 0x31C4
 
-#define RECOIL_COMPENSATION 2
-#define RECOIL_TRACKING 0.4499999f
-
-#define ENABLE_AUTOSCOPE true
-#define ENABLE_SILENTAIM true
 #define ENABLE_NOVISRECOIL true
 #define ENABLE_THIRDPERSON true
 
@@ -175,6 +171,10 @@ public:
 		return (CMisc*)&m_misc;
 	}
 
+	CVisuals* Visuals() {
+		return (CVisuals*)&m_visuals;
+	}
+
 	QAngle& ClientViewAngles() {
 		return m_qClientViewAngles;
 	}
@@ -226,6 +226,7 @@ private:
 	CBhop m_bhop;
 	CEsp m_esp;
 	CMisc m_misc;
+	CVisuals m_visuals;
 
 	CWindow* m_pWindow;
 

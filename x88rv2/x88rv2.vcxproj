@@ -166,6 +166,7 @@
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VFTableHook.cpp" />
+    <ClCompile Include="Visuals.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
@@ -202,6 +203,7 @@
     <ClInclude Include="Vector.h" />
     <ClInclude Include="VEngineClient.h" />
     <ClInclude Include="VFTableHook.h" />
+    <ClInclude Include="Visuals.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="XorString.h" />
   </ItemGroup>

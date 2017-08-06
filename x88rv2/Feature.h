@@ -1,6 +1,8 @@
 #ifndef __FEATURE_H__
 #define __FEATURE_H__
 
+class CApplication;
+
 class IFeature
 {
 public:
@@ -15,6 +17,7 @@ public:
 	void IsEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool IsEnabled()				{ return m_bIsEnabled; }
 protected:
+	CApplication* m_pApp;
 	bool m_bIsEnabled;
 };
 

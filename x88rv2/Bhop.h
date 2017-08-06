@@ -19,7 +19,6 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
-	CApplication* m_pApp;
 };
 
 #endif // __BHOP_H__

@@ -43,8 +43,6 @@ private:
 	bool WorldToScreen(const Vector &origin, Vector &screen);
 
 	bool m_DrawArmorbar;
-
-	CApplication* m_pApp;
 };
 
 #endif // __ESP_H__

@@ -16,10 +16,8 @@ public:
 
 	virtual void Setup();
 	virtual void Update(void* pParameters);
-	virtual void NoFlash(int flashPercentage);
 	virtual void NoRecoil(CUserCmd* pUserCmd);
 private:
-	CApplication* m_pApp;
 };
 
 

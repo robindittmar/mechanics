@@ -1,4 +1,5 @@
 #include "Feature.h"
+#include "Application.h"
 
 IFeature::IFeature()
 {
