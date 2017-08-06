@@ -60,7 +60,7 @@ void CVisuals::HandsDrawStyle(const char* pszModelName)
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_tHandsDrawStyle == HandsDrawStyleNone)
+	if (m_tHandsDrawStyle == HandsDrawStyleNone)
 		return;
 
 	static CXorString pArms("vyè±");
