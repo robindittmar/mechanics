@@ -28,7 +28,11 @@ public:
 		this->y = Y;
 		this->z = Z;
 	}
-	Vector(vec_t* clr);
+	Vector(vec_t* clr) {
+		this->x = clr[0];
+		this->y = clr[1];
+		this->z = clr[2];
+	}
 
 	// Initialization
 	void Init(vec_t ix = 0.0f, vec_t iy = 0.0f, vec_t iz = 0.0f);
@@ -210,7 +214,13 @@ public:
 	}
 	Vector	operator*(const Vector& v) const;
 	Vector	operator/(const Vector& v) const;
-	Vector	operator*(float fl) const;
+	Vector	operator*(float fl) const {
+		Vector n;
+		n.x = this->x * fl;
+		n.y = this->y * fl;
+		n.z = this->z * fl;
+		return n;
+	}
 	Vector	operator/(float fl) const {
 		Vector n;
 		n.x = this->x / fl;

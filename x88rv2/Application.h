@@ -47,7 +47,7 @@
 #define OFFSET_DEADFLAG 0x31C4
 
 #define ENABLE_NOVISRECOIL true
-#define ENABLE_THIRDPERSON true
+#define ENABLE_THIRDPERSON false
 
 #define PI_F		3.1415f
 #define DEG2RAD(x)	((x / 180.0f) * PI_F)
@@ -99,6 +99,7 @@ typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, co
 void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
+void Normalize(Vector angle);
 
 // Singleton
 class CApplication

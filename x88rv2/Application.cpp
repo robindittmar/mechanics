@@ -279,39 +279,96 @@ CApplication::~CApplication()
 		delete m_pWindow;
 }
 
-// TODO: This is not working :c
-void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
+
+void inline SinCos(float radians, float *sine, float *cosine)
 {
-	static CConsole console;
+	*sine = sin(radians);
+	*cosine = cos(radians);
+}
+void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *up)
+{
+	float sr, sp, sy, cr, cp, cy;
+	SinCos(DEG2RAD(angles.y), &sy, &cy);
+	SinCos(DEG2RAD(angles.x), &sp, &cp);
+	SinCos(DEG2RAD(angles.z), &sr, &cr);
 
-	QAngle qNewAngles(
-		pUserCmd->viewangles[0],
-		pUserCmd->viewangles[1],
-		pUserCmd->viewangles[2]
-	);
+	if (forward)
+	{
+		forward->x = cp*cy;
+		forward->y = cp*sy;
+		forward->z = -sp;
+	}
 
-	float fDelta = qOrigAngles.y - pUserCmd->viewangles[1];
+	if (right)
+	{
+		right->x = (-1 * sr*sp*cy + -1 * cr*-sy);
+		right->y = (-1 * sr*sp*sy + -1 * cr*cy);
+		right->z = -1 * sr*cp;
+	}
 
-	if (fDelta == 0.0f)
-		return;
+	if (up)
+	{
+		up->x = (cr*sp*cy + -sr*-sy);
+		up->y = (cr*sp*sy + -sr*cy);
+		up->z = cr*cp;
+	}
+}
+void FixMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
+{
+	CApplication* pApp = CApplication::Instance();
 
-	float fOldForwardmove = pUserCmd->forwardmove;
-	float fOldSidemove = pUserCmd->sidemove;
+	Vector vecViewForward, vecViewRight, vecViewUp, vecAimForward, vecAimRight, vecAimUp;
+	QAngle qViewAngles, qAimAngles;
 
-	float fAngle = qNewAngles.Dot(qOrigAngles) / (qNewAngles.Length() * qOrigAngles.Length());
+	pApp->EngineClient()->GetViewAngles(qViewAngles);
 
-	QAngle qDelta = qOrigAngles - qNewAngles;
-	QAngle qDeltaAngled;
+	float flForward = pCmd->forwardmove;
+	float flRight = pCmd->sidemove;
+	float flUp = pCmd->upmove;
 
-	VectorAngles((float*)&qDelta, (float*)&qDeltaAngled);
+	qViewAngles = QAngle(0.0f, qViewAngles.y, 0.0f);
+	qAimAngles = QAngle(0.0f, pCmd->viewangles[1], 0.0f);
 
-	console.Write("%f (%f) (%f)\n",
-		fAngle,
-		acosf(fAngle),
-		RAD2DEG(acosf(fAngle))
-	);
+	AngleVectors(qViewAngles, &vecViewForward, &vecViewRight, &vecViewUp);
+	AngleVectors(qAimAngles, &vecAimForward, &vecAimRight, &vecAimUp);
 
-	//pUserCmd->forwardmove = fAngle * fOldForwardmove;
+	Normalize(vecViewForward);
+	Normalize(vecViewRight);
+	Normalize(vecViewUp);
+
+	Vector vecForwardNorm = vecViewForward * flForward;
+	Vector vecRightNorm = vecViewRight * flRight;
+	Vector vecUpNorm = vecViewUp * flUp;
+
+	pCmd->forwardmove = vecForwardNorm.Dot(vecAimForward) + vecRightNorm.Dot(vecAimForward) + vecUpNorm.Dot(vecAimForward);
+	pCmd->sidemove = vecForwardNorm.Dot(vecAimRight) + vecRightNorm.Dot(vecAimRight) + vecUpNorm.Dot(vecAimRight);
+	pCmd->upmove = vecForwardNorm.Dot(vecAimUp) + vecRightNorm.Dot(vecAimUp) + vecUpNorm.Dot(vecAimUp);
+
+	ClampMovement(pCmd);
+}
+void Normalize(Vector angle)
+{
+	// Normalize pitch
+	while (angle.x > 89.0f)
+	{
+		angle.x -= 178.0f;
+	}
+	while (angle.x < -89.0f)
+	{
+		angle.x += 178.0f;
+	}
+
+	// Normalize yaw
+	while (angle.y > 179.9999f)
+	{
+		angle.y -= 360.0f;
+	}
+	while (angle.y < -179.9999f)
+	{
+		angle.y += 360.0f;
+	}
+
+	angle.z = 0.0f;
 }
 
 void NormalizeAngles(CUserCmd* pUserCmd)
@@ -359,5 +416,15 @@ void ClampMovement(CUserCmd* pUserCmd)
 	else if (pUserCmd->sidemove < -450.0f)
 	{
 		pUserCmd->sidemove = -450.0f;
+	}
+	
+	// Clamp upmove
+	if (pUserCmd->sidemove > 320.0f)
+	{
+		pUserCmd->sidemove = 320.0f;
+	}
+	else if (pUserCmd->sidemove < -320.0f)
+	{
+		pUserCmd->sidemove = -320.0f;
 	}
 }
