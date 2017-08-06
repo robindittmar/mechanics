@@ -49,9 +49,9 @@
 #define RECOIL_TRACKING 0.4499999f
 
 #define ENABLE_AUTOSCOPE true
-#define ENABLE_SILENTAIM true
+#define ENABLE_SILENTAIM false
 #define ENABLE_NOVISRECOIL true
-#define ENABLE_THIRDPERSON true
+#define ENABLE_THIRDPERSON false
 
 #define PI_F		3.1415f
 #define DEG2RAD(x)	((x / 180.0f) * PI_F)

@@ -324,8 +324,6 @@ void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles)
 	QAngle qDelta = qOrigAngles - qNewAngles;
 	QAngle qDeltaAngled;
 
-	VectorAngles((float*)&qDelta, (float*)&qDeltaAngled);
-
 	console.Write("%f (%f) (%f)\n",
 		fAngle,
 		acosf(fAngle),

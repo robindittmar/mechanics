@@ -2,6 +2,7 @@
 #define __AIMBOT_H__
 
 #include "Feature.h"
+#include "Vector.h"
 
 // Defines how to choose the next target for the aimbot
 // -> Origin: Chooses the target that's standing closest to you
@@ -25,6 +26,9 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
+	float GetOriginDist(Vector& a, Vector& b);
+	float GetViewangleDist(QAngle& a, QAngle& b);
+
 	TargetCriteria_t m_tTargetCriteria;
 	float m_fSpeed;
 
