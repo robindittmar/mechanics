@@ -20,7 +20,7 @@ void CVisuals::Update(void* pParameters)
 		return;
 }
 
-void CVisuals::NoFlash(float fFlashPercentage)
+void CVisuals::NoFlash()
 {
 	if (!m_bIsEnabled)
 		return;
@@ -29,7 +29,7 @@ void CVisuals::NoFlash(float fFlashPercentage)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - fFlashPercentage));
+	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - m_iNoFlashPercentage));
 }
 
 void CVisuals::NoSmoke()
@@ -60,7 +60,7 @@ void CVisuals::HandsDrawStyle(const char* pszModelName)
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_tHandsDrawStyle == HandsDrawStyleNone)
+	if (m_tHandsDrawStyle == HandsDrawStyleNone)
 		return;
 
 	static CXorString pArms("vyè±");
@@ -91,4 +91,56 @@ void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 
 	pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * RECOIL_COMPENSATION * RECOIL_TRACKING);
 	pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * RECOIL_COMPENSATION * RECOIL_TRACKING);
+}
+
+void CVisuals::Thirdperson()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bThirdperson)
+		return;
+
+	static Vector vecAngles;
+	m_pApp->EngineClient()->GetViewAngles(vecAngles);
+	if (!m_pApp->Input()->m_fCameraInThirdPerson)
+	{
+		m_pApp->Input()->m_fCameraInThirdPerson = true;
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonValue);
+	}
+	else
+	{
+		m_pApp->Input()->m_fCameraInThirdPerson = false;
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);
+	}
+}
+
+void CVisuals::ThirdpersonAntiAim()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bThirdperson)
+		return;
+
+	if (m_pApp->Input()->m_fCameraInThirdPerson)
+	{
+		IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
+		*(Vector*)((DWORD)pLocalEntity + OFFSET_DEADFLAG + 0x4) = m_pApp->LastTickAngles();
+	}
+}
+
+void CVisuals::FovChange(CViewSetup* pViewSetup)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bFovChange)
+		return;
+
+	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
+	if (!m_bFovChangeScoped && pLocalEntity->IsScoped())
+		return;
+
+	pViewSetup->fov = 105;
 }

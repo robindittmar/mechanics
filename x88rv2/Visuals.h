@@ -3,8 +3,7 @@
 
 #include "Feature.h"
 
-#define RECOIL_COMPENSATION 2
-#define RECOIL_TRACKING 0.4499999f
+#define OFFSET_DEADFLAG 0x31C4
 
 enum HandsDrawStyles_t {
 	HandsDrawStyleNone,
@@ -21,6 +20,8 @@ public:
 
 	void IsNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; };
 	bool IsNoFlash() { return m_bNoFlash; };
+	void NoFlashPercentage(int iNoFlashPercentage) { m_iNoFlashPercentage = iNoFlashPercentage; };
+	int NoFlashPercentage() { return m_iNoFlashPercentage; };
 
 	void IsNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; };
 	bool IsNoSmoke() { return m_bNoSmoke; };
@@ -31,18 +32,42 @@ public:
 	void IsNoVisualRecoil(bool bNoVisualRecoil) { m_bNoVisualRecoil = bNoVisualRecoil; };
 	bool IsNoVisualRecoil() { return m_bNoVisualRecoil; };
 
+	void IsThirdperson(bool bThirdperson) { m_bThirdperson = bThirdperson; };
+	bool IsThirdperson() { return m_bThirdperson; };
+	void ThirdpersonValue(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; };
+	int ThirdpersonValue() { return m_iThirdpersonValue; };
+
+	void IsFovChange(int bFovChange) { m_bFovChange = bFovChange; };
+	int IsFovChange() { return m_bFovChange; };
+	void IsFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; };
+	int IsFovChangeScoped() { return m_bFovChangeScoped; };
+	void FovValue(int iFovValue) { m_iFovValue = iFovValue; };
+	int FovValue() { return m_iFovValue; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
-	void NoFlash(float fFlashPercentage);
+	void NoFlash();
 	void NoSmoke();
 	void HandsDrawStyle(const char*);
 	void NoVisualRecoil(CViewSetup*);
+	void Thirdperson();
+	void ThirdpersonAntiAim();
+	void FovChange(CViewSetup*);
 private:
 	bool m_bNoFlash;
+	float m_iNoFlashPercentage;
+
 	bool m_bNoSmoke;
 	HandsDrawStyles_t m_tHandsDrawStyle;
 	bool m_bNoVisualRecoil;
+
+	bool m_bThirdperson;
+	int m_iThirdpersonValue;
+
+	bool m_bFovChange;
+	bool m_bFovChangeScoped;
+	int m_iFovValue;
 };
 
 #endif // __VISUALS_H__

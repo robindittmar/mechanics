@@ -5,6 +5,8 @@
 
 #define NOFLASH_OFFSET 0xA304
 
+#define MAXPACKETSCHOKED 16
+
 class CApplication;
 class CUserCmd;
 
@@ -14,10 +16,20 @@ public:
 	CMisc();
 	~CMisc();
 
+	void IsNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; };
+	bool IsNoRecoil() { return m_bNoRecoil; };
+
+	void IsFakelag(bool bFakelag) { m_bFakelag = bFakelag; };
+	bool IsFakelag() { return m_bFakelag; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
-	virtual void NoRecoil(CUserCmd* pUserCmd);
+
+	void NoRecoil(CUserCmd* pUserCmd);
+	void Fakelag(CUserCmd*);
 private:
+	bool m_bNoRecoil;
+	bool m_bFakelag;
 };
 
 
