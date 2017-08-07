@@ -74,24 +74,25 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 
 	if (!m_pApp->m_bGotSendPackets)
 		return;
-	
+
 	if (pUserCmd->buttons == IN_ATTACK ||
 		pUserCmd->buttons == IN_ATTACK2)
 	{
 		*m_pApp->m_bSendPackets = true;
+		return;
+	}
+
+	static int chokedPackets = 0;
+
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (chokedPackets >= MAXPACKETSCHOKED || pLocalEntity->GetVelocity() <= 0.f) //todo: MAXPACKETCHOKED -/+ FakelagValue!
+	{
+		*m_pApp->m_bSendPackets = true;
+		chokedPackets = 0;
 	}
 	else
 	{
-		static int chokedPackets = 0;
-		if (chokedPackets < MAXPACKETSCHOKED)
-		{
-			chokedPackets++;
-			*m_pApp->m_bSendPackets = false;
-		}
-		else
-		{
-			chokedPackets = 0;
-			*m_pApp->m_bSendPackets = true;
-		}
+		chokedPackets++;
+		*m_pApp->m_bSendPackets = false;
 	}
 }

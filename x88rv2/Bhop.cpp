@@ -29,7 +29,7 @@ void CBhop::Update(void* pParameters)
 		return;
 		
 	DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
-	if (*(DWORD*)((DWORD)pLocalEntity + VELOCITY_OFFSET) > 0 &&
+	if (pLocalEntity->GetVelocity() > 0.f &&
 		!m_pApp->EngineClient()->Con_IsVisible() &&
 		GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{

@@ -6,7 +6,6 @@
 
 #define FORCEJUMP_OFFSET 0x4F2379C
 #define JUMP_FLAG_OFFSET 0x100
-#define VELOCITY_OFFSET 0x110
 
 class CApplication;
 

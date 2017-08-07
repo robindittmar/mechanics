@@ -5,7 +5,7 @@
 
 #define NOFLASH_OFFSET 0xA304
 
-#define MAXPACKETSCHOKED 6
+#define MAXPACKETSCHOKED 16
 
 class CApplication;
 class CUserCmd;

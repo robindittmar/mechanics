@@ -39,8 +39,12 @@ bool IClientEntity::IsScoped()
 void* IClientEntity::ActiveWeapon()
 {
 	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 
 	HANDLE hActiveWeapon = *(PHANDLE)((PUCHAR)this + OFFSET_ACTIVEWEAPON);
 	return (void*)pApp->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
+}
+
+float IClientEntity::GetVelocity()
+{
+	return *(float*)((DWORD)this + OFFSET_VELOCITY);
 }
