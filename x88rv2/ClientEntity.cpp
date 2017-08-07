@@ -41,6 +41,6 @@ void* IClientEntity::ActiveWeapon()
 	CApplication* pApp = CApplication::Instance();
 	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 
-	int weaponIndex = *(int*)((unsigned long)pLocalEntity + OFFSET_ACTIVEWEAPON) & 0xFFF;
-	return (void*)pApp->EntityList()->GetClientEntity(weaponIndex);
+	HANDLE hActiveWeapon = *(PHANDLE)((PUCHAR)this + OFFSET_ACTIVEWEAPON);
+	return (void*)pApp->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
 }

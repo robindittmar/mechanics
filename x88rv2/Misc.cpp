@@ -14,20 +14,6 @@ void CMisc::Setup()
 	m_pApp = CApplication::Instance();
 }
 
-void CMisc::NoFlash(int flashPercentage)
-{
-	if (!m_bIsEnabled)
-		return;
-
-	if (false) //todo: check if noflash
-		return;
-
-	//todo: check if noflash enabled
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-
-	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - ((float)flashPercentage / 100.0f)));
-}
-
 void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
 	if (!m_bIsEnabled)

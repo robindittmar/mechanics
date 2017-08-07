@@ -2,7 +2,7 @@
 
 int CWeapon::WeaponId()
 {
-	return *(int*)((unsigned long)this + OFFSET_WEAPONID);
+	return *(int*)((unsigned long)this + OFFSET_ATRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
 }
 
 bool CWeapon::IsKnife()
@@ -10,11 +10,12 @@ bool CWeapon::IsKnife()
 	int weaponId = this->WeaponId();
 	if (weaponId == WEAPON_KNIFE ||
 		weaponId == WEAPON_KNIFE_BAYONET ||
-		weaponId == WEAPON_KNIFE_BUTTERFLY ||
-		weaponId == WEAPON_KNIFE_FALCHION ||
 		weaponId == WEAPON_KNIFE_FLIP ||
 		weaponId == WEAPON_KNIFE_GUT ||
 		weaponId == WEAPON_KNIFE_KARAMBIT ||
+		weaponId == WEAPON_KNIFE_M9_BAYONET ||
+		weaponId == WEAPON_KNIFE_BUTTERFLY ||
+		weaponId == WEAPON_KNIFE_FALCHION ||
 		weaponId == WEAPON_KNIFE_PUSH ||
 		weaponId == WEAPON_KNIFE_SURVIVAL_BOWIE ||
 		weaponId == WEAPON_KNIFE_T ||

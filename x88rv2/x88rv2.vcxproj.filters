@@ -93,6 +93,9 @@
     <ClCompile Include="ClientEntity.cpp">
       <Filter>Source Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Visuals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -196,6 +199,9 @@
     </ClInclude>
     <ClInclude Include="CWeapon.h">
       <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Visuals.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

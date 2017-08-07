@@ -20,8 +20,14 @@ public:
 	CAimbot();
 	~CAimbot();
 
-	void Autoshoot(bool bAutoshoot) { m_bAutoshoot = bAutoshoot; };
-	bool Autoshoot() { return m_bAutoshoot; };
+	void IsAutoshoot(bool bAutoshoot) { m_bAutoshoot = bAutoshoot; };
+	bool IsAutoshoot() { return m_bAutoshoot; };
+
+	void IsAutoscope(bool bAutoscope) { m_bAutoscope = bAutoscope; };
+	bool IsAutoscope() { return m_bAutoscope; };
+
+	void IsSilentAim(bool bSilentAim) { m_bSilentAim = bSilentAim; };
+	bool IsSilentAim() { return m_bSilentAim; };
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -33,6 +39,8 @@ private:
 	float m_fSpeed;
 
 	bool m_bAutoshoot;
+	bool m_bAutoscope;
+	bool m_bSilentAim;
 };
 
 #endif // __AIMBOT_H__
