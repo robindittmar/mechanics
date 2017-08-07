@@ -37,7 +37,7 @@ void CEsp::Update(void* pParameters)
 		bool shouldDrawOwnTeam = false;
 		bool shouldDrawHimselfWhileThirdperson = true;
 
-		if (!(isLocalPlayer && ENABLE_THIRDPERSON && shouldDrawHimselfWhileThirdperson ||
+		if (!(isLocalPlayer && m_pApp->Visuals()->IsThirdperson() && shouldDrawHimselfWhileThirdperson ||
 			!isLocalPlayer && shouldDrawOwnTeam && entityTeam == localTeam ||
 			entityTeam != localTeam))
 			continue;

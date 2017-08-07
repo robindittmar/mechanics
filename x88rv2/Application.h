@@ -44,10 +44,9 @@
 #define OFFSET_AIMPUNCHANGLE 0x70
 #define OFFSET_VIEWPUNCHANGLE 0x64
 #define OFFSET_SHOTSFIRED 0x0A2C0
-#define OFFSET_DEADFLAG 0x31C4
 
-#define ENABLE_NOVISRECOIL true
-#define ENABLE_THIRDPERSON false
+#define RECOIL_COMPENSATION 2
+#define RECOIL_TRACKING 0.4499999f
 
 #define PI_F		3.1415f
 #define DEG2RAD(x)	((x / 180.0f) * PI_F)
@@ -96,7 +95,7 @@ typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
 
-void FixMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
+void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
 void Normalize(Vector angle);
@@ -148,6 +147,10 @@ public:
 		return m_dwMaterialSystemDll;
 	}
 
+	CInput* Input() {
+		return m_pInput;
+	}
+
 	FrameStageNotify_t FrameStageNotify() {
 		return m_pFrameStageNotify;
 	}
@@ -184,10 +187,16 @@ public:
 		m_qClientViewAngles = q;
 	}
 
+	QAngle LastTickAngles()	{
+		return m_qLastTickAngles;
+	}
+
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
 	//bool m_bSetClientViewAngles;
 	bool m_bAimbotNoRecoil;
+	bool* m_bSendPackets;
+	bool m_bGotSendPackets;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);

@@ -25,8 +25,16 @@ void CApplication::Run()
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
-
 	CApplication* pApp = CApplication::Instance();
+
+	if (!pApp->m_bGotSendPackets)
+	{
+		uintptr_t* fp;
+		__asm mov fp, ebp;
+		pApp->m_bSendPackets = (bool*)(*fp - 0x1C);
+		pApp->m_bGotSendPackets = true;
+	}
+
 	if (pApp->EngineClient()->IsInGame())
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
@@ -50,12 +58,14 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 			// Update NoRecoil
 			pApp->Misc()->NoRecoil(pUserCmd);
+			// Update Fakelag
+			pApp->Misc()->Fakelag(pUserCmd);
 
 			// Update AntiAim
 			pApp->AntiAim()->Update(pUserCmd);
 
-			// Fix movement & angles
-			FixMovement(pUserCmd, qOldAngles);
+			// Correct movement & angles
+			CorrectMovement(pUserCmd, qOldAngles);
 			NormalizeAngles(pUserCmd);
 
 			// Set ViewAngles we prepared for display
@@ -80,7 +90,7 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 		// this needs to go into paintTraverse hook because of flickering because of multirendering
 		pApp->Esp()->Update(device);
 
-		pApp->Visuals()->NoFlash(0.5f);
+		pApp->Visuals()->NoFlash();
 	}
 
 	//CButton btn(100, 100);
@@ -108,11 +118,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			if (pLocalEntity->IsAlive())
 			{
 				pApp->Visuals()->NoSmoke();
-
-				if (pApp->m_pInput->m_fCameraInThirdPerson)
-				{
-					*(Vector*)((DWORD)pLocalEntity + OFFSET_DEADFLAG + 0x4) = pApp->m_qLastTickAngles;
-				}
+				pApp->Visuals()->ThirdpersonAntiAim();
 			}
 		}
 	}
@@ -127,29 +133,9 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	if (pApp->EngineClient()->IsInGame())
 	{
 		if (pLocalEntity->IsAlive())
-		{
-			//todo: FOV changer ;)
-			if (!pLocalEntity->IsScoped()) //todo: check if fov change should happen while scoping
-			{
-				pViewSetup->fov = 105;
-			}
-
-			static Vector vecAngles;
-			pApp->EngineClient()->GetViewAngles(vecAngles);
-			if (ENABLE_THIRDPERSON)
-			{
-				if (!pApp->m_pInput->m_fCameraInThirdPerson)
-				{
-					pApp->m_pInput->m_fCameraInThirdPerson = true;
-					pApp->m_pInput->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 120); //todo: value
-				}
-			}
-			else
-			{
-				pApp->m_pInput->m_fCameraInThirdPerson = false;
-				pApp->m_pInput->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);
-			}
-
+		{			
+			pApp->Visuals()->FovChange(pViewSetup);
+			pApp->Visuals()->Thirdperson();
 			pApp->Visuals()->NoVisualRecoil(pViewSetup);
 		}
 	}
@@ -207,6 +193,7 @@ void CApplication::Setup()
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
 
+	// Setups
 	this->m_aimbot.Setup();
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
@@ -214,21 +201,37 @@ void CApplication::Setup()
 	this->m_misc.Setup();
 	this->m_visuals.Setup();
 
+	// Aimbot
 	this->m_aimbot.IsEnabled(true);
 	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
 	this->m_aimbot.IsSilentAim(true);
 
+	// AA, Bhop, ESP
 	this->m_antiAim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
 	this->m_esp.IsEnabled(true);
-	this->m_misc.IsEnabled(true);
 
+	// Misc
+	this->m_misc.IsEnabled(true);
+	this->m_misc.IsNoRecoil(true);
+	this->m_misc.IsFakelag(false);
+
+	// Visuals
 	this->m_visuals.IsEnabled(true);
-	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.IsNoSmoke(false);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
+
+	this->m_visuals.IsNoFlash(true);
+	this->m_visuals.NoFlashPercentage(0.2f);
+
+	this->m_visuals.IsThirdperson(false);
+	this->m_visuals.ThirdpersonValue(120);
+
+	this->m_visuals.IsFovChange(true);
+	this->m_visuals.FovValue(105);
+	this->m_visuals.IsFovChangeScoped(false);
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {}
@@ -244,6 +247,9 @@ void CApplication::Hook()
 			"f----fbcdefghasdfta"
 		) + 1
 		);
+
+	this->m_bSendPackets = (bool*)(this->EngineDll() + 0xE5E3A) + 1;
+
 
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClientDll))[15] + 0x1);
@@ -313,7 +319,7 @@ void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *
 		up->z = cr*cp;
 	}
 }
-void FixMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
+void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
 {
 	CApplication* pApp = CApplication::Instance();
 
@@ -417,7 +423,7 @@ void ClampMovement(CUserCmd* pUserCmd)
 	{
 		pUserCmd->sidemove = -450.0f;
 	}
-	
+
 	// Clamp upmove
 	if (pUserCmd->sidemove > 320.0f)
 	{

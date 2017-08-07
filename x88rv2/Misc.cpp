@@ -14,12 +14,16 @@ void CMisc::Setup()
 	m_pApp = CApplication::Instance();
 }
 
+void CMisc::Update(void* pParameters)
+{
+}
+
 void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
 	if (!m_bIsEnabled)
 		return;
 
-	if (false) //todo: check if norecoil
+	if (!m_bNoRecoil)
 		return;
 
 	if (m_pApp->m_bAimbotNoRecoil)
@@ -30,7 +34,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	int shotsFired = *(int*)((DWORD)pLocalEntity + OFFSET_SHOTSFIRED);
-	if (ENABLE_NOVISRECOIL)
+	if (m_pApp->Visuals()->IsNoVisualRecoil())
 	{
 		if (shotsFired > 1)
 		{
@@ -59,7 +63,35 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 }
 
-void CMisc::Update(void* pParameters)
+//todo: check if works properly and not to many packets choked
+void CMisc::Fakelag(CUserCmd* pUserCmd)
 {
-	// Update code (once per in-game loop)
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bFakelag)
+		return;
+
+	if (!m_pApp->m_bGotSendPackets)
+		return;
+	
+	if (pUserCmd->buttons == IN_ATTACK ||
+		pUserCmd->buttons == IN_ATTACK2)
+	{
+		*m_pApp->m_bSendPackets = true;
+	}
+	else
+	{
+		static int chokedPackets = 0;
+		if (chokedPackets < MAXPACKETSCHOKED)
+		{
+			chokedPackets++;
+			*m_pApp->m_bSendPackets = false;
+		}
+		else
+		{
+			chokedPackets = 0;
+			*m_pApp->m_bSendPackets = true;
+		}
+	}
 }
