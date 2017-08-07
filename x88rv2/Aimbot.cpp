@@ -67,13 +67,6 @@ void CAimbot::Update(void* pParameters)
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
 		return;
 
-	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (pActiveWeapon->IsKnife() ||
-		pActiveWeapon->IsNade() ||
-		pActiveWeapon->IsC4() ||
-		pActiveWeapon->Clip1() == 0)
-		return;
-
 	// Get position + add relative eye position
 	Vector myHeadPos = *pLocalEntity->Origin();
 	myHeadPos += *pLocalEntity->EyeOffset();
@@ -176,27 +169,27 @@ void CAimbot::Update(void* pParameters)
 	aimAngles.x = RAD2DEG(aimAngles.x);
 	aimAngles.y = RAD2DEG(aimAngles.y);
 
-	pApp->m_bAimbotNoRecoil = true;
+	m_pApp->m_bAimbotNoRecoil = true;
 
 	QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 
-	if (!ENABLE_SILENTAIM)
+	if (!m_bSilentAim)
 	{
-		pApp->ClientViewAngles(aimAngles);
+		m_pApp->ClientViewAngles(aimAngles);
 	}
 
 	aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
 	aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
 
-	pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-	pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+	m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+	m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
 	pUserCmd->viewangles[0] = aimAngles.x;
 	pUserCmd->viewangles[1] = aimAngles.y;
 
 	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 	{
-		if (ENABLE_AUTOSCOPE)
+		if (this->m_bAutoscope)
 		{
 			if (pLocalEntity->IsScoped())
 			{
