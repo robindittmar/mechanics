@@ -46,6 +46,7 @@
 #define OFFSET_AIMPUNCHANGLE 0x70
 #define OFFSET_VIEWPUNCHANGLE 0x64
 #define OFFSET_SHOTSFIRED 0x0A2C0
+#define OFFSET_GLOBALS 0x1B
 
 #define RECOIL_COMPENSATION 2
 #define RECOIL_TRACKING 0.4499999f
@@ -89,6 +90,27 @@ struct CViewSetup
 class IClientMode;
 class IMatRenderContext;
 class DrawModelState_t;
+
+class CGlobalVars
+{
+public:
+	float    realtime;
+	int      framecount;
+	float    absoluteframetime;
+	float    absoluteframestarttimestddev;
+	float    curtime;
+	float    frametime;
+	int      maxClients;
+	int      tickcount;
+	float    interval_per_tick;
+	float    interpolation_amount;
+	int      simTicksThisFrame;
+	int      network_protocol;
+	void*    pSaveData;
+	bool     m_bClient;
+	int      nTimestampNetworkingBase;
+	int      nTimestampRandomizeWindow;
+};
 
 typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
 typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9*);
@@ -139,6 +161,8 @@ public:
 	IPanel* Panel() { return m_pPanel; }
 
 	ISurface* Surface() { return m_pSurface; }
+
+	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 
 	FrameStageNotify_t FrameStageNotify() { return m_pFrameStageNotify; }
 
@@ -196,6 +220,7 @@ private:
 	CInput* m_pInput;
 	IPanel* m_pPanel;
 	ISurface* m_pSurface;
+	CGlobalVars* m_pGlobalVars;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;

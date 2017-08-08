@@ -154,6 +154,7 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
 	CApplication* pApp = CApplication::Instance();
+
 	if (pApp->EngineClient()->IsInGame())
 	{
 		if (pApp->Misc()->NoScope(vguiPanel))
@@ -228,6 +229,8 @@ void CApplication::Setup()
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 
+	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClientDll))[0] + OFFSET_GLOBALS);
+
 	// Setups
 	this->m_aimbot.Setup();
 	this->m_antiAim.Setup();
@@ -272,7 +275,7 @@ void CApplication::Setup()
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.2f);
 
-	this->m_visuals.IsThirdperson(false);
+	this->m_visuals.IsThirdperson(true);
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
