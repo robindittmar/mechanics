@@ -162,6 +162,7 @@
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="IControl.cpp" />
     <ClCompile Include="IMaterialSystem.cpp" />
+    <ClCompile Include="ISurface.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="Vector.cpp" />
@@ -184,6 +185,7 @@
     <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="IPanel.h" />
     <ClInclude Include="CreateInterface.h" />
     <ClInclude Include="CWeapon.h" />
     <ClInclude Include="ESP.h" />
@@ -193,6 +195,7 @@
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="IMaterial.h" />
     <ClInclude Include="IMaterialSystem.h" />
+    <ClInclude Include="ISurface.h" />
     <ClInclude Include="IVModelInfo.h" />
     <ClInclude Include="IVModelRender.h" />
     <ClInclude Include="Misc.h" />

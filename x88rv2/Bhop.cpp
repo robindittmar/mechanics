@@ -28,12 +28,11 @@ void CBhop::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 		
-	DWORD flag = *(DWORD*)((DWORD)pLocalEntity + JUMP_FLAG_OFFSET);
-	if (pLocalEntity->GetVelocity() > 0.f &&
-		!m_pApp->EngineClient()->Con_IsVisible() &&
+	DWORD flags = pLocalEntity->Flags();
+	if (!m_pApp->EngineClient()->Con_IsVisible() &&
 		GetAsyncKeyState(VK_SPACE) & 0x8000)
 	{
-		if (flag & FL_ONGROUND || flag & FL_INWATER)
+		if (flags & FL_ONGROUND || flags & FL_INWATER)
 		{
 			pUserCmd->buttons |= IN_JUMP;
 		}

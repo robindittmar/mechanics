@@ -96,3 +96,25 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 		*m_pApp->m_bSendPackets = false;
 	}
 }
+
+void CMisc::AutoStrafe(CUserCmd* pUserCmd)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bAutoStrafe)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (!(pLocalEntity->Flags() & FL_ONGROUND))
+	{
+		if (pUserCmd->mousedx > 0)
+		{
+			pUserCmd->sidemove = 450;
+		}
+		if (pUserCmd->mousedx < 0)
+		{
+			pUserCmd->sidemove = -450;
+		}
+	}
+}

@@ -8,6 +8,7 @@ DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
 OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
+PaintTraverse_t CApplication::m_pPaintTraverse;
 
 CApplication* CApplication::Instance()
 {
@@ -60,6 +61,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->NoRecoil(pUserCmd);
 			// Update Fakelag
 			pApp->Misc()->Fakelag(pUserCmd);
+			// Update AutoStrafe
+			pApp->Misc()->AutoStrafe(pUserCmd);
 
 			// Update AntiAim
 			pApp->AntiAim()->Update(pUserCmd);
@@ -133,7 +136,7 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	if (pApp->EngineClient()->IsInGame())
 	{
 		if (pLocalEntity->IsAlive())
-		{			
+		{
 			pApp->Visuals()->FovChange(pViewSetup);
 			pApp->Visuals()->Thirdperson();
 			pApp->Visuals()->NoVisualRecoil(pViewSetup);
@@ -154,6 +157,33 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	}
 
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+}
+
+void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
+	CApplication* pApp = CApplication::Instance();
+
+	static unsigned int vguiMatSystemTopPanel;
+
+	if (vguiMatSystemTopPanel == NULL)
+	{
+		const char* szName = pApp->Panel()->GetName(vguiPanel);
+		if (stricmp(szName, "MatSystemTopPanel") == 0)
+		{
+			vguiMatSystemTopPanel = vguiPanel;
+		}
+	}
+
+	if (vguiMatSystemTopPanel == vguiPanel)
+	{
+		
+	}
+
+	if (!strcmp("HudZoom", pApp->Panel()->GetName(vguiPanel)))
+	{
+		return;
+	}
+
+	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
 }
 
 void CApplication::Setup()
@@ -177,13 +207,21 @@ void CApplication::Setup()
 	CXorString VModelRender("ANë¥~eàxoà®':³");
 	CXorString EngineTraceClient("_cajthRq{nc@vdcmn=67", 0x1A);
 	CXorString VMaterialSystem("AFä¶ryì£{Xü±cnèò/;");
+	CXorString vgui2Dll("alð«%%á®{");
+	CXorString vguiSurfaceDll("alð«zjñ±byã£tn«¦{g");
+	CXorString VguiPanel("ALÐ‹H[ä¬rgµò.");
+	CXorString VguiSurface("ALÐ‹HXð°qjæ§'8´");
 
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
+	this->m_dwVgui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
+	this->m_dwVguiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
 	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVgui2Dll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVguiSurfaceDll, createInterface.ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -192,6 +230,8 @@ void CApplication::Setup()
 	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
+	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
+	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 
 	// Setups
 	this->m_aimbot.Setup();
@@ -216,6 +256,7 @@ void CApplication::Setup()
 	this->m_misc.IsEnabled(true);
 	this->m_misc.IsNoRecoil(true);
 	this->m_misc.IsFakelag(false);
+	this->m_misc.IsAutoStrafe(true);
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
@@ -267,6 +308,10 @@ void CApplication::Hook()
 
 	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);
+
+	VFTableHook vgui2Hook((DWORD*)this->m_pPanel, true);
+	m_pPaintTraverse = (PaintTraverse_t)vgui2Hook.Hook(41, (DWORD*)hk_PaintTraverse);
+
 }
 
 // Singleton

@@ -29,6 +29,8 @@
 #include "IMaterialSystem.h"
 #include "CInput.h"
 #include "CWeapon.h"
+#include "IPanel.h"
+#include "ISurface.h"
 
 // DirectX
 #include "d3d9.h"
@@ -94,6 +96,7 @@ typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITI
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
+typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
@@ -107,89 +110,55 @@ public:
 	static CApplication* Instance();
 	void Run();
 
-	IVEngineClient* EngineClient() {
-		return m_pEngineClient;
-	}
+	IVEngineClient* EngineClient() { return m_pEngineClient; }
 
-	IBaseClientDLL* BaseClientDLL() {
-		return m_pClientDll;
-	}
+	IBaseClientDLL* BaseClientDLL() { return m_pClientDll; }
 
-	IClientEntityList* EntityList() {
-		return m_pEntityList;
-	}
+	IClientEntityList* EntityList() { return m_pEntityList; }
 
-	IVModelInfo* ModelInfo() {
-		return m_pModelInfo;
-	}
+	IVModelInfo* ModelInfo() { return m_pModelInfo; }
 
-	IVModelRender* ModelRender() {
-		return m_pModelRender;
-	}
+	IVModelRender* ModelRender() { return m_pModelRender; }
 
-	IEngineTrace* EngineTrace() {
-		return m_pEngineTrace;
-	}
+	IEngineTrace* EngineTrace() { return m_pEngineTrace; }
 
-	IMaterialSystem* MaterialSystem() {
-		return m_pMaterialSystem;
-	}
+	IMaterialSystem* MaterialSystem() {	return m_pMaterialSystem; }
 
-	DWORD ClientDll() {
-		return m_dwClientDll;
-	}
+	DWORD ClientDll() {	return m_dwClientDll; }
 
-	DWORD EngineDll() {
-		return m_dwEngineDll;
-	}
+	DWORD EngineDll() {	return m_dwEngineDll; }
 
-	DWORD MaterialSystemDll() {
-		return m_dwMaterialSystemDll;
-	}
+	DWORD MaterialSystemDll() {	return m_dwMaterialSystemDll; }
 
-	CInput* Input() {
-		return m_pInput;
-	}
+	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
 
-	FrameStageNotify_t FrameStageNotify() {
-		return m_pFrameStageNotify;
-	}
+	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll;	}
 
-	CAimbot* Aimbot() {
-		return (CAimbot*)&m_aimbot;
-	}
+	CInput* Input() { return m_pInput; }
 
-	CAntiAim* AntiAim() {
-		return (CAntiAim*)&m_antiAim;
-	}
+	IPanel* Panel() { return m_pPanel; }
 
-	CBhop* Bhop() {
-		return (CBhop*)&m_bhop;
-	}
+	ISurface* Surface() { return m_pSurface; }
 
-	CEsp* Esp() {
-		return (CEsp*)&m_esp;
-	}
+	FrameStageNotify_t FrameStageNotify() { return m_pFrameStageNotify; }
 
-	CMisc* Misc() {
-		return (CMisc*)&m_misc;
-	}
+	CAimbot* Aimbot() {	return (CAimbot*)&m_aimbot; }
 
-	CVisuals* Visuals() {
-		return (CVisuals*)&m_visuals;
-	}
+	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim;	}
 
-	QAngle& ClientViewAngles() {
-		return m_qClientViewAngles;
-	}
+	CBhop* Bhop() {	return (CBhop*)&m_bhop;	}
 
-	void ClientViewAngles(QAngle& q) {
-		m_qClientViewAngles = q;
-	}
+	CEsp* Esp() { return (CEsp*)&m_esp; }
 
-	QAngle LastTickAngles()	{
-		return m_qLastTickAngles;
-	}
+	CMisc* Misc() {	return (CMisc*)&m_misc; }
+
+	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
+
+	QAngle& ClientViewAngles() { return m_qClientViewAngles; }
+
+	void ClientViewAngles(QAngle& q) { m_qClientViewAngles = q; }
+
+	QAngle LastTickAngles() { return m_qLastTickAngles;	}
 
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
@@ -204,6 +173,7 @@ public:
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
+	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
 private:
 	void Setup();
 	void Hook();
@@ -214,6 +184,7 @@ private:
 	static FrameStageNotify_t m_pFrameStageNotify;
 	static OverrideView_t m_pOverrideView;
 	static DrawModelExecute_t m_pDrawModelExecute;
+	static PaintTraverse_t m_pPaintTraverse;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClientDll;
@@ -223,10 +194,14 @@ private:
 	IEngineTrace* m_pEngineTrace;
 	IMaterialSystem* m_pMaterialSystem;
 	CInput* m_pInput;
+	IPanel* m_pPanel;
+	ISurface* m_pSurface;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
+	DWORD m_dwVgui2Dll;
+	DWORD m_dwVguiSurfaceDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;

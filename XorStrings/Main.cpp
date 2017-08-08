@@ -9,8 +9,8 @@ void printByteString(const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("Other textures"),
-		CXorString("particle/vistasmokev1/vistasmokev1_smokegrenade"),
+		CXorString("VGUI_Surface031"),
+		CXorString("VGUI_Panel009"),
 		CXorString("particle/vistasmokev1/vistasmokev1_emods"),
 		CXorString("particle/vistasmokev1/vistasmokev1_emods_impactdust"),
 		CXorString("particle/vistasmokev1/vistasmokev1_fire")
