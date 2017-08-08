@@ -48,6 +48,7 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	m_bIsShooting = false;
+	m_bDidNoRecoil = false;
 
 	// Update code here
 	IVEngineClient* pEngineClient = m_pApp->EngineClient();
@@ -226,10 +227,6 @@ void CAimbot::Update(void* pParameters)
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
 		m_bDidNoRecoil = true;
-	}
-	else
-	{
-		m_bDidNoRecoil = false;
 	}
 
 	pUserCmd->viewangles[0] = aimAngles.x;

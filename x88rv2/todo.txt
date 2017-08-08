@@ -10,6 +10,8 @@ Priority High
 Priority Medium
 --------------------------------------
 => bPacketSend arbeitsweise rausfinden
+=> Skin changer
+=> Viewmodel changer (viewmodel position)
 
 --------------------------------------
 Priority Low
