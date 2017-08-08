@@ -7,6 +7,7 @@
 #include "Feature.h"
 #include "Vector.h"
 #include "ISurface.h"
+#include "ClientEntity.h"
 
 #define EnableHealthbar true
 #define EnableArmorbar false
@@ -40,6 +41,12 @@ public:
 	void ShouldDrawOnlySpotted(bool bDrawOnlySpotted) { m_bDrawOnlySpotted = bDrawOnlySpotted; };
 	bool ShouldDrawOnlySpotted() { return m_bDrawOnlySpotted; };
 
+	void ShouldDrawOutline(bool bDrawOutlineEsp) { m_bDrawOutline = bDrawOutlineEsp; };
+	bool ShouldDrawOutline() { return m_bDrawOutline; };
+
+	void ShouldDrawNames(bool bDrawNames) { m_bDrawNames = bDrawNames; };
+	bool ShouldDrawNames() { return m_bDrawNames; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
@@ -47,6 +54,7 @@ private:
 	void DrawBoundingBox(int posX, int posY, int height, int width, Color color);
 	void DrawHealthBar(int posX, int posY, int height, int width, int health);
 	void DrawHelmet(int posX, int posY, int height, int width);
+	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
 
 	bool ScreenTransform(const Vector& point, Vector& screen);
 	bool WorldToScreen(const Vector &origin, Vector &screen);
@@ -57,6 +65,8 @@ private:
 	bool m_bDrawOwnTeam;
 	bool m_bDrawOwnModel;
 	bool m_bDrawOnlySpotted;
+	bool m_bDrawOutline;
+	bool m_bDrawNames;
 };
 
 #endif // __ESP_H__

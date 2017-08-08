@@ -11,6 +11,7 @@
 #define DRAWPRINTTEXT_INDEX			28
 #define SCREATEFONT_INDEX			71
 #define SETFONTGLYPHSET_INDEX		72
+#define GETTEXTSIZE_INDEX			79
 
 void ISurface::DrawSetColor(Color color)
 {
@@ -76,4 +77,10 @@ void ISurface::DrawSetTextFont(unsigned int font)
 {
 	typedef void(__thiscall *CreateFont_t)(void*, unsigned int);
 	((CreateFont_t)(*(void***)this)[DRAWSETTEXTFONT_INDEX])(this, font);
+}
+
+void ISurface::GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall)
+{
+	typedef void(__thiscall *TextSize_t)(void*, HFont, const wchar_t*, int&, int&);
+	((TextSize_t)(*(void***)this)[GETTEXTSIZE_INDEX])(this, font, text, wide, tall);
 }
