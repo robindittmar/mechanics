@@ -1,10 +1,6 @@
 #ifndef __ICONTROL_H__
 #define __ICONTROL_H__
 
-// DirectX
-#include "d3d9.h"
-#include "d3dx9.h"
-
 class IControl
 {
 public:
@@ -13,7 +9,7 @@ public:
 
 	// TODO: ProcessEvents
 	virtual void ProcessEvents() = 0;
-	virtual void Draw(IDirect3DDevice9* pDevice, int xOff, int yOff) = 0;
+	virtual void Draw(/*IDirect3DDevice9* pDevice, */int xOff, int yOff) = 0;
 
 	void IsEnabled(bool bIsEnabled) {
 		m_bIsEnabled = bIsEnabled;

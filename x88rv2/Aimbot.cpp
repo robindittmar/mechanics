@@ -47,6 +47,7 @@ void CAimbot::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	*m_pApp->m_bSendPackets = true;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
 
@@ -257,6 +258,9 @@ void CAimbot::Update(void* pParameters)
 	{
 		this->Shoot(pUserCmd, fNextattack, fServertime);
 	}
+
+	if (this->m_bIsShooting)
+		*m_pApp->m_bSendPackets = false;
 }
 
 void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)

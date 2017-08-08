@@ -102,12 +102,18 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		// TODO: Temporary, I hope
 		if(GetAsyncKeyState(VK_DELETE) & 0x8000)
 		{
+			// Unregister listeners
+			pApp->GameEventManager()->RemoveListener(&pApp->m_cRoundEndListener);
+			pApp->GameEventManager()->RemoveListener(&pApp->m_cRoundStartListener);
+			pApp->GameEventManager()->RemoveListener(&pApp->m_cPlayerDeathListener);
+			pApp->GameEventManager()->RemoveListener(&pApp->m_cPlayerHurtListener);
+
 			// Reverse order, in case of any dependencies
 			pApp->VguiHook()->Restore();
 			pApp->ClientHook()->Restore();
 			pApp->EngineModelHook()->Restore();
 			pApp->ClientModeHook()->Restore();
-				
+			
 			// Free & Exit
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, pApp->m_hModule, NULL, NULL);
 		}
@@ -186,7 +192,7 @@ void CApplication::Setup()
 	);
 	//m_pWindow->IsVisible(true);
 
-	// Setup engine stuff
+	// Setup strings
 	CXorString clientDll("tgì§y«¦{g");
 	CXorString engineDll("reâ«yn«¦{g");
 	CXorString materialSystemDll("zjñ§ebä®drö¶rf«¦{g");
@@ -202,7 +208,9 @@ void CApplication::Setup()
 	CXorString vguiSurfaceDll("alð«zjñ±byã£tn«¦{g");
 	CXorString VguiPanel("ALÐ‹H[ä¬rgµò.");
 	CXorString VguiSurface("ALÐ‹HXð°qjæ§'8´");
+	CXorString GameEventListener("lÔ\a`nÃ\xfkÆ\adeÔ\r`y¥z\x17", 0xF12B);
 
+	// Grab engine addresses
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
@@ -223,6 +231,7 @@ void CApplication::Setup()
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
+	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
@@ -236,7 +245,7 @@ void CApplication::Setup()
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(true);
+	this->m_aimbot.IsAutoshoot(false);
 	this->m_aimbot.IsAutoscope(true);
 	this->m_aimbot.IsSilentAim(true);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
@@ -287,6 +296,18 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
+	// XorStrings
+	CXorString player_hurt("ggä»ryÚªbyñ");
+	CXorString player_death("ggä»ryÚ¦rjñª");
+	CXorString round_start("edð¬sTö¶vyñ");
+	CXorString round_end("edð¬sTà¬s");
+
+	// Register Event Handlers
+	m_pGameEventManager->AddListener(&m_cPlayerHurtListener, player_hurt.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_cPlayerDeathListener, player_death.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_cRoundStartListener, round_start.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_cRoundEndListener, round_end.ToCharArray(), false);
+
 	// Get ClientMode and CInput
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);

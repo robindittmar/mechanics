@@ -1,9 +1,6 @@
 #ifndef __ESP_H__
 #define __ESP_H__
 
-#include "d3d9.h"
-#include "d3dx9.h"
-
 #include "Feature.h"
 #include "Vector.h"
 #include "ISurface.h"

@@ -15,6 +15,9 @@
 #include "Misc.h"
 #include "Visuals.h"
 
+// Game Event listener
+#include "GameEventListener.h"
+
 // Source Engine
 #include "CreateInterface.h"
 #include "VEngineClient.h"
@@ -31,6 +34,7 @@
 #include "CWeapon.h"
 #include "IPanel.h"
 #include "ISurface.h"
+#include "IGameEventManager.h"
 
 #include "VTableHook.h"
 
@@ -104,11 +108,9 @@ public:
 };
 
 typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
-typedef HRESULT(__stdcall* EndScene_t)(IDirect3DDevice9*);
-typedef HRESULT(__stdcall* DrawIndexedPrimitive_t)(IDirect3DDevice9*, D3DPRIMITIVETYPE, INT, UINT, UINT, UINT, UINT);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
-typedef void* (__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
+typedef void*(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
 typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
@@ -142,6 +144,7 @@ public:
 	IPanel* Panel() { return m_pPanel; }
 	ISurface* Surface() { return m_pSurface; }
 	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
+	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 
 	// DLL Addresses
 	DWORD ClientDll() {	return m_dwClientDll; }
@@ -203,6 +206,7 @@ private:
 	IPanel* m_pPanel;
 	ISurface* m_pSurface;
 	CGlobalVars* m_pGlobalVars;
+	IGameEventManager2* m_pGameEventManager;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
@@ -213,6 +217,7 @@ private:
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;
 
+	// Features
 	CAimbot m_aimbot;
 	CAntiAim m_antiAim;
 	CBhop m_bhop;
@@ -220,9 +225,15 @@ private:
 	CMisc m_misc;
 	CVisuals m_visuals;
 
+	// Event listener
+	CPlayerHurtEventListener m_cPlayerHurtListener;
+	CPlayerDeathEventListener m_cPlayerDeathListener;
+	CRoundStartEventListener m_cRoundStartListener;
+	CRoundEndEventListener m_cRoundEndListener;
+
 	CWindow* m_pWindow;
 
-	// Singleton 
+	// Singleton
 	CApplication();
 	CApplication(CApplication const&);
 	~CApplication();

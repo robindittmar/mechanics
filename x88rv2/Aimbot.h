@@ -21,7 +21,9 @@ public:
 	CAimbot();
 	~CAimbot();
 
+	// Returns wether or not the Aimbot will shoot in this tick
 	bool IsShooting() { return m_bIsShooting; }
+	// Returns wether or not the aimbot compensated for recoil
 	bool DidNoRecoil() { return m_bDidNoRecoil; }
 
 	void IsAutoshoot(bool bAutoshoot) { m_bAutoshoot = bAutoshoot; }

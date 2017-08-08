@@ -1,6 +1,7 @@
 --------------------------------------
 Priority High
 --------------------------------------
+==> AUTOWALL!
 => GUI/Menu
 => ConVar->FindVar(...)
 => Unhook [X]
@@ -17,3 +18,4 @@ Priority Medium
 Priority Low
 --------------------------------------
 => https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events
+=> Antiaim Wall detection

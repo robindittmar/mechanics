@@ -65,6 +65,7 @@ bool CInjector::Inject(const char* pProcess, CLibrary* pLibrary)
 
 bool CInjector::Detach(const char* pProcess, CLibrary* pLibrary)
 {
+	return false;
 }
 
 DWORD CInjector::GetProcessId(const char* pProcess)

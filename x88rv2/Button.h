@@ -2,6 +2,7 @@
 #define __BUTTON_H__
 
 #include "IControl.h"
+#include <cstring>
 
 class CButton : public IControl
 {
@@ -10,7 +11,7 @@ public:
 	~CButton();
 
 	virtual void ProcessEvents();
-	virtual void Draw(IDirect3DDevice9* pDevice, int xOff, int yOff);
+	virtual void Draw(/*IDirect3DDevice9* pDevice, */int xOff, int yOff);
 
 	void ContentText(const char* pText) {
 		if (m_pContentText)

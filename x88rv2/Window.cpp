@@ -35,23 +35,23 @@ bool CWindow::AddChild(IControl* pControl)
 	return true;
 }
 
-void CWindow::Draw(IDirect3DDevice9* pDevice)
+void CWindow::Draw(/*IDirect3DDevice9* pDevice*/)
 {
 	if (!m_bIsVisible)
 		return;
 	
-	D3DRECT rect = {
+	/*D3DRECT rect = {
 		m_iX,
 		m_iY,
 		m_iX + m_iWidth,
 		m_iY + m_iHeight
 	};
 
-	pDevice->Clear(1, &rect, D3DCLEAR_TARGET, D3DCOLOR_ARGB(128, 255, 0, 0), 0.0f, 0);
+	pDevice->Clear(1, &rect, D3DCLEAR_TARGET, D3DCOLOR_ARGB(128, 255, 0, 0), 0.0f, 0);*/
 
 	for (std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)
 	{
 		IControl* p = *it;
-		p->Draw(pDevice, m_iX, m_iY);
+		p->Draw(/*pDevice, */m_iX, m_iY);
 	}
 }

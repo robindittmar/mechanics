@@ -57,7 +57,6 @@ void CAntiAim::Update(void* pParameters)
 		break;
 	}
 
-
 	// Yaw
 	static float trigger = 0.0f;
 	switch (aa.yawAA)

@@ -5,10 +5,6 @@
 #include <cstring>
 #include <vector>
 
-// DirectX
-#include "d3d9.h"
-#include "d3dx9.h"
-
 // Custom
 #include "IControl.h"
 
@@ -26,7 +22,7 @@ public:
 
 	// TODO:
 	void HandleEvents();
-	void Draw(IDirect3DDevice9* pDevice);
+	void Draw(/*IDirect3DDevice9* pDevice*/);
 
 	void IsVisible(bool bIsVisible) {
 		m_bIsVisible = bIsVisible;

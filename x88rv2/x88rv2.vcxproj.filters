@@ -99,6 +99,9 @@
     <ClCompile Include="VTableHook.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameEventListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -210,6 +213,15 @@
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VTableHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameEventManager.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameEvent.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEventListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

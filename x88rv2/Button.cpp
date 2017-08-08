@@ -17,7 +17,7 @@ void CButton::ProcessEvents()
 	// TODO
 }
 
-void CButton::Draw(IDirect3DDevice9* pDevice, int xOff, int yOff)
+void CButton::Draw(/*IDirect3DDevice9* pDevice, */int xOff, int yOff)
 {
 	if (!m_bIsEnabled)
 		return;
@@ -25,12 +25,12 @@ void CButton::Draw(IDirect3DDevice9* pDevice, int xOff, int yOff)
 	int offsetX = m_iX + xOff;
 	int offsetY = m_iY + yOff;
 
-	D3DRECT rect = {
+	/*D3DRECT rect = {
 		offsetX,
 		offsetY,
 		offsetX + m_iWidth,
 		offsetY + m_iHeight
 	};
 
-	pDevice->Clear(1, &rect, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 1.0f, 0);
+	pDevice->Clear(1, &rect, D3DCLEAR_TARGET, D3DCOLOR_ARGB(255, 0, 255, 255), 1.0f, 0);*/
 }
