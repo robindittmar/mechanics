@@ -57,7 +57,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
 
-			// Update NoRecoil
+			// Update NoRecoil & AutoPistol
 			pApp->Misc()->NoRecoil(pUserCmd);
 			// Update Fakelag
 			pApp->Misc()->Fakelag(pUserCmd);
@@ -244,7 +244,7 @@ void CApplication::Setup()
 	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
 	this->m_aimbot.IsSilentAim(true);
-	this->m_aimbot.TargetCriteria(TargetCriteriaOrigin);
+	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 
 	// AA, Bhop
 	this->m_antiAim.IsEnabled(true);
@@ -265,6 +265,8 @@ void CApplication::Setup()
 	this->m_misc.IsFakelag(false);
 	this->m_misc.IsAutoStrafe(true);
 	this->m_misc.IsNoScope(true);
+	this->m_misc.IsAutoPistol(true);
+
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
@@ -275,7 +277,7 @@ void CApplication::Setup()
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.2f);
 
-	this->m_visuals.IsThirdperson(true);
+	this->m_visuals.IsThirdperson(false);
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);

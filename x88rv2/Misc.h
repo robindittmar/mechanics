@@ -28,6 +28,9 @@ public:
 	void IsNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
 	bool IsNoScope() { return m_bNoScope; };
 
+	void IsAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
+	bool IsAutoPistol() { return m_bAutoPistol; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -41,6 +44,7 @@ private:
 	bool m_bFakelag;
 	bool m_bAutoStrafe;
 	bool m_bNoScope;
+	bool m_bAutoPistol;
 };
 
 

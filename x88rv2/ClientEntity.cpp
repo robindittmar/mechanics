@@ -68,3 +68,13 @@ DWORD IClientEntity::MoveType()
 {
 	return *(DWORD*)((DWORD)this + OFFSET_MOVETYPE);
 }
+
+int IClientEntity::TickBase()
+{
+	return *(int*)((DWORD)this + OFFSET_TICKBASE);
+}
+
+int IClientEntity::ShotsFired()
+{
+	return *(int*)((DWORD)this + OFFSET_SHOTSFIRED);
+}
