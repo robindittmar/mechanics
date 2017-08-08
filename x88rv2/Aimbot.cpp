@@ -48,7 +48,7 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	// TODO
-	*m_pApp->m_bSendPackets = true;
+	//*m_pApp->m_bSendPackets = true;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
 
@@ -146,6 +146,8 @@ void CAimbot::Update(void* pParameters)
 		m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
 		if (!trace.IsVisible())
 			continue;
+		/*if (trace.fraction < 0.7f || trace.fraction > 0.97f)
+			continue;*/
 
 		switch (m_tTargetCriteria)
 		{
@@ -265,8 +267,8 @@ void CAimbot::Update(void* pParameters)
 	}
 
 	// TODO
-	if (this->m_bIsShooting)
-		*m_pApp->m_bSendPackets = false;
+	//if (this->m_bIsShooting)
+	//	*m_pApp->m_bSendPackets = false;
 }
 
 void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)

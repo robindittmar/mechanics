@@ -31,6 +31,9 @@ void CPlayerHurtEventListener::FireGameEvent(IGameEvent *pEvent)
 		int dmg_armor = pEvent->GetInt(strDmgArmor.ToCharArray());
 		int hitgroup = pEvent->GetBool(strHitgroup.ToCharArray());
 
+		if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
+			return;
+
 		// Headshot
 		if(hitgroup == 1) // ?
 		{
@@ -76,6 +79,9 @@ void CPlayerDeathEventListener::FireGameEvent(IGameEvent *pEvent)
 		int dominated = pEvent->GetInt(strDominated.ToCharArray());
 		int revenge = pEvent->GetInt(strRevenge.ToCharArray());
 		int penetrated = pEvent->GetInt(strPenetrated.ToCharArray());
+
+		if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
+			return;
 
 		bool sayTaunt = true;
 		if (headshot && sayTaunt)
