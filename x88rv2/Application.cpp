@@ -154,26 +154,28 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
 	CApplication* pApp = CApplication::Instance();
-
-	if (pApp->Misc()->NoScope(vguiPanel))
-		return;
-
-	static unsigned int vguiMatSystemTopPanel;
-	if (vguiMatSystemTopPanel == NULL)
+	if (pApp->EngineClient()->IsInGame())
 	{
-		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
-		const char* szName = pApp->Panel()->GetName(vguiPanel);
-		if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
+		if (pApp->Misc()->NoScope(vguiPanel))
+			return;
+
+		static unsigned int vguiMatSystemTopPanel;
+		if (vguiMatSystemTopPanel == NULL)
 		{
-			vguiMatSystemTopPanel = vguiPanel;
+			static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
+			const char* szName = pApp->Panel()->GetName(vguiPanel);
+			if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
+			{
+				vguiMatSystemTopPanel = vguiPanel;
+			}
 		}
-	}
 
-	if (vguiMatSystemTopPanel == vguiPanel)
-	{
-		pApp->Misc()->DrawNoScope();
+		if (vguiMatSystemTopPanel == vguiPanel)
+		{
+			pApp->Misc()->DrawNoScope();
 
-		pApp->Esp()->Update();
+			pApp->Esp()->Update();
+		}
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
@@ -270,11 +272,11 @@ void CApplication::Setup()
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.2f);
 
-	this->m_visuals.IsThirdperson(true);
+	this->m_visuals.IsThirdperson(false);
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
-	this->m_visuals.FovValue(105);
+	this->m_visuals.FovValue(110);
 	this->m_visuals.ShouldFovChangeScoped(true);
 
 	// Wait for the game to be ingame before hooking
