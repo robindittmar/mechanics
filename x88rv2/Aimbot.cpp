@@ -47,6 +47,7 @@ void CAimbot::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	// TODO
 	*m_pApp->m_bSendPackets = true;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
@@ -122,6 +123,10 @@ void CAimbot::Update(void* pParameters)
 		// Only from enemy team & we don't want spectators or something
 		int entityTeam = pCurEntity->TeamNum();
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
+			continue;
+
+		// Spawn protection
+		if (pCurEntity->IsInvincible())
 			continue;
 
 		// Bone ID: 8 (maybe 7=neck)
@@ -259,6 +264,7 @@ void CAimbot::Update(void* pParameters)
 		this->Shoot(pUserCmd, fNextattack, fServertime);
 	}
 
+	// TODO
 	if (this->m_bIsShooting)
 		*m_pApp->m_bSendPackets = false;
 }

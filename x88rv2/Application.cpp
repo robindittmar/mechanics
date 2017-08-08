@@ -19,7 +19,6 @@ void CApplication::Run(HMODULE hModule)
 	m_hModule = hModule;
 
 	this->Setup();
-	//Sleep(5000);
 	this->Hook();
 }
 
@@ -44,7 +43,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
-
 
 			// Update Aimbot
 			pApp->Aimbot()->Update(pUserCmd);
@@ -205,6 +203,10 @@ void CApplication::Setup()
 	CXorString VguiPanel("ALÐ‹H[ä¬rgµò.");
 	CXorString VguiSurface("ALÐ‹HXð°qjæ§'8´");
 	CXorString GameEventListener("lÔ\a`nÃ\xfkÆ\adeÔ\r`y¥z\x17", 0xF12B);
+	CXorString player_hurt("ggä»ryÚªbyñ");
+	CXorString player_death("ggä»ryÚ¦rjñª");
+	CXorString round_start("edð¬sTö¶vyñ");
+	CXorString round_end("edð¬sTà¬s");
 
 	// Grab engine addresses
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
@@ -241,9 +243,9 @@ void CApplication::Setup()
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(false);
+	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(true);
+	this->m_aimbot.IsSilentAim(false);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 	this->m_aimbot.Speed(1.0f);
 	this->m_aimbot.Fov(360.0f);
@@ -288,24 +290,20 @@ void CApplication::Setup()
 	this->m_visuals.FovValue(110);
 	this->m_visuals.ShouldFovChangeScoped(true);
 
-	// Wait for the game to be ingame before hooking
-	while (!m_pEngineClient->IsInGame()) {}
-}
-
-void CApplication::Hook()
-{
-	// XorStrings
-	CXorString player_hurt("ggä»ryÚªbyñ");
-	CXorString player_death("ggä»ryÚ¦rjñª");
-	CXorString round_start("edð¬sTö¶vyñ");
-	CXorString round_end("edð¬sTà¬s");
-
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_cPlayerHurtListener, player_hurt.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_cPlayerDeathListener, player_death.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_cRoundStartListener, round_start.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_cRoundEndListener, round_end.ToCharArray(), false);
 
+	// Wait for the game to be ingame before hooking
+	while (!m_pEngineClient->IsInGame()) {
+		Sleep(100);
+	}
+}
+
+void CApplication::Hook()
+{
 	// Get ClientMode and CInput
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
@@ -333,6 +331,8 @@ CApplication::CApplication()
 	m_pEngineModelHook = NULL;
 	m_pClientHook = NULL;
 	m_pVguiHook = NULL;
+
+	m_bGotSendPackets = false;
 }
 
 CApplication::CApplication(CApplication const&)
