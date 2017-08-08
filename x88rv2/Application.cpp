@@ -41,9 +41,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 		if (pLocalEntity->IsAlive())
 		{
-			float view_forward = 0;
-			float view_right = 10;
-
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
