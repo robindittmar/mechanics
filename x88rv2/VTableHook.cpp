@@ -1,15 +1,13 @@
-#include "VFTableHook.h"
+#include "VTableHook.h"
 
-
-
-VFTableHook::VFTableHook()
+VTableHook::VTableHook()
 {
 }
 
-VFTableHook::VFTableHook(PDWORD pObj, bool bReplace)
+VTableHook::VTableHook(DWORD* pObj, bool bReplace)
 {
 	m_pObj = pObj;
-	m_pOldVTable = (DWORD*)*pObj;
+	m_pOldVTable = (DWORD*)*m_pObj;
 
 	CalculateLength();
 
@@ -20,30 +18,31 @@ VFTableHook::VFTableHook(PDWORD pObj, bool bReplace)
 			m_pNewVTable[i] = m_pOldVTable[i];
 		}
 
-		*pObj = (DWORD)m_pNewVTable;
+		*m_pObj = (DWORD)m_pNewVTable;
 	}
 }
 
 
-VFTableHook::~VFTableHook()
+VTableHook::~VTableHook()
 {
 }
 
-DWORD VFTableHook::Hook(UINT index, PDWORD pFunc)
+DWORD VTableHook::Hook(UINT index, DWORD* pFunc)
 {
-	if (index > m_dwLen) {
+	if (index > m_dwLen)
 		return false;
-	}
+	
 	m_pNewVTable[index] = (DWORD)pFunc;
 
 	return m_pOldVTable[index];
 }
 
-void VFTableHook::Restore()
+void VTableHook::Restore()
 {
+	*m_pObj = (DWORD)m_pOldVTable;
 }
 
-void VFTableHook::CalculateLength()
+void VTableHook::CalculateLength()
 {
 	if (!m_pOldVTable) return;
 	for (m_dwLen = 0; m_pOldVTable[m_dwLen]; m_dwLen++);

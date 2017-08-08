@@ -1,0 +1,17 @@
+--------------------------------------
+Priority High
+--------------------------------------
+=> GUI/Menu
+=> ConVar->FindVar(...)
+=> Unhook [X]
+=> Aimbot GetViewangleDist(...) [X]
+
+--------------------------------------
+Priority Medium
+--------------------------------------
+=> bPacketSend arbeitsweise rausfinden
+
+--------------------------------------
+Priority Low
+--------------------------------------
+=> https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events

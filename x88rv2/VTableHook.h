@@ -1,13 +1,13 @@
 #pragma once
 #include <Windows.h>
 
-class VFTableHook
+class VTableHook
 {
 public:
-	VFTableHook();
-	VFTableHook(PDWORD pObj, bool bReplace);
-	~VFTableHook();
-	DWORD Hook(UINT index, PDWORD pFunc);
+	VTableHook();
+	VTableHook(DWORD* pObj, bool bReplace);
+	~VTableHook();
+	DWORD Hook(UINT index, DWORD* pFunc);
 	void Restore();
 
 private:

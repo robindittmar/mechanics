@@ -3,8 +3,6 @@
 #include <math.h>
 
 CreateMove_t CApplication::m_pCreateMove;
-EndScene_t CApplication::m_pEndScene;
-DrawIndexedPrimitive_t CApplication::m_pDrawIndexedPrimitive;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
 OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
@@ -16,8 +14,10 @@ CApplication* CApplication::Instance()
 	return &inst;
 }
 
-void CApplication::Run()
+void CApplication::Run(HMODULE hModule)
 {
+	m_hModule = hModule;
+
 	this->Setup();
 	//Sleep(5000);
 	this->Hook();
@@ -49,7 +49,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			QAngle qOldAngles = pApp->ClientViewAngles();
 
 			//pApp->m_bSetClientViewAngles = false;
-			pApp->m_bAimbotNoRecoil = false;
+			//pApp->m_bAimbotNoRecoil = false;
 
 			// Update Aimbot
 			pApp->Aimbot()->Update(pUserCmd);
@@ -83,32 +83,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	return false;
 }
 
-HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	IVEngineClient* pEngineClient = pApp->EngineClient();
-	if (pEngineClient->IsInGame())
-	{
-		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		pApp->Esp()->Update(device);
-
-		pApp->Visuals()->NoFlash();
-	}
-
-	//CButton btn(100, 100);
-	//btn.Draw(device, 10, 10);
-	pApp->m_pWindow->Draw(device);
-	return m_pEndScene(device);
-}
-
-HRESULT __stdcall CApplication::hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount)
-{
-	// TODO: Maybe Use IVModelRender::DrawModelExecute(...)
-
-	return m_pDrawIndexedPrimitive(pDevice, Type, BaseVertexIndex, MinVertexIndex, NumVertices, startIndex, PrimitiveCount);
-}
-
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -124,6 +98,20 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
 		}
+		
+		// TODO: Temporary, I hope
+		if(GetAsyncKeyState(VK_DELETE) & 0x8000)
+		{
+			// Reverse order, in case of any dependencies
+			pApp->VguiHook()->Restore();
+			pApp->ClientHook()->Restore();
+			pApp->EngineModelHook()->Restore();
+			pApp->ClientModeHook()->Restore();
+				
+			// Free & Exit
+			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, pApp->m_hModule, NULL, NULL);
+		}
+		// TODO: Temporary, I hope
 	}
 
 	m_pFrameStageNotify(ecx, curStage);
@@ -224,7 +212,7 @@ void CApplication::Setup()
 	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVguiSurfaceDll, createInterface.ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
-	m_pClientDll = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
+	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
 	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
 	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
 	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
@@ -247,6 +235,8 @@ void CApplication::Setup()
 	this->m_aimbot.IsAutoscope(true);
 	this->m_aimbot.IsSilentAim(false);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
+	this->m_aimbot.Speed(1.0f);
+	this->m_aimbot.Fov(360.0f);
 
 	// AA, Bhop, ESP
 	this->m_antiAim.IsEnabled(true);
@@ -282,44 +272,33 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
-	IDirect3DDevice9* dwDevice = (IDirect3DDevice9*)**(DWORD**)(
-		(DWORD)CPattern::FindPattern(
-		(BYTE*)(GetModuleHandle("shaderapidx9.dll")),
-			0xC1000,
-			(BYTE*)"\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44",
-			"f----fbcdefghasdfta"
-		) + 1
-		);
+	// Get ClientMode and CInput
+	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
+	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
 
-	this->m_bSendPackets = (bool*)(this->EngineDll() + 0xE5E3A) + 1;
+	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode, true);
+	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
+	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
+	
+	m_pEngineModelHook = new VTableHook((DWORD*)this->ModelRender(), true);
+	m_pDrawModelExecute = (DrawModelExecute_t)m_pEngineModelHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
+	m_pClientHook = new VTableHook((DWORD*) this->m_pClient, true);
+	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
 
-	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClientDll))[10] + 0x5));
-	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClientDll))[15] + 0x1);
-
-	VFTableHook clientModeHook((DWORD*)dwClientMode, true);
-	m_pCreateMove = (CreateMove_t)clientModeHook.Hook(24, (DWORD*)hk_CreateMove);
-	m_pOverrideView = (OverrideView_t)clientModeHook.Hook(18, (DWORD*)hk_OverrideView);
-
-	VFTableHook d3dHook((DWORD*)dwDevice, true);
-	m_pEndScene = (EndScene_t)d3dHook.Hook(42, (DWORD*)hk_EndScene);
-	//m_pDrawIndexedPrimitive = (DrawIndexedPrimitive_t)d3dHook.Hook(82, (DWORD*)hk_DrawIndexPrimitive);
-
-	VFTableHook engineModelHook((DWORD*)this->ModelRender(), true);
-	m_pDrawModelExecute = (DrawModelExecute_t)engineModelHook.Hook(21, (DWORD*)hk_DrawModelExecute);
-
-	VFTableHook clientHook((DWORD*) this->m_pClientDll, true);
-	m_pFrameStageNotify = (FrameStageNotify_t)clientHook.Hook(36, (DWORD*)hk_FrameStageNotify);
-
-	VFTableHook vgui2Hook((DWORD*)this->m_pPanel, true);
-	m_pPaintTraverse = (PaintTraverse_t)vgui2Hook.Hook(41, (DWORD*)hk_PaintTraverse);
-
+	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
+	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 }
 
 // Singleton
 CApplication::CApplication()
 {
 	m_pWindow = NULL;
+
+	m_pClientModeHook = NULL;
+	m_pEngineModelHook = NULL;
+	m_pClientHook = NULL;
+	m_pVguiHook = NULL;
 }
 
 CApplication::CApplication(CApplication const&)
@@ -328,6 +307,18 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pVguiHook)
+		delete m_pVguiHook;
+
+	if (m_pClientHook)
+		delete m_pClientHook;
+
+	if (m_pEngineModelHook)
+		delete m_pEngineModelHook;
+
+	if (m_pClientModeHook)
+		delete m_pClientModeHook;
+
 	if (m_pWindow)
 		delete m_pWindow;
 }
@@ -422,4 +413,10 @@ void ClampMovement(CUserCmd* pUserCmd)
 	{
 		pUserCmd->sidemove = -320.0f;
 	}
+}
+
+DWORD ThreadFreeLibrary(void* pParam)
+{
+	Sleep(1000);
+	FreeLibraryAndExitThread((HMODULE)pParam, 0);
 }

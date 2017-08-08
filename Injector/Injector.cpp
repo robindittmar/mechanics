@@ -19,7 +19,7 @@ bool CInjector::Inject(const char* pProcess, CLibrary* pLibrary)
 	{
 		return false;
 	}
-
+	
 	// Open target process
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
 	if (!hProcess)
@@ -61,6 +61,10 @@ bool CInjector::Inject(const char* pProcess, CLibrary* pLibrary)
 	// Close process handle
 	CloseHandle(hProcess);
 	return true;
+}
+
+bool CInjector::Detach(const char* pProcess, CLibrary* pLibrary)
+{
 }
 
 DWORD CInjector::GetProcessId(const char* pProcess)

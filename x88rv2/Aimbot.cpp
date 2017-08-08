@@ -1,15 +1,20 @@
 #include "Aimbot.h"
 #include "Application.h"
-#include "Vector.h"
 #include "IEngineTrace.h"
 #include "CGameTrace.h"
 #include "ray.h"
+#include "Console.h"
 
 CAimbot::CAimbot()
 {
-	// Just test values
+	m_bSilentAim = false;
+	m_bAutoshoot = true;
+	m_bAutoscope = false;
+	m_bDoNoRecoil = true;
+
 	m_tTargetCriteria = TargetCriteriaUnspecified;
 	m_fSpeed = 1.0f;
+	m_fFov = 360.0f;
 }
 
 CAimbot::~CAimbot()
@@ -36,11 +41,13 @@ struct mat3x4
 	float c[3][4];
 };
 
-// TODO: Still needs alot of reworking ;)
+// TODO: Still needs some reworking
 void CAimbot::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;
+
+	m_bIsShooting = false;
 
 	// Update code here
 	IVEngineClient* pEngineClient = m_pApp->EngineClient();
@@ -102,12 +109,15 @@ void CAimbot::Update(void* pParameters)
 		if (pCurEntity->IsDormant())
 			continue;
 
+		// Can't shoot ourself
 		if (i == iLocalPlayerIdx)
 			continue;
 
+		// If the possible target isn't alive
 		if (!pCurEntity->IsAlive())
 			continue;
 
+		// Only from enemy team & we don't want spectators or something
 		int entityTeam = pCurEntity->TeamNum();
 		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
 			continue;
@@ -155,8 +165,13 @@ void CAimbot::Update(void* pParameters)
 			aimAngles = this->CalcAngle(headPos);
 
 			// Calculate our fov to the enemy
-			fViewangleDist = this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist);
-			if (fViewangleDist < fLowestDist)
+			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist));
+			// Max FOV
+			if (fViewangleDist > m_fFov)
+			{
+				continue;
+			}
+			else if (fViewangleDist < fLowestDist)
 			{
 				fLowestDist = fViewangleDist;
 
@@ -188,25 +203,37 @@ void CAimbot::Update(void* pParameters)
 		// Calculate our viewangles to aim at the enemy
 		aimAngles = this->CalcAngle(targetPos);
 	}
+	else
+	{
+		aimAngles = targetAngles;
+	}
 
+	// Set ClientViewAngles if we don't have silentaim activated
+	if (!this->m_bSilentAim)
+	{
+		m_pApp->ClientViewAngles(aimAngles);
+	}
 
-		m_pApp->m_bAimbotNoRecoil = true;
-
+	// If we have no recoil activated in the aimbot, do it
+	// (and remember that we did!)
+	if(m_bDoNoRecoil)
+	{
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-
-		if (!this->m_bSilentAim)
-		{
-			m_pApp->ClientViewAngles(aimAngles);
-		}
-
 		aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
 		aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
 
 		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 
-		pUserCmd->viewangles[0] = aimAngles.x;
-		pUserCmd->viewangles[1] = aimAngles.y;
+		m_bDidNoRecoil = true;
+	}
+	else
+	{
+		m_bDidNoRecoil = false;
+	}
+
+	pUserCmd->viewangles[0] = aimAngles.x;
+	pUserCmd->viewangles[1] = aimAngles.y;
 
 	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 	{
@@ -215,6 +242,7 @@ void CAimbot::Update(void* pParameters)
 			if (pLocalEntity->IsScoped())
 			{
 				pUserCmd->buttons |= IN_ATTACK;
+				m_bIsShooting = true;
 			}
 			else
 			{
@@ -224,11 +252,13 @@ void CAimbot::Update(void* pParameters)
 		else
 		{
 			pUserCmd->buttons |= IN_ATTACK;
+			m_bIsShooting = true;
 		}
 	}
 	else if (this->m_bAutoshoot && !pActiveWeapon->IsPistol() && !pActiveWeapon->IsTaser())
 	{
 		pUserCmd->buttons |= IN_ATTACK;
+		m_bIsShooting = true;
 	}
 }
 
@@ -252,5 +282,7 @@ float CAimbot::GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance)
 {
 	QAngle qDist = b - a;
 	qDist.Normalize();
-	return qDist.LengthSqr();
+	float fAng = qDist.Length();
+
+	return (sinf(DEG2RAD(fAng)) * fOriginDistance);
 }

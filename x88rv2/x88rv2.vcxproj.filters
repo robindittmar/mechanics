@@ -39,9 +39,6 @@
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VFTableHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Pattern.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -99,12 +96,12 @@
     <ClCompile Include="ISurface.cpp">
       <Filter>Source Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VTableHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VFTableHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Pattern.h">
@@ -212,5 +209,11 @@
     <ClInclude Include="ISurface.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VTableHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="todo.txt" />
   </ItemGroup>
 </Project>

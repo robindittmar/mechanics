@@ -12,6 +12,7 @@ public:
 	~CInjector();
 
 	bool Inject(const char* pProcess, CLibrary* pLibrary);
+	bool Detach(const char* pProcess, CLibrary* pLibrary);
 private:
 	DWORD GetProcessId(const char* pProcess);
 	DWORD WaitForProcess(const char* pProcess);

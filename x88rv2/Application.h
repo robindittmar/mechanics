@@ -32,15 +32,7 @@
 #include "IPanel.h"
 #include "ISurface.h"
 
-// DirectX
-#include "d3d9.h"
-#include "d3dx9.h"
-
-// TODO: Pending to be removed once reworked
-#include "VFTableHook.h"
-
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
+#include "VTableHook.h"
 
 #define OFFSET_LOCAL 0x2FAC
 #define OFFSET_AIMPUNCHANGLE 0x70
@@ -101,75 +93,64 @@ typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
-void Normalize(Vector angle);
+
+DWORD ThreadFreeLibrary(void* pParam);
 
 // Singleton
 class CApplication
 {
 public:
 	static CApplication* Instance();
-	void Run();
+	void Run(HMODULE hModule);
 
+	// VTable Hooks
+	VTableHook* ClientModeHook() { return m_pClientModeHook; }
+	VTableHook* EngineModelHook() { return m_pEngineModelHook; }
+	VTableHook* ClientHook() { return m_pClientHook; }
+	VTableHook* VguiHook() { return m_pVguiHook; }
+
+	// Engine Pointer
 	IVEngineClient* EngineClient() { return m_pEngineClient; }
-
-	IBaseClientDLL* BaseClientDLL() { return m_pClientDll; }
-
+	IBaseClientDLL* BaseClient() { return m_pClient; }
 	IClientEntityList* EntityList() { return m_pEntityList; }
-
 	IVModelInfo* ModelInfo() { return m_pModelInfo; }
-
 	IVModelRender* ModelRender() { return m_pModelRender; }
-
 	IEngineTrace* EngineTrace() { return m_pEngineTrace; }
-
 	IMaterialSystem* MaterialSystem() {	return m_pMaterialSystem; }
-
-	DWORD ClientDll() {	return m_dwClientDll; }
-
-	DWORD EngineDll() {	return m_dwEngineDll; }
-
-	DWORD MaterialSystemDll() {	return m_dwMaterialSystemDll; }
-
-	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
-
-	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll;	}
-
 	CInput* Input() { return m_pInput; }
-
 	IPanel* Panel() { return m_pPanel; }
-
 	ISurface* Surface() { return m_pSurface; }
 
-	FrameStageNotify_t FrameStageNotify() { return m_pFrameStageNotify; }
+	// DLL Addresses
+	DWORD ClientDll() {	return m_dwClientDll; }
+	DWORD EngineDll() {	return m_dwEngineDll; }
+	DWORD MaterialSystemDll() {	return m_dwMaterialSystemDll; }
+	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
+	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll;	}
 
+	// Features
 	CAimbot* Aimbot() {	return (CAimbot*)&m_aimbot; }
-
 	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim;	}
-
 	CBhop* Bhop() {	return (CBhop*)&m_bhop;	}
-
 	CEsp* Esp() { return (CEsp*)&m_esp; }
-
 	CMisc* Misc() {	return (CMisc*)&m_misc; }
-
 	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
 
+	// Client ViewAngles
 	QAngle& ClientViewAngles() { return m_qClientViewAngles; }
-
 	void ClientViewAngles(QAngle& q) { m_qClientViewAngles = q; }
 
+	// Viewangles of last tick
 	QAngle LastTickAngles() { return m_qLastTickAngles;	}
 
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
 	//bool m_bSetClientViewAngles;
-	bool m_bAimbotNoRecoil;
+	//bool m_bAimbotNoRecoil;
 	bool* m_bSendPackets;
 	bool m_bGotSendPackets;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
-	static HRESULT __stdcall hk_EndScene(IDirect3DDevice9* device);
-	static HRESULT __stdcall hk_DrawIndexPrimitive(LPDIRECT3DDEVICE9 pDevice, D3DPRIMITIVETYPE Type, INT BaseVertexIndex, UINT MinVertexIndex, UINT NumVertices, UINT startIndex, UINT PrimitiveCount);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
@@ -178,16 +159,21 @@ private:
 	void Setup();
 	void Hook();
 
+	HMODULE m_hModule;
+
+	VTableHook* m_pClientModeHook;
+	VTableHook* m_pEngineModelHook;
+	VTableHook* m_pClientHook;
+	VTableHook* m_pVguiHook;
+
 	static CreateMove_t m_pCreateMove;
-	static EndScene_t m_pEndScene;
-	static DrawIndexedPrimitive_t m_pDrawIndexedPrimitive;
 	static FrameStageNotify_t m_pFrameStageNotify;
 	static OverrideView_t m_pOverrideView;
 	static DrawModelExecute_t m_pDrawModelExecute;
 	static PaintTraverse_t m_pPaintTraverse;
 
 	IVEngineClient* m_pEngineClient;
-	IBaseClientDLL* m_pClientDll;
+	IBaseClientDLL* m_pClient;
 	IClientEntityList* m_pEntityList;
 	IVModelInfo* m_pModelInfo;
 	IVModelRender* m_pModelRender;

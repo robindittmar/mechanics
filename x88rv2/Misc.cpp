@@ -26,7 +26,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	if (!m_bNoRecoil)
 		return;
 
-	if (m_pApp->m_bAimbotNoRecoil)
+	if (m_pApp->Aimbot()->DidNoRecoil())
 		return;
 
 	if (!(pUserCmd->buttons & IN_ATTACK))
