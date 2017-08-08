@@ -11,12 +11,12 @@ VFTableHook::VFTableHook(PDWORD pObj, bool bReplace)
 	m_pObj = pObj;
 	m_pOldVTable = (DWORD*)*pObj;
 
-	DWORD dwLen = CalculateLength();
+	CalculateLength();
 
-	if (dwLen) {
-		m_pNewVTable = new DWORD[dwLen];
+	if (m_dwLen) {
+		m_pNewVTable = new DWORD[m_dwLen];
 
-		for (auto i = 0; i < dwLen; i++) {
+		for (DWORD i = 0; i < m_dwLen; i++) {
 			m_pNewVTable[i] = m_pOldVTable[i];
 		}
 
@@ -31,8 +31,7 @@ VFTableHook::~VFTableHook()
 
 DWORD VFTableHook::Hook(UINT index, PDWORD pFunc)
 {
-	DWORD dwLen = CalculateLength();
-	if (index > dwLen) {
+	if (index > m_dwLen) {
 		return false;
 	}
 	m_pNewVTable[index] = (DWORD)pFunc;
@@ -44,16 +43,8 @@ void VFTableHook::Restore()
 {
 }
 
-UINT VFTableHook::CalculateLength()
+void VFTableHook::CalculateLength()
 {
-	int dwIndex;
-	if (!m_pOldVTable) return 0;
-
-	for (dwIndex = 0; m_pOldVTable[dwIndex]; dwIndex++) {
-		if (m_pOldVTable[dwIndex] == 1) break;
-		if (IsBadCodePtr((FARPROC)m_pOldVTable[dwIndex])) {
-			break;
-		}
-	}
-	return dwIndex;
+	if (!m_pOldVTable) return;
+	for (m_dwLen = 0; m_pOldVTable[m_dwLen]; m_dwLen++);
 }

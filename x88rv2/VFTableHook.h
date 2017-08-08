@@ -11,11 +11,12 @@ public:
 	void Restore();
 
 private:
-	UINT CalculateLength();
+	DWORD m_dwLen;
+	void CalculateLength();
 
-	PDWORD m_pObj;
-
-	PDWORD m_pOldVTable;
-	PDWORD m_pNewVTable;
+	DWORD* m_pObj;
+	
+	DWORD* m_pOldVTable;
+	DWORD* m_pNewVTable;
 };
 

@@ -7,7 +7,7 @@
 CAimbot::CAimbot()
 {
 	// Just test values
-	m_tTargetCriteria = TargetCriteriaOrigin;
+	m_tTargetCriteria = TargetCriteriaUnspecified;
 	m_fSpeed = 1.0f;
 }
 
@@ -73,6 +73,7 @@ void CAimbot::Update(void* pParameters)
 	int localTeam = pLocalEntity->TeamNum();
 
 	Vector targetPos;
+	QAngle targetAngles;
 
 	QAngle aimAngles;
 	Ray_t ray;
@@ -80,7 +81,8 @@ void CAimbot::Update(void* pParameters)
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
 
 	int iSelectedEntity = -1;
-	float fDist;
+	float fViewangleDist;
+	float fOriginDist;
 	float fLowestDist = 999999.0f;
 
 	// Start at i=1 since 0 is usually (always as of now) the local player
@@ -130,10 +132,10 @@ void CAimbot::Update(void* pParameters)
 		switch (m_tTargetCriteria)
 		{
 		case TargetCriteriaOrigin:
-			fDist = this->GetOriginDist(myHeadPos, headPos);
-			if (fDist < fLowestDist)
+			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+			if (fOriginDist < fLowestDist)
 			{
-				fLowestDist = fDist;
+				fLowestDist = fOriginDist;
 
 				iSelectedEntity = i;
 				targetPos = headPos;
@@ -143,6 +145,25 @@ void CAimbot::Update(void* pParameters)
 
 			break;
 		case TargetCriteriaViewangle:
+			// Get Origin distance for "real" FOV (independent of distance)
+			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+
+			// Relative position
+			headPos -= myHeadPos;
+			// Calc angle
+			aimAngles = this->CalcAngle(headPos);
+
+			// Calculate our fov to the enemy
+			fViewangleDist = this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist);
+			if (fViewangleDist < fLowestDist)
+			{
+				fLowestDist = fViewangleDist;
+
+				iSelectedEntity = i;
+				targetAngles = aimAngles;
+
+				continue;
+			}
 			break;
 		case TargetCriteriaUnspecified:
 			iSelectedEntity = i;
@@ -158,16 +179,14 @@ void CAimbot::Update(void* pParameters)
 	if (iSelectedEntity == -1)
 		return;
 
-	// Get relative position to ourselves
-	targetPos -= myHeadPos;
+	if (m_tTargetCriteria != TargetCriteriaViewangle)
+	{
+		// Get relative position to ourselves
+		targetPos -= myHeadPos;
 
-	// Calculate our viewangles to aim at the enemy
-	aimAngles.x = -asinf(targetPos.z / targetPos.Length());
-	aimAngles.y = atan2f(targetPos.y, targetPos.x);
-
-	// Get the angles in degrees (for the game)
-	aimAngles.x = RAD2DEG(aimAngles.x);
-	aimAngles.y = RAD2DEG(aimAngles.y);
+		// Calculate our viewangles to aim at the enemy
+		aimAngles = this->CalcAngle(targetPos);
+	}
 
 	m_pApp->m_bAimbotNoRecoil = true;
 
@@ -211,13 +230,25 @@ void CAimbot::Update(void* pParameters)
 	}
 }
 
+QAngle CAimbot::CalcAngle(Vector& relativeDist)
+{
+	QAngle qAngle(
+		RAD2DEG(-asinf(relativeDist.z / relativeDist.Length())),
+		RAD2DEG(atan2f(relativeDist.y, relativeDist.x)),
+		0.0f
+	);
+
+	return qAngle;
+}
+
 float CAimbot::GetOriginDist(Vector& a, Vector& b)
 {
 	return (b - a).Length();
 }
 
-float CAimbot::GetViewangleDist(QAngle& a, QAngle& b)
+float CAimbot::GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance)
 {
-	// TODO
-	return 0.0f;
+	QAngle qDist = b - a;
+	qDist.Normalize();
+	return qDist.LengthSqr();
 }

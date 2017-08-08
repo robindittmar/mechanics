@@ -235,6 +235,8 @@ public:
 	// Returns a vector with the min or max in X, Y, and Z.
 	Vector	Min(const Vector &vOther) const;
 	Vector	Max(const Vector &vOther) const;
+
+	void Normalize();
 };
 
 class __declspec(align(16)) VectorAligned : public Vector {
@@ -443,6 +445,8 @@ public:
 	vec_t		m[4][4];
 };
 
+void inline SinCos(float radians, float *sine, float *cosine);
 void VectorAngles(const float *forward, float *angles);
+void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *up);
 
 #endif // __VECTOR_H__
