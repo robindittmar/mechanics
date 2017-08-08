@@ -8,7 +8,7 @@
 CAimbot::CAimbot()
 {
 	// Just test values
-	m_tTargetCriteria = TargetCriteriaOrigin;
+	m_tTargetCriteria = TargetCriteriaUnspecified;
 	m_fSpeed = 1.0f;
 }
 
@@ -73,9 +73,18 @@ void CAimbot::Update(void* pParameters)
 	myHeadPos += *pLocalEntity->EyeOffset();
 	int localTeam = pLocalEntity->TeamNum();
 
+	Vector targetPos;
+	QAngle targetAngles;
+
+	QAngle aimAngles;
 	Ray_t ray;
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+
+	int iSelectedEntity = -1;
+	float fViewangleDist;
+	float fOriginDist;
+	float fLowestDist = 999999.0f;
 
 	// Start at i=1 since 0 is usually (always as of now) the local player
 	int iMaxEntities = pEntityList->GetMaxEntities();
@@ -121,20 +130,64 @@ void CAimbot::Update(void* pParameters)
 		if (!trace.IsVisible())
 			continue;
 
+		switch (m_tTargetCriteria)
+		{
+		case TargetCriteriaOrigin:
+			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+			if (fOriginDist < fLowestDist)
+			{
+				fLowestDist = fOriginDist;
+
+				iSelectedEntity = i;
+				targetPos = headPos;
+
+				continue;
+			}
+
+			break;
+		case TargetCriteriaViewangle:
+			// Get Origin distance for "real" FOV (independent of distance)
+			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+
+			// Relative position
+			headPos -= myHeadPos;
+			// Calc angle
+			aimAngles = this->CalcAngle(headPos);
+
+			// Calculate our fov to the enemy
+			fViewangleDist = this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist);
+			if (fViewangleDist < fLowestDist)
+			{
+				fLowestDist = fViewangleDist;
+
+				iSelectedEntity = i;
+				targetAngles = aimAngles;
+
+				continue;
+			}
+			break;
+		case TargetCriteriaUnspecified:
+			iSelectedEntity = i;
+			targetPos = headPos;
+
+			// Force the entityloop to exit out (break would only break switch)
+			i = iMaxEntities;
+			break;
+		}
+	}
+
+	// If we found no target just exit
+	if (iSelectedEntity == -1)
+		return;
+
+	if (m_tTargetCriteria != TargetCriteriaViewangle)
+	{
 		// Get relative position to ourselves
-		headPos -= myHeadPos;
-		float vecLen = sqrtf(headPos.x * headPos.x + headPos.y * headPos.y + headPos.z * headPos.z);
+		targetPos -= myHeadPos;
 
 		// Calculate our viewangles to aim at the enemy
-		QAngle aimAngles(
-			-asinf(headPos.z / vecLen),
-			atan2f(headPos.y, headPos.x),
-			0.0f
-		);
-
-		// Get the angles in degrees (for the game)
-		aimAngles.x = RAD2DEG(aimAngles.x);
-		aimAngles.y = RAD2DEG(aimAngles.y);
+		aimAngles = this->CalcAngle(targetPos);
+	}
 
 
 		m_pApp->m_bAimbotNoRecoil = true;
@@ -155,30 +208,49 @@ void CAimbot::Update(void* pParameters)
 		pUserCmd->viewangles[0] = aimAngles.x;
 		pUserCmd->viewangles[1] = aimAngles.y;
 
-
-		if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
+	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
+	{
+		if (this->m_bAutoscope)
 		{
-			if (this->m_bAutoscope)
-			{
-				if (pLocalEntity->IsScoped())
-				{
-					pUserCmd->buttons |= IN_ATTACK;
-				}
-				else
-				{
-					pUserCmd->buttons |= IN_ATTACK2;
-				}
-			}
-			else
+			if (pLocalEntity->IsScoped())
 			{
 				pUserCmd->buttons |= IN_ATTACK;
 			}
+			else
+			{
+				pUserCmd->buttons |= IN_ATTACK2;
+			}
 		}
-		else if (this->m_bAutoshoot && !pActiveWeapon->IsPistol() && !pActiveWeapon->IsTaser())
+		else
 		{
 			pUserCmd->buttons |= IN_ATTACK;
 		}
-
-		break;
 	}
+	else if (this->m_bAutoshoot && !pActiveWeapon->IsPistol() && !pActiveWeapon->IsTaser())
+	{
+		pUserCmd->buttons |= IN_ATTACK;
+	}
+}
+
+QAngle CAimbot::CalcAngle(Vector& relativeDist)
+{
+	QAngle qAngle(
+		RAD2DEG(-asinf(relativeDist.z / relativeDist.Length())),
+		RAD2DEG(atan2f(relativeDist.y, relativeDist.x)),
+		0.0f
+	);
+
+	return qAngle;
+}
+
+float CAimbot::GetOriginDist(Vector& a, Vector& b)
+{
+	return (b - a).Length();
+}
+
+float CAimbot::GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance)
+{
+	QAngle qDist = b - a;
+	qDist.Normalize();
+	return qDist.LengthSqr();
 }

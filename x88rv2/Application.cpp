@@ -243,9 +243,10 @@ void CApplication::Setup()
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(true);
+	this->m_aimbot.IsAutoshoot(false);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(true);
+	this->m_aimbot.IsSilentAim(false);
+	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 
 	// AA, Bhop, ESP
 	this->m_antiAim.IsEnabled(true);
@@ -260,6 +261,7 @@ void CApplication::Setup()
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
+
 	this->m_visuals.IsNoSmoke(false);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
@@ -330,40 +332,6 @@ CApplication::~CApplication()
 		delete m_pWindow;
 }
 
-
-void inline SinCos(float radians, float *sine, float *cosine)
-{
-	*sine = sin(radians);
-	*cosine = cos(radians);
-}
-void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *up)
-{
-	float sr, sp, sy, cr, cp, cy;
-	SinCos(DEG2RAD(angles.y), &sy, &cy);
-	SinCos(DEG2RAD(angles.x), &sp, &cp);
-	SinCos(DEG2RAD(angles.z), &sr, &cr);
-
-	if (forward)
-	{
-		forward->x = cp*cy;
-		forward->y = cp*sy;
-		forward->z = -sp;
-	}
-
-	if (right)
-	{
-		right->x = (-1 * sr*sp*cy + -1 * cr*-sy);
-		right->y = (-1 * sr*sp*sy + -1 * cr*cy);
-		right->z = -1 * sr*cp;
-	}
-
-	if (up)
-	{
-		up->x = (cr*sp*cy + -sr*-sy);
-		up->y = (cr*sp*sy + -sr*cy);
-		up->z = cr*cp;
-	}
-}
 void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -383,9 +351,9 @@ void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
 	AngleVectors(qViewAngles, &vecViewForward, &vecViewRight, &vecViewUp);
 	AngleVectors(qAimAngles, &vecAimForward, &vecAimRight, &vecAimUp);
 
-	Normalize(vecViewForward);
-	Normalize(vecViewRight);
-	Normalize(vecViewUp);
+	vecViewForward.Normalize();
+	vecViewRight.Normalize();
+	vecViewUp.Normalize();
 
 	Vector vecForwardNorm = vecViewForward * flForward;
 	Vector vecRightNorm = vecViewRight * flRight;
@@ -396,30 +364,6 @@ void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
 	pCmd->upmove = vecForwardNorm.Dot(vecAimUp) + vecRightNorm.Dot(vecAimUp) + vecUpNorm.Dot(vecAimUp);
 
 	ClampMovement(pCmd);
-}
-void Normalize(Vector angle)
-{
-	// Normalize pitch
-	while (angle.x > 89.0f)
-	{
-		angle.x -= 178.0f;
-	}
-	while (angle.x < -89.0f)
-	{
-		angle.x += 178.0f;
-	}
-
-	// Normalize yaw
-	while (angle.y > 179.9999f)
-	{
-		angle.y -= 360.0f;
-	}
-	while (angle.y < -179.9999f)
-	{
-		angle.y += 360.0f;
-	}
-
-	angle.z = 0.0f;
 }
 
 void NormalizeAngles(CUserCmd* pUserCmd)
