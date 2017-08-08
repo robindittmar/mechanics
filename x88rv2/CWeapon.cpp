@@ -84,3 +84,13 @@ int CWeapon::Clip2()
 {
 	return *(int*)((unsigned long)this + OFFSET_CLIP2);
 }
+
+float CWeapon::NextPrimaryAttack()
+{
+	return *(float*)((unsigned long)this + OFFSET_NEXTPRIMARYATTACK);
+}
+
+float CGrenade::ThrowTime()
+{
+	return *(float*)((unsigned long)this + OFFSET_THROWTIME);
+}

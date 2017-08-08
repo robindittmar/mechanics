@@ -1,11 +1,14 @@
 #ifndef __CWEAPON_H__
 #define __CWEAPON_H__
 
-#define OFFSET_ATRIBUTEMANAGER 0x2D70
-#define OFFSET_ITEM 0x40
-#define OFFSET_ITEMDEFINITIONINDEX 0x1D8
-#define OFFSET_CLIP1 0x3204
-#define OFFSET_CLIP2 0x3208
+#define OFFSET_ATRIBUTEMANAGER		0x2D70
+#define OFFSET_ITEM					0x40
+#define OFFSET_ITEMDEFINITIONINDEX	0x1D8
+#define OFFSET_CLIP1				0x3204
+#define OFFSET_CLIP2				0x3208
+#define OFFSET_NEXTPRIMARYATTACK	0x31D8
+
+#define OFFSET_THROWTIME			0x3354
 
 enum ItemDefinitionIndex : int {
 	WEAPON_DEAGLE = 1,
@@ -74,6 +77,13 @@ public:
 	bool IsTaser();
 	int Clip1();
 	int Clip2();
+	float NextPrimaryAttack();
+private:
+};
+
+class CGrenade {
+public:
+	float ThrowTime();
 private:
 };
 

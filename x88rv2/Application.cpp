@@ -48,8 +48,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
 
-			//pApp->m_bSetClientViewAngles = false;
-			//pApp->m_bAimbotNoRecoil = false;
 
 			// Update Aimbot
 			pApp->Aimbot()->Update(pUserCmd);
@@ -57,7 +55,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
 
-			// Update NoRecoil
+			// Update NoRecoil & AutoPistol
 			pApp->Misc()->NoRecoil(pUserCmd);
 			// Update Fakelag
 			pApp->Misc()->Fakelag(pUserCmd);
@@ -97,6 +95,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pApp->Visuals()->NoSmoke();
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
+
+			pApp->Visuals()->NoFlash();
 		}
 		
 		// TODO: Temporary, I hope
@@ -150,25 +150,28 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
 	CApplication* pApp = CApplication::Instance();
 
-	static unsigned int vguiMatSystemTopPanel;
-
-	if (vguiMatSystemTopPanel == NULL)
+	if (pApp->EngineClient()->IsInGame())
 	{
-		const char* szName = pApp->Panel()->GetName(vguiPanel);
-		if (stricmp(szName, "MatSystemTopPanel") == 0)
+		if (pApp->Misc()->NoScope(vguiPanel))
+			return;
+
+		static unsigned int vguiMatSystemTopPanel;
+		if (vguiMatSystemTopPanel == NULL)
 		{
-			vguiMatSystemTopPanel = vguiPanel;
+			static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
+			const char* szName = pApp->Panel()->GetName(vguiPanel);
+			if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
+			{
+				vguiMatSystemTopPanel = vguiPanel;
+			}
 		}
-	}
 
-	if (vguiMatSystemTopPanel == vguiPanel)
-	{
-		
-	}
+		if (vguiMatSystemTopPanel == vguiPanel)
+		{
+			pApp->Misc()->DrawNoScope();
 
-	if (!strcmp("HudZoom", pApp->Panel()->GetName(vguiPanel)))
-	{
-		return;
+			pApp->Esp()->Update();
+		}
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
@@ -221,6 +224,8 @@ void CApplication::Setup()
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 
+	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
+
 	// Setups
 	this->m_aimbot.Setup();
 	this->m_antiAim.Setup();
@@ -231,28 +236,38 @@ void CApplication::Setup()
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(false);
+	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(false);
+	this->m_aimbot.IsSilentAim(true);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 	this->m_aimbot.Speed(1.0f);
 	this->m_aimbot.Fov(360.0f);
 
-	// AA, Bhop, ESP
+	// AA, Bhop
 	this->m_antiAim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
+
+	// ESP
 	this->m_esp.IsEnabled(true);
+	this->m_esp.ShouldDrawBoundingBox(true);
+	this->m_esp.ShouldDrawHealthBar(true);
+	this->m_esp.ShouldDrawArmorBar(false);
+	this->m_esp.ShouldDrawOwnTeam(false);
+	this->m_esp.ShouldDrawOwnModel(true);
+	this->m_esp.ShouldDrawOnlySpotted(false);
 
 	// Misc
 	this->m_misc.IsEnabled(true);
 	this->m_misc.IsNoRecoil(true);
 	this->m_misc.IsFakelag(false);
 	this->m_misc.IsAutoStrafe(true);
+	this->m_misc.IsNoScope(true);
+	this->m_misc.IsAutoPistol(true);
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
-	this->m_visuals.IsNoSmoke(false);
+	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
 
@@ -263,8 +278,8 @@ void CApplication::Setup()
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
-	this->m_visuals.FovValue(105);
-	this->m_visuals.IsFovChangeScoped(false);
+	this->m_visuals.FovValue(110);
+	this->m_visuals.ShouldFovChangeScoped(true);
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {}

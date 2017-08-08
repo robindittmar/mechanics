@@ -39,8 +39,8 @@ public:
 
 	void IsFovChange(int bFovChange) { m_bFovChange = bFovChange; };
 	int IsFovChange() { return m_bFovChange; };
-	void IsFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; };
-	int IsFovChangeScoped() { return m_bFovChangeScoped; };
+	void ShouldFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; };
+	int ShouldFovChangeScoped() { return m_bFovChangeScoped; };
 	void FovValue(int iFovValue) { m_iFovValue = iFovValue; };
 	int FovValue() { return m_iFovValue; };
 

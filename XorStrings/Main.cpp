@@ -9,7 +9,7 @@ void printByteString(const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("VGUI_Surface031"),
+		CXorString("HudZoom"),
 		CXorString("VGUI_Panel009"),
 		CXorString("particle/vistasmokev1/vistasmokev1_emods"),
 		CXorString("particle/vistasmokev1/vistasmokev1_emods_impactdust"),

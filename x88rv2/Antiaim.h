@@ -6,12 +6,15 @@
 class CApplication;
 
 enum PitchAntiAims {
-	DOWN
+	PitchNone,
+	PitchUp,
+	PitchDown
 };
 
 enum YawAntiAims {
-	BACKWARDS,
-	STATIC_JITTER_BACKWARDS
+	YawNone,
+	YawBackwards,
+	YawStaticJitterBackwards
 };
 
 struct AntiAim {

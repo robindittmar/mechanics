@@ -1,6 +1,7 @@
 #include "ISurface.h"
 
-#define DRAWSETCOLOR_INDEX			15
+#define DRAWSETCOLOR_ALT1_INDEX		14
+#define DRAWSETCOLOR_ALT2_INDEX		15
 #define DRAWFILLEDRECT_INDEX		16
 #define DRAWOUTLINEDRECT_INDEX		18
 #define DRAWLINE_INDEX				19
@@ -11,10 +12,16 @@
 #define SCREATEFONT_INDEX			71
 #define SETFONTGLYPHSET_INDEX		72
 
+void ISurface::DrawSetColor(Color color)
+{
+	typedef void(__thiscall *DrawSetColor_t)(void*, Color);
+	((DrawSetColor_t)(*(void***)this)[DRAWSETCOLOR_ALT1_INDEX])(this, color);
+}
+
 void ISurface::DrawSetColor(int a, int r, int g, int b)
 {
 	typedef void(__thiscall *DrawSetColor_t)(void*, int, int, int, int);
-	((DrawSetColor_t)(*(void***)this)[DRAWSETCOLOR_INDEX])(this, r, g, b, a);
+	((DrawSetColor_t)(*(void***)this)[DRAWSETCOLOR_ALT2_INDEX])(this, r, g, b, a);
 }
 
 void ISurface::DrawFilledRect(int x0, int y0, int x1, int y1)
