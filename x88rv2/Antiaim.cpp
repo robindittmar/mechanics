@@ -48,6 +48,9 @@ void CAntiAim::Update(void* pParameters)
 	{
 	default:
 		break;
+	case PitchUp:
+		angles.x = -89.0f;
+		break;
 	case PitchDown:
 		angles.x = 89.0f;
 		break;

@@ -7,6 +7,7 @@ class CApplication;
 
 enum PitchAntiAims {
 	PitchNone,
+	PitchUp,
 	PitchDown
 };
 

@@ -103,23 +103,23 @@ void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 
 void CVisuals::Thirdperson()
 {
-	if (!m_bIsEnabled)
-		return;
-
-	if (!m_bThirdperson)
-		return;
-
 	static Vector vecAngles;
+
+	if (!m_bThirdperson || !m_bIsEnabled)
+	{
+		if (m_pApp->Input()->m_fCameraInThirdPerson)
+		{
+			m_pApp->Input()->m_fCameraInThirdPerson = false;
+			m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);
+		}
+		return;
+	}
+
 	m_pApp->EngineClient()->GetViewAngles(vecAngles);
 	if (!m_pApp->Input()->m_fCameraInThirdPerson)
 	{
 		m_pApp->Input()->m_fCameraInThirdPerson = true;
 		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonValue);
-	}
-	else
-	{
-		m_pApp->Input()->m_fCameraInThirdPerson = false;
-		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);
 	}
 }
 
