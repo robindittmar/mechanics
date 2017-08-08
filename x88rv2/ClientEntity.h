@@ -22,6 +22,7 @@
 #define OFFSET_MOVETYPE			0x258
 #define OFFSET_TICKBASE			0x3424
 #define OFFSET_SHOTSFIRED		0x0A2C0
+#define OFFSET_SPAWNPROTECTION	0x38B0
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -256,6 +257,7 @@ public:
 	int TickBase();
 	int ShotsFired();
 	PlayerInfo GetPlayerInfo();
+	bool IsInvincible();
 };
 
 #endif // __CLIENTENTITY_H__

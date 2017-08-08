@@ -289,7 +289,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	m_pApp->Surface()->GetTextSize(font, name, w, h);
 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 16);
+	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
 }
 

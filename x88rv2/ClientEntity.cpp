@@ -88,3 +88,8 @@ PlayerInfo IClientEntity::GetPlayerInfo()
 
 	return pInfo;
 }
+
+bool IClientEntity::IsInvincible()
+{
+	return *(bool*)((DWORD)this + OFFSET_SPAWNPROTECTION);
+}
