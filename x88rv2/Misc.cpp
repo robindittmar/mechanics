@@ -85,7 +85,7 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 	static int chokedPackets = 0;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (chokedPackets >= MAXPACKETSCHOKED || pLocalEntity->GetVelocity() <= 0.f) //todo: MAXPACKETCHOKED -/+ FakelagValue!
+	if (chokedPackets >= MAXPACKETSCHOKED) //todo: MAXPACKETCHOKED -/+ FakelagValue!
 	{
 		*m_pApp->m_bSendPackets = true;
 		chokedPackets = 0;
@@ -106,7 +106,10 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (!(pLocalEntity->Flags() & FL_ONGROUND))
+	DWORD moveType = pLocalEntity->MoveType();
+	if (!(pLocalEntity->Flags() & FL_ONGROUND) &&
+		!(moveType & MOVETYPE_NOCLIP) &&
+		!(moveType & MOVETYPE_LADDER))
 	{
 		if (pUserCmd->mousedx > 0)
 		{
@@ -117,4 +120,37 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 			pUserCmd->sidemove = -450;
 		}
 	}
+}
+
+void CMisc::DrawNoScope()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bNoScope)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (!pLocalEntity->IsScoped())
+		return;
+
+	int width, height;
+	m_pApp->EngineClient()->GetScreenSize(width, height);
+	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+	m_pApp->Surface()->DrawLine(width / 2, 0, width / 2, height);
+	m_pApp->Surface()->DrawLine(0, height / 2, width, height / 2);
+}
+
+bool CMisc::NoScope(unsigned int vguiPanel)
+{
+	if (!m_bIsEnabled)
+		return false;
+
+	if (!m_bNoScope)
+		return false;
+
+	static CXorString hudZoom("_~á˜xdè");
+	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
+		return true;
+	return false;
 }

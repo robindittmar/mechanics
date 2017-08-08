@@ -1,6 +1,5 @@
 #include "Aimbot.h"
 #include "Application.h"
-#include "Vector.h"
 #include "IEngineTrace.h"
 #include "CGameTrace.h"
 #include "ray.h"

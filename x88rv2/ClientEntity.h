@@ -14,7 +14,10 @@
 #define OFFSET_ACTIVEWEAPON		0x2EE8
 #define OFFSET_ISSCOPED			0x389C
 #define OFFSET_VELOCITY			0x110
-
+#define OFFSET_SPOTTED			0x939
+#define OFFSET_ARMOR			0xB248
+#define OFFSET_HELMET			0xB23C
+#define OFFSET_MOVETYPE			0x258
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -241,7 +244,11 @@ public:
 	Vector* EyeOffset();
 	bool IsScoped();
 	void* ActiveWeapon();
-	float GetVelocity();
+	float Velocity();
+	bool IsSpotted();
+	int Armor();
+	bool HasHelmet();
+	DWORD MoveType();
 };
 
 #endif // __CLIENTENTITY_H__

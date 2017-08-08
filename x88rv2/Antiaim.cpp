@@ -29,18 +29,26 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	DWORD moveType = *(DWORD*)((DWORD)pLocalEntity + 0x258);
-	
-	if (moveType & MOVETYPE_LADDER)
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	if (activeWeapon->IsNade())
+	{
+		CGrenade* activeGrenade = (CGrenade*)activeWeapon;
+		if (activeGrenade->ThrowTime() > 0.f)
+			return;
+	}
+
+	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { DOWN, STATIC_JITTER_BACKWARDS };
+	AntiAim aa = { PitchDown, YawStaticJitterBackwards };
 	QAngle angles = m_pApp->ClientViewAngles();
 
 	// Pitch
 	switch (aa.pitchAA)
 	{
-	case DOWN:
+	default:
+		break;
+	case PitchDown:
 		angles.x = 89.0f;
 		break;
 	}
@@ -50,10 +58,12 @@ void CAntiAim::Update(void* pParameters)
 	static float trigger = 0.0f;
 	switch (aa.yawAA)
 	{
-	case BACKWARDS:
+	default:
+		break;
+	case YawBackwards:
 		angles.y -= 180.0f;
 		break;
-	case STATIC_JITTER_BACKWARDS:
+	case YawStaticJitterBackwards:
 		trigger += 15.0f;
 		angles.y -= trigger > 50.0f ? -145.0f : 145.0f;
 

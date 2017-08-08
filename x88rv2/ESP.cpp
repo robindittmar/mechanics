@@ -20,7 +20,7 @@ void CEsp::Update(void* pParameters)
 		return;
 
 	IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	int localTeam = *(int*)((DWORD)localEntity + TEAM_OFFSET);
+	int localTeam = localEntity->TeamNum();
 
 	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
 	{
@@ -32,33 +32,30 @@ void CEsp::Update(void* pParameters)
 			continue;
 
 		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
-		int entityTeam = *(int*)((DWORD)pEntity + TEAM_OFFSET);
+		int entityTeam = pEntity->TeamNum();
 
-		bool shouldDrawOwnTeam = false;
-		bool shouldDrawHimselfWhileThirdperson = true;
-
-		if (!(isLocalPlayer && m_pApp->Visuals()->IsThirdperson() && shouldDrawHimselfWhileThirdperson ||
-			!isLocalPlayer && shouldDrawOwnTeam && entityTeam == localTeam ||
+		if (!(isLocalPlayer && m_pApp->Visuals()->IsThirdperson() && m_bDrawOwnModel ||
+			!isLocalPlayer && m_bDrawOwnTeam && entityTeam == localTeam ||
 			entityTeam != localTeam))
 			continue;
 
-		bool isSpotted = *(bool*)((DWORD)pEntity + SPOTTED_OFFSET);
-		if (false && entityTeam == localTeam && !isSpotted) //todo: isSpotted
+		bool isSpotted = pEntity->IsSpotted();
+		if (!isSpotted && m_bDrawOnlySpotted)
 			continue;
 
 		Vector screenOrigin, screenHead;
 		Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
 		Vector origin = headPos;
 
-		D3DCOLOR color;
+		Color color;
 		if (entityTeam == CT_TEAMID)
 		{
-			color = D3DCOLOR_ARGB(200, 0, 0, 255);
+			color = Color(0, 0, 255);
 			headPos.z += 71;
 		}
 		else if (entityTeam == T_TEAMID)
 		{
-			color = D3DCOLOR_ARGB(200, 255, 0, 0);
+			color = Color(255, 0, 0);
 			headPos.z += 72;
 		}
 		else
@@ -68,153 +65,147 @@ void CEsp::Update(void* pParameters)
 
 		if (isSpotted)
 		{
-			color = D3DCOLOR_ARGB(200, 255, 255, 255);
+			color = Color(255, 255, 255);
 		}
 
-		int health = *(int*)((DWORD)pEntity + HEALTH_OFFSET);
+		int health = pEntity->Health();
 		if (health == 0)
 			continue;
 
-		DWORD flag = *(DWORD*)((DWORD)pEntity + JUMP_FLAG_OFFSET);
-		if (flag & IN_DUCK)
+		DWORD flags = pEntity->Flags();
+		if (flags & IN_DUCK)
 		{
 			headPos.z -= 17;
 		}
 
 		//todo: both interesting for knifebot
-		int armor = *(int*)((DWORD)pEntity + ARMOR_OFFSET);
-		bool hasHelmet = *(bool*)((DWORD)pEntity + HELMET_OFFSET);
+		int armor = pEntity->Armor();
+		bool hasHelmet = pEntity->HasHelmet();
 
 		if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
 		{
 			float height = abs(screenHead.y - screenOrigin.y);
 			float width = height * 0.65f;
 
-			if (EnableArmorbar && armor > 0) //todo: check if armorbar
+			if (m_bDrawArmorBar)
 			{
-				DrawArmorBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, armor);
-				m_DrawArmorbar = true;
+				DrawArmorBar(screenOrigin.x, screenOrigin.y, height, width, armor);
 			}
-			else
+			if (m_bDrawBoundingBox)
 			{
-				m_DrawArmorbar = false;
+				DrawBoundingBox(screenOrigin.x, screenOrigin.y, height, width, color);
 			}
-			if (true) //todo: check if bounding box
+			if (m_bDrawHealthBar)
 			{
-				DrawBoundingBox((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, color);
-			}
-			if (EnableHealthbar) //todo: check if healthbar
-			{
-				DrawHealthBar((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width, health);
+				DrawHealthBar(screenOrigin.x, screenOrigin.y, height, width, health);
 			}
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{
-				DrawHelmet((IDirect3DDevice9*)pParameters, screenOrigin.x, screenOrigin.y, height, width);
+				DrawHelmet(screenOrigin.x, screenOrigin.y, height, width);
 			}
 		}
 	}
 }
 
-void CEsp::DrawArmorBar(IDirect3DDevice9* pDevice, int posX, int posY, int height, int width, int armor)
+void CEsp::DrawArmorBar(int posX, int posY, int height, int width, int armor)
 {
 	float armorpercentage = (100 - armor) / 100.0f;
-	D3DRECT armorbackground = {
+
+	//background
+	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 7,
 		posY - height - 5,
 		posX - width / 2 - 3,
-		posY + 6 };
-	D3DRECT armorbar = {
+		posY + 6);
+	// actual armor
+	m_pApp->Surface()->DrawSetColor(255, 128, 128, 128);
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 7,
 		posY - (height - (height * armorpercentage)) - 5,
 		posX - width / 2 - 3,
-		posY + 6 };
-
-	pDevice->Clear(1, &armorbackground, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 0, 0, 0), 0, 0);
-	pDevice->Clear(1, &armorbar, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 128, 128, 128), 0, 0);
+		posY + 6);
 }
-void CEsp::DrawBoundingBox(IDirect3DDevice9* pDevice, int posX, int posY, int height, int width, D3DCOLOR color)
+void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color color)
 {
-	D3DRECT rightLineTop = {
+	m_pApp->Surface()->DrawSetColor(color);
+
+	//right line top and bottom
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 1,
 		posY - height - 5,
 		posX - width / 2 + 1,
-		posY - height - 5 + (width / 2 - width / 5) };
-	D3DRECT rightLineBottom = {
+		posY - height - 5 + (width / 2 - width / 5));
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 1,
 		posY + 6 - (width / 2 - width / 5),
 		posX - width / 2 + 1,
-		posY + 6 };
+		posY + 6);
 
-	D3DRECT leftLineTop = {
+	// left line top and bottom
+	m_pApp->Surface()->DrawFilledRect(
 		posX + width / 2 - 1,
 		posY - height - 5,
 		posX + width / 2 + 1,
-		posY - height - 5 + (width / 2 - width / 5) };
-	D3DRECT leftLineBottom = {
+		posY - height - 5 + (width / 2 - width / 5));
+	m_pApp->Surface()->DrawFilledRect(
 		posX + width / 2 - 1,
 		posY + 6 - (width / 2 - width / 5),
 		posX + width / 2 + 1,
-		posY + 6 };
+		posY + 6);
 
-	D3DRECT bottomLineLeft = {
+	// bottom line left and right
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 1,
 		posY + 4,
 		posX - width / 5,
-		posY + 6 };
-	D3DRECT bottomLineRight = {
+		posY + 6);
+	m_pApp->Surface()->DrawFilledRect(
 		posX + width / 5,
 		posY + 4,
 		posX + width / 2 + 1,
-		posY + 6 };
+		posY + 6);
 
-	D3DRECT topLineLeft = {
+	//top line left and right
+	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 1,
 		posY - height - 5,
 		posX - width / 5,
-		posY - height - 3 };
-	D3DRECT topLineRight = {
+		posY - height - 3);
+	m_pApp->Surface()->DrawFilledRect(
 		posX + width / 5,
 		posY - height - 5,
 		posX + width / 2 + 1,
-		posY - height - 3 };
-
-	pDevice->Clear(1, &rightLineTop, D3DCLEAR_TARGET, color, 0, 0);
-	pDevice->Clear(1, &rightLineBottom, D3DCLEAR_TARGET, color, 0, 0);
-
-	pDevice->Clear(1, &leftLineTop, D3DCLEAR_TARGET, color, 0, 0);
-	pDevice->Clear(1, &leftLineBottom, D3DCLEAR_TARGET, color, 0, 0);
-
-	pDevice->Clear(1, &bottomLineLeft, D3DCLEAR_TARGET, color, 0, 0);
-	pDevice->Clear(1, &bottomLineRight, D3DCLEAR_TARGET, color, 0, 0);
-
-	pDevice->Clear(1, &topLineLeft, D3DCLEAR_TARGET, color, 0, 0);
-	pDevice->Clear(1, &topLineRight, D3DCLEAR_TARGET, color, 0, 0);
+		posY - height - 3);
 }
-void CEsp::DrawHealthBar(IDirect3DDevice9* pDevice, int posX, int posY, int height, int width, int health)
+void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
 {
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2 - 7;
 	int x2 = posX - width / 2 - 3;
-	if (m_DrawArmorbar)
+	if (m_bDrawArmorBar)
 	{
 		x1 -= 6;
 		x2 -= 6;
 	}
-	D3DRECT healthbackground = {
+
+	//background
+	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+	m_pApp->Surface()->DrawFilledRect(
 		x1,
 		posY - height - 5,
 		x2,
-		posY + 6 };
-	D3DRECT healthbar = {
+		posY + 6);
+
+	// actual health
+	m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
+	m_pApp->Surface()->DrawFilledRect(
 		x1,
 		posY - (height - (height * healthpercentage)) - 5,
 		x2,
-		posY + 6 };
-
-	pDevice->Clear(1, &healthbackground, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 0, 0, 0), 0, 0);
-	pDevice->Clear(1, &healthbar, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 0, 255, 0), 0, 0);
+		posY + 6);
 }
-void CEsp::DrawHelmet(IDirect3DDevice9* pDevice, int posX, int posY, int height, int width)
+void CEsp::DrawHelmet(int posX, int posY, int height, int width)
 {
 	//todo: iwie symbol zeichnen oder sonst etwas
 	/*D3DRECT helmet = {

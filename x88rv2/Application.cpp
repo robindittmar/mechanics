@@ -87,15 +87,6 @@ HRESULT __stdcall CApplication::hk_EndScene(IDirect3DDevice9* device)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	IVEngineClient* pEngineClient = pApp->EngineClient();
-	if (pEngineClient->IsInGame())
-	{
-		// this needs to go into paintTraverse hook because of flickering because of multirendering
-		pApp->Esp()->Update(device);
-
-		pApp->Visuals()->NoFlash();
-	}
-
 	//CButton btn(100, 100);
 	//btn.Draw(device, 10, 10);
 	pApp->m_pWindow->Draw(device);
@@ -123,6 +114,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pApp->Visuals()->NoSmoke();
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
+
+			pApp->Visuals()->NoFlash();
 		}
 	}
 
@@ -162,12 +155,15 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
 	CApplication* pApp = CApplication::Instance();
 
-	static unsigned int vguiMatSystemTopPanel;
+	if (pApp->Misc()->NoScope(vguiPanel))
+		return;
 
+	static unsigned int vguiMatSystemTopPanel;
 	if (vguiMatSystemTopPanel == NULL)
 	{
+		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
 		const char* szName = pApp->Panel()->GetName(vguiPanel);
-		if (stricmp(szName, "MatSystemTopPanel") == 0)
+		if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
 		{
 			vguiMatSystemTopPanel = vguiPanel;
 		}
@@ -175,12 +171,9 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 	if (vguiMatSystemTopPanel == vguiPanel)
 	{
-		
-	}
+		pApp->Misc()->DrawNoScope();
 
-	if (!strcmp("HudZoom", pApp->Panel()->GetName(vguiPanel)))
-	{
-		return;
+		pApp->Esp()->Update();
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
@@ -243,38 +236,46 @@ void CApplication::Setup()
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(false);
+	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(false);
-	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
+	this->m_aimbot.IsSilentAim(true);
+	this->m_aimbot.TargetCriteria(TargetCriteriaOrigin);
 
-	// AA, Bhop, ESP
+	// AA, Bhop
 	this->m_antiAim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
+
+	// ESP
 	this->m_esp.IsEnabled(true);
+	this->m_esp.ShouldDrawBoundingBox(true);
+	this->m_esp.ShouldDrawHealthBar(true);
+	this->m_esp.ShouldDrawArmorBar(false);
+	this->m_esp.ShouldDrawOwnTeam(false);
+	this->m_esp.ShouldDrawOwnModel(true);
+	this->m_esp.ShouldDrawOnlySpotted(false);
 
 	// Misc
 	this->m_misc.IsEnabled(true);
 	this->m_misc.IsNoRecoil(true);
 	this->m_misc.IsFakelag(false);
 	this->m_misc.IsAutoStrafe(true);
-
+	this->m_misc.IsNoScope(true);
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
-	this->m_visuals.IsNoSmoke(false);
+	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
 
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.2f);
 
-	this->m_visuals.IsThirdperson(false);
+	this->m_visuals.IsThirdperson(true);
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
 	this->m_visuals.FovValue(105);
-	this->m_visuals.IsFovChangeScoped(false);
+	this->m_visuals.ShouldFovChangeScoped(true);
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {}

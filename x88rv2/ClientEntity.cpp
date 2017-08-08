@@ -44,7 +44,27 @@ void* IClientEntity::ActiveWeapon()
 	return (void*)pApp->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
 }
 
-float IClientEntity::GetVelocity()
+float IClientEntity::Velocity()
 {
 	return *(float*)((DWORD)this + OFFSET_VELOCITY);
+}
+
+bool IClientEntity::IsSpotted()
+{
+	return *(bool*)((DWORD)this + OFFSET_SPOTTED);
+}
+
+int IClientEntity::Armor()
+{
+	return *(int*)((DWORD)this + OFFSET_ARMOR);
+}
+
+bool IClientEntity::HasHelmet()
+{
+	return *(bool*)((DWORD)this + OFFSET_HELMET);
+}
+
+DWORD IClientEntity::MoveType()
+{
+	return *(DWORD*)((DWORD)this + OFFSET_MOVETYPE);
 }

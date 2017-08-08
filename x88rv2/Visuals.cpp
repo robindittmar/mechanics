@@ -70,7 +70,15 @@ void CVisuals::HandsDrawStyle(const char* pszModelName)
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
 
-		pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+		switch (m_tHandsDrawStyle)
+		{
+		case HandsDrawStyleNoHands:
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			break;
+		case HandsDrawStyleWireframe:
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
+				break;
+		}
 
 		this->m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
 	}
