@@ -137,6 +137,7 @@ public:
 	bool SetFontGlyphSet(unsigned int font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0);
 	unsigned int SCreateFont();
 	void DrawSetTextFont(unsigned int font);
+	void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall);
 };
 
 #endif // __ISURFACE_H__

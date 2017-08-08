@@ -10,7 +10,6 @@
 #define NULL 0
 
 class CAudioSource;
-class PlayerInfo;
 class client_textmessage_t;
 class CSentence;
 class SurfInfo;

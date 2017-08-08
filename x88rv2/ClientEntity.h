@@ -6,6 +6,8 @@
 #ifndef __CLIENTENTITY_H__
 #define __CLIENTENTITY_H__
 
+#include "PlayerInfo.h"
+
 #define OFFSET_HEALTH			0xFC
 #define OFFSET_TEAM				0xF0
 #define OFFSET_FLAGS			0x100
@@ -20,6 +22,7 @@
 #define OFFSET_MOVETYPE			0x258
 #define OFFSET_TICKBASE			0x3424
 #define OFFSET_SHOTSFIRED		0x0A2C0
+#define OFFSET_SPAWNPROTECTION	0x38B0
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -221,7 +224,7 @@ public:
 	virtual ICollideable*              GetCollideable() = 0;
 	virtual IClientNetworkable*        GetClientNetworkable() = 0;
 	virtual IClientRenderable*         GetClientRenderable() = 0;
-	virtual IClientEntity*			   GetIClientEntity() = 0;
+	virtual void*                      GetIClientEntity() = 0;
 	virtual C_BaseEntity*              GetBaseEntity() = 0;
 	virtual IClientThinkable*          GetClientThinkable() = 0;
 	//virtual IClientModelRenderable*  GetClientModelRenderable() = 0;
@@ -253,6 +256,8 @@ public:
 	DWORD MoveType();
 	int TickBase();
 	int ShotsFired();
+	PlayerInfo GetPlayerInfo();
+	bool IsInvincible();
 };
 
 #endif // __CLIENTENTITY_H__

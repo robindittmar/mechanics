@@ -11,7 +11,6 @@ class IClientEntity;
 class IMaterial;
 class model_t;
 class SurfInfo;
-class PlayerInfo;
 class client_textmessage_t;
 class CSentence;
 class CAudioSource;

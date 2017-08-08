@@ -78,3 +78,18 @@ int IClientEntity::ShotsFired()
 {
 	return *(int*)((DWORD)this + OFFSET_SHOTSFIRED);
 }
+
+PlayerInfo IClientEntity::GetPlayerInfo()
+{
+	CApplication* pApp = CApplication::Instance();
+
+	PlayerInfo pInfo;
+	pApp->EngineClient()->GetPlayerInfo(this->EntIndex(), &pInfo);
+
+	return pInfo;
+}
+
+bool IClientEntity::IsInvincible()
+{
+	return *(bool*)((DWORD)this + OFFSET_SPAWNPROTECTION);
+}

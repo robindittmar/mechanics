@@ -65,7 +65,7 @@ void CEsp::Update(void* pParameters)
 
 		if (isSpotted)
 		{
-			color = Color(255, 255, 255);
+			color = Color(255, 51, 255);
 		}
 
 		int health = pEntity->Health();
@@ -87,17 +87,22 @@ void CEsp::Update(void* pParameters)
 			float height = abs(screenHead.y - screenOrigin.y);
 			float width = height * 0.65f;
 
-			if (m_bDrawArmorBar)
-			{
-				DrawArmorBar(screenOrigin.x, screenOrigin.y, height, width, armor);
-			}
 			if (m_bDrawBoundingBox)
 			{
 				DrawBoundingBox(screenOrigin.x, screenOrigin.y, height, width, color);
 			}
+			if (m_bDrawNames)
+			{
+				DrawName(pEntity, screenOrigin.x, screenOrigin.y, height, width);
+			}
 			if (m_bDrawHealthBar)
 			{
 				DrawHealthBar(screenOrigin.x, screenOrigin.y, height, width, health);
+			}
+
+			if (m_bDrawArmorBar)
+			{
+				DrawArmorBar(screenOrigin.x, screenOrigin.y, height, width, armor);
 			}
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{
@@ -128,9 +133,60 @@ void CEsp::DrawArmorBar(int posX, int posY, int height, int width, int armor)
 }
 void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color color)
 {
-	m_pApp->Surface()->DrawSetColor(color);
+	if (this->m_bDrawOutline)
+	{
+		//left line top and bottom
+		m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+		m_pApp->Surface()->DrawFilledRect(
+			posX - width / 2 - 2,
+			posY - height - 6,
+			posX - width / 2 + 2,
+			posY - height - 4 + (width / 2 - width / 5));
+		m_pApp->Surface()->DrawFilledRect(
+			posX - width / 2 - 2,
+			posY + 5 - (width / 2 - width / 5),
+			posX - width / 2 + 2,
+			posY + 7);
 
-	//right line top and bottom
+		// left line top and bottom
+		m_pApp->Surface()->DrawFilledRect(
+			posX + width / 2 - 2,
+			posY - height - 6,
+			posX + width / 2 + 2,
+			posY - height - 4 + (width / 2 - width / 5));
+		m_pApp->Surface()->DrawFilledRect(
+			posX + width / 2 - 2,
+			posY + 5 - (width / 2 - width / 5),
+			posX + width / 2 + 2,
+			posY + 7);
+
+		// bottom line left and right
+		m_pApp->Surface()->DrawFilledRect(
+			posX - width / 2 - 2,
+			posY + 3,
+			posX - width / 5 + 1,
+			posY + 7);
+		m_pApp->Surface()->DrawFilledRect(
+			posX + width / 5 - 1,
+			posY + 3,
+			posX + width / 2 + 2,
+			posY + 7);
+
+		// top line left and right
+		m_pApp->Surface()->DrawFilledRect(
+			posX - width / 2 - 2,
+			posY - height - 6,
+			posX - width / 5 + 1,
+			posY - height - 2);
+		m_pApp->Surface()->DrawFilledRect(
+			posX + width / 5 - 1,
+			posY - height - 6,
+			posX + width / 2 + 2,
+			posY - height - 2);
+	}
+
+	m_pApp->Surface()->DrawSetColor(color);
+	//left line top and bottom
 	m_pApp->Surface()->DrawFilledRect(
 		posX - width / 2 - 1,
 		posY - height - 5,
@@ -181,8 +237,8 @@ void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color colo
 void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
 {
 	float healthpercentage = (100 - health) / 100.0f;
-	int x1 = posX - width / 2 - 7;
-	int x2 = posX - width / 2 - 3;
+	int x1 = posX - width / 2 - 8;
+	int x2 = posX - width / 2 - 4;
 	if (m_bDrawArmorBar)
 	{
 		x1 -= 6;
@@ -215,6 +271,26 @@ void CEsp::DrawHelmet(int posX, int posY, int height, int width)
 		posY - height - 1 };
 
 	pDevice->Clear(1, &helmet, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 83, 83, 83), 0, 0);*/
+}
+void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width) {
+	static unsigned long font = NULL;
+	if (font == NULL)
+	{
+		font = m_pApp->Surface()->SCreateFont();
+		m_pApp->Surface()->SetFontGlyphSet(font, "Arial Black", 12, 255, 0, 0, 0x200);
+	}
+	m_pApp->Surface()->DrawSetTextFont(font);
+
+	PlayerInfo pInfo = pEntity->GetPlayerInfo();
+	wchar_t name[256];
+	int iLen = pInfo.GetName(name, 256);
+
+	int w, h;
+	m_pApp->Surface()->GetTextSize(font, name, w, h);
+
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
+	m_pApp->Surface()->DrawPrintText(name, iLen);
 }
 
 

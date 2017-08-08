@@ -41,9 +41,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 		if (pLocalEntity->IsAlive())
 		{
-			float view_forward = 0;
-			float view_right = 10;
-
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
@@ -175,7 +172,6 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
 			pApp->Misc()->DrawNoScope();
-
 			pApp->Esp()->Update();
 		}
 	}
@@ -259,11 +255,13 @@ void CApplication::Setup()
 	// ESP
 	this->m_esp.IsEnabled(true);
 	this->m_esp.ShouldDrawBoundingBox(true);
+	this->m_esp.ShouldDrawNames(true);
 	this->m_esp.ShouldDrawHealthBar(true);
 	this->m_esp.ShouldDrawArmorBar(false);
 	this->m_esp.ShouldDrawOwnTeam(false);
 	this->m_esp.ShouldDrawOwnModel(true);
 	this->m_esp.ShouldDrawOnlySpotted(false);
+	this->m_esp.ShouldDrawOutline(true);
 
 	// Misc
 	this->m_misc.IsEnabled(true);
@@ -277,7 +275,7 @@ void CApplication::Setup()
 	this->m_visuals.IsEnabled(true);
 
 	this->m_visuals.IsNoSmoke(true);
-	this->m_visuals.HandsDrawStyle(HandsDrawStyleNoHands);
+	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
 
 	this->m_visuals.IsNoFlash(true);
