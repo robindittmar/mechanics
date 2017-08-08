@@ -22,7 +22,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
 	if (!m_bIsEnabled ||
 		!m_bNoRecoil ||
-		m_pApp->m_bAimbotNoRecoil ||
+		m_pApp->Aimbot()->DidNoRecoil() ||
 		!(pUserCmd->buttons & IN_ATTACK))
 	{
 		m_pApp->m_oldAimPunchAngle.x = 0;
@@ -38,7 +38,6 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	if (m_pApp->Aimbot()->DidNoRecoil())
 		return;
 
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	int shotsFired = pLocalEntity->ShotsFired();
 	if (m_pApp->Visuals()->IsNoVisualRecoil())
 	{

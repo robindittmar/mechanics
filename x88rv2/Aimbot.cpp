@@ -235,14 +235,16 @@ void CAimbot::Update(void* pParameters)
 	pUserCmd->viewangles[0] = aimAngles.x;
 	pUserCmd->viewangles[1] = aimAngles.y;
 
+	float fNextattack = pActiveWeapon->NextPrimaryAttack();
+	float fServertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
+
 	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 	{
 		if (this->m_bAutoscope)
 		{
 			if (pLocalEntity->IsScoped())
 			{
-				pUserCmd->buttons |= IN_ATTACK;
-				m_bIsShooting = true;
+				this->Shoot(pUserCmd, fNextattack, fServertime);
 			}
 			else
 			{
@@ -251,11 +253,18 @@ void CAimbot::Update(void* pParameters)
 		}
 		else
 		{
-			pUserCmd->buttons |= IN_ATTACK;
-			m_bIsShooting = true;
+			this->Shoot(pUserCmd, fNextattack, fServertime);
 		}
 	}
-	else if (this->m_bAutoshoot && !pActiveWeapon->IsPistol() && !pActiveWeapon->IsTaser())
+	else if (this->m_bAutoshoot && !pActiveWeapon->IsTaser())
+	{
+		this->Shoot(pUserCmd, fNextattack, fServertime);
+	}
+}
+
+void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
+{
+	if (fNextPrimaryAttack <= fServerTime)
 	{
 		pUserCmd->buttons |= IN_ATTACK;
 		m_bIsShooting = true;

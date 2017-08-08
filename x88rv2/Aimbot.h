@@ -3,6 +3,7 @@
 
 #include "Feature.h"
 #include "Vector.h"
+#include "UserCmd.h"
 
 // Defines how to choose the next target for the aimbot
 // -> Origin: Chooses the target that's standing closest to you
@@ -47,6 +48,7 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
+	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
 	QAngle CalcAngle(Vector& relativeDist);
 
 	float GetOriginDist(Vector& a, Vector& b);

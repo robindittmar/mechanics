@@ -141,6 +141,7 @@ public:
 	CInput* Input() { return m_pInput; }
 	IPanel* Panel() { return m_pPanel; }
 	ISurface* Surface() { return m_pSurface; }
+	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 
 	// DLL Addresses
 	DWORD ClientDll() {	return m_dwClientDll; }
@@ -166,8 +167,6 @@ public:
 
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
-	//bool m_bSetClientViewAngles;
-	//bool m_bAimbotNoRecoil;
 	bool* m_bSendPackets;
 	bool m_bGotSendPackets;
 
