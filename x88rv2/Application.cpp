@@ -288,7 +288,7 @@ void CApplication::Setup()
 	this->m_visuals.Crosshair(true);
 	this->m_visuals.Hitmarker(true);
 	this->m_visuals.IsNoSmoke(true);
-	this->m_visuals.HandsDrawStyle(HandsDrawStyleNoHands);
+	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
 
 	this->m_visuals.IsNoFlash(true);

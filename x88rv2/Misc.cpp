@@ -32,7 +32,8 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (activeWeapon->IsPistol() && !m_pApp->Visuals()->IsNoVisualRecoil()) //todo: maybe norecoil while pistol
+	if (activeWeapon->IsNade() ||
+		activeWeapon->IsPistol() && !m_pApp->Visuals()->IsNoVisualRecoil()) //todo: maybe norecoil while pistol
 		return;
 
 	if (m_pApp->Aimbot()->DidNoRecoil())
