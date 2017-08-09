@@ -34,14 +34,24 @@ void CPlayerHurtEventListener::FireGameEvent(IGameEvent *pEvent)
 		if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 			return;
 
-		// Headshot
-		if(hitgroup == 1) // ?
+		// Hitmarker (TODO: It probably should go into the Visuals class,
+		//			        but the hitmarker feature is depending on a few more hooks)
+		// TODO IMPORTANT: Probably should try to call the sound engine directly
+		if(pApp->Visuals()->Hitmarker())
 		{
-			// Hitmarker
-		}
-		if(dmg_health > 100)
-		{
-			pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
+			if (dmg_health > 100 && hitgroup == 1)
+			{
+				// say +1
+				//pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
+				pApp->EngineClient()->ExecuteClientCmd("play buttons/blip2.wav"); // TODO: Xor
+			}
+			else
+			{
+				pApp->EngineClient()->ExecuteClientCmd("play buttons/blip1.wav"); // TODO: Xor
+			}
+
+			// Draw hitmarker
+			pApp->Visuals()->TriggerHitmarker();
 		}
 	}
 }
@@ -83,7 +93,7 @@ void CPlayerDeathEventListener::FireGameEvent(IGameEvent *pEvent)
 		if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 			return;
 
-		bool sayTaunt = true;
+		bool sayTaunt = false;
 		if (headshot && sayTaunt)
 		{
 			pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
@@ -121,7 +131,7 @@ void CRoundStartEventListener::FireGameEvent(IGameEvent *pEvent)
 		uint64 fraglimit = pEvent->GetUint64(strFraglimit.ToCharArray());
 		const char* objective = pEvent->GetString(strObjective.ToCharArray());
 
-		bool roundSay = true;
+		bool roundSay = false;
 		if (roundSay)
 		{
 			pApp->EngineClient()->ClientCmd(CXorString("djüâ)+õ­`n÷§s+ç»7s½úe}·").ToCharArray());

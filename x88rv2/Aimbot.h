@@ -15,6 +15,12 @@ enum TargetCriteria_t
 	TargetCriteriaViewangle			= 2
 };
 
+struct AimbotUpdateParam
+{
+	float fInputSampleTime;
+	CUserCmd* pUserCmd;
+};
+
 class CAimbot : public IFeature
 {
 public:

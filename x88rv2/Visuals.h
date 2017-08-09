@@ -5,6 +5,8 @@
 
 #define OFFSET_DEADFLAG 0x31C4
 
+#define HITMARKER_DEFAULT_TIME	0.5f
+
 enum HandsDrawStyles_t {
 	HandsDrawStyleNone,
 	HandsDrawStyleNoHands,
@@ -18,35 +20,50 @@ public:
 	CVisuals();
 	~CVisuals();
 
-	void IsNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; };
-	bool IsNoFlash() { return m_bNoFlash; };
-	void NoFlashPercentage(int iNoFlashPercentage) { m_iNoFlashPercentage = iNoFlashPercentage; };
-	int NoFlashPercentage() { return m_iNoFlashPercentage; };
+	void Crosshair(bool bCrosshair) { m_bCrosshair = bCrosshair; }
+	bool Crosshair() { return m_bCrosshair; }
 
-	void IsNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; };
-	bool IsNoSmoke() { return m_bNoSmoke; };
+	void Hitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
+	bool Hitmarker() { return m_bHitmarker; }
 
-	void HandsDrawStyle(HandsDrawStyles_t tHandsDrawStyle) { m_tHandsDrawStyle = tHandsDrawStyle; };
-	HandsDrawStyles_t HandsDrawStyle() { return m_tHandsDrawStyle; };
+	void TriggerHitmarker(float fTime = HITMARKER_DEFAULT_TIME) { m_fDrawHitmarker = fTime; }
+	void UpdateHitmarker(float fInputSampleTime) {
+		m_fDrawHitmarker -= fInputSampleTime;
+		if (m_fDrawHitmarker < 0.0f)
+			m_fDrawHitmarker = 0.0f;
+	}
 
-	void IsNoVisualRecoil(bool bNoVisualRecoil) { m_bNoVisualRecoil = bNoVisualRecoil; };
-	bool IsNoVisualRecoil() { return m_bNoVisualRecoil; };
+	void IsNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; }
+	bool IsNoFlash() { return m_bNoFlash; }
+	void NoFlashPercentage(int iNoFlashPercentage) { m_iNoFlashPercentage = iNoFlashPercentage; }
+	int NoFlashPercentage() { return m_iNoFlashPercentage; }
 
-	void IsThirdperson(bool bThirdperson) { m_bThirdperson = bThirdperson; };
-	bool IsThirdperson() { return m_bThirdperson; };
-	void ThirdpersonValue(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; };
-	int ThirdpersonValue() { return m_iThirdpersonValue; };
+	void IsNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
+	bool IsNoSmoke() { return m_bNoSmoke; }
 
-	void IsFovChange(int bFovChange) { m_bFovChange = bFovChange; };
-	int IsFovChange() { return m_bFovChange; };
-	void ShouldFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; };
-	int ShouldFovChangeScoped() { return m_bFovChangeScoped; };
-	void FovValue(int iFovValue) { m_iFovValue = iFovValue; };
-	int FovValue() { return m_iFovValue; };
+	void HandsDrawStyle(HandsDrawStyles_t tHandsDrawStyle) { m_tHandsDrawStyle = tHandsDrawStyle; }
+	HandsDrawStyles_t HandsDrawStyle() { return m_tHandsDrawStyle; }
+
+	void IsNoVisualRecoil(bool bNoVisualRecoil) { m_bNoVisualRecoil = bNoVisualRecoil; }
+	bool IsNoVisualRecoil() { return m_bNoVisualRecoil; }
+
+	void IsThirdperson(bool bThirdperson) { m_bThirdperson = bThirdperson; }
+	bool IsThirdperson() { return m_bThirdperson; }
+	void ThirdpersonValue(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; }
+	int ThirdpersonValue() { return m_iThirdpersonValue; }
+
+	void IsFovChange(int bFovChange) { m_bFovChange = bFovChange; }
+	int IsFovChange() { return m_bFovChange; }
+	void ShouldFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; }
+	int ShouldFovChangeScoped() { return m_bFovChangeScoped; }
+	void FovValue(int iFovValue) { m_iFovValue = iFovValue; }
+	int FovValue() { return m_iFovValue; }
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
+	void DrawCrosshair();
+	void DrawHitmarker();
 	void NoFlash();
 	void NoSmoke();
 	void HandsDrawStyle(const char*);
@@ -55,6 +72,14 @@ public:
 	void ThirdpersonAntiAim();
 	void FovChange(CViewSetup*);
 private:
+	int m_iSurfaceWidth;
+	int m_iSurfaceHeight;
+
+	bool m_bCrosshair;
+
+	bool m_bHitmarker;
+	float m_fDrawHitmarker;
+
 	bool m_bNoFlash;
 	float m_iNoFlashPercentage;
 

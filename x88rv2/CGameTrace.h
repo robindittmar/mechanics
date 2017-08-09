@@ -68,7 +68,7 @@ public:
 	bool DidHitNonWorldEntity() const;
 	int GetEntityIndex() const;
 	bool DidHit() const;
-	bool IsVisible() const;
+	bool IsVisible(IClientEntity* pTarget) const;
 
 public:
 
@@ -131,9 +131,9 @@ inline bool CGameTrace::DidHit() const
 	return fraction < 1 || allsolid || startsolid;
 }
 
-inline bool CGameTrace::IsVisible() const
+inline bool CGameTrace::IsVisible(IClientEntity* pTarget) const
 {
-	return fraction > 0.97f;
+	return ((fraction > 0.97f) || (hit_entity == pTarget));
 }
 
 #endif // __CGAMETRACE_H__

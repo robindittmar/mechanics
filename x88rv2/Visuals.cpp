@@ -3,6 +3,7 @@
 
 CVisuals::CVisuals()
 {
+	m_bCrosshair = false;
 }
 
 CVisuals::~CVisuals()
@@ -12,12 +13,52 @@ CVisuals::~CVisuals()
 void CVisuals::Setup()
 {
 	m_pApp = CApplication::Instance();
+	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
 }
 
 void CVisuals::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;
+}
+
+void CVisuals::DrawCrosshair()
+{
+	const int crosshair_size = 20;
+
+	int iMidX = m_iSurfaceWidth / 2;
+	int iMidY = m_iSurfaceHeight / 2;
+
+	ISurface* pSurface = m_pApp->Surface();
+
+	// Outer lines
+	pSurface->DrawSetColor(255, 255, 255, 255);
+	pSurface->DrawLine(iMidX - crosshair_size, iMidY, iMidX + crosshair_size, iMidY);
+	pSurface->DrawLine(iMidX, iMidY - crosshair_size, iMidX, iMidY + crosshair_size);
+
+	// Inner crosshair
+	pSurface->DrawSetColor(255, 255, 0, 0);
+	pSurface->DrawLine(iMidX - (crosshair_size / 2), iMidY, iMidX + (crosshair_size / 2), iMidY);
+	pSurface->DrawLine(iMidX , iMidY - (crosshair_size / 2), iMidX, iMidY + (crosshair_size / 2));
+}
+
+void CVisuals::DrawHitmarker()
+{
+	const int hitmarker_gap = 10;
+	const int hitmarker_size = 10;
+
+	if(m_fDrawHitmarker > 0.0f && m_bHitmarker)
+	{
+		int iMidX = m_iSurfaceWidth / 2;
+		int iMidY = m_iSurfaceHeight / 2;
+
+		ISurface* pSurface = m_pApp->Surface();
+		pSurface->DrawSetColor(255, 255, 255, 255);
+		pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY - hitmarker_gap); // Top left
+		pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY + hitmarker_gap); // Bottom left
+		pSurface->DrawLine(iMidX + hitmarker_gap, iMidY - hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size)); // Top right
+		pSurface->DrawLine(iMidX + hitmarker_gap, iMidY + hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size)); // Bottom right
+	}
 }
 
 void CVisuals::NoFlash()

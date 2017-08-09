@@ -47,6 +47,8 @@ void CAimbot::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	AimbotUpdateParam* pParam = (AimbotUpdateParam*)pParameters;
+
 	// TODO
 	//*m_pApp->m_bSendPackets = true;
 	m_bIsShooting = false;
@@ -60,7 +62,7 @@ void CAimbot::Update(void* pParameters)
 	IClientEntity* pLocalEntity = pEntityList->GetClientEntity(iLocalPlayerIdx);
 	IClientEntity* pCurEntity;
 	QAngle qAimAngles, qLocalViewAngles = m_pApp->ClientViewAngles();
-	CUserCmd* pUserCmd = (CUserCmd*)pParameters;
+	CUserCmd* pUserCmd = pParam->pUserCmd;
 
 	if (!pUserCmd)
 		return;
@@ -79,7 +81,7 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	// Get position + add relative eye position
-	Vector myHeadPos = *pLocalEntity->Origin();
+	Vector myHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * pParam->fInputSampleTime);
 	myHeadPos += *pLocalEntity->EyeOffset();
 	int localTeam = pLocalEntity->TeamNum();
 
@@ -141,10 +143,14 @@ void CAimbot::Update(void* pParameters)
 		headPos.y = boneMatrix->c[1][3];
 		headPos.z = boneMatrix->c[2][3];
 
+		// TODO: PREDICTION
+		headPos += (*pCurEntity->Velocity() * pParam->fInputSampleTime);
+		// TODO: PREDICTION
+
 		// IsVisible check
 		ray.Init(myHeadPos, headPos);
 		m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
-		if (!trace.IsVisible())
+		if (!trace.IsVisible(pCurEntity))
 			continue;
 		/*if (trace.fraction < 0.7f || trace.fraction > 0.97f)
 			continue;*/
@@ -175,7 +181,7 @@ void CAimbot::Update(void* pParameters)
 
 			// Calculate our fov to the enemy
 			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist));
-			// Max FOV
+			// TODO: GetViewangleDist doesn't return a nice FOV, as it doesn't take fOriginDist into account (RIGHT NOW!)
 			if (fViewangleDist > m_fFov)
 			{
 				continue;
@@ -302,5 +308,7 @@ float CAimbot::GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance)
 	qDist.Normalize();
 	float fAng = qDist.Length();
 
-	return (sinf(DEG2RAD(fAng)) * fOriginDistance);
+	// Causes weird angles to have giant "fovs"
+	//return (sinf(DEG2RAD(fAng)) * fOriginDistance);
+	return fAng;
 }

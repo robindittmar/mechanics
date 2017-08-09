@@ -44,9 +44,9 @@ void* IClientEntity::ActiveWeapon()
 	return (void*)pApp->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
 }
 
-float IClientEntity::Velocity()
+Vector* IClientEntity::Velocity()
 {
-	return *(float*)((DWORD)this + OFFSET_VELOCITY);
+	return (Vector*)((DWORD)this + OFFSET_VELOCITY);
 }
 
 bool IClientEntity::IsSpotted()

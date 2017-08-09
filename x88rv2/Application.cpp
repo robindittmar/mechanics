@@ -45,10 +45,14 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			QAngle qOldAngles = pApp->ClientViewAngles();
 
 			// Update Aimbot
-			pApp->Aimbot()->Update(pUserCmd);
+			AimbotUpdateParam aimBotParam = { fInputSampleTime, pUserCmd };
+			pApp->Aimbot()->Update((void*)&aimBotParam);
 
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
+
+			// Update timer for hitmarker
+			pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
 
 			// Update NoRecoil & AutoPistol
 			pApp->Misc()->NoRecoil(pUserCmd);
@@ -171,6 +175,11 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 		{
 			pApp->Misc()->DrawNoScope();
 			pApp->Esp()->Update();
+
+			pApp->Visuals()->DrawHitmarker();
+
+			// Draw Crosshair last (always on top)
+			pApp->Visuals()->DrawCrosshair();
 		}
 	}
 
@@ -245,13 +254,13 @@ void CApplication::Setup()
 	this->m_aimbot.IsEnabled(true);
 	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(false);
+	this->m_aimbot.IsSilentAim(true);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 	this->m_aimbot.Speed(1.0f);
 	this->m_aimbot.Fov(360.0f);
 
 	// AA, Bhop
-	this->m_antiAim.IsEnabled(true);
+	this->m_antiAim.IsEnabled(false);
 	this->m_bhop.IsEnabled(true);
 
 	// ESP
@@ -276,6 +285,8 @@ void CApplication::Setup()
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
+	this->m_visuals.Crosshair(true);
+	this->m_visuals.Hitmarker(true);
 	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleNoHands);
 	this->m_visuals.IsNoVisualRecoil(true);

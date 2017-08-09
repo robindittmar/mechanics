@@ -249,7 +249,7 @@ public:
 	Vector* EyeOffset();
 	bool IsScoped();
 	void* ActiveWeapon();
-	float Velocity();
+	Vector* Velocity();
 	bool IsSpotted();
 	int Armor();
 	bool HasHelmet();
