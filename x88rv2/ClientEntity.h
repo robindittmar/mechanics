@@ -258,6 +258,7 @@ public:
 	int ShotsFired();
 	PlayerInfo GetPlayerInfo();
 	bool IsInvincible();
+	IClientEntity* ObserverTarget();
 };
 
 #endif // __CLIENTENTITY_H__

@@ -41,7 +41,7 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { PitchDown, YawStaticJitterBackwards };
+	AntiAim aa = { PitchDown, YawBackwards };
 	QAngle angles = m_pApp->ClientViewAngles();
 
 	// Pitch

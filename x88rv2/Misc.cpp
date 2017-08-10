@@ -58,17 +58,6 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
 	}
-
-	if (!m_pApp->Misc()->IsAutoPistol() && activeWeapon->IsPistol()) //todo: maybe norecoil while pistol
-		return;
-
-	float nextattack = activeWeapon->NextPrimaryAttack();
-	float servertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
-	if (nextattack > servertime)
-	{
-		pUserCmd->buttons &= ~IN_ATTACK;
-		return;
-	}
 }
 
 //todo: check if works properly and not to many packets choked
@@ -161,4 +150,147 @@ bool CMisc::NoScope(unsigned int vguiPanel)
 	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
 		return true;
 	return false;
+}
+
+void CMisc::AutoPistol(CUserCmd* pUserCmd)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bAutoPistol)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+
+	if (!activeWeapon->IsPistol())
+		return;
+
+	float nextattack = activeWeapon->NextPrimaryAttack();
+	float servertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
+	if (nextattack > servertime)
+	{
+		pUserCmd->buttons &= ~IN_ATTACK;
+		return;
+	}
+}
+
+void CMisc::SpectatorList()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bSpectators)
+		return;
+
+	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	PlayerInfo pLocalInfo = pLocalEntity->GetPlayerInfo();
+	wchar_t pLocalName[256];
+	int iLocalNameLen = pLocalInfo.GetName(pLocalName, 256);
+
+	int count = 0;
+	Observers m_Observers[64];
+	//m_Observers = GetObservators(localEntity->EntIndex());
+
+	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
+	{
+		IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
+
+		if (!pEntity)
+			continue;
+
+		if (pEntity == pLocalEntity)
+			continue;
+
+		if (pEntity->IsAlive())
+			continue;
+
+		if (pEntity->IsDormant())
+			continue;
+
+		PlayerInfo pEntityInfo = pEntity->GetPlayerInfo();
+		if (pEntityInfo.ishltv)
+			continue;
+
+		IClientEntity* pObserverTarget = pEntity->ObserverTarget(); //todo: crashes
+
+		if (!pObserverTarget)
+			continue;
+
+		if (m_bOnlyMySpectators && pObserverTarget != pLocalEntity)
+			continue;
+
+		m_Observers[count++] = Observers(pEntity->EntIndex(), pObserverTarget->EntIndex());
+	}
+
+
+	static int width, height;
+	m_pApp->EngineClient()->GetScreenSize(width, height);
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+
+	static unsigned long fontHeader = NULL;
+	if (fontHeader == NULL)
+	{
+		fontHeader = m_pApp->Surface()->SCreateFont();
+		m_pApp->Surface()->SetFontGlyphSet(fontHeader, "Arial Black", 13, 255, 0, 0, 0x200);
+	}
+	m_pApp->Surface()->DrawSetTextFont(fontHeader);
+	int wHeader, hHeader;
+	m_pApp->Surface()->GetTextSize(fontHeader, L"Spectator List:", wHeader, hHeader);
+	m_pApp->Surface()->DrawSetTextPos(10, height / 2 - hHeader + 3);
+	m_pApp->Surface()->DrawPrintText(L"Spectator List:", lstrlenW(L"Spectator List"));
+
+	for (int i = 0; i < (sizeof(m_Observers) / sizeof(m_Observers[0])); i++)
+	{
+		if (m_Observers[i].Observer == NULL)
+			break;
+
+		// Drawing list
+		static unsigned long fontSpecList = NULL;
+		if (fontSpecList == NULL)
+		{
+			fontSpecList = m_pApp->Surface()->SCreateFont();
+			m_pApp->Surface()->SetFontGlyphSet(fontSpecList, "Arial", 12, 255, 0, 0, 0x200);
+		}
+		m_pApp->Surface()->DrawSetTextFont(fontSpecList);
+
+		IClientEntity* observer = m_pApp->EntityList()->GetClientEntity(m_Observers[i].Observer);
+		IClientEntity* observing = m_pApp->EntityList()->GetClientEntity(m_Observers[i].Observing);
+
+		if (observer && observing)
+		{
+			PlayerInfo infoObserver = observer->GetPlayerInfo();
+			PlayerInfo infoObserving = observing->GetPlayerInfo();
+
+			wchar_t observerName[256];
+			int lenObserver = infoObserver.GetName(observerName, 256);
+			wchar_t observingName[256];
+			int lenObserving = infoObserving.GetName(observingName, 256);
+
+			wchar_t text[5] = L" -> ";
+			wchar_t end[256];
+
+			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+			if (wcscmp(observingName, pLocalName) == 0 && !m_bOnlyMySpectators)
+			{
+				wcscpy(end, observerName);
+				wcscat(end, text);
+				wcscat(end, observingName);
+
+				m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+			}
+			else
+			{
+				wcscpy(end, observerName);
+			}
+			int len = lstrlenW(end);
+
+
+			int w, h;
+			m_pApp->Surface()->GetTextSize(fontSpecList, observerName, w, h);
+
+			m_pApp->Surface()->DrawSetTextPos(10, height / 2 + i * h);
+			m_pApp->Surface()->DrawPrintText(end, len);
+		}
+	}
 }

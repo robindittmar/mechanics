@@ -3,12 +3,25 @@
 
 #include "Feature.h"
 
-#define NOFLASH_OFFSET 0xA304
+#define OFFSET_NOFLASH 0xA304
+#define OFFSET_OBSERVER 0x3380
 
 #define MAXPACKETSCHOKED 16
 
 class CApplication;
 class CUserCmd;
+
+struct Observers
+{
+	int Observer, Observing;
+
+	Observers() {};
+	Observers(int ObserverEntNum, int ObservingEntNum)
+	{
+		this->Observer = ObserverEntNum;
+		this->Observing = ObservingEntNum;
+	}
+};
 
 class CMisc : public IFeature
 {
@@ -31,6 +44,12 @@ public:
 	void IsAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
 	bool IsAutoPistol() { return m_bAutoPistol; };
 
+	void ShowSpectators(bool bSpectators) { m_bSpectators = bSpectators; };
+	bool ShowSpectators() { return m_bSpectators; };
+
+	void ShowOnlyMySpectators(bool bOnlyMySpectators) { m_bOnlyMySpectators = bOnlyMySpectators; };
+	bool ShowOnlyMySpectators() { return m_bOnlyMySpectators; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -39,12 +58,16 @@ public:
 	void AutoStrafe(CUserCmd*);
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
+	void AutoPistol(CUserCmd*);
+	void SpectatorList();
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
 	bool m_bAutoStrafe;
 	bool m_bNoScope;
 	bool m_bAutoPistol;
+	bool m_bSpectators;
+	bool m_bOnlyMySpectators;
 };
 
 

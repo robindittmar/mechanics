@@ -70,7 +70,7 @@ void CVisuals::NoFlash()
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + NOFLASH_OFFSET) = 255.0f - (255.0f * (1.0f - m_iNoFlashPercentage));
+	*(float*)((DWORD)pLocalEntity + OFFSET_NOFLASH) = 255.0f - (255.0f * (1.0f - m_iNoFlashPercentage));
 }
 
 void CVisuals::NoSmoke()

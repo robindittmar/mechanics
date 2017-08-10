@@ -93,3 +93,10 @@ bool IClientEntity::IsInvincible()
 {
 	return *(bool*)((DWORD)this + OFFSET_SPAWNPROTECTION);
 }
+
+IClientEntity* IClientEntity::ObserverTarget()
+{
+	CApplication* pApp = CApplication::Instance();
+
+	return pApp->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)this + OFFSET_OBSERVER)); // todo: crashes...
+}

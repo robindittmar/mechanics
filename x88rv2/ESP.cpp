@@ -28,6 +28,7 @@ void CEsp::Update(void* pParameters)
 
 		if (!pEntity)
 			continue;
+
 		if (pEntity->IsDormant())
 			continue;
 
@@ -36,7 +37,8 @@ void CEsp::Update(void* pParameters)
 
 		if (!(isLocalPlayer && m_pApp->Visuals()->IsThirdperson() && m_bDrawOwnModel ||
 			!isLocalPlayer && m_bDrawOwnTeam && entityTeam == localTeam ||
-			entityTeam != localTeam))
+			entityTeam != localTeam) ||
+			entityTeam == 0)
 			continue;
 
 		bool isSpotted = pEntity->IsSpotted();
@@ -277,7 +279,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	if (font == NULL)
 	{
 		font = m_pApp->Surface()->SCreateFont();
-		m_pApp->Surface()->SetFontGlyphSet(font, "Arial Black", 12, 255, 0, 0, 0x200);
+		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
 	}
 	m_pApp->Surface()->DrawSetTextFont(font);
 

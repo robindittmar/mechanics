@@ -55,6 +55,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
 
 			// Update NoRecoil & AutoPistol
+			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
 			// Update Fakelag
 			pApp->Misc()->Fakelag(pUserCmd);
@@ -173,9 +174,14 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
+			// Draw NoScope & SpecList
 			pApp->Misc()->DrawNoScope();
+			pApp->Misc()->SpectatorList();
+
+			// Draw Esp
 			pApp->Esp()->Update();
 
+			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
 
 			// Draw Crosshair last (always on top)
@@ -260,7 +266,7 @@ void CApplication::Setup()
 	this->m_aimbot.Fov(360.0f);
 
 	// AA, Bhop
-	this->m_antiAim.IsEnabled(false);
+	this->m_antiAim.IsEnabled(true);
 	this->m_bhop.IsEnabled(true);
 
 	// ESP
@@ -281,6 +287,8 @@ void CApplication::Setup()
 	this->m_misc.IsAutoStrafe(true);
 	this->m_misc.IsNoScope(true);
 	this->m_misc.IsAutoPistol(true);
+	this->m_misc.ShowSpectators(false);
+	this->m_misc.ShowOnlyMySpectators(false);
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
@@ -292,14 +300,14 @@ void CApplication::Setup()
 	this->m_visuals.IsNoVisualRecoil(true);
 
 	this->m_visuals.IsNoFlash(true);
-	this->m_visuals.NoFlashPercentage(0.2f);
+	this->m_visuals.NoFlashPercentage(0.f);
 
 	this->m_visuals.IsThirdperson(false);
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
 	this->m_visuals.FovValue(110);
-	this->m_visuals.ShouldFovChangeScoped(true);
+	this->m_visuals.ShouldFovChangeScoped(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_cPlayerHurtListener, player_hurt.ToCharArray(), false);

@@ -139,7 +139,7 @@ public:
 	IVModelInfo* ModelInfo() { return m_pModelInfo; }
 	IVModelRender* ModelRender() { return m_pModelRender; }
 	IEngineTrace* EngineTrace() { return m_pEngineTrace; }
-	IMaterialSystem* MaterialSystem() {	return m_pMaterialSystem; }
+	IMaterialSystem* MaterialSystem() { return m_pMaterialSystem; }
 	CInput* Input() { return m_pInput; }
 	IPanel* Panel() { return m_pPanel; }
 	ISurface* Surface() { return m_pSurface; }
@@ -147,18 +147,18 @@ public:
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 
 	// DLL Addresses
-	DWORD ClientDll() {	return m_dwClientDll; }
-	DWORD EngineDll() {	return m_dwEngineDll; }
-	DWORD MaterialSystemDll() {	return m_dwMaterialSystemDll; }
+	DWORD ClientDll() { return m_dwClientDll; }
+	DWORD EngineDll() { return m_dwEngineDll; }
+	DWORD MaterialSystemDll() { return m_dwMaterialSystemDll; }
 	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
-	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll;	}
+	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll; }
 
 	// Features
-	CAimbot* Aimbot() {	return (CAimbot*)&m_aimbot; }
-	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim;	}
-	CBhop* Bhop() {	return (CBhop*)&m_bhop;	}
+	CAimbot* Aimbot() { return (CAimbot*)&m_aimbot; }
+	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim; }
+	CBhop* Bhop() { return (CBhop*)&m_bhop; }
 	CEsp* Esp() { return (CEsp*)&m_esp; }
-	CMisc* Misc() {	return (CMisc*)&m_misc; }
+	CMisc* Misc() { return (CMisc*)&m_misc; }
 	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
 
 	// Client ViewAngles
@@ -166,7 +166,7 @@ public:
 	void ClientViewAngles(QAngle& q) { m_qClientViewAngles = q; }
 
 	// Viewangles of last tick
-	QAngle LastTickAngles() { return m_qLastTickAngles;	}
+	QAngle LastTickAngles() { return m_qLastTickAngles; }
 
 	QAngle m_oldAimPunchAngle;
 	QAngle m_viewAngle;
