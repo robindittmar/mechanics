@@ -41,8 +41,16 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { PitchDown, YawBackwards };
-	QAngle angles = m_pApp->ClientViewAngles();
+	AntiAim aa = { PitchDown, YawBackwardsFakeRight };
+	QAngle angles;
+	if(m_pApp->Aimbot()->HasTarget())
+	{
+		angles = *m_pApp->Aimbot()->GetAimAngles();
+	}
+	else
+	{
+		angles = m_pApp->ClientViewAngles();
+	}
 
 	// Pitch
 	switch (aa.pitchAA)
@@ -58,6 +66,7 @@ void CAntiAim::Update(void* pParameters)
 	}
 
 	// Yaw
+	static bool bSendPacketsToggle = true;
 	static float trigger = 0.0f;
 	switch (aa.yawAA)
 	{
@@ -73,6 +82,21 @@ void CAntiAim::Update(void* pParameters)
 		if (trigger > 100.0f)
 		{
 			trigger = 0.0f;
+		}
+		break;
+	case YawBackwardsFakeRight:
+		if(m_pApp->m_bGotSendPackets)
+		{
+			if(bSendPacketsToggle)
+			{
+				angles.y -= 90.0f;
+			}
+			else
+			{
+				angles.y -= 180.0f;
+			}
+			*m_pApp->m_bSendPackets = bSendPacketsToggle;
+			bSendPacketsToggle = !bSendPacketsToggle;
 		}
 		break;
 	}

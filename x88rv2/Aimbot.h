@@ -27,11 +27,15 @@ public:
 	CAimbot();
 	~CAimbot();
 
+	// Returns wether or not the Aimbot has got a target
+	bool HasTarget() { return m_bHasTarget; }
+	// Returns the Aim angles for the current tick
+	QAngle* GetAimAngles() { return &m_qAimAngles; }
 	// Returns wether or not the Aimbot will shoot in this tick
 	bool IsShooting() { return m_bIsShooting; }
 	// Returns wether or not the aimbot compensated for recoil
 	bool DidNoRecoil() { return m_bDidNoRecoil; }
-
+	
 	void IsAutoshoot(bool bAutoshoot) { m_bAutoshoot = bAutoshoot; }
 	bool IsAutoshoot() { return m_bAutoshoot; }
 
@@ -62,9 +66,12 @@ private:
 	float GetOriginDist(Vector& a, Vector& b);
 	float GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance);
 
+	bool m_bHasTarget;
+	QAngle m_qAimAngles;
+
 	bool m_bIsShooting;
 	bool m_bDidNoRecoil;
-
+	
 	bool m_bAutoshoot;
 	bool m_bAutoscope;
 	bool m_bSilentAim;

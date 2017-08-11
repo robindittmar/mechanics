@@ -51,6 +51,7 @@ void CAimbot::Update(void* pParameters)
 
 	// TODO
 	//*m_pApp->m_bSendPackets = true;
+	m_bHasTarget = false;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
 
@@ -71,14 +72,14 @@ void CAimbot::Update(void* pParameters)
 		return;
 
 	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (pActiveWeapon->IsKnife() ||
+	if (//pActiveWeapon->IsKnife() ||
 		pActiveWeapon->IsNade() ||
 		pActiveWeapon->IsC4() ||
 		pActiveWeapon->Clip1() == 0)
 		return;
-
-	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
-		return;
+	// TODO: This has moved below finding a target
+	/*if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+		return;*/
 
 	// Get position + add relative eye position
 	Vector myHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * pParam->fInputSampleTime);
@@ -88,7 +89,6 @@ void CAimbot::Update(void* pParameters)
 	Vector targetPos;
 	QAngle targetAngles;
 
-	QAngle aimAngles;
 	Ray_t ray;
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
@@ -177,10 +177,10 @@ void CAimbot::Update(void* pParameters)
 			// Relative position
 			headPos -= myHeadPos;
 			// Calc angle
-			aimAngles = this->CalcAngle(headPos);
+			m_qAimAngles = this->CalcAngle(headPos);
 
 			// Calculate our fov to the enemy
-			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, aimAngles, fOriginDist));
+			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles, fOriginDist));
 			// TODO: GetViewangleDist doesn't return a nice FOV, as it doesn't take fOriginDist into account (RIGHT NOW!)
 			if (fViewangleDist > m_fFov)
 			{
@@ -191,7 +191,7 @@ void CAimbot::Update(void* pParameters)
 				fLowestDist = fViewangleDist;
 
 				iSelectedEntity = i;
-				targetAngles = aimAngles;
+				targetAngles = m_qAimAngles;
 
 				continue;
 			}
@@ -210,23 +210,28 @@ void CAimbot::Update(void* pParameters)
 	if (iSelectedEntity == -1)
 		return;
 
+	m_bHasTarget = true;
+
+	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+		return;
+
 	if (m_tTargetCriteria != TargetCriteriaViewangle)
 	{
 		// Get relative position to ourselves
 		targetPos -= myHeadPos;
 
 		// Calculate our viewangles to aim at the enemy
-		aimAngles = this->CalcAngle(targetPos);
+		m_qAimAngles = this->CalcAngle(targetPos);
 	}
 	else
 	{
-		aimAngles = targetAngles;
+		m_qAimAngles = targetAngles;
 	}
 
 	// Set ClientViewAngles if we don't have silentaim activated
 	if (!this->m_bSilentAim)
 	{
-		m_pApp->ClientViewAngles(aimAngles);
+		m_pApp->ClientViewAngles(m_qAimAngles);
 	}
 
 	// If we have no recoil activated in the aimbot, do it
@@ -234,8 +239,8 @@ void CAimbot::Update(void* pParameters)
 	if(m_bDoNoRecoil)
 	{
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-		aimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
-		aimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
+		m_qAimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
+		m_qAimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
 
 		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
@@ -243,8 +248,8 @@ void CAimbot::Update(void* pParameters)
 		m_bDidNoRecoil = true;
 	}
 
-	pUserCmd->viewangles[0] = aimAngles.x;
-	pUserCmd->viewangles[1] = aimAngles.y;
+	pUserCmd->viewangles[0] = m_qAimAngles.x;
+	pUserCmd->viewangles[1] = m_qAimAngles.y;
 
 	float fNextattack = pActiveWeapon->NextPrimaryAttack();
 	float fServertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;

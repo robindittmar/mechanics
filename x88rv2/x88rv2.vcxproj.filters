@@ -105,6 +105,9 @@
     <ClCompile Include="GameEventListener.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="murmurhash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -228,6 +231,9 @@
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="murmurhash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

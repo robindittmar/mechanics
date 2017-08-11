@@ -226,11 +226,9 @@ private:
 	CVisuals m_visuals;
 
 	// Event listener
-	CPlayerHurtEventListener m_cPlayerHurtListener;
-	CPlayerDeathEventListener m_cPlayerDeathListener;
-	CRoundStartEventListener m_cRoundStartListener;
-	CRoundEndEventListener m_cRoundEndListener;
+	CGameEventListener m_gameEventListener;
 
+	// Hack GUI
 	CWindow* m_pWindow;
 
 	// Singleton

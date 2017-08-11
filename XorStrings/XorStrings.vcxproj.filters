@@ -21,9 +21,15 @@
     <ClCompile Include="..\x88rv2\XorString.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\x88rv2\murmurhash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\x88rv2\XorString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\x88rv2\murmurhash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

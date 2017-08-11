@@ -1,4 +1,5 @@
 #include "..\x88rv2\XorString.h"
+#include "..\x88rv2\murmurhash.h"
 
 void printByteString(const char* p, int len)
 {
@@ -20,7 +21,7 @@ int main(int argc, char** argv)
 	int lenBytes[] {
 		19
 	};
-	
+
 	int countstr = sizeof(strings) / sizeof(CXorString);
 	for (int i = 0; i < countstr; i++)
 	{
@@ -33,6 +34,11 @@ int main(int argc, char** argv)
 		printByteString(byteStrings[i].Xor(), lenBytes[i]);
 		puts("\n");
 	}
+
+	uint32_t player_hurt = murmurhash("player_hurt", strlen("player_hurt"), 0xB16B00B5);
+	uint32_t player_death = murmurhash("player_death", strlen("player_death"), 0xB16B00B5);
+	uint32_t round_start = murmurhash("round_start", strlen("round_start"), 0xB16B00B5);
+	uint32_t round_end = murmurhash("round_end", strlen("round_end"), 0xB16B00B5);
 
 	fflush(stdin);
 	getchar();

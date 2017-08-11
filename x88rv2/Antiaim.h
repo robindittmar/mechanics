@@ -14,7 +14,8 @@ enum PitchAntiAims {
 enum YawAntiAims {
 	YawNone,
 	YawBackwards,
-	YawStaticJitterBackwards
+	YawStaticJitterBackwards,
+	YawBackwardsFakeRight
 };
 
 struct AntiAim {
