@@ -135,24 +135,40 @@ void CAimbot::Update(void* pParameters)
 		//studiohdr_t* pModel = m_pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
 
 		// TODO
-		int boneIdx = 8;
-		mat3x4* boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx));
+		// 8, 10, 72, 79
+		bool isVisible = false;
+		int boneIdx[] = { 8, 10, 72, 79 };
+		int bone = 0;
+		int boneCount = sizeof(boneIdx) / sizeof(int);
+
+		mat3x4* boneMatrix;
 		Vector headPos;
-		headPos.x = boneMatrix->c[0][3];
-		headPos.y = boneMatrix->c[1][3];
-		headPos.z = boneMatrix->c[2][3];
 
-		// TODO: PREDICTION
-		headPos += (*pCurEntity->Velocity() * pParam->fInputSampleTime);
-		// TODO: PREDICTION
+		for(bone = 0; bone < boneCount; bone++)
+		{
+			// Get matrix for current bone
+			boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
 
-		// IsVisible check
-		ray.Init(myHeadPos, headPos);
-		m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
-		if (!trace.IsVisible(pCurEntity))
+			// Get position
+			headPos.x = boneMatrix->c[0][3];
+			headPos.y = boneMatrix->c[1][3];
+			headPos.z = boneMatrix->c[2][3];
+
+			// Prediction
+			headPos += (*pCurEntity->Velocity() * pParam->fInputSampleTime);
+
+			ray.Init(myHeadPos, headPos);
+			m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
+			if (trace.IsVisible(pCurEntity))
+			{
+				isVisible = true;
+				break;
+			}
+		}
+
+		// Nothing visible :(
+		if (!isVisible)
 			continue;
-		/*if (trace.fraction < 0.7f || trace.fraction > 0.97f)
-			continue;*/
 
 		switch (m_tTargetCriteria)
 		{

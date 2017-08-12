@@ -84,7 +84,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 		if (dmg_health > 100 && hitgroup == 1)
 		{
 			// say +1
-			//pApp->EngineClient()->ExecuteClientCmd(CXorString("djόβ<:").ToCharArray());
+			pApp->EngineClient()->ExecuteClientCmd(CXorString("djόβ<:").ToCharArray());
 			pApp->EngineClient()->ExecuteClientCmd("play buttons/blip2.wav"); // TODO: Xor
 		}
 		else

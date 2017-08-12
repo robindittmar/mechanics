@@ -288,7 +288,7 @@ void CApplication::Setup()
 	this->m_aimbot.IsEnabled(true);
 	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(true);
+	this->m_aimbot.IsSilentAim(false);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 	this->m_aimbot.Speed(1.0f);
 	this->m_aimbot.Fov(360.0f);
