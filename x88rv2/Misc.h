@@ -50,6 +50,9 @@ public:
 	void ShowOnlyMySpectators(bool bOnlyMySpectators) { m_bOnlyMySpectators = bOnlyMySpectators; };
 	bool ShowOnlyMySpectators() { return m_bOnlyMySpectators; };
 
+	void ShowOnlyMyTeamSpectators(bool bOnlyMyTeamSpectators) { m_bOnlyMyTeamSpectators = bOnlyMyTeamSpectators; };
+	bool ShowOnlyMyTeamSpectators() { return m_bOnlyMyTeamSpectators; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -68,6 +71,7 @@ private:
 	bool m_bAutoPistol;
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
+	bool m_bOnlyMyTeamSpectators;
 };
 
 

@@ -100,12 +100,10 @@ void CAimbot::Update(void* pParameters)
 	float fLowestDist = 999999.0f;
 
 	// Start at i=1 since 0 is usually (always as of now) the local player
-	int iMaxEntities = pEntityList->GetMaxEntities();
+	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
 	for (int i = 1; i < iMaxEntities; i++)
 	{
 		pCurEntity = pEntityList->GetClientEntity(i);
-
-		// TODO: Check if entity invincible (after spawn in warmup for example)
 
 		// Filter entites
 		if (!pCurEntity)
@@ -125,7 +123,7 @@ void CAimbot::Update(void* pParameters)
 
 		// Only from enemy team & we don't want spectators or something
 		int entityTeam = pCurEntity->TeamNum();
-		if (entityTeam == localTeam || entityTeam != 2 && entityTeam != 3)
+		if (entityTeam == localTeam || entityTeam == 0 || entityTeam == 1)
 			continue;
 
 		// Spawn protection

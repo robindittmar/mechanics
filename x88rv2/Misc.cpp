@@ -190,9 +190,8 @@ void CMisc::SpectatorList()
 
 	int count = 0;
 	Observers m_Observers[64];
-	//m_Observers = GetObservators(localEntity->EntIndex());
 
-	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
+	for (int i = 1; i < m_pApp->EngineClient()->GetMaxClients(); i++)
 	{
 		IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
 
@@ -206,6 +205,9 @@ void CMisc::SpectatorList()
 			continue;
 
 		if (pEntity->IsDormant())
+			continue;
+
+		if (m_bOnlyMyTeamSpectators &&	pLocalEntity->TeamNum() != pEntity->TeamNum() && pEntity->TeamNum() != 1)
 			continue;
 
 		PlayerInfo pEntityInfo = pEntity->GetPlayerInfo();
@@ -271,13 +273,15 @@ void CMisc::SpectatorList()
 			wchar_t end[256];
 
 			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-			if (wcscmp(observingName, pLocalName) == 0 && !m_bOnlyMySpectators)
+			if (!m_bOnlyMySpectators)
 			{
 				wcscpy(end, observerName);
 				wcscat(end, text);
 				wcscat(end, observingName);
-
-				m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+				if (wcscmp(observingName, pLocalName) == 0)
+				{
+					m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+				}
 			}
 			else
 			{
