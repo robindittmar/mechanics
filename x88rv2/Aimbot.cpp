@@ -71,14 +71,15 @@ void CAimbot::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 
-	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	// TODO: This has moved below finding a target
+	/*CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
 	if (//pActiveWeapon->IsKnife() ||
 		pActiveWeapon->IsNade() ||
 		pActiveWeapon->IsC4() ||
 		pActiveWeapon->Clip1() == 0)
 		return;
-	// TODO: This has moved below finding a target
-	/*if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+	
+	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
 		return;*/
 
 	// Get position + add relative eye position
@@ -214,6 +215,13 @@ void CAimbot::Update(void* pParameters)
 	m_bHasTarget = true;
 
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+		return;
+
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	if (pActiveWeapon->IsKnife() ||
+		pActiveWeapon->IsNade() ||
+		pActiveWeapon->IsC4() ||
+		pActiveWeapon->Clip1() == 0)
 		return;
 
 	if (m_tTargetCriteria != TargetCriteriaViewangle)

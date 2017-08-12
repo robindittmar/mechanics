@@ -33,6 +33,17 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		__asm mov fp, ebp;
 		pApp->m_bSendPackets = (bool*)(*fp - 0x1C);
 		pApp->m_bGotSendPackets = true;
+
+		/*
+		Not working that well, as it changes @.code segment
+		pApp->m_bSendPackets = (bool*)(pApp->EngineDll() + 0xCAC4A);
+		VirtualProtect(pApp->m_bSendPackets, sizeof(bool), PAGE_EXECUTE_READWRITE, NULL);
+		pApp->m_bGotSendPackets = true;
+
+		/*DWORD dwOldProtection;
+		VirtualProtect(pApp->m_bSendPackets, sizeof(bool), PAGE_EXECUTE_READWRITE, &dwOldProtection);
+		printf("%d\n", dwOldProtection);
+		dwOldProtection = 0;*/
 	}
 
 	if (pApp->EngineClient()->IsInGame())

@@ -43,14 +43,14 @@ void CAntiAim::Update(void* pParameters)
 
 	AntiAim aa = { PitchDown, YawBackwardsFakeRight };
 	QAngle angles;
-	if(m_pApp->Aimbot()->HasTarget())
+	/*if(m_pApp->Aimbot()->HasTarget())
 	{
 		angles = *m_pApp->Aimbot()->GetAimAngles();
 	}
 	else
-	{
+	{*/
 		angles = m_pApp->ClientViewAngles();
-	}
+	//}
 
 	// Pitch
 	switch (aa.pitchAA)
@@ -66,7 +66,7 @@ void CAntiAim::Update(void* pParameters)
 	}
 
 	// Yaw
-	static bool bSendPacketsToggle = true;
+	static int iCountFake = 0;
 	static float trigger = 0.0f;
 	switch (aa.yawAA)
 	{
@@ -87,16 +87,18 @@ void CAntiAim::Update(void* pParameters)
 	case YawBackwardsFakeRight:
 		if(m_pApp->m_bGotSendPackets)
 		{
-			if(bSendPacketsToggle)
+			if(iCountFake < 15)
 			{
-				angles.y -= 90.0f;
+				angles.y += 90.0f;
+				*m_pApp->m_bSendPackets = false;
+				iCountFake++;
 			}
 			else
 			{
 				angles.y -= 180.0f;
+				*m_pApp->m_bSendPackets = true;
+				iCountFake = 0;
 			}
-			*m_pApp->m_bSendPackets = bSendPacketsToggle;
-			bSendPacketsToggle = !bSendPacketsToggle;
 		}
 		break;
 	}
