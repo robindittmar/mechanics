@@ -93,7 +93,7 @@ void CAimbot::Update(void* pParameters)
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
 
-	int iSelectedEntity = -1;
+	m_iSelectedTarget = -1;
 	float fViewangleDist;
 	float fOriginDist;
 	float fLowestDist = 999999.0f;
@@ -163,7 +163,7 @@ void CAimbot::Update(void* pParameters)
 			{
 				fLowestDist = fOriginDist;
 
-				iSelectedEntity = i;
+				m_iSelectedTarget = i;
 				targetPos = headPos;
 
 				continue;
@@ -190,14 +190,14 @@ void CAimbot::Update(void* pParameters)
 			{
 				fLowestDist = fViewangleDist;
 
-				iSelectedEntity = i;
+				m_iSelectedTarget = i;
 				targetAngles = m_qAimAngles;
 
 				continue;
 			}
 			break;
 		case TargetCriteriaUnspecified:
-			iSelectedEntity = i;
+			m_iSelectedTarget = i;
 			targetPos = headPos;
 
 			// Force the entityloop to exit out (break would only break switch)
@@ -207,9 +207,10 @@ void CAimbot::Update(void* pParameters)
 	}
 
 	// If we found no target just exit
-	if (iSelectedEntity == -1)
+	if (m_iSelectedTarget == -1)
 		return;
 
+	// Save that we got a target :)
 	m_bHasTarget = true;
 
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))

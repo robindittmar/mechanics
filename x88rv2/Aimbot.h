@@ -29,6 +29,8 @@ public:
 
 	// Returns wether or not the Aimbot has got a target
 	bool HasTarget() { return m_bHasTarget; }
+	// Gets the selected target (if none == -1)
+	int SelectedTarget() { return m_iSelectedTarget; }
 	// Returns the Aim angles for the current tick
 	QAngle* GetAimAngles() { return &m_qAimAngles; }
 	// Returns wether or not the Aimbot will shoot in this tick
@@ -67,6 +69,7 @@ private:
 	float GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance);
 
 	bool m_bHasTarget;
+	int m_iSelectedTarget;
 	QAngle m_qAimAngles;
 
 	bool m_bIsShooting;
