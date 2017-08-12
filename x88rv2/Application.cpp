@@ -25,6 +25,11 @@ void CApplication::Run(HMODULE hModule)
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
+
+	// Instantly return
+	if (!pUserCmd || !pUserCmd->command_number)
+		return false;
+
 	CApplication* pApp = CApplication::Instance();
 
 	if (!pApp->m_bGotSendPackets)
@@ -106,7 +111,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
 			if (pEntity)
 			{
-				pEntity->ViewAngles()->y = pEntity->LowerBodyYaw();
+				pEntity->AngEyePosition()->y = pEntity->LowerBodyYaw();
 			}
 		}
 	}

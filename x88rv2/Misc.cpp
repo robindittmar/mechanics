@@ -73,7 +73,8 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 		return;
 
 	if (pUserCmd->buttons == IN_ATTACK ||
-		pUserCmd->buttons == IN_ATTACK2)
+		pUserCmd->buttons == IN_ATTACK2 ||
+		pUserCmd->buttons == IN_JUMP)
 	{
 		*m_pApp->m_bSendPackets = true;
 		return;
@@ -112,7 +113,7 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 		{
 			pUserCmd->sidemove = 450;
 		}
-		if (pUserCmd->mousedx < 0)
+		else if (pUserCmd->mousedx < 0)
 		{
 			pUserCmd->sidemove = -450;
 		}

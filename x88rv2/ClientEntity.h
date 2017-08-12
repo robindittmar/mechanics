@@ -24,7 +24,7 @@
 #define OFFSET_SHOTSFIRED		0x0A2C0
 #define OFFSET_SPAWNPROTECTION	0x38B0
 #define OFFSET_LOWERBODYYAW		0x39F8
-#define OFFSET_VIEWANGLES		0x128
+#define OFFSET_EYEANGLES		0xB24C
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -261,8 +261,8 @@ public:
 	PlayerInfo GetPlayerInfo();
 	bool IsInvincible();
 	IClientEntity* ObserverTarget();
+	QAngle* AngEyePosition();
 	float LowerBodyYaw();
-	QAngle* ViewAngles();
 };
 
 #endif // __CLIENTENTITY_H__

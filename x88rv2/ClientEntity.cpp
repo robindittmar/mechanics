@@ -101,12 +101,12 @@ IClientEntity* IClientEntity::ObserverTarget()
 	return pApp->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)this + OFFSET_OBSERVER)); // todo: crashes...
 }
 
+QAngle* IClientEntity::AngEyePosition()
+{
+	return (QAngle*)((DWORD)this + OFFSET_EYEANGLES);
+}
+
 float IClientEntity::LowerBodyYaw()
 {
 	return *(float*)((DWORD)this + OFFSET_LOWERBODYYAW);
-}
-
-QAngle* IClientEntity::ViewAngles()
-{
-	return (QAngle*)((DWORD)this + OFFSET_VIEWANGLES);
 }

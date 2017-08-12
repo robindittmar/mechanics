@@ -25,6 +25,9 @@ void CAntiAim::Update(void* pParameters)
 	if (!pUserCmd)
 		return;
 
+	/*static CConsole console;
+	console.Write("%d | %d\n", pUserCmd->command_number, pUserCmd->tick_count);*/
+
 	// Allow us to use (open doors, defuse bomb) and shoot normally
 	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK)
 		return;
@@ -43,14 +46,14 @@ void CAntiAim::Update(void* pParameters)
 
 	AntiAim aa = { PitchDown, YawBackwardsFakeRight };
 	QAngle angles;
-	/*if(m_pApp->Aimbot()->HasTarget())
+	if(m_pApp->Aimbot()->HasTarget())
 	{
 		angles = *m_pApp->Aimbot()->GetAimAngles();
 	}
 	else
-	{*/
+	{
 		angles = m_pApp->ClientViewAngles();
-	//}
+	}
 
 	// Pitch
 	switch (aa.pitchAA)
@@ -66,7 +69,8 @@ void CAntiAim::Update(void* pParameters)
 	}
 
 	// Yaw
-	static int iCountFake = 0;
+	//static int iCountFake = 0;
+	static bool bFakeAngles = true;
 	static float trigger = 0.0f;
 	switch (aa.yawAA)
 	{
@@ -87,7 +91,7 @@ void CAntiAim::Update(void* pParameters)
 	case YawBackwardsFakeRight:
 		if(m_pApp->m_bGotSendPackets)
 		{
-			if(iCountFake < 15)
+			/*if(iCountFake < 8)
 			{
 				angles.y += 90.0f;
 				*m_pApp->m_bSendPackets = false;
@@ -98,7 +102,19 @@ void CAntiAim::Update(void* pParameters)
 				angles.y -= 180.0f;
 				*m_pApp->m_bSendPackets = true;
 				iCountFake = 0;
+			}*/
+			if(bFakeAngles)
+			{
+				angles.y += 90.0f;
 			}
+			else
+			{
+				//angles.y -= 180.0f;
+				angles.y -= 90.0f;
+			}
+
+			*m_pApp->m_bSendPackets = bFakeAngles;
+			bFakeAngles = !bFakeAngles;
 		}
 		break;
 	}
