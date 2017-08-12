@@ -92,8 +92,11 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame())
 		{
-			IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-			//pLocalEntity->EyeOffset()->y = pEntity->LowerBodyYaw();
+			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
+			if (pEntity)
+			{
+				pEntity->ViewAngles()->y = pEntity->LowerBodyYaw();
+			}
 		}
 	}
 
