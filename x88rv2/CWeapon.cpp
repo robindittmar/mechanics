@@ -1,5 +1,30 @@
 #include "CWeapon.h"
 
+float CWeaponInfo::ArmorRatio()
+{
+	return *(float*)((unsigned long)this + OFFSET_ARMORRATIO);
+}
+
+float CWeaponInfo::Penetration()
+{
+	return *(float*)((unsigned long)this + OFFSET_PENETRATION);
+}
+
+int CWeaponInfo::Damage()
+{
+	return *(int*)((unsigned long)this + OFFSET_DAMAGE);
+}
+
+float CWeaponInfo::Range()
+{
+	return *(float*)((unsigned long)this + OFFSET_RANGE);
+}
+
+float CWeaponInfo::RangeModifier()
+{
+	return *(float*)((unsigned long)this + OFFSET_RANGEMODIFIER);
+}
+
 int CWeapon::WeaponId()
 {
 	return *(int*)((unsigned long)this + OFFSET_ATRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
@@ -93,4 +118,10 @@ float CWeapon::NextPrimaryAttack()
 float CGrenade::ThrowTime()
 {
 	return *(float*)((unsigned long)this + OFFSET_THROWTIME);
+}
+
+CWeaponInfo* CWeapon::GetWeaponInfo()
+{
+	typedef CWeaponInfo*(__thiscall* GetWeaponData_t)(void*);
+	return ((GetWeaponData_t)(*(void***)this)[456])(this);
 }

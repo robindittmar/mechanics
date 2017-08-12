@@ -4,6 +4,36 @@
 #include "Feature.h"
 #include "Vector.h"
 #include "UserCmd.h"
+#include "IEngineTrace.h"
+#include "CGameTrace.h"
+#include "CWeapon.h"
+
+
+#define HITGROUP_HEAD		1
+#define HITGROUP_CHEST		2
+#define HITGROUP_STOMACH	3
+#define HITGROUP_LEFTARM	4
+#define HITGROUP_RIGHTARM	5
+#define HITGROUP_LEFTLEG	6
+#define HITGROUP_RIGHTLEG	7
+
+struct FireBulletData
+{
+	FireBulletData(const Vector &eye_pos, IClientEntity* pLocal = NULL)
+		: src(eye_pos),
+		filter((IHandleEntity*)pLocal)
+	{
+	}
+
+	Vector           src;
+	trace_t          enter_trace;
+	Vector           direction;
+	CTraceFilterSkipEntity    filter;
+	float           trace_length;
+	float           trace_length_remaining;
+	float           current_damage;
+	int             penetrate_count;
+};
 
 // Defines how to choose the next target for the aimbot
 // -> Origin: Chooses the target that's standing closest to you
@@ -62,6 +92,8 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
+	bool SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulletData &data);
+
 	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
 	QAngle CalcAngle(Vector& relativeDist);
 

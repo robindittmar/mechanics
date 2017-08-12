@@ -250,6 +250,8 @@ void CApplication::Setup()
 	CXorString player_death("ggä»ryÚ¦rjñª");
 	CXorString round_start("edð¬sTö¶vyñ");
 	CXorString round_end("edð¬sTà¬s");
+	CXorString vphysicsDll("a{í»dbæ±9oé®");
+	CXorString physicsSurfaceProps("A[í»dbæ±D~÷¤vhà’edõ±';´");
 
 	// Grab engine addresses
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
@@ -257,11 +259,13 @@ void CApplication::Setup()
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
 	this->m_dwVgui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
 	this->m_dwVguiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
+	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(vphysicsDll.ToCharArray());
 	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVgui2Dll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVguiSurfaceDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -273,6 +277,7 @@ void CApplication::Setup()
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
+	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)CreateVPhysicsInterface(physicsSurfaceProps.ToCharArray(), NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
