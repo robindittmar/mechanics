@@ -72,9 +72,12 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Set ViewAngles we prepared for display
 			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
-			pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
-			pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
-			pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+			/*if (flip)
+			{*/
+				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
+				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
+				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+			//}
 		}
 	}
 
@@ -84,6 +87,15 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
+
+	if (curStage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
+	{
+		if (pApp->EngineClient()->IsInGame())
+		{
+			IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+			//pLocalEntity->EyeOffset()->y = pEntity->LowerBodyYaw();
+		}
+	}
 
 	if (curStage == FRAME_RENDER_START)
 	{
@@ -287,8 +299,9 @@ void CApplication::Setup()
 	this->m_misc.IsAutoStrafe(true);
 	this->m_misc.IsNoScope(true);
 	this->m_misc.IsAutoPistol(true);
-	this->m_misc.ShowSpectators(false);
+	this->m_misc.ShowSpectators(true);
 	this->m_misc.ShowOnlyMySpectators(false);
+	this->m_misc.ShowOnlyMyTeamSpectators(false);
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
