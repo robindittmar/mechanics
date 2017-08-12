@@ -26,11 +26,14 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
+	CApplication* pApp = CApplication::Instance();
+
+	// Update timer for hitmarker
+	pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
+
 	// Instantly return
 	if (!pUserCmd || !pUserCmd->command_number)
 		return false;
-
-	CApplication* pApp = CApplication::Instance();
 
 	if (!pApp->m_bGotSendPackets)
 	{
@@ -66,9 +69,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
-
-			// Update timer for hitmarker
-			pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
 
 			// Update NoRecoil & AutoPistol
 			pApp->Misc()->AutoPistol(pUserCmd);
@@ -288,7 +288,7 @@ void CApplication::Setup()
 	this->m_aimbot.IsEnabled(true);
 	this->m_aimbot.IsAutoshoot(true);
 	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(false);
+	this->m_aimbot.IsSilentAim(true);
 	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
 	this->m_aimbot.Speed(1.0f);
 	this->m_aimbot.Fov(360.0f);
