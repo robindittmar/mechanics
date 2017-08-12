@@ -114,11 +114,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		// TODO: Temporary, I hope
 		if(GetAsyncKeyState(VK_DELETE) & 0x8000)
 		{
-			// Unregister listeners
-			pApp->GameEventManager()->RemoveListener(&pApp->m_cRoundEndListener);
-			pApp->GameEventManager()->RemoveListener(&pApp->m_cRoundStartListener);
-			pApp->GameEventManager()->RemoveListener(&pApp->m_cPlayerDeathListener);
-			pApp->GameEventManager()->RemoveListener(&pApp->m_cPlayerHurtListener);
+			// Unregister listener
+			pApp->GameEventManager()->RemoveListener(&pApp->m_gameEventListener);
 
 			// Reverse order, in case of any dependencies
 			pApp->VguiHook()->Restore();
@@ -323,10 +320,10 @@ void CApplication::Setup()
 	this->m_visuals.ShouldFovChangeScoped(false);
 
 	// Register Event Handlers
-	m_pGameEventManager->AddListener(&m_cPlayerHurtListener, player_hurt.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_cPlayerDeathListener, player_death.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_cRoundStartListener, round_start.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_cRoundEndListener, round_end.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, player_death.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, round_start.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, round_end.ToCharArray(), false);
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {

@@ -165,6 +165,7 @@
     <ClCompile Include="IMaterialSystem.cpp" />
     <ClCompile Include="ISurface.cpp" />
     <ClCompile Include="Misc.cpp" />
+    <ClCompile Include="murmurhash.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Vector.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="IVModelInfo.h" />
     <ClInclude Include="IVModelRender.h" />
     <ClInclude Include="Misc.h" />
+    <ClInclude Include="murmurhash.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="ray.h" />
