@@ -1,7 +1,5 @@
 #include "Aimbot.h"
 #include "Application.h"
-#include "IEngineTrace.h"
-#include "CGameTrace.h"
 #include "ray.h"
 #include "Console.h"
 
@@ -78,11 +76,11 @@ void CAimbot::Update(void* pParameters)
 		pActiveWeapon->IsC4() ||
 		pActiveWeapon->Clip1() == 0)
 		return;
-	
+
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
 		return;*/
 
-	// Get position + add relative eye position
+		// Get position + add relative eye position
 	Vector myHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * pParam->fInputSampleTime);
 	myHeadPos += *pLocalEntity->EyeOffset();
 	int localTeam = pLocalEntity->TeamNum();
@@ -98,7 +96,7 @@ void CAimbot::Update(void* pParameters)
 	float fViewangleDist;
 	float fOriginDist;
 	float fLowestDist = 999999.0f;
-
+	float fDamage;
 	// Start at i=1 since 0 is usually (always as of now) the local player
 	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
 	for (int i = 1; i < iMaxEntities; i++)
@@ -137,14 +135,14 @@ void CAimbot::Update(void* pParameters)
 		// TODO
 		// 8, 10, 72, 79
 		bool isVisible = false;
-		int boneIdx[] = { 8, 10, 72, 79 };
+		int boneIdx[] = { 8/*, 10, 72, 79*/ };
 		int bone = 0;
 		int boneCount = sizeof(boneIdx) / sizeof(int);
 
 		mat3x4* boneMatrix;
 		Vector headPos;
 
-		for(bone = 0; bone < boneCount; bone++)
+		for (bone = 0; bone < boneCount; bone++)
 		{
 			// Get matrix for current bone
 			boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
@@ -158,12 +156,35 @@ void CAimbot::Update(void* pParameters)
 			headPos += (*pCurEntity->Velocity() * pParam->fInputSampleTime);
 
 			ray.Init(myHeadPos, headPos);
-			m_pApp->EngineTrace()->TraceRay(ray, 0x4600400B, &traceFilter, &trace);
+			m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+
 			if (trace.IsVisible(pCurEntity))
 			{
 				isVisible = true;
 				break;
 			}
+			/*else
+			{
+				m_iSelectedTarget = i;
+
+				FireBulletData data(myHeadPos, pLocalEntity);
+
+				QAngle angles;
+				Vector headPosTemp = headPos - myHeadPos;
+				angles = this->CalcAngle(headPosTemp);
+				AngleVectors(angles, &data.direction, NULL, NULL);
+				data.direction.Normalize();
+
+				if (SimulateFireBullet(pLocalEntity, true, data))
+				{
+					fDamage = data.current_damage;
+					if (fDamage > 0.0f)
+					{
+						isVisible = true;
+						break;
+					}
+				}
+			}*/
 		}
 
 		// Nothing visible :(
@@ -238,6 +259,8 @@ void CAimbot::Update(void* pParameters)
 		pActiveWeapon->Clip1() == 0)
 		return;
 
+	CWeaponInfo* test = pActiveWeapon->GetWeaponInfo();
+
 	if (m_tTargetCriteria != TargetCriteriaViewangle)
 	{
 		// Get relative position to ourselves
@@ -259,7 +282,7 @@ void CAimbot::Update(void* pParameters)
 
 	// If we have no recoil activated in the aimbot, do it
 	// (and remember that we did!)
-	if(m_bDoNoRecoil)
+	if (m_bDoNoRecoil)
 	{
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 		m_qAimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
@@ -300,10 +323,240 @@ void CAimbot::Update(void* pParameters)
 		this->Shoot(pUserCmd, fNextattack, fServertime);
 	}
 
+	/*static CConsole console;
+	console.Write("\n%.2f", fDamage);*/
+
 	// TODO
 	//if (this->m_bIsShooting)
 	//	*m_pApp->m_bSendPackets = false;
 }
+
+float GetHitgroupDamageMultiplier(int iHitGroup)
+{
+	switch (iHitGroup)
+	{
+	case HITGROUP_HEAD:
+		return 4.0f;
+	case HITGROUP_CHEST:
+	case HITGROUP_LEFTARM:
+	case HITGROUP_RIGHTARM:
+		return 1.0f;
+	case HITGROUP_STOMACH:
+		return 1.25f;
+	case HITGROUP_LEFTLEG:
+	case HITGROUP_RIGHTLEG:
+		return 0.75f;
+	default:
+		return 1.0f;
+	}
+}
+
+void TraceLine(Vector vecAbsStart, Vector vecAbsEnd, unsigned int mask, IClientEntity* ignore, trace_t* ptr)
+{
+	Ray_t ray;
+	ray.Init(vecAbsStart, vecAbsEnd);
+	CTraceFilterSkipEntity filter(ignore);
+
+	CApplication::Instance()->EngineTrace()->TraceRay(ray, mask, &filter, ptr);
+}
+
+bool TraceToExit(Vector& end, trace_t* enter_trace, Vector start, Vector dir, trace_t* exit_trace) {
+	float distance = 0.0f;
+
+	while (distance <= 90.0f)
+	{
+		distance += 4.0f;
+		end = start + dir * distance;
+
+		auto point_contents = CApplication::Instance()->EngineTrace()->GetPointContents(end, MASK_SHOT_HULL | CONTENTS_HITBOX, NULL);
+
+		if (point_contents & MASK_SHOT_HULL && !(point_contents & CONTENTS_HITBOX))
+			continue;
+
+		auto new_end = end - (dir * 4.0f);
+
+		Ray_t ray;
+		ray.Init(end, new_end);
+		CApplication::Instance()->EngineTrace()->TraceRay(ray, MASK_SHOT, 0, exit_trace);
+
+		if (exit_trace->startsolid && exit_trace->surface.flags & SURF_HITBOX)
+		{
+			ray.Init(end, start);
+
+			CTraceFilterSkipEntity filter(exit_trace->hit_entity);
+
+			CApplication::Instance()->EngineTrace()->TraceRay(ray, 0x600400B, &filter, exit_trace);
+
+			if ((exit_trace->fraction < 1.0f || exit_trace->allsolid) && !exit_trace->startsolid)
+			{
+				end = exit_trace->endpos;
+				return true;
+			}
+
+			continue;
+		}
+
+		if (!(exit_trace->fraction < 1.0 || exit_trace->allsolid || exit_trace->startsolid) || exit_trace->startsolid)
+		{
+			if (exit_trace->hit_entity)
+			{
+				if (enter_trace->hit_entity && enter_trace->hit_entity == CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->Aimbot()->SelectedTarget()))
+					return true;
+			}
+
+			continue;
+		}
+
+		if (exit_trace->surface.flags >> 7 & 1 && !(enter_trace->surface.flags >> 7 & 1))
+			continue;
+
+		if (exit_trace->plane.normal.Dot(dir) <= 1.0f)
+		{
+			auto fraction = exit_trace->fraction * 4.0f;
+			end = end - (dir * fraction);
+
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
+{
+	surfacedata_t *enter_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(data.enter_trace.surface.surfaceProps);
+	int enter_material = enter_surface_data->game.material;
+	float enter_surf_penetration_mod = *(float*)((uint8_t*)enter_surface_data + 76);
+
+	data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
+	data.current_damage *= powf(wpn_data->RangeModifier(), data.trace_length * 0.002f);
+
+	if (data.trace_length > 3000.f || enter_surf_penetration_mod < 0.1f)
+		data.penetrate_count = 0;
+
+	if (data.penetrate_count <= 0)
+		return false;
+
+	Vector dummy;
+	trace_t trace_exit;
+
+	if (!TraceToExit(dummy, &data.enter_trace, data.enter_trace.endpos, data.direction, &trace_exit))
+		return false;
+
+	surfacedata_t *exit_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(trace_exit.surface.surfaceProps);
+	int exit_material = exit_surface_data->game.material;
+
+	float exit_surf_penetration_mod = *(float*)((uint8_t*)exit_surface_data + 76);
+	float final_damage_modifier = 0.16f;
+	float combined_penetration_modifier = 0.0f;
+
+	if ((data.enter_trace.contents & CONTENTS_GRATE) != 0 || enter_material == 89 || enter_material == 71)
+	{
+		combined_penetration_modifier = 3.0f;
+		final_damage_modifier = 0.05f;
+	}
+	else
+		combined_penetration_modifier = (enter_surf_penetration_mod + exit_surf_penetration_mod) * 0.5f;
+
+	if (enter_material == exit_material)
+	{
+		if (exit_material == 87 || exit_material == 85)
+			combined_penetration_modifier = 3.0f;
+		else if (exit_material == 76)
+			combined_penetration_modifier = 2.0f;
+	}
+
+	float v34 = fmaxf(0.f, 1.0f / combined_penetration_modifier);
+	float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.0f, (3.0f / wpn_data->Penetration()) * 1.25f);
+	float thickness = (trace_exit.endpos - data.enter_trace.endpos).Length();
+
+	thickness *= thickness;
+	thickness *= v34;
+	thickness /= 24.0f;
+
+	float lost_damage = fmaxf(0.0f, v35 + thickness);
+
+	if (lost_damage > data.current_damage)
+		return false;
+
+	if (lost_damage >= 0.0f)
+		data.current_damage -= lost_damage;
+
+	if (data.current_damage < 1.0f)
+		return false;
+
+	data.src = trace_exit.endpos;
+	data.penetrate_count--;
+
+	return true;
+}
+
+void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage)
+{
+	current_damage *= GetHitgroupDamageMultiplier(hitgroup);
+
+	if (enemy->Armor() > 0)
+	{
+		if (hitgroup == HITGROUP_HEAD)
+		{
+			if (enemy->HasHelmet())
+				current_damage *= (weapon_armor_ratio * .5f);
+		}
+		else
+		{
+			current_damage *= (weapon_armor_ratio * .5f);
+		}
+	}
+}
+
+bool CAimbot::SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulletData &data)
+{
+	CWeaponInfo* weaponInfo = ((CWeapon*)local->ActiveWeapon())->GetWeaponInfo();
+
+	data.penetrate_count = 4;
+	data.trace_length = 0.0f;
+	data.current_damage = (float)weaponInfo->Damage();
+
+	while (data.penetrate_count > 0 && data.current_damage >= 1.0f)
+	{
+		data.trace_length_remaining = weaponInfo->Range() - data.trace_length;
+
+		Vector end = data.src + data.direction * data.trace_length_remaining;
+
+		// data.enter_trace
+		TraceLine(data.src, end, MASK_SHOT, local, &data.enter_trace);
+
+		Ray_t ray;
+		ray.Init(data.src, end + data.direction * 40.f);
+
+		m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &data.filter, &data.enter_trace);
+
+		TraceLine(data.src, end + data.direction * 40.f, MASK_SHOT, local, &data.enter_trace);
+
+		if (data.enter_trace.fraction == 1.0f)
+			break;
+
+		if (data.enter_trace.hitgroup <= HITGROUP_RIGHTLEG && data.enter_trace.hitgroup > 0)
+		{
+			data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
+			data.current_damage *= powf(weaponInfo->RangeModifier(), data.trace_length * 0.002f);
+
+			IClientEntity* player = (IClientEntity*)data.enter_trace.hit_entity;
+			if (teamCheck && player->TeamNum() == local->TeamNum())
+				return false;
+
+			ScaleDamage(data.enter_trace.hitgroup, player, weaponInfo->ArmorRatio(), data.current_damage);
+
+			return true;
+		}
+
+		if (!HandleBulletPenetration(weaponInfo, data))
+			break;
+	}
+
+	return false;
+}
+
 
 void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
 {

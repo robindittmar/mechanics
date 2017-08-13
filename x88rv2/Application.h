@@ -35,6 +35,7 @@
 #include "IPanel.h"
 #include "ISurface.h"
 #include "IGameEventManager.h"
+#include "IPhysicsSurfaceProps.h"
 
 #include "VTableHook.h"
 
@@ -145,6 +146,7 @@ public:
 	ISurface* Surface() { return m_pSurface; }
 	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
+	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
@@ -152,6 +154,7 @@ public:
 	DWORD MaterialSystemDll() { return m_dwMaterialSystemDll; }
 	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
 	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll; }
+	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 
 	// Features
 	CAimbot* Aimbot() { return (CAimbot*)&m_aimbot; }
@@ -178,6 +181,8 @@ public:
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
 	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
+
+	DrawModelExecute_t DrawModelExecute() { return m_pDrawModelExecute; }
 private:
 	void Setup();
 	void Hook();
@@ -207,12 +212,14 @@ private:
 	ISurface* m_pSurface;
 	CGlobalVars* m_pGlobalVars;
 	IGameEventManager2* m_pGameEventManager;
+	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
 	DWORD m_dwVgui2Dll;
 	DWORD m_dwVguiSurfaceDll;
+	DWORD m_dwVPhysicsDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;

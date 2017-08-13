@@ -86,7 +86,7 @@ public:
 		QAngle const& angles, Vector* pLightingCenter) = 0;
 
 	virtual int						GetModelContents(int modelIndex) const = 0;
-	virtual studiohdr_t				*GetStudioModel(const model_t *mod) = 0;
+	virtual studiohdr_t				*GetStudiomodel(const model_t *mod) = 0;
 	virtual int						GetModelSpriteWidth(const model_t *model) const = 0;
 	virtual int						GetModelSpriteHeight(const model_t *model) const = 0;
 
@@ -119,7 +119,7 @@ public:
 	virtual void					GetBrushModelPlane(const model_t *model, int nIndex, cplane_t &plane, Vector *pOrigin) const = 0;
 	virtual int						GetSurfacepropsForVirtualTerrain(int index) = 0;
 	virtual bool					UsesEnvCubemap(const model_t *model) const = 0;
-	virtual bool					UsesStaticLighting(const model_t *model) const = 0;
+	virtual bool	UsesStaticLighting(const model_t *model) const = 0;
 };
 
 

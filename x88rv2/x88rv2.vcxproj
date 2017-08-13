@@ -204,6 +204,7 @@
     <ClInclude Include="IEngineTrace.h" />
     <ClInclude Include="IMaterial.h" />
     <ClInclude Include="IMaterialSystem.h" />
+    <ClInclude Include="IPhysicsSurfaceProps.h" />
     <ClInclude Include="ISurface.h" />
     <ClInclude Include="IVModelInfo.h" />
     <ClInclude Include="IVModelRender.h" />

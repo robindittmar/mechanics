@@ -7,6 +7,11 @@
 #define OFFSET_CLIP1				0x3204
 #define OFFSET_CLIP2				0x3208
 #define OFFSET_NEXTPRIMARYATTACK	0x31D8
+#define OFFSET_ARMORRATIO			0x850
+#define OFFSET_PENETRATION			0x864
+#define OFFSET_DAMAGE				0x868
+#define OFFSET_RANGE				0x86C
+#define OFFSET_RANGEMODIFIER		0x870
 
 #define OFFSET_THROWTIME			0x3354
 
@@ -66,7 +71,18 @@ enum ItemDefinitionIndex : int {
 	WEAPON_KNIFE_PUSH = 516
 };
 
-class CWeapon {
+class CWeaponInfo
+{
+public:
+	float ArmorRatio();
+	float Penetration();
+	int Damage();
+	float Range();
+	float RangeModifier();
+};
+
+class CWeapon
+{
 public:
 	int WeaponId();
 	bool IsKnife();
@@ -78,6 +94,7 @@ public:
 	int Clip1();
 	int Clip2();
 	float NextPrimaryAttack();
+	CWeaponInfo* GetWeaponInfo();
 private:
 };
 

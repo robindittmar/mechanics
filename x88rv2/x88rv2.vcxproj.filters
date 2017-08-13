@@ -242,6 +242,9 @@
     <ClInclude Include="murmurhash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="IPhysicsSurfaceProps.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GuiEvent.h">
       <Filter>GUI\Header Files</Filter>
     </ClInclude>
