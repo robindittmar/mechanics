@@ -135,7 +135,7 @@ void CAimbot::Update(void* pParameters)
 		// TODO
 		// 8, 10, 72, 79
 		bool isVisible = false;
-		int boneIdx[] = { 8/*, 10, 72, 79*/ };
+		int boneIdx[] = { 8, 10, 72, 79 };
 		int bone = 0;
 		int boneCount = sizeof(boneIdx) / sizeof(int);
 
