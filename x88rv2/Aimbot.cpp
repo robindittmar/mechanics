@@ -163,7 +163,7 @@ void CAimbot::Update(void* pParameters)
 				isVisible = true;
 				break;
 			}
-			else
+			/*else
 			{
 				m_iSelectedTarget = i;
 
@@ -184,7 +184,7 @@ void CAimbot::Update(void* pParameters)
 						break;
 					}
 				}
-			}
+			}*/
 		}
 
 		// Nothing visible :(
@@ -323,8 +323,8 @@ void CAimbot::Update(void* pParameters)
 		this->Shoot(pUserCmd, fNextattack, fServertime);
 	}
 
-	static CConsole console;
-	console.Write("\n%.2f", fDamage);
+	/*static CConsole console;
+	console.Write("\n%.2f", fDamage);*/
 
 	// TODO
 	//if (this->m_bIsShooting)

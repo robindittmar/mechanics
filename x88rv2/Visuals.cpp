@@ -96,7 +96,7 @@ void CVisuals::NoSmoke()
 	}
 }
 
-void CVisuals::HandsDrawStyle(const char* pszModelName)
+void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
 {
 	if (!m_bIsEnabled)
 		return;
@@ -122,6 +122,7 @@ void CVisuals::HandsDrawStyle(const char* pszModelName)
 		}
 
 		this->m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
+		m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 }
 
@@ -192,4 +193,61 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 		return;
 
 	pViewSetup->fov = 105;
+}
+
+void CVisuals::Chams(const char* pszModelName, void* ecx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bChams)
+		return;
+
+	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
+
+	if (strstr(pszModelName, "models/player") != NULL)
+	{
+		IMaterial *mats[32];
+
+		IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+		IClientEntity* pModelEntity = m_pApp->EntityList()->GetClientEntity(pInfo.entity_index);
+		studiohdr_t* hdr = (studiohdr_t*)((DWORD)pModelEntity + 0xD20);
+
+		if (pModelEntity && pModelEntity->IsAlive() &&
+			pLocalEntity != pModelEntity && 
+			pLocalEntity->TeamNum() != pModelEntity->TeamNum())
+		{
+			m_pApp->ModelInfo()->GetModelMaterials(pInfo.pModel, hdr->numtextures, mats);
+			for (int i = 0; i < hdr->numtextures; i++)
+			{
+				IMaterial* mat = mats[i];
+				if (!mat)
+					continue;
+
+				if ((unsigned long)mat == 0xcccccccc)
+					break;
+
+				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_ALPHATEST, true);
+				mat->AlphaModulate(1.0f); // don't need this, I just use it just cause.
+
+				m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+
+				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_ALPHATEST, false);
+				mat->AlphaModulate(1.0f);
+
+				m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+
+				//TODO:
+				//create material
+				// set all for ignorez
+				//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+				// set all for ignorez false
+				//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			}
+		}
+	}
 }

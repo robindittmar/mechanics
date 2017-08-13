@@ -81,10 +81,6 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
 		int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
 
-		char buffer[256];
-		sprintf(buffer, "say %d", dmg_health);
-		pApp->EngineClient()->ExecuteClientCmd(buffer);
-
 		if (dmg_health > 100 && hitgroup == 1)
 		{
 			// say +1

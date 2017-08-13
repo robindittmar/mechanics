@@ -175,9 +175,9 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
-		pApp->Visuals()->HandsDrawStyle(pszModelName);
+		pApp->Visuals()->Chams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
-
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 }
 
@@ -332,6 +332,7 @@ void CApplication::Setup()
 	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
+	this->m_visuals.DrawChams(true);
 
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.f);

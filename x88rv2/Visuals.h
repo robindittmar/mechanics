@@ -2,6 +2,7 @@
 #define __VISUALS_H__
 
 #include "Feature.h"
+#include "IVModelRender.h"
 
 #define OFFSET_DEADFLAG 0x31C4
 
@@ -13,6 +14,7 @@ enum HandsDrawStyles_t {
 	HandsDrawStyleWireframe
 };
 class CViewSetup;
+class IMatRenderContext;
 
 class CVisuals : public IFeature
 {
@@ -59,6 +61,9 @@ public:
 	void FovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int FovValue() { return m_iFovValue; }
 
+	void DrawChams(bool bChams) { m_bChams = bChams; }
+	bool DrawChams() { return m_bChams; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -66,11 +71,12 @@ public:
 	void DrawHitmarker();
 	void NoFlash();
 	void NoSmoke();
-	void HandsDrawStyle(const char*);
+	void HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	void NoVisualRecoil(CViewSetup*);
 	void Thirdperson();
 	void ThirdpersonAntiAim();
 	void FovChange(CViewSetup*);
+	void Chams(const char*, void*, IMatRenderContext* , const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
@@ -93,6 +99,8 @@ private:
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
+
+	bool m_bChams;
 };
 
 #endif // __VISUALS_H__
