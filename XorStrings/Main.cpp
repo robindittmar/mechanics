@@ -10,7 +10,7 @@ void printByteString(const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("A[í»dbæ±D~÷¤vhà’edõ±';´"),
+		CXorString("models/player"),
 		CXorString("a{í»dbæ±9oé®")
 	};
 

@@ -204,8 +204,9 @@ void CVisuals::Chams(const char* pszModelName, void* ecx, IMatRenderContext * ct
 		return;
 
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
+	static CXorString pModelsSlashPlayers("zdá§{ xª²{ jü§e");
 
-	if (strstr(pszModelName, "models/player") != NULL)
+	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
 	{
 		IMaterial *mats[32];
 
