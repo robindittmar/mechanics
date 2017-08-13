@@ -26,11 +26,14 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
+	CApplication* pApp = CApplication::Instance();
+
+	// Update timer for hitmarker
+	pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
+
 	// Instantly return
 	if (!pUserCmd || !pUserCmd->command_number)
 		return false;
-
-	CApplication* pApp = CApplication::Instance();
 
 	if (!pApp->m_bGotSendPackets)
 	{
@@ -66,9 +69,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
-
-			// Update timer for hitmarker
-			pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
 
 			// Update NoRecoil & AutoPistol
 			pApp->Misc()->AutoPistol(pUserCmd);
@@ -212,8 +212,11 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
 
-			// Draw Crosshair last (always on top)
+			// Draw Crosshair last (but not least)
 			pApp->Visuals()->DrawCrosshair();
+
+			// Draw Menu least ;)
+			pApp->m_pWindow->Draw(pApp->Surface());
 		}
 	}
 
@@ -222,6 +225,9 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 void CApplication::Setup()
 {
+	// Setup console
+	g_pConsole = new CConsole();
+
 	// Create GUI (Window + all controls)
 	m_pWindow = new CWindow(30, 30, 500, 400, "I'm a title lel");
 	m_pWindow->AddChild(
@@ -275,6 +281,21 @@ void CApplication::Setup()
 	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
+
+	// Print all classes & their properties
+	/*ClientClass* lClass = m_pClient->GetAllClasses();
+	while(lClass)
+	{
+		c.Write("%s\n", lClass->m_pNetworkName);
+
+		RecvTable* pTable = lClass->m_pRecvTable;
+		for(int i = 0; i < pTable->m_nProps; i++)
+		{
+			c.Write("\t> %s\n", pTable->m_pProps[i].m_pVarName);
+		}
+
+		lClass = lClass->m_pNext;
+	}*/
 
 	// Setups
 	this->m_aimbot.Setup();
@@ -499,6 +520,9 @@ void ClampMovement(CUserCmd* pUserCmd)
 
 DWORD ThreadFreeLibrary(void* pParam)
 {
+	// Free console
+	delete g_pConsole;
+
 	Sleep(1000);
 	FreeLibraryAndExitThread((HMODULE)pParam, 0);
 }

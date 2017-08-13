@@ -11,22 +11,16 @@ public:
 	~CButton();
 
 	virtual void ProcessEvents();
-	virtual void Draw(/*IDirect3DDevice9* pDevice, */int xOff, int yOff);
+	virtual void Draw(ISurface* pSurface, int xOff, int yOff);
 
-	void ContentText(const char* pText) {
-		if (m_pContentText)
-			delete[] m_pContentText;
-
-		int iLen = strlen(pText) + 1;
-		m_pContentText = new char[iLen];
-		memcpy(m_pContentText, pText, iLen);
-	}
-
+	void ContentText(const char* pText);
 	const char* ContentText() {
 		return (const char*)m_pContentText;
 	}
 private:
+	int m_iContentTextLen;
 	char* m_pContentText;
+	wchar_t* m_pContentTextW;
 };
 
 #endif // __BUTTON_H__

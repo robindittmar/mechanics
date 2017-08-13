@@ -161,6 +161,8 @@
     <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Feature.cpp" />
     <ClCompile Include="GameEventListener.cpp" />
+    <ClCompile Include="Gui.cpp" />
+    <ClCompile Include="GuiEvent.cpp" />
     <ClCompile Include="IControl.cpp" />
     <ClCompile Include="IMaterialSystem.cpp" />
     <ClCompile Include="ISurface.cpp" />
@@ -189,6 +191,7 @@
     <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="GuiEvent.h" />
     <ClInclude Include="IGameEvent.h" />
     <ClInclude Include="IGameEventManager.h" />
     <ClInclude Include="IPanel.h" />

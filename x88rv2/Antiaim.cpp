@@ -44,7 +44,7 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { PitchDown, YawBackwardsFakeRight };
+	AntiAim aa = { PitchDown, YawStaticJitterBackwards };
 	QAngle angles;
 	if(m_pApp->Aimbot()->HasTarget())
 	{

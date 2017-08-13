@@ -108,6 +108,12 @@
     <ClCompile Include="murmurhash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GuiEvent.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Gui.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -235,6 +241,9 @@
     </ClInclude>
     <ClInclude Include="murmurhash.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GuiEvent.h">
+      <Filter>GUI\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

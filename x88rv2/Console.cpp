@@ -1,8 +1,15 @@
 #include "Console.h"
 
+CConsole* g_pConsole;
+
 CConsole::CConsole()
 {
 	AllocConsole();
+
+	// Reopen standard input/output
+	freopen("CONIN$", "r", stdin);
+	freopen("CONOUT$", "w", stdout);
+	freopen("CONOUT$", "w", stderr);
 
 	m_hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	m_hIn = GetStdHandle(STD_INPUT_HANDLE);

@@ -4,4 +4,6 @@
 #include "Window.h"
 #include "Button.h"
 
+void CreateGuiEvent();
+
 #endif // __GUI_H__
