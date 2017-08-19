@@ -100,7 +100,9 @@ private:
 
 	float GetOriginDist(Vector& a, Vector& b);
 	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);
-
+	
+	// Called each 'Update' (resets m_bIsShooting, m_bDidNoRecoil, etc)
+	void inline ResetTickVariables();
 	// fInputSampleTime for predictions
 	bool ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd);
 	void ApplyNoRecoil(IClientEntity* pLocalEntity);

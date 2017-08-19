@@ -47,6 +47,8 @@ void CAimbot::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	this->ResetTickVariables();
+
 	// Local vars
 	AimbotUpdateParam* pParam;
 	CUserCmd* pUserCmd;
@@ -334,10 +336,16 @@ float CAimbot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOrigi
 	return fAng;
 }
 
+void inline CAimbot::ResetTickVariables()
+{
+	m_bHasTarget = false;
+	m_bIsShooting = false;
+	m_bDidNoRecoil = false;
+}
+
 bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	// No selected target
-	m_bHasTarget = false;
 	m_iSelectedTarget = -1;
 
 	int iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
@@ -545,7 +553,6 @@ void CAimbot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 {
 	// If we have no recoil activated in the aimbot, do it
 	// (and remember that we did!)
-	m_bDidNoRecoil = false;
 	if (m_bDoNoRecoil)
 	{
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
@@ -595,7 +602,6 @@ void CAimbot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalE
 
 void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
 {
-	m_bIsShooting = false;
 	if (fNextPrimaryAttack <= fServerTime)
 	{
 		this->Aim(pUserCmd);
