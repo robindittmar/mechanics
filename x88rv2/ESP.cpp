@@ -270,7 +270,7 @@ void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
 void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int health)
 {
 	float healthpercentage = (100 - health) / 100.0f;
-	int x1 = posX - width / 2 - 8;
+	int x1 = posX - width / 2;
 	if (m_bDrawArmorBar)
 	{
 		x1 -= 6;
@@ -290,7 +290,7 @@ void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int healt
 	m_pApp->Surface()->GetTextSize(font, sHealth, w, h);
 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(x1 - w / 2, posY - (height - (height * healthpercentage)) - h / 2);
+	m_pApp->Surface()->DrawSetTextPos(x1 - w, posY - (height - (height * healthpercentage)) - h);
 	m_pApp->Surface()->DrawPrintText(sHealth, iLen);
 }
 void CEsp::DrawHelmet(int posX, int posY, int height, int width)
