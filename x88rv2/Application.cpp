@@ -321,6 +321,7 @@ void CApplication::Setup()
 	this->m_esp.ShouldDrawBoundingBox(true);
 	this->m_esp.ShouldDrawNames(true);
 	this->m_esp.ShouldDrawHealthBar(true);
+	this->m_esp.ShouldDrawHealthNumber(true);
 	this->m_esp.ShouldDrawArmorBar(false);
 	this->m_esp.ShouldDrawOwnTeam(false);
 	this->m_esp.ShouldDrawOwnModel(true);

@@ -26,6 +26,9 @@ public:
 	void ShouldDrawHealthBar(bool bDrawHealthBar) { m_bDrawHealthBar = bDrawHealthBar; };
 	bool ShouldDrawHealthBar() { return m_bDrawHealthBar; };
 
+	void ShouldDrawHealthNumber(bool bDrawHealthNumber) { m_bDrawHealthNumber = bDrawHealthNumber; };
+	bool ShouldDrawHealthNumber() { return m_bDrawHealthNumber; };
+
 	void ShouldDrawArmorBar(bool bDrawArmorBar) { m_bDrawArmorBar = bDrawArmorBar; };
 	bool ShouldDrawArmorBar() { return m_bDrawArmorBar; };
 
@@ -50,6 +53,7 @@ private:
 	void DrawArmorBar(int posX, int posY, int height, int width, int armor);
 	void DrawBoundingBox(int posX, int posY, int height, int width, Color color);
 	void DrawHealthBar(int posX, int posY, int height, int width, int health);
+	void DrawHealthNumber(int posX, int posY, int height, int width, int health);
 	void DrawHelmet(int posX, int posY, int height, int width);
 	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
 
@@ -58,6 +62,7 @@ private:
 
 	bool m_bDrawBoundingBox;
 	bool m_bDrawHealthBar;
+	bool m_bDrawHealthNumber;
 	bool m_bDrawArmorBar;
 	bool m_bDrawOwnTeam;
 	bool m_bDrawOwnModel;
