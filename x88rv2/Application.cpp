@@ -229,7 +229,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 void CApplication::Setup()
 {
 	// Setup console
-	g_pConsole = new CConsole();
+	//g_pConsole = new CConsole();
 
 	// Create GUI (Window + all controls)
 	m_pWindow = new CWindow(30, 30, 500, 400, "I'm a title lel");
@@ -330,7 +330,7 @@ void CApplication::Setup()
 	this->m_esp.IsEnabled(true);
 	this->m_esp.ShouldDrawBoundingBox(true);
 	this->m_esp.ShouldDrawNames(true);
-	this->m_esp.ShouldDrawHealthBar(true);
+	this->m_esp.ShouldDrawHealthBar(false);
 	this->m_esp.ShouldDrawArmorBar(false);
 	this->m_esp.ShouldDrawOwnTeam(false);
 	this->m_esp.ShouldDrawOwnModel(true);
@@ -351,7 +351,7 @@ void CApplication::Setup()
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
-	this->m_visuals.Crosshair(true);
+	this->m_visuals.Crosshair(false);
 	this->m_visuals.Hitmarker(true);
 	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
@@ -365,7 +365,7 @@ void CApplication::Setup()
 	this->m_visuals.ThirdpersonValue(120);
 
 	this->m_visuals.IsFovChange(true);
-	this->m_visuals.FovValue(110);
+	this->m_visuals.FovValue(130);
 	this->m_visuals.ShouldFovChangeScoped(false);
 
 	// Register Event Handlers
