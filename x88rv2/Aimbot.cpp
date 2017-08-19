@@ -22,6 +22,9 @@ CAimbot::~CAimbot()
 void CAimbot::Setup()
 {
 	m_pApp = CApplication::Instance();
+
+	m_pEngineClient = m_pApp->EngineClient();
+	m_pEntityList = m_pApp->EntityList();
 }
 
 int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
@@ -39,293 +42,39 @@ struct mat3x4
 	float c[3][4];
 };
 
-// TODO: Still needs some reworking
 void CAimbot::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;
 
-	AimbotUpdateParam* pParam = (AimbotUpdateParam*)pParameters;
-
+	// Local vars
+	AimbotUpdateParam* pParam;
+	CUserCmd* pUserCmd;
+	IClientEntity* pLocalEntity;
 	// TODO
 	//*m_pApp->m_bSendPackets = true;
-	m_bHasTarget = false;
-	m_bIsShooting = false;
-	m_bDidNoRecoil = false;
 
-	// Update code here
-	IVEngineClient* pEngineClient = m_pApp->EngineClient();
-	IClientEntityList* pEntityList = m_pApp->EntityList();
+	// Initialize local variables
+	pParam = (AimbotUpdateParam*)pParameters;
+	pUserCmd = pParam->pUserCmd;
+	pLocalEntity = m_pEntityList->GetClientEntity(m_pEngineClient->GetLocalPlayer());
 
-	int iLocalPlayerIdx = pEngineClient->GetLocalPlayer();
-	IClientEntity* pLocalEntity = pEntityList->GetClientEntity(iLocalPlayerIdx);
-	IClientEntity* pCurEntity;
-	QAngle qAimAngles, qLocalViewAngles = m_pApp->ClientViewAngles();
-	CUserCmd* pUserCmd = pParam->pUserCmd;
-
-	if (!pUserCmd)
+	// Choose target
+	if (!this->ChooseTarget(pParam->fInputSampleTime, pUserCmd))
 		return;
-
-	if (!pLocalEntity)
-		return;
-
-	// TODO: This has moved below finding a target
-	/*CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (//pActiveWeapon->IsKnife() ||
-		pActiveWeapon->IsNade() ||
-		pActiveWeapon->IsC4() ||
-		pActiveWeapon->Clip1() == 0)
-		return;
-
-	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
-		return;*/
-
-		// Get position + add relative eye position
-	Vector myHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * pParam->fInputSampleTime);
-	myHeadPos += *pLocalEntity->EyeOffset();
-	int localTeam = pLocalEntity->TeamNum();
-
-	Vector targetPos;
-	QAngle targetAngles;
-
-	Ray_t ray;
-	trace_t trace;
-	CTraceFilterSkipEntity traceFilter(pLocalEntity);
-
-	m_iSelectedTarget = -1;
-	float fViewangleDist;
-	float fOriginDist;
-	float fLowestDist = 999999.0f;
-	float fDamage;
-	// Start at i=1 since 0 is usually (always as of now) the local player
-	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
-	for (int i = 1; i < iMaxEntities; i++)
-	{
-		pCurEntity = pEntityList->GetClientEntity(i);
-
-		// Filter entites
-		if (!pCurEntity)
-			continue;
-
-		// Skip dormant entities
-		if (pCurEntity->IsDormant())
-			continue;
-
-		// Can't shoot ourself
-		if (i == iLocalPlayerIdx)
-			continue;
-
-		// If the possible target isn't alive
-		if (!pCurEntity->IsAlive())
-			continue;
-
-		// Only from enemy team & we don't want spectators or something
-		int entityTeam = pCurEntity->TeamNum();
-		if (entityTeam == localTeam || entityTeam == 0 || entityTeam == 1)
-			continue;
-
-		// Spawn protection
-		if (pCurEntity->IsInvincible())
-			continue;
-
-		// Bone ID: 8 (maybe 7=neck)
-		// 10 ca chest
-		//studiohdr_t* pModel = m_pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
-
-		// TODO
-		// 8, 10, 72, 79
-		bool isVisible = false;
-		int boneIdx[] = { 8, 10, 72, 79 };
-		int bone = 0;
-		int boneCount = sizeof(boneIdx) / sizeof(int);
-
-		mat3x4* boneMatrix;
-		Vector headPos;
-
-		for (bone = 0; bone < boneCount; bone++)
-		{
-			// Get matrix for current bone
-			boneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
-
-			// Get position
-			headPos.x = boneMatrix->c[0][3];
-			headPos.y = boneMatrix->c[1][3];
-			headPos.z = boneMatrix->c[2][3];
-
-			// Prediction
-			headPos += (*pCurEntity->Velocity() * pParam->fInputSampleTime);
-
-			ray.Init(myHeadPos, headPos);
-			m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-
-			if (trace.IsVisible(pCurEntity))
-			{
-				isVisible = true;
-				break;
-			}
-			/*else
-			{
-				m_iSelectedTarget = i;
-
-				FireBulletData data(myHeadPos, pLocalEntity);
-
-				QAngle angles;
-				Vector headPosTemp = headPos - myHeadPos;
-				angles = this->CalcAngle(headPosTemp);
-				AngleVectors(angles, &data.direction, NULL, NULL);
-				data.direction.Normalize();
-
-				if (SimulateFireBullet(pLocalEntity, true, data))
-				{
-					fDamage = data.current_damage;
-					if (fDamage > 0.0f)
-					{
-						isVisible = true;
-						break;
-					}
-				}
-			}*/
-		}
-
-		// Nothing visible :(
-		if (!isVisible)
-			continue;
-
-		switch (m_tTargetCriteria)
-		{
-		case TargetCriteriaOrigin:
-			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
-			if (fOriginDist < fLowestDist)
-			{
-				fLowestDist = fOriginDist;
-
-				m_iSelectedTarget = i;
-				targetPos = headPos;
-
-				continue;
-			}
-
-			break;
-		case TargetCriteriaViewangle:
-			// Get Origin distance for "real" FOV (independent of distance)
-			fOriginDist = this->GetOriginDist(myHeadPos, headPos);
-
-			// Relative position
-			headPos -= myHeadPos;
-			// Calc angle
-			m_qAimAngles = this->CalcAngle(headPos);
-
-			// Calculate our fov to the enemy
-			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles, fOriginDist));
-			// TODO: GetViewangleDist doesn't return a nice FOV, as it doesn't take fOriginDist into account (RIGHT NOW!)
-			if (fViewangleDist > m_fFov)
-			{
-				continue;
-			}
-			else if (fViewangleDist < fLowestDist)
-			{
-				fLowestDist = fViewangleDist;
-
-				m_iSelectedTarget = i;
-				targetAngles = m_qAimAngles;
-
-				continue;
-			}
-			break;
-		case TargetCriteriaUnspecified:
-			m_iSelectedTarget = i;
-			targetPos = headPos;
-
-			// Force the entityloop to exit out (break would only break switch)
-			i = iMaxEntities;
-			break;
-		}
-	}
-
-	// If we found no target just exit
-	if (m_iSelectedTarget == -1)
-		return;
-
-	// Save that we got a target :)
-	m_bHasTarget = true;
-
-	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
-		return;
-
-	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (pActiveWeapon->IsKnife() ||
-		pActiveWeapon->IsNade() ||
-		pActiveWeapon->IsC4() ||
-		pActiveWeapon->Clip1() == 0)
-		return;
-
-	CWeaponInfo* test = pActiveWeapon->GetWeaponInfo();
-
-	if (m_tTargetCriteria != TargetCriteriaViewangle)
-	{
-		// Get relative position to ourselves
-		targetPos -= myHeadPos;
-
-		// Calculate our viewangles to aim at the enemy
-		m_qAimAngles = this->CalcAngle(targetPos);
-	}
-	else
-	{
-		m_qAimAngles = targetAngles;
-	}
 
 	// Set ClientViewAngles if we don't have silentaim activated
+	// (we do so before applying NoRecoil :D)
 	if (!this->m_bSilentAim)
 	{
 		m_pApp->ClientViewAngles(m_qAimAngles);
 	}
 
-	// If we have no recoil activated in the aimbot, do it
-	// (and remember that we did!)
-	if (m_bDoNoRecoil)
-	{
-		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-		m_qAimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
-		m_qAimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
-
-		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
-
-		m_bDidNoRecoil = true;
-	}
-
-	pUserCmd->viewangles[0] = m_qAimAngles.x;
-	pUserCmd->viewangles[1] = m_qAimAngles.y;
-
-	float fNextattack = pActiveWeapon->NextPrimaryAttack();
-	float fServertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
-
-	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
-	{
-		if (this->m_bAutoscope)
-		{
-			if (pLocalEntity->IsScoped())
-			{
-				this->Shoot(pUserCmd, fNextattack, fServertime);
-			}
-			else
-			{
-				pUserCmd->buttons |= IN_ATTACK2;
-			}
-		}
-		else
-		{
-			this->Shoot(pUserCmd, fNextattack, fServertime);
-		}
-	}
-	else if (this->m_bAutoshoot && !pActiveWeapon->IsTaser())
-	{
-		this->Shoot(pUserCmd, fNextattack, fServertime);
-	}
-
-	/*static CConsole console;
-	console.Write("\n%.2f", fDamage);*/
-
+	// Do NoRecoil
+	this->ApplyNoRecoil(pLocalEntity);
+	// Apply viewangles & shoot if necessary
+	this->ApplyViewanglesAndShoot(pUserCmd, pLocalEntity);
+	
 	// TODO
 	//if (this->m_bIsShooting)
 	//	*m_pApp->m_bSendPackets = false;
@@ -557,39 +306,311 @@ bool CAimbot::SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulle
 	return false;
 }
 
-
-void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
+QAngle CAimbot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
 {
-	if (fNextPrimaryAttack <= fServerTime)
-	{
-		pUserCmd->buttons |= IN_ATTACK;
-		m_bIsShooting = true;
-	}
-}
-
-QAngle CAimbot::CalcAngle(Vector& relativeDist)
-{
+	Vector vRelativeDist = vEndPos - vStartPos;
 	QAngle qAngle(
-		RAD2DEG(-asinf(relativeDist.z / relativeDist.Length())),
-		RAD2DEG(atan2f(relativeDist.y, relativeDist.x)),
+		RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
+		RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
 		0.0f
 	);
 
 	return qAngle;
 }
 
-float CAimbot::GetOriginDist(Vector& a, Vector& b)
+float CAimbot::GetOriginDist(Vector& vSource, Vector& vTarget)
 {
-	return (b - a).Length();
+	return (vTarget - vSource).Length();
 }
 
-float CAimbot::GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance)
+float CAimbot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/)
 {
-	QAngle qDist = b - a;
+	QAngle qDist = qTarget - qSource;
 	qDist.Normalize();
 	float fAng = qDist.Length();
 
 	// Causes weird angles to have giant "fovs"
 	//return (sinf(DEG2RAD(fAng)) * fOriginDistance);
 	return fAng;
+}
+
+bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
+{
+	// No selected target
+	m_bHasTarget = false;
+	m_iSelectedTarget = -1;
+
+	int iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
+	IClientEntity* pLocalEntity = m_pEntityList->GetClientEntity(iLocalPlayerIdx);
+	IClientEntity* pCurEntity;
+	CWeapon* pMyActiveWeapon;
+	QAngle qAimAngles;
+	QAngle qLocalViewAngles;
+
+	// Return if localplayer invalid
+	if (!pLocalEntity)
+		return false;
+	
+	// Get headpos & add eyeoffset
+	Vector vMyHeadPos;
+	int iMyTeamNum;
+
+	Vector vTargetPos;
+	QAngle qTargetAngles;
+
+	mat3x4* pBoneMatrix;
+	Vector vEnemyHeadPos;
+
+	Ray_t ray;
+	trace_t trace;
+	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+	
+	float fViewangleDist;
+	float fOriginDist;
+	float fLowestDist = 999999.0f;
+	float fDamage;
+
+	// Grab my values
+	iMyTeamNum = pLocalEntity->TeamNum();
+	vMyHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * fInputSampleTime);
+	vMyHeadPos += *pLocalEntity->EyeOffset();
+	pMyActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	qLocalViewAngles = m_pApp->ClientViewAngles();
+	
+	// If we're not autoshooting or not attacking ourselves
+	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+		return false;
+
+	// If invalid weapon for aimbot
+	if (pMyActiveWeapon->IsKnife() ||
+		pMyActiveWeapon->IsNade() ||
+		pMyActiveWeapon->IsC4() ||
+		pMyActiveWeapon->Clip1() == 0)
+		return false;
+
+	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
+	for (int i = 1; i < iMaxEntities; i++)
+	{
+		pCurEntity = m_pEntityList->GetClientEntity(i);
+
+		// Filter entites
+		if (!pCurEntity)
+			continue;
+
+		// Skip dormant entities
+		if (pCurEntity->IsDormant())
+			continue;
+
+		// Can't shoot ourself
+		if (i == iLocalPlayerIdx)
+			continue;
+
+		// If the possible target isn't alive
+		if (!pCurEntity->IsAlive())
+			continue;
+
+		// Only from enemy team & we don't want spectators or something
+		int entityTeam = pCurEntity->TeamNum();
+		if (entityTeam == iMyTeamNum || entityTeam != 2 && entityTeam != 3)
+			continue;
+
+		// Spawn protection
+		if (pCurEntity->IsInvincible())
+			continue;
+
+		// Bone ID: 8 (maybe 7=neck)
+		// 10 ca chest
+		//studiohdr_t* pModel = m_pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
+
+		// TODO
+		// 8, 10, 72, 79
+		bool bIsHittable = false;
+		int boneIdx[] = { 8, 10, 72, 79 };
+		int bone = 0;
+		int boneCount = sizeof(boneIdx) / sizeof(int);
+
+		for (bone = 0; bone < boneCount; bone++)
+		{
+			// Get matrix for current bone
+			pBoneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
+
+			// Get position
+			vEnemyHeadPos.x = pBoneMatrix->c[0][3];
+			vEnemyHeadPos.y = pBoneMatrix->c[1][3];
+			vEnemyHeadPos.z = pBoneMatrix->c[2][3];
+
+			// Prediction
+			vEnemyHeadPos += (*pCurEntity->Velocity() * fInputSampleTime);
+
+			ray.Init(vMyHeadPos, vEnemyHeadPos);
+			m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+
+			if (trace.IsVisible(pCurEntity))
+			{
+				bIsHittable = true;
+				break;
+			}
+			/*else
+			{
+			m_iSelectedTarget = i;
+
+			FireBulletData data(myHeadPos, pLocalEntity);
+
+			QAngle angles;
+			Vector headPosTemp = headPos - myHeadPos;
+			angles = this->CalcAngle(headPosTemp);
+			AngleVectors(angles, &data.direction, NULL, NULL);
+			data.direction.Normalize();
+
+			if (SimulateFireBullet(pLocalEntity, true, data))
+			{
+			fDamage = data.current_damage;
+			if (fDamage > 0.0f)
+			{
+			isVisible = true;
+			break;
+			}
+			}
+			}*/
+		}
+
+		// Nothing visible :(
+		if (!bIsHittable)
+			continue;
+
+		switch (m_tTargetCriteria)
+		{
+		case TargetCriteriaOrigin:
+			fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyHeadPos);
+			if (fOriginDist < fLowestDist)
+			{
+				fLowestDist = fOriginDist;
+
+				m_iSelectedTarget = i;
+				vTargetPos = vEnemyHeadPos;
+
+				continue;
+			}
+
+			break;
+		case TargetCriteriaViewangle:
+			// Get Origin distance for "real" FOV (independent of distance)
+			//fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+
+			// Relative position
+			vEnemyHeadPos -= vMyHeadPos;
+			// Calc angle
+			m_qAimAngles = this->CalcAngle(vMyHeadPos, vEnemyHeadPos);
+
+			// Calculate our fov to the enemy
+			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles/*, fOriginDist*/));
+			// TODO: GetViewangleDist doesn't return a nice FOV, as it doesn't take fOriginDist into account (RIGHT NOW!)
+			if (fViewangleDist > m_fFov)
+			{
+				continue;
+			}
+			else if (fViewangleDist < fLowestDist)
+			{
+				fLowestDist = fViewangleDist;
+
+				m_iSelectedTarget = i;
+				qTargetAngles = m_qAimAngles;
+
+				continue;
+			}
+			break;
+		case TargetCriteriaUnspecified:
+			m_iSelectedTarget = i;
+			vTargetPos = vEnemyHeadPos;
+
+			// Force the entityloop to exit out (break would only break switch)
+			i = iMaxEntities;
+			break;
+		}
+	}
+
+	if (m_tTargetCriteria != TargetCriteriaViewangle)
+	{
+		// Calculate our viewangles to aim at the enemy
+		m_qAimAngles = this->CalcAngle(vMyHeadPos, vTargetPos);
+	}
+	else
+	{
+		// We already got our viewangles :)
+		m_qAimAngles = qTargetAngles;
+	}
+
+	return (m_iSelectedTarget != -1);
+}
+
+void CAimbot::ApplyNoRecoil(IClientEntity* pLocalEntity)
+{
+	// If we have no recoil activated in the aimbot, do it
+	// (and remember that we did!)
+	m_bDidNoRecoil = false;
+	if (m_bDoNoRecoil)
+	{
+		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
+		m_qAimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
+		m_qAimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
+
+		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
+		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+
+		m_bDidNoRecoil = true;
+	}
+}
+
+void CAimbot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity)
+{
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	float fNextattack = pActiveWeapon->NextPrimaryAttack();
+	float fServertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
+
+	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
+	{
+		if (this->m_bAutoscope)
+		{
+			if (pLocalEntity->IsScoped())
+			{
+				this->Shoot(pUserCmd, fNextattack, fServertime);
+			}
+			else
+			{
+				pUserCmd->buttons |= IN_ATTACK2;
+			}
+		}
+		else
+		{
+			this->Shoot(pUserCmd, fNextattack, fServertime);
+		}
+	}
+	else if (this->m_bAutoshoot && !pActiveWeapon->IsTaser())
+	{
+		this->Shoot(pUserCmd, fNextattack, fServertime);
+	}
+	else if(!this->m_bAutoshoot)
+	{
+		this->Aim(pUserCmd);
+	}
+}
+
+void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
+{
+	m_bIsShooting = false;
+	if (fNextPrimaryAttack <= fServerTime)
+	{
+		this->Aim(pUserCmd);
+
+		// Shoot
+		pUserCmd->buttons |= IN_ATTACK;
+		m_bIsShooting = true;
+	}
+}
+
+void inline CAimbot::Aim(CUserCmd* pUserCmd)
+{
+	// Write viewangles
+	pUserCmd->viewangles[0] = m_qAimAngles.x;
+	pUserCmd->viewangles[1] = m_qAimAngles.y;
 }

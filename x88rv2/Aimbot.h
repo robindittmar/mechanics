@@ -8,7 +8,6 @@
 #include "CGameTrace.h"
 #include "CWeapon.h"
 
-
 #define HITGROUP_HEAD		1
 #define HITGROUP_CHEST		2
 #define HITGROUP_STOMACH	3
@@ -50,6 +49,9 @@ struct AimbotUpdateParam
 	float fInputSampleTime;
 	CUserCmd* pUserCmd;
 };
+
+class IVEngineClient;
+class IClientEntityList;
 
 class CAimbot : public IFeature
 {
@@ -94,11 +96,20 @@ public:
 private:
 	bool SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulletData &data);
 
-	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
-	QAngle CalcAngle(Vector& relativeDist);
+	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
 
 	float GetOriginDist(Vector& a, Vector& b);
-	float GetViewangleDist(QAngle& a, QAngle& b, float fOriginDistance);
+	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);
+
+	// fInputSampleTime for predictions
+	bool ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd);
+	void ApplyNoRecoil(IClientEntity* pLocalEntity);
+	void ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity);
+	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
+	void inline Aim(CUserCmd* pUserCmd);
+
+	IVEngineClient* m_pEngineClient;
+	IClientEntityList* m_pEntityList;
 
 	bool m_bHasTarget;
 	int m_iSelectedTarget;

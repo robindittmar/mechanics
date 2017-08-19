@@ -229,7 +229,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 void CApplication::Setup()
 {
 	// Setup console
-	//g_pConsole = new CConsole();
+	g_pConsole = new CConsole();
 
 	// Create GUI (Window + all controls)
 	m_pWindow = new CWindow(30, 30, 500, 400, "I'm a title lel");
@@ -291,7 +291,7 @@ void CApplication::Setup()
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
 	// Print all classes & their properties
-	ClientClass* lClass = m_pClient->GetAllClasses();
+	/*ClientClass* lClass = m_pClient->GetAllClasses();
 	while(lClass)
 	{
 		g_pConsole->Write("%s\n", lClass->m_pNetworkName);
@@ -303,7 +303,7 @@ void CApplication::Setup()
 		}
 
 		lClass = lClass->m_pNext;
-	}
+	}*/
 
 	// Setups
 	this->m_aimbot.Setup();
