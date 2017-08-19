@@ -19,3 +19,4 @@ Priority Low
 --------------------------------------
 => https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events
 => Antiaim Wall detection
+=> Multipoint visibility check

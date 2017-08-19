@@ -114,6 +114,9 @@
     <ClCompile Include="Gui.cpp">
       <Filter>GUI\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="InputHandler.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -246,6 +249,9 @@
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GuiEvent.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputHandler.h">
       <Filter>GUI\Header Files</Filter>
     </ClInclude>
   </ItemGroup>

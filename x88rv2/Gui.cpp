@@ -1,5 +1,7 @@
 #include "Gui.h"
 
-void CreateGuiEvent()
+void CreateGuiEvent(CGuiEvent* pEvent)
 {
+	static bool isInitialized = false;
+	//static std::map<
 }
