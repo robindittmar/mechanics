@@ -13,7 +13,7 @@
 #define OFFSET_RANGE				0x86C
 #define OFFSET_RANGEMODIFIER		0x870
 
-#define OFFSET_THROWTIME			0x3354
+#define OFFSET_THROWTIME			0x3344
 
 enum ItemDefinitionIndex : int {
 	WEAPON_DEAGLE = 1,

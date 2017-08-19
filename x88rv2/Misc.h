@@ -3,8 +3,8 @@
 
 #include "Feature.h"
 
-#define OFFSET_NOFLASH 0xA304
-#define OFFSET_OBSERVER 0x3380
+#define OFFSET_NOFLASH 0xA2E4
+#define OFFSET_OBSERVER 0x3360
 
 #define MAXPACKETSCHOKED 16
 
@@ -22,6 +22,8 @@ struct Observers
 		this->Observing = ObservingEntNum;
 	}
 };
+
+typedef void(__fastcall* SetClanTag_t)(const char*, const char*);
 
 class CMisc : public IFeature
 {
@@ -63,6 +65,7 @@ public:
 	bool NoScope(unsigned int vguiPanel);
 	void AutoPistol(CUserCmd*);
 	void SpectatorList();
+	void SetClanTag(const char*);
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
@@ -72,6 +75,8 @@ private:
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
 	bool m_bOnlyMyTeamSpectators;
+
+	SetClanTag_t m_pSetClanTag;
 };
 
 

@@ -24,6 +24,12 @@ void CVisuals::Update(void* pParameters)
 
 void CVisuals::DrawCrosshair()
 {
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bCrosshair)
+		return;
+
 	const int crosshair_size = 20;
 
 	int iMidX = m_iSurfaceWidth / 2;
@@ -204,7 +210,7 @@ void CVisuals::Chams(const char* pszModelName, void* ecx, IMatRenderContext * ct
 		return;
 
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
-	static CXorString pModelsSlashPlayers("zdá§{ xª²{ jü§e");
+	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
 
 	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
 	{

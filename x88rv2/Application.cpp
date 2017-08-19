@@ -41,17 +41,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		__asm mov fp, ebp;
 		pApp->m_bSendPackets = (bool*)(*fp - 0x1C);
 		pApp->m_bGotSendPackets = true;
-
-		/*
-		Not working that well, as it changes @.code segment
-		pApp->m_bSendPackets = (bool*)(pApp->EngineDll() + 0xCAC4A);
-		VirtualProtect(pApp->m_bSendPackets, sizeof(bool), PAGE_EXECUTE_READWRITE, NULL);
-		pApp->m_bGotSendPackets = true;
-
-		/*DWORD dwOldProtection;
-		VirtualProtect(pApp->m_bSendPackets, sizeof(bool), PAGE_EXECUTE_READWRITE, &dwOldProtection);
-		printf("%d\n", dwOldProtection);
-		dwOldProtection = 0;*/
 	}
 
 	if (pApp->EngineClient()->IsInGame())
@@ -88,6 +77,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Set ViewAngles we prepared for display
 			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
+			//todo: check if fake and if sendpackets false
 			/*if (flip)
 			{*/
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
@@ -327,7 +317,7 @@ void CApplication::Setup()
 	this->m_esp.IsEnabled(true);
 	this->m_esp.ShouldDrawBoundingBox(true);
 	this->m_esp.ShouldDrawNames(true);
-	this->m_esp.ShouldDrawHealthBar(false);
+	this->m_esp.ShouldDrawHealthBar(true);
 	this->m_esp.ShouldDrawArmorBar(false);
 	this->m_esp.ShouldDrawOwnTeam(false);
 	this->m_esp.ShouldDrawOwnModel(true);
@@ -348,12 +338,12 @@ void CApplication::Setup()
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
-	this->m_visuals.Crosshair(false);
+	this->m_visuals.Crosshair(true);
 	this->m_visuals.Hitmarker(true);
 	this->m_visuals.IsNoSmoke(true);
 	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
 	this->m_visuals.IsNoVisualRecoil(true);
-	this->m_visuals.DrawChams(true);
+	this->m_visuals.DrawChams(false);
 
 	this->m_visuals.IsNoFlash(true);
 	this->m_visuals.NoFlashPercentage(0.f);
