@@ -26,7 +26,7 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	// Allow us to use (open doors, defuse bomb) and shoot normally
-	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK)
+	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK || pUserCmd->buttons & IN_ATTACK2)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -41,7 +41,7 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { PitchDown, YawBackwardsFakeRight };
+	AntiAim aa = { PitchDown, YawBackwards };
 	QAngle angles;
 	if(m_pApp->Aimbot()->HasTarget())
 	{

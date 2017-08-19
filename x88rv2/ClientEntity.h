@@ -14,17 +14,17 @@
 #define OFFSET_EYEPOS			0x104
 #define OFFSET_ORIGIN			0x134
 #define OFFSET_ACTIVEWEAPON		0x2EE8
-#define OFFSET_ISSCOPED			0x389C
+#define OFFSET_ISSCOPED			0x387C
 #define OFFSET_VELOCITY			0x110
 #define OFFSET_SPOTTED			0x939
 #define OFFSET_ARMOR			0xB248
-#define OFFSET_HELMET			0xB23C
+#define OFFSET_HELMET			0xB21C
 #define OFFSET_MOVETYPE			0x258
-#define OFFSET_TICKBASE			0x3424
-#define OFFSET_SHOTSFIRED		0x0A2C0
-#define OFFSET_SPAWNPROTECTION	0x38B0
-#define OFFSET_LOWERBODYYAW		0x39F8
-#define OFFSET_EYEANGLES		0xB24C
+#define OFFSET_TICKBASE			0x3404
+#define OFFSET_SHOTSFIRED		0xA2A0
+#define OFFSET_SPAWNPROTECTION	0x3890
+#define OFFSET_LOWERBODYYAW		0x39D8
+#define OFFSET_EYEANGLES		0xB22C
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground

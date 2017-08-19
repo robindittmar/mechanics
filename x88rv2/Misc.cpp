@@ -12,6 +12,7 @@ CMisc::~CMisc()
 void CMisc::Setup()
 {
 	m_pApp = CApplication::Instance();
+	m_pSetClanTag = (SetClanTag_t)CPattern::FindPattern((BYTE*)m_pApp->EngineDll(), 0x8C7000, (BYTE*)"\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15", "adhgezvel");
 }
 
 void CMisc::Update(void* pParameters)
@@ -298,4 +299,9 @@ void CMisc::SpectatorList()
 			m_pApp->Surface()->DrawPrintText(end, len);
 		}
 	}
+}
+
+void CMisc::SetClanTag(const char* tag)
+{
+	m_pSetClanTag(tag, "");
 }
