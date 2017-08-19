@@ -101,6 +101,10 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawHealthBar(screenOrigin.x, screenOrigin.y, height, width, health);
 			}
+			if (m_bDrawHealthNumber && health < 100)
+			{
+				DrawHealthNumber(screenOrigin.x, screenOrigin.y, height, width, health);
+			}
 
 			if (m_bDrawArmorBar)
 			{
@@ -263,6 +267,32 @@ void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
 		x2,
 		posY + 6);
 }
+void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int health)
+{
+	float healthpercentage = (100 - health) / 100.0f;
+	int x1 = posX - width / 2 - 8;
+	if (m_bDrawArmorBar)
+	{
+		x1 -= 6;
+	}
+	static unsigned long font = NULL;
+	if (font == NULL)
+	{
+		font = m_pApp->Surface()->SCreateFont();
+		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
+	}
+	m_pApp->Surface()->DrawSetTextFont(font);
+
+	wchar_t sHealth[16];
+	int iLen = swprintf(sHealth, 16, L"%d", health);
+
+	int w, h;
+	m_pApp->Surface()->GetTextSize(font, sHealth, w, h);
+
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextPos(x1 - w / 2, posY - (height - (height * healthpercentage)) - h / 2);
+	m_pApp->Surface()->DrawPrintText(sHealth, iLen);
+}
 void CEsp::DrawHelmet(int posX, int posY, int height, int width)
 {
 	//todo: iwie symbol zeichnen oder sonst etwas
@@ -294,6 +324,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
 }
+
 
 
 bool CEsp::ScreenTransform(const Vector& point, Vector& screen) {
