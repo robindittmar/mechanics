@@ -25,9 +25,6 @@ void CAntiAim::Update(void* pParameters)
 	if (!pUserCmd)
 		return;
 
-	/*static CConsole console;
-	console.Write("%d | %d\n", pUserCmd->command_number, pUserCmd->tick_count);*/
-
 	// Allow us to use (open doors, defuse bomb) and shoot normally
 	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK || pUserCmd->buttons & IN_ATTACK2)
 		return;
@@ -88,21 +85,9 @@ void CAntiAim::Update(void* pParameters)
 			trigger = 0.0f;
 		}
 		break;
-	case YawBackwardsFakeRight:
+	case YawBackwardsFakeRight: // TODO: Name isn't quiet right (it's fake left/right, real other direction rnow)
 		if(m_pApp->m_bGotSendPackets)
 		{
-			/*if(iCountFake < 8)
-			{
-				angles.y += 90.0f;
-				*m_pApp->m_bSendPackets = false;
-				iCountFake++;
-			}
-			else
-			{
-				angles.y -= 180.0f;
-				*m_pApp->m_bSendPackets = true;
-				iCountFake = 0;
-			}*/
 			if(bFakeAngles)
 			{
 				angles.y += 90.0f;

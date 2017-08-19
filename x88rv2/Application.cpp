@@ -131,6 +131,9 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			pApp->ClientHook()->Restore();
 			pApp->EngineModelHook()->Restore();
 			pApp->ClientModeHook()->Restore();
+
+			// Free console
+			delete g_pConsole;
 			
 			// Free & Exit
 			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, pApp->m_hModule, NULL, NULL);
@@ -278,19 +281,19 @@ void CApplication::Setup()
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
 	// Print all classes & their properties
-	/*ClientClass* lClass = m_pClient->GetAllClasses();
+	ClientClass* lClass = m_pClient->GetAllClasses();
 	while(lClass)
 	{
-		c.Write("%s\n", lClass->m_pNetworkName);
+		g_pConsole->Write("%s\n", lClass->m_pNetworkName);
 
 		RecvTable* pTable = lClass->m_pRecvTable;
 		for(int i = 0; i < pTable->m_nProps; i++)
 		{
-			c.Write("\t> %s\n", pTable->m_pProps[i].m_pVarName);
+			g_pConsole->Write("\t> %s\n", pTable->m_pProps[i].m_pVarName);
 		}
 
 		lClass = lClass->m_pNext;
-	}*/
+	}
 
 	// Setups
 	this->m_aimbot.Setup();
@@ -516,9 +519,7 @@ void ClampMovement(CUserCmd* pUserCmd)
 
 DWORD ThreadFreeLibrary(void* pParam)
 {
-	// Free console
-	//delete g_pConsole;
-
+	// Wait 1 sec for hooks to finish running
 	Sleep(1000);
 	FreeLibraryAndExitThread((HMODULE)pParam, 0);
 }
