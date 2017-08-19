@@ -497,8 +497,6 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 			// Get Origin distance for "real" FOV (independent of distance)
 			//fOriginDist = this->GetOriginDist(myHeadPos, headPos);
 
-			// Relative position
-			vEnemyHeadPos -= vMyHeadPos;
 			// Calc angle
 			m_qAimAngles = this->CalcAngle(vMyHeadPos, vEnemyHeadPos);
 
