@@ -8,13 +8,15 @@
 #include "CGameTrace.h"
 #include "CWeapon.h"
 
-#define HITGROUP_HEAD		1
-#define HITGROUP_CHEST		2
-#define HITGROUP_STOMACH	3
-#define HITGROUP_LEFTARM	4
-#define HITGROUP_RIGHTARM	5
-#define HITGROUP_LEFTLEG	6
-#define HITGROUP_RIGHTLEG	7
+#define HITGROUP_GENERIC		0
+#define HITGROUP_HEAD			1
+#define HITGROUP_CHEST			2
+#define HITGROUP_STOMACH		3
+#define HITGROUP_LEFTARM		4
+#define HITGROUP_RIGHTARM		5
+#define HITGROUP_LEFTLEG		6
+#define HITGROUP_RIGHTLEG		7
+#define HITGROUP_GEAR			10
 
 struct FireBulletData
 {
@@ -39,9 +41,9 @@ struct FireBulletData
 // -> Viewangle: Choose the target that's closest to your crosshair
 enum TargetCriteria_t
 {
-	TargetCriteriaUnspecified		= 0,
-	TargetCriteriaOrigin			= 1,
-	TargetCriteriaViewangle			= 2
+	TargetCriteriaUnspecified = 0,
+	TargetCriteriaOrigin = 1,
+	TargetCriteriaViewangle = 2
 };
 
 struct AimbotUpdateParam
@@ -69,7 +71,7 @@ public:
 	bool IsShooting() { return m_bIsShooting; }
 	// Returns wether or not the aimbot compensated for recoil
 	bool DidNoRecoil() { return m_bDidNoRecoil; }
-	
+
 	void IsAutoshoot(bool bAutoshoot) { m_bAutoshoot = bAutoshoot; }
 	bool IsAutoshoot() { return m_bAutoshoot; }
 
@@ -87,20 +89,20 @@ public:
 
 	void Speed(float fSpeed) { m_fSpeed = fSpeed; }
 	float Speed() { return m_fSpeed; }
-	
+
 	void Fov(float fFov) { m_fFov = fFov; }
 	float Fov() { return m_fFov; }
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
-	bool SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulletData &data);
-
 	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
+	bool CanHit(Vector &point, float *damage_given);
+
 
 	float GetOriginDist(Vector& a, Vector& b);
 	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);
-	
+
 	// Called each 'Update' (resets m_bIsShooting, m_bDidNoRecoil, etc)
 	void inline ResetTickVariables();
 	// fInputSampleTime for predictions
@@ -119,7 +121,7 @@ private:
 
 	bool m_bIsShooting;
 	bool m_bDidNoRecoil;
-	
+
 	bool m_bAutoshoot;
 	bool m_bAutoscope;
 	bool m_bSilentAim;

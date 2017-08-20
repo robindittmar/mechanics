@@ -1,29 +1,5 @@
 #include "CWeapon.h"
 
-float CWeaponInfo::ArmorRatio()
-{
-	return *(float*)((unsigned long)this + OFFSET_ARMORRATIO);
-}
-
-float CWeaponInfo::Penetration()
-{
-	return *(float*)((unsigned long)this + OFFSET_PENETRATION);
-}
-
-int CWeaponInfo::Damage()
-{
-	return *(int*)((unsigned long)this + OFFSET_DAMAGE);
-}
-
-float CWeaponInfo::Range()
-{
-	return *(float*)((unsigned long)this + OFFSET_RANGE);
-}
-
-float CWeaponInfo::RangeModifier()
-{
-	return *(float*)((unsigned long)this + OFFSET_RANGEMODIFIER);
-}
 
 int CWeapon::WeaponId()
 {
@@ -123,5 +99,10 @@ float CGrenade::ThrowTime()
 CWeaponInfo* CWeapon::GetWeaponInfo()
 {
 	typedef CWeaponInfo*(__thiscall* GetWeaponData_t)(void*);
-	return ((GetWeaponData_t)(*(void***)this)[456])(this);
+	return ((GetWeaponData_t)(*(void***)this)[446])(this);
+}
+
+float CWeapon::PostPoneFireReady()
+{
+	return *(float*)((unsigned long)this + OFFSET_POSTPONEFIREREADY);
 }

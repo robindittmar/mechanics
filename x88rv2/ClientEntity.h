@@ -232,7 +232,7 @@ public:
 	//virtual IClientModelRenderable*  GetClientModelRenderable() = 0;
 	virtual IClientAlphaProperty*      GetClientAlphaProperty() = 0;
 };
-
+ 
 class IClientEntity : public IClientUnknown, public IClientRenderable, public IClientNetworkable, public IClientThinkable
 {
 public:
