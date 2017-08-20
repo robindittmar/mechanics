@@ -82,107 +82,149 @@ void CAimbot::Update(void* pParameters)
 	//	*m_pApp->m_bSendPackets = false;
 }
 
-float GetHitgroupDamageMultiplier(int iHitGroup)
+inline bool DidHitWorld(IClientEntity* m_pEnt)
+{
+	return m_pEnt->EntIndex() == 0;
+}
+
+inline bool DidHitNonWorldEntity(IClientEntity* m_pEnt)
+{
+	return m_pEnt != NULL && !DidHitWorld(m_pEnt);
+}
+
+bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data);
+
+float GetHitgroupDamageMult(int iHitGroup)
 {
 	switch (iHitGroup)
 	{
 	case HITGROUP_HEAD:
-		return 4.0f;
+		return 2.0f;
+	case HITGROUP_STOMACH:
+		return 0.75f;
+	case HITGROUP_GENERIC:
 	case HITGROUP_CHEST:
 	case HITGROUP_LEFTARM:
 	case HITGROUP_RIGHTARM:
-		return 1.0f;
-	case HITGROUP_STOMACH:
-		return 1.25f;
+	case HITGROUP_GEAR:
+		return 0.5f;
 	case HITGROUP_LEFTLEG:
 	case HITGROUP_RIGHTLEG:
-		return 0.75f;
+		return 0.375f;
 	default:
 		return 1.0f;
+
+	}
+
+	return 1.0f;
+}
+
+void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage)
+{
+	current_damage *= GetHitgroupDamageMult(hitgroup);
+
+	if (enemy->Armor() > 0)
+	{
+		if (hitgroup == HITGROUP_HEAD)
+		{
+			if (enemy->HasHelmet())
+				current_damage *= (weapon_armor_ratio);
+		}
+		else
+		{
+			current_damage *= (weapon_armor_ratio);
+		}
 	}
 }
 
-void TraceLine(Vector vecAbsStart, Vector vecAbsEnd, unsigned int mask, IClientEntity* ignore, trace_t* ptr)
+void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, int collisionGroup, trace_t *ptr)
 {
-	Ray_t ray;
-	ray.Init(vecAbsStart, vecAbsEnd);
-	CTraceFilterSkipEntity filter(ignore);
-
-	CApplication::Instance()->EngineTrace()->TraceRay(ray, mask, &filter, ptr);
+	typedef int(__fastcall* UTIL_TraceLine_t)(const Vector&, const Vector&, unsigned int, const IClientEntity*, int, trace_t*);
+	static UTIL_TraceLine_t TraceLine = (UTIL_TraceLine_t)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x7C\x56\x52", "xxxxxxxxxxx");
+	TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
 }
 
-bool TraceToExit(Vector& end, trace_t* enter_trace, Vector start, Vector dir, trace_t* exit_trace) {
-	float distance = 0.0f;
+void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr)
+{
+	static DWORD dwAddress = (DWORD)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x00\x00\x00\x00\x8B\x43\x10", "xxxxxxxxxxxxxxxxxxxxxxxx----xxx");
 
-	while (distance <= 90.0f)
+	if (!dwAddress)
+		return;
+
+	_asm
 	{
-		distance += 4.0f;
-		end = start + dir * distance;
+		MOV		EAX, filter
+		LEA		ECX, tr
+		PUSH	ECX
+		PUSH	EAX
+		PUSH	mask
+		LEA		EDX, vecAbsEnd
+		LEA		ECX, vecAbsStart
+		CALL	dwAddress
+		ADD		ESP, 0xC
+	}
+}
 
-		auto point_contents = CApplication::Instance()->EngineTrace()->GetPointContents(end, MASK_SHOT_HULL | CONTENTS_HITBOX, NULL);
 
-		if (point_contents & MASK_SHOT_HULL && !(point_contents & CONTENTS_HITBOX))
-			continue;
 
-		auto new_end = end - (dir * 4.0f);
+bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &data)
+{
+	data.penetrate_count = 4;
+	data.trace_length = 0.0f;
+	auto *wpn_data = weapon->GetWeaponInfo();
+	data.current_damage = (float)wpn_data->iDamage;
 
-		Ray_t ray;
-		ray.Init(end, new_end);
-		CApplication::Instance()->EngineTrace()->TraceRay(ray, MASK_SHOT, 0, exit_trace);
+	while ((data.penetrate_count > 0) && (data.current_damage >= 1.0f))
+	{
+		data.trace_length_remaining = wpn_data->flRange - data.trace_length;
+		Vector End_Point = data.src + data.direction * data.trace_length_remaining;
 
-		if (exit_trace->startsolid && exit_trace->surface.flags & SURF_HITBOX)
+		UTIL_TraceLine(data.src, End_Point, 0x4600400B, local, 0, &data.enter_trace);
+		UTIL_ClipTraceToPlayers(data.src, End_Point * 40.f, 0x4600400B, &data.filter, &data.enter_trace);
+
+		if (data.enter_trace.fraction == 1.0f)
+			break;
+
+		if ((data.enter_trace.hitgroup <= 7) && (data.enter_trace.hitgroup > 0) && (local->TeamNum() != data.enter_trace.hit_entity->TeamNum()))
 		{
-			ray.Init(end, start);
-
-			CTraceFilterSkipEntity filter(exit_trace->hit_entity);
-
-			CApplication::Instance()->EngineTrace()->TraceRay(ray, 0x600400B, &filter, exit_trace);
-
-			if ((exit_trace->fraction < 1.0f || exit_trace->allsolid) && !exit_trace->startsolid)
-			{
-				end = exit_trace->endpos;
-				return true;
-			}
-
-			continue;
-		}
-
-		if (!(exit_trace->fraction < 1.0 || exit_trace->allsolid || exit_trace->startsolid) || exit_trace->startsolid)
-		{
-			if (exit_trace->hit_entity)
-			{
-				if (enter_trace->hit_entity && enter_trace->hit_entity == CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->Aimbot()->SelectedTarget()))
-					return true;
-			}
-
-			continue;
-		}
-
-		if (exit_trace->surface.flags >> 7 & 1 && !(enter_trace->surface.flags >> 7 & 1))
-			continue;
-
-		if (exit_trace->plane.normal.Dot(dir) <= 1.0f)
-		{
-			auto fraction = exit_trace->fraction * 4.0f;
-			end = end - (dir * fraction);
-
+			data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
+			data.current_damage *= pow(wpn_data->flRangeModifier, data.trace_length * 0.002);
+			ScaleDamage(data.enter_trace.hitgroup, data.enter_trace.hit_entity, wpn_data->flArmorRatio, data.current_damage);
 			return true;
 		}
-	}
 
+		if (!HandleBulletPenetration(wpn_data, data))
+			break;
+	}
 	return false;
+}
+
+bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* trace)
+{
+	typedef bool(__fastcall* TraceToExitFn)(Vector&, trace_t&, float, float, float, float, float, float, trace_t*);
+	static TraceToExitFn TraceToExit = (TraceToExitFn)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xEC\x30\xF3\x0F\x10\x75", "xxxxxxxxxx");
+
+	if (!TraceToExit)
+		return false;
+
+	return TraceToExit(end, tr, start.x, start.y, start.z, vEnd.x, vEnd.y, vEnd.z, trace);
+}
+
+inline vec_t VectorLength(const Vector& v)
+{
+	return (vec_t)sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
 bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
 {
 	surfacedata_t *enter_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(data.enter_trace.surface.surfaceProps);
 	int enter_material = enter_surface_data->game.material;
-	float enter_surf_penetration_mod = *(float*)((uint8_t*)enter_surface_data + 76);
+	float enter_surf_penetration_mod = enter_surface_data->game.flPenetrationModifier;
 
 	data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
-	data.current_damage *= powf(wpn_data->RangeModifier(), data.trace_length * 0.002f);
+	data.current_damage *= pow(wpn_data->flRangeModifier, (data.trace_length * 0.002));
 
-	if (data.trace_length > 3000.f || enter_surf_penetration_mod < 0.1f)
+	if ((data.trace_length > 3000.f) || (enter_surf_penetration_mod < 0.1f))
 		data.penetrate_count = 0;
 
 	if (data.penetrate_count <= 0)
@@ -191,42 +233,38 @@ bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
 	Vector dummy;
 	trace_t trace_exit;
 
-	if (!TraceToExit(dummy, &data.enter_trace, data.enter_trace.endpos, data.direction, &trace_exit))
+	if (!TraceToExit(dummy, data.enter_trace, data.enter_trace.endpos, data.direction, &trace_exit))
 		return false;
 
 	surfacedata_t *exit_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(trace_exit.surface.surfaceProps);
 	int exit_material = exit_surface_data->game.material;
-
-	float exit_surf_penetration_mod = *(float*)((uint8_t*)exit_surface_data + 76);
+	float exit_surf_penetration_mod = exit_surface_data->game.flPenetrationModifier;
 	float final_damage_modifier = 0.16f;
 	float combined_penetration_modifier = 0.0f;
 
-	if ((data.enter_trace.contents & CONTENTS_GRATE) != 0 || enter_material == 89 || enter_material == 71)
+	if (((data.enter_trace.contents & CONTENTS_GRATE) != 0) || (enter_material == 89) || (enter_material == 71))
 	{
-		combined_penetration_modifier = 3.0f;
-		final_damage_modifier = 0.05f;
+		combined_penetration_modifier = 3.0f; final_damage_modifier = 0.05f;
 	}
 	else
+	{
 		combined_penetration_modifier = (enter_surf_penetration_mod + exit_surf_penetration_mod) * 0.5f;
+	}
 
 	if (enter_material == exit_material)
 	{
-		if (exit_material == 87 || exit_material == 85)
-			combined_penetration_modifier = 3.0f;
-		else if (exit_material == 76)
-			combined_penetration_modifier = 2.0f;
+		if (exit_material == 87 || exit_material == 85)combined_penetration_modifier = 3.0f;
+		else if (exit_material == 76)combined_penetration_modifier = 2.0f;
 	}
 
 	float v34 = fmaxf(0.f, 1.0f / combined_penetration_modifier);
-	float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.0f, (3.0f / wpn_data->Penetration()) * 1.25f);
-	float thickness = (trace_exit.endpos - data.enter_trace.endpos).Length();
-
+	float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.f, (3.0f / wpn_data->flPenetration) * 1.25f);
+	float thickness = VectorLength(trace_exit.endpos - data.enter_trace.endpos);
 	thickness *= thickness;
 	thickness *= v34;
 	thickness /= 24.0f;
 
 	float lost_damage = fmaxf(0.0f, v35 + thickness);
-
 	if (lost_damage > data.current_damage)
 		return false;
 
@@ -242,71 +280,54 @@ bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
 	return true;
 }
 
-void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage)
+inline vec_t VectorNormalize(Vector& v)
 {
-	current_damage *= GetHitgroupDamageMultiplier(hitgroup);
+	vec_t l = v.Length();
 
-	if (enemy->Armor() > 0)
+	if (l != 0.0f)
 	{
-		if (hitgroup == HITGROUP_HEAD)
-		{
-			if (enemy->HasHelmet())
-				current_damage *= (weapon_armor_ratio * .5f);
-		}
-		else
-		{
-			current_damage *= (weapon_armor_ratio * .5f);
-		}
+		v /= l;
 	}
+	else
+	{
+		v.x = v.y = 0.0f; v.z = 1.0f;
+	}
+
+	return l;
 }
 
-bool CAimbot::SimulateFireBullet(IClientEntity *local, bool teamCheck, FireBulletData &data)
+bool CAimbot::CanHit(Vector &point, float *damage_given)
 {
-	CWeaponInfo* weaponInfo = ((CWeapon*)local->ActiveWeapon())->GetWeaponInfo();
+	IClientEntity* local = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
-	data.penetrate_count = 4;
-	data.trace_length = 0.0f;
-	data.current_damage = (float)weaponInfo->Damage();
+	FireBulletData data(*local->Origin() + *local->EyeOffset(), local);
 
-	while (data.penetrate_count > 0 && data.current_damage >= 1.0f)
+	Vector angles = CalcAngle(data.src, point);
+	AngleVectors(angles, &data.direction);
+	VectorNormalize(data.direction);
+
+	if (SimulateFireBullet(local, (CWeapon*)local->ActiveWeapon(), data))
 	{
-		data.trace_length_remaining = weaponInfo->Range() - data.trace_length;
+		*damage_given = data.current_damage;
 
-		Vector end = data.src + data.direction * data.trace_length_remaining;
-
-		// data.enter_trace
-		TraceLine(data.src, end, MASK_SHOT, local, &data.enter_trace);
-
-		Ray_t ray;
-		ray.Init(data.src, end + data.direction * 40.f);
-
-		m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &data.filter, &data.enter_trace);
-
-		TraceLine(data.src, end + data.direction * 40.f, MASK_SHOT, local, &data.enter_trace);
-
-		if (data.enter_trace.fraction == 1.0f)
-			break;
-
-		if (data.enter_trace.hitgroup <= HITGROUP_RIGHTLEG && data.enter_trace.hitgroup > 0)
-		{
-			data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
-			data.current_damage *= powf(weaponInfo->RangeModifier(), data.trace_length * 0.002f);
-
-			IClientEntity* player = (IClientEntity*)data.enter_trace.hit_entity;
-			if (teamCheck && player->TeamNum() == local->TeamNum())
-				return false;
-
-			ScaleDamage(data.enter_trace.hitgroup, player, weaponInfo->ArmorRatio(), data.current_damage);
-
-			return true;
-		}
-
-		if (!HandleBulletPenetration(weaponInfo, data))
-			break;
+		return true;
 	}
-
 	return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 QAngle CAimbot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
 {
@@ -452,34 +473,18 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			ray.Init(vMyHeadPos, vEnemyHeadPos);
 			m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-
-			if (trace.IsVisible(pCurEntity))
+			/*float Damage = 0.f;
+			if (CanHit(vEnemyHeadPos, &Damage))
+			{
+				g_pConsole->Write("%d\n", Damage);
+				bIsHittable = true;
+				break;
+			}
+			else*/ if (trace.IsVisible(pCurEntity))
 			{
 				bIsHittable = true;
 				break;
 			}
-			/*else
-			{
-			m_iSelectedTarget = i;
-
-			FireBulletData data(myHeadPos, pLocalEntity);
-
-			QAngle angles;
-			Vector headPosTemp = headPos - myHeadPos;
-			angles = this->CalcAngle(headPosTemp);
-			AngleVectors(angles, &data.direction, NULL, NULL);
-			data.direction.Normalize();
-
-			if (SimulateFireBullet(pLocalEntity, true, data))
-			{
-			fDamage = data.current_damage;
-			if (fDamage > 0.0f)
-			{
-			isVisible = true;
-			break;
-			}
-			}
-			}*/
 		}
 
 		// Nothing visible :(

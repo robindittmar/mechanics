@@ -70,6 +70,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
 
+			pApp->Misc()->AutoRevolver(pUserCmd);
+
 			// Update Aimbot
 			AimbotUpdateParam aimBotParam = { fInputSampleTime, pUserCmd };
 			pApp->Aimbot()->Update((void*)&aimBotParam);
@@ -559,6 +561,8 @@ void CApplication::Hook()
 
 	m_pClientHook = new VTableHook((DWORD*) this->m_pClient, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
+
+	//m_pGetViewModelFov = (GetViewModelFov_t)m_pClientHook(35, );
 
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);

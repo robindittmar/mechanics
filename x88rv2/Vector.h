@@ -447,6 +447,6 @@ public:
 
 void inline SinCos(float radians, float *sine, float *cosine);
 void VectorAngles(const float *forward, float *angles);
-void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *up);
+void AngleVectors(const QAngle &angles, Vector *forward = NULL, Vector *right = NULL, Vector *up = NULL);
 
 #endif // __VECTOR_H__

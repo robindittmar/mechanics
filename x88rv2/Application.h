@@ -64,9 +64,11 @@ typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
+typedef float(__thiscall* GetViewModelFov_t)(void*);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
+
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
@@ -173,9 +175,12 @@ private:
 	static OverrideView_t m_pOverrideView;
 	static DrawModelExecute_t m_pDrawModelExecute;
 	static PaintTraverse_t m_pPaintTraverse;
+	static GetViewModelFov_t m_pGetViewModelFov;
 
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
+
+	
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;

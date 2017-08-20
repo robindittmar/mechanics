@@ -66,6 +66,7 @@ public:
 	void AutoPistol(CUserCmd*);
 	void SpectatorList();
 	void SetClanTag(const char*);
+	void AutoRevolver(CUserCmd*);
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;

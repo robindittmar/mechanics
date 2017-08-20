@@ -168,6 +168,9 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 	if (!activeWeapon->IsPistol())
 		return;
 
+	if (activeWeapon->WeaponId() == WEAPON_REVOLVER)
+		return;
+
 	float nextattack = activeWeapon->NextPrimaryAttack();
 	float servertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
 	if (nextattack > servertime)
@@ -304,4 +307,28 @@ void CMisc::SpectatorList()
 void CMisc::SetClanTag(const char* tag)
 {
 	m_pSetClanTag(tag, "");
+}
+
+void CMisc::AutoRevolver(CUserCmd* pUserCmd)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_pApp->Aimbot()->IsEnabled())
+		return;
+
+	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	if (activeWeapon->WeaponId() != WEAPON_REVOLVER)
+		return;
+
+	if (activeWeapon->Clip1() == 0)
+		return;
+
+	pUserCmd->buttons |= IN_ATTACK;
+	float flPostponeFireReady = activeWeapon->PostPoneFireReady();
+	if (flPostponeFireReady > 0 && flPostponeFireReady - .1f < m_pApp->GlobalVars()->curtime)
+	{
+		pUserCmd->buttons &= ~IN_ATTACK;
+	}
 }
