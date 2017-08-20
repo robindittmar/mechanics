@@ -11,9 +11,21 @@ int main(int argc, char** argv)
 {
 	CXorString strings[]{
 		CXorString("models/player"),
-		CXorString("a{í»dbæ±9oé®")
+		CXorString("cl_mouseenable 0"),
+		CXorString("cl_mouseenable 1"),
+		CXorString("tgÚ¯x~ö§reä {n¥ò"),
+		CXorString("tgÚ¯x~ö§reä {n¥ó"),
+		CXorString("VEngineRenderView014"),
+		// "VertexLitGeneric" : "UnlitGeneric"
+		CXorString("VertexLitGeneric"),
+		CXorString("UnlitGeneric"),
+		CXorString("An÷¶rsÉ«cLà¬ryì¡"),
+		CXorString("Beé«cLà¬ryì¡"),
+		CXorString("xhmat_%d.vmt"),
+		CXorString("Counter-Strike: Global Offensive"),
+		CXorString("Tdğ¬cn÷ïD÷«|n¿âPgê vg¥qmà¬dbó§")
 	};
-
+	
 	CXorString byteStrings[] {
 		CXorString("\xA1\x00\x00\x00\x00\x6A\x00\x6A\x00\x6A\x00\x8B\x08\x6A\x00\x50\xFF\x51\x44")
 	};
@@ -22,11 +34,13 @@ int main(int argc, char** argv)
 		19
 	};
 
+	FILE* fp = fopen("xor.txt", "w");
 	int countstr = sizeof(strings) / sizeof(CXorString);
 	for (int i = 0; i < countstr; i++)
 	{
-		printf("%s\n", strings[i]);
+		fprintf(fp, "%s\n", strings[i]);
 	}
+	fclose(fp);
 
 	int countbytestr = sizeof(byteStrings) / sizeof(CXorString);
 	for (int i = 0; i < countbytestr; i++)

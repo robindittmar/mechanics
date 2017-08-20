@@ -1,13 +1,10 @@
 #include "Window.h"
 
-CWindow::CWindow(int x, int y, int w, int h, const char* pTitle)
+CWindow::CWindow(int x, int y, int w, int h, const char* pTitle) : IControl(x, y, w, h)
 {
 	m_bIsVisible = false;
 
-	m_iX = x;
-	m_iY = y;
-	m_iWidth = w;
-	m_iHeight = h;
+	m_bIsDragging = false;
 
 	m_pTitle = NULL;
 	m_pTitleW = NULL;
@@ -16,16 +13,6 @@ CWindow::CWindow(int x, int y, int w, int h, const char* pTitle)
 
 CWindow::~CWindow()
 {
-	for (std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)
-	{
-		IControl* p = *it;
-
-		if (p)
-		{
-			delete p;
-		}
-	}
-
 	if (m_pTitleW)
 		delete[] m_pTitleW;
 
@@ -33,19 +20,61 @@ CWindow::~CWindow()
 		delete[] m_pTitle;
 }
 
-bool CWindow::AddChild(IControl* pControl)
+void CWindow::ProcessEvent(CInputEvent* pEvent)
 {
-	m_pChildren.push_back(pControl);
-	return true;
+	if (!m_bIsEnabled)
+		return;
+
+	CGui* pGui = CGui::Instance();
+
+	if(pEvent->eventType == EVENT_TYPE_MOUSE)
+	{
+		if(pEvent->buttons & EVENT_BTN_LMOUSE)
+		{
+			if(pEvent->buttonProperties & EVENT_BTN_LMOUSE) // Mouse down
+			{
+				if (pGui->IsMouseInRect(m_iX, m_iY - TITLEBAR_HEIGHT, m_iWidth, TITLEBAR_HEIGHT))
+				{
+					m_iDragOffsetX = pEvent->mousex - m_iX;
+					m_iDragOffsetY = pEvent->mousey - m_iY;
+					m_bIsDragging = true;
+				}
+			}
+			else // Mouse up
+			{
+				m_bIsDragging = false;
+			}
+		}
+
+		if(m_bIsDragging)
+		{
+			m_iX = pEvent->mousex - m_iDragOffsetX;
+			m_iY = pEvent->mousey - m_iDragOffsetY;
+
+			// Prevent clipping X
+			if (m_iX < 0)
+				m_iX = 0;
+			else if (m_iX + m_iWidth > pGui->ScreenWidth())
+				m_iX = pGui->ScreenWidth() - m_iWidth;
+
+			// Prevent clipping Y
+			if (m_iY - TITLEBAR_HEIGHT < 0)
+				m_iY = TITLEBAR_HEIGHT;
+			else if (m_iY + m_iHeight > pGui->ScreenHeight())
+				m_iY = pGui->ScreenHeight() - m_iHeight;
+		}
+	}
+
+	IControl::ProcessEvent(pEvent);
 }
 
 void CWindow::Draw(ISurface* pSurface)
 {
-	if (!m_bIsVisible)
+	if (!m_bIsVisible || !m_bIsEnabled)
 		return;
 
 	// Draw titlebar
-	pSurface->DrawSetColor(255, 100, 100, 100);
+	pSurface->DrawSetColor(255, 150, 150, 150);
 	pSurface->DrawFilledRect(m_iX, m_iY - TITLEBAR_HEIGHT, m_iX + m_iWidth, m_iY + TITLEBAR_HEIGHT);
 
 	// TODO
@@ -53,7 +82,7 @@ void CWindow::Draw(ISurface* pSurface)
 	if (iFont == NULL)
 	{
 		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 16, 255, 0, 0, 0x200);
+		pSurface->SetFontGlyphSet(iFont, "Arial", 20, 255, 0, 0, 0x200);
 	}
 	
 	// Draw title
@@ -65,20 +94,19 @@ void CWindow::Draw(ISurface* pSurface)
 	pSurface->DrawPrintText(m_pTitleW, m_iLenTitle);
 
 	// Draw client region
-	pSurface->DrawSetColor(255, 200, 200, 200);
+	pSurface->DrawSetColor(150, 230, 230, 230);
 	pSurface->DrawFilledRect(m_iX, m_iY, m_iX + m_iWidth, m_iY + m_iHeight);
 
-	for (std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)
-	{
-		IControl* p = *it;
-		p->Draw(pSurface, m_iX, m_iY);
-	}
+	IControl::Draw(pSurface);
 }
 
 void CWindow::Title(const char* pTitle)
 {
 	if (m_pTitle)
 		delete[] m_pTitle;
+
+	if (m_pTitleW)
+		delete[] m_pTitleW;
 
 	m_iLenTitle = strlen(pTitle) + 1;
 	m_pTitle = new char[m_iLenTitle];

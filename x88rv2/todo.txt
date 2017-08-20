@@ -4,13 +4,12 @@ Priority High
 ==> AUTOWALL!
 => GUI/Menu
 => ConVar->FindVar(...)
-=> Unhook [X]
-=> Aimbot GetViewangleDist(...) [X]
+=> Netvars
 
 --------------------------------------
 Priority Medium
 --------------------------------------
-=> bPacketSend arbeitsweise rausfinden
+=> psilent?
 => Skin changer
 => Viewmodel changer (viewmodel position)
 
@@ -20,3 +19,4 @@ Priority Low
 => https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events
 => Antiaim Wall detection
 => Multipoint visibility check
+=> AntiAim target von aimbot wenn möglich, sonst closest to origin

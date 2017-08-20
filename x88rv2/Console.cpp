@@ -17,9 +17,6 @@ CConsole::CConsole()
 
 CConsole::~CConsole()
 {
-	CloseHandle(m_hOut);
-	CloseHandle(m_hIn);
-
 	FreeConsole();
 }
 

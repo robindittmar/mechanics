@@ -1,7 +1,7 @@
 #ifndef __MISC_H__
 #define __MISC_H__
 
-#include "Feature.h"
+#include "IFeature.h"
 
 #define OFFSET_NOFLASH 0xA2E4
 #define OFFSET_OBSERVER 0x3360
@@ -31,29 +31,29 @@ public:
 	CMisc();
 	~CMisc();
 
-	void IsNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; };
-	bool IsNoRecoil() { return m_bNoRecoil; };
+	void SetNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; };
+	bool GetNoRecoil() { return m_bNoRecoil; };
 
-	void IsFakelag(bool bFakelag) { m_bFakelag = bFakelag; };
-	bool IsFakelag() { return m_bFakelag; };
+	void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; };
+	bool GetFakelag() { return m_bFakelag; };
 
-	void IsAutoStrafe(bool bAutoStrafe) { m_bAutoStrafe = bAutoStrafe; };
-	bool IsAutoStrafe() { return m_bAutoStrafe; };
+	void SetAutoStrafe(bool bAutoStrafe) { m_bAutoStrafe = bAutoStrafe; };
+	bool GetAutoStrafe() { return m_bAutoStrafe; };
 
-	void IsNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
-	bool IsNoScope() { return m_bNoScope; };
+	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
+	bool GetNoScope() { return m_bNoScope; };
 
-	void IsAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
-	bool IsAutoPistol() { return m_bAutoPistol; };
+	void SetAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
+	bool GetAutoPistol() { return m_bAutoPistol; };
 
-	void ShowSpectators(bool bSpectators) { m_bSpectators = bSpectators; };
-	bool ShowSpectators() { return m_bSpectators; };
+	void SetShowSpectators(bool bSpectators) { m_bSpectators = bSpectators; };
+	bool GetShowSpectators() { return m_bSpectators; };
 
-	void ShowOnlyMySpectators(bool bOnlyMySpectators) { m_bOnlyMySpectators = bOnlyMySpectators; };
-	bool ShowOnlyMySpectators() { return m_bOnlyMySpectators; };
+	void SetShowOnlyMySpectators(bool bOnlyMySpectators) { m_bOnlyMySpectators = bOnlyMySpectators; };
+	bool GetShowOnlyMySpectators() { return m_bOnlyMySpectators; };
 
-	void ShowOnlyMyTeamSpectators(bool bOnlyMyTeamSpectators) { m_bOnlyMyTeamSpectators = bOnlyMyTeamSpectators; };
-	bool ShowOnlyMyTeamSpectators() { return m_bOnlyMyTeamSpectators; };
+	void SetShowOnlyMyTeamSpectators(bool bOnlyMyTeamSpectators) { m_bOnlyMyTeamSpectators = bOnlyMyTeamSpectators; };
+	bool GetShowOnlyMyTeamSpectators() { return m_bOnlyMyTeamSpectators; };
 
 	virtual void Setup();
 	virtual void Update(void* pParameters);

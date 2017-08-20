@@ -1,27 +1,30 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-//
+// Custom includes
 #include "Console.h"
 #include "Pattern.h"
 #include "XorString.h"
+#include "VTableHook.h"
 #include "Gui.h"
+#include "InputHandler.h"
+#include "Controls.h"
+#include "GameEventListener.h"
+#include "ResourceManager.h"
 
 // Features
 #include "Aimbot.h"
 #include "Antiaim.h"
 #include "Bhop.h"
 #include "ESP.h"
+#include "Chams.h"
 #include "Misc.h"
 #include "Visuals.h"
-
-// Game Event listener
-#include "GameEventListener.h"
 
 // Source Engine
 #include "CreateInterface.h"
 #include "VEngineClient.h"
-#include "BaseClientDLL.h"
+#include "IBaseClientDLL.h"
 #include "ClientEntity.h"
 #include "ClientEntityList.h"
 #include "ClientFrameStage.h"
@@ -36,8 +39,11 @@
 #include "ISurface.h"
 #include "IGameEventManager.h"
 #include "IPhysicsSurfaceProps.h"
-
-#include "VTableHook.h"
+#include "CViewSetup.h"
+#include "CGlobalVars.h"
+#include "IVModelRender.h"
+#include "IVRenderView.h"
+#include "KeyValues.h"
 
 #define OFFSET_LOCAL 0x2FAC
 #define OFFSET_AIMPUNCHANGLE 0x70
@@ -51,68 +57,16 @@
 #define DEG2RAD(x)	((x / 180.0f) * PI_F)
 #define RAD2DEG(x)	((x * 180.0f) / PI_F)
 
-struct CViewSetup
-{
-	char _0x0000[16];
-	__int32 x;
-	__int32 x_old;
-	__int32 y;
-	__int32 y_old;
-	__int32 width;
-	__int32    width_old;
-	__int32 height;
-	__int32    height_old;
-	char _0x0030[128];
-	float fov;
-	float fovViewmodel;
-	Vector origin;
-	Vector angles;
-	float zNear;
-	float zFar;
-	float zNearViewmodel;
-	float zFarViewmodel;
-	float m_flAspectRatio;
-	float m_flNearBlurDepth;
-	float m_flNearFocusDepth;
-	float m_flFarFocusDepth;
-	float m_flFarBlurDepth;
-	float m_flNearBlurRadius;
-	float m_flFarBlurRadius;
-	float m_nDoFQuality;
-	__int32 m_nMotionBlurMode;
-	char _0x0104[68];
-	__int32 m_EdgeBlur;
-};
-class IClientMode;
-class IMatRenderContext;
-class DrawModelState_t;
+#define CLIENTDLL_SIZE	0x50E5000
 
-class CGlobalVars
-{
-public:
-	float    realtime;
-	int      framecount;
-	float    absoluteframetime;
-	float    absoluteframestarttimestddev;
-	float    curtime;
-	float    frametime;
-	int      maxClients;
-	int      tickcount;
-	float    interval_per_tick;
-	float    interpolation_amount;
-	int      simTicksThisFrame;
-	int      network_protocol;
-	void*    pSaveData;
-	bool     m_bClient;
-	int      nTimestampNetworkingBase;
-	int      nTimestampRandomizeWindow;
-};
-
-typedef bool(__thiscall* CreateMove_t)(void*, float, CUserCmd*);
+typedef bool(__thiscall *CreateMove_t)(void*, float, CUserCmd*);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
-typedef void*(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext* ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t* pCustomBoneToWorld);
+typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
+
+typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
+typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
@@ -126,6 +80,7 @@ class CApplication
 public:
 	static CApplication* Instance();
 	void Run(HMODULE hModule);
+	void Detach();
 
 	// VTable Hooks
 	VTableHook* ClientModeHook() { return m_pClientModeHook; }
@@ -133,12 +88,26 @@ public:
 	VTableHook* ClientHook() { return m_pClientHook; }
 	VTableHook* VguiHook() { return m_pVguiHook; }
 
+	// Exposed callable engine functions
+	CreateMove_t CreateMove() { return m_pCreateMove; }
+	FrameStageNotify_t FrameStageNotify() { return m_pFrameStageNotify; }
+	OverrideView_t OverrideView() { return m_pOverrideView; }
+	DrawModelExecute_t DrawModelExecute() { return m_pDrawModelExecute; }
+	PaintTraverse_t PaintTraverse() { return m_pPaintTraverse; }
+
+	InitKeyValues_t InitKeyValues() { return m_pInitKeyValues; }
+	LoadFromBuffer_t LoadFromBuffer() { return m_pLoadFromBuffer; }
+
+	//void InitKeyValues(KeyValues*, const char*);
+	void LoadFromBuffer(KeyValues*, const char*, const char*);
+
 	// Engine Pointer
 	IVEngineClient* EngineClient() { return m_pEngineClient; }
 	IBaseClientDLL* BaseClient() { return m_pClient; }
 	IClientEntityList* EntityList() { return m_pEntityList; }
 	IVModelInfo* ModelInfo() { return m_pModelInfo; }
 	IVModelRender* ModelRender() { return m_pModelRender; }
+	IVRenderView* RenderView() { return m_pRenderView; }
 	IEngineTrace* EngineTrace() { return m_pEngineTrace; }
 	IMaterialSystem* MaterialSystem() { return m_pMaterialSystem; }
 	CInput* Input() { return m_pInput; }
@@ -161,8 +130,15 @@ public:
 	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim; }
 	CBhop* Bhop() { return (CBhop*)&m_bhop; }
 	CEsp* Esp() { return (CEsp*)&m_esp; }
+	CChams* Chams() { return (CChams*)&m_chams; }
 	CMisc* Misc() { return (CMisc*)&m_misc; }
 	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
+
+	// Resource Manager
+	CResourceManager* ResourceManager() { return &m_resourceManager; }
+
+	// Gui
+	CGui* Gui() { return m_pGui; }
 
 	// Client ViewAngles
 	QAngle& ClientViewAngles() { return m_qClientViewAngles; }
@@ -181,8 +157,6 @@ public:
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
 	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
-
-	DrawModelExecute_t DrawModelExecute() { return m_pDrawModelExecute; }
 private:
 	void Setup();
 	void Hook();
@@ -200,11 +174,15 @@ private:
 	static DrawModelExecute_t m_pDrawModelExecute;
 	static PaintTraverse_t m_pPaintTraverse;
 
+	InitKeyValues_t m_pInitKeyValues;
+	LoadFromBuffer_t m_pLoadFromBuffer;
+
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;
 	IClientEntityList* m_pEntityList;
 	IVModelInfo* m_pModelInfo;
 	IVModelRender* m_pModelRender;
+	IVRenderView* m_pRenderView;
 	IEngineTrace* m_pEngineTrace;
 	IMaterialSystem* m_pMaterialSystem;
 	CInput* m_pInput;
@@ -229,14 +207,23 @@ private:
 	CAntiAim m_antiAim;
 	CBhop m_bhop;
 	CEsp m_esp;
+	CChams m_chams;
 	CMisc m_misc;
 	CVisuals m_visuals;
 
 	// Event listener
 	CGameEventListener m_gameEventListener;
 
+	// Resource Manager
+	CResourceManager m_resourceManager;
+
 	// Hack GUI
+	CGui* m_pGui;
+	CInputEvent m_inputEvent;
+	CInputHandler m_inputHandler;
 	CWindow* m_pWindow;
+
+	CCheckbox* m_pGuiThirdpersonCheckbox;
 
 	// Singleton
 	CApplication();

@@ -1,7 +1,7 @@
 #ifndef __BHOP_H__
 #define __BHOP_H__
 
-#include "Feature.h"
+#include "IFeature.h"
 #include "UserCmd.h"
 
 class CApplication;

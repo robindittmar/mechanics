@@ -35,7 +35,7 @@ void CEsp::Update(void* pParameters)
 		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
 		int entityTeam = pEntity->TeamNum();
 
-		if (!(isLocalPlayer && m_pApp->Visuals()->IsThirdperson() && m_bDrawOwnModel ||
+		if (!(isLocalPlayer && m_pApp->Visuals()->GetThirdperson() && m_bDrawOwnModel ||
 			!isLocalPlayer && m_bDrawOwnTeam && entityTeam == localTeam ||
 			entityTeam != localTeam) ||
 			entityTeam == 0)

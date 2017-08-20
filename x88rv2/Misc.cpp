@@ -34,14 +34,14 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
 	if (activeWeapon->IsNade() ||
-		activeWeapon->IsPistol() && !m_pApp->Visuals()->IsNoVisualRecoil()) //todo: maybe norecoil while pistol
+		activeWeapon->IsPistol() && !m_pApp->Visuals()->GetNoVisualRecoil()) //todo: maybe norecoil while pistol
 		return;
 
 	if (m_pApp->Aimbot()->DidNoRecoil())
 		return;
 
 	int shotsFired = pLocalEntity->ShotsFired();
-	if (m_pApp->Visuals()->IsNoVisualRecoil())
+	if (m_pApp->Visuals()->GetNoVisualRecoil())
 	{
 		QAngle aimPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 		pUserCmd->viewangles[0] -= aimPunch.x * RECOIL_COMPENSATION;

@@ -22,6 +22,21 @@ void CVisuals::Update(void* pParameters)
 		return;
 }
 
+void CVisuals::TriggerHitmarker(float fTime)
+{
+	m_fDrawHitmarker = fTime;
+}
+
+void CVisuals::UpdateHitmarker(float fInputSampleTime)
+{
+	if (!m_bHitmarker)
+		return;
+
+	m_fDrawHitmarker -= fInputSampleTime;
+	if (m_fDrawHitmarker < 0.0f)
+		m_fDrawHitmarker = 0.0f;
+}
+
 void CVisuals::DrawCrosshair()
 {
 	if (!m_bIsEnabled)
@@ -45,15 +60,18 @@ void CVisuals::DrawCrosshair()
 	// Inner crosshair
 	pSurface->DrawSetColor(255, 255, 0, 0);
 	pSurface->DrawLine(iMidX - (crosshair_size / 2), iMidY, iMidX + (crosshair_size / 2), iMidY);
-	pSurface->DrawLine(iMidX , iMidY - (crosshair_size / 2), iMidX, iMidY + (crosshair_size / 2));
+	pSurface->DrawLine(iMidX, iMidY - (crosshair_size / 2), iMidX, iMidY + (crosshair_size / 2));
 }
 
 void CVisuals::DrawHitmarker()
 {
+	if (!m_bHitmarker)
+		return;
+
 	const int hitmarker_gap = 10;
 	const int hitmarker_size = 10;
 
-	if(m_fDrawHitmarker > 0.0f && m_bHitmarker)
+	if (m_fDrawHitmarker > 0.0f && m_bHitmarker)
 	{
 		int iMidX = m_iSurfaceWidth / 2;
 		int iMidY = m_iSurfaceHeight / 2;
@@ -76,7 +94,7 @@ void CVisuals::NoFlash()
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + OFFSET_NOFLASH) = 255.0f - (255.0f * (1.0f - m_iNoFlashPercentage));
+	*(float*)((DWORD)pLocalEntity + OFFSET_NOFLASH) = 255.0f - (255.0f * (1.0f - m_fFlashPercentage));
 }
 
 void CVisuals::NoSmoke()
@@ -107,8 +125,8 @@ void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderCon
 	if (!m_bIsEnabled)
 		return;
 
-	if (m_tHandsDrawStyle == HandsDrawStyleNone)
-		return;
+	/*if (m_tHandsDrawStyle == HandsDrawStyleNone)
+	return;*/
 
 	static CXorString pArms("vyè±");
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
@@ -121,14 +139,20 @@ void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderCon
 		{
 		case HandsDrawStyleNoHands:
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 			break;
 		case HandsDrawStyleWireframe:
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, false);
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
-				break;
+			break;
+		default:
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, false);
+			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+			break;
 		}
 
 		this->m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
-		m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 }
 
@@ -198,63 +222,5 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 	if (!m_bFovChangeScoped && pLocalEntity->IsScoped())
 		return;
 
-	pViewSetup->fov = 105;
-}
-
-void CVisuals::Chams(const char* pszModelName, void* ecx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
-{
-	if (!m_bIsEnabled)
-		return;
-
-	if (!m_bChams)
-		return;
-
-	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
-	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
-
-	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
-	{
-		IMaterial *mats[32];
-
-		IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-		IClientEntity* pModelEntity = m_pApp->EntityList()->GetClientEntity(pInfo.entity_index);
-		studiohdr_t* hdr = (studiohdr_t*)((DWORD)pModelEntity + 0xD20);
-
-		if (pModelEntity && pModelEntity->IsAlive() &&
-			pLocalEntity != pModelEntity && 
-			pLocalEntity->TeamNum() != pModelEntity->TeamNum())
-		{
-			m_pApp->ModelInfo()->GetModelMaterials(pInfo.pModel, hdr->numtextures, mats);
-			for (int i = 0; i < hdr->numtextures; i++)
-			{
-				IMaterial* mat = mats[i];
-				if (!mat)
-					continue;
-
-				if ((unsigned long)mat == 0xcccccccc)
-					break;
-
-				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_ALPHATEST, true);
-				mat->AlphaModulate(1.0f); // don't need this, I just use it just cause.
-
-				m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-
-				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_ALPHATEST, false);
-				mat->AlphaModulate(1.0f);
-
-				m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-
-				//TODO:
-				//create material
-				// set all for ignorez
-				//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-				// set all for ignorez false
-				//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-			}
-		}
-	}
+	pViewSetup->fov = m_iFovValue;
 }

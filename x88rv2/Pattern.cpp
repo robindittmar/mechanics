@@ -19,15 +19,16 @@ bool CPattern::CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask)
 	return true;
 }
 
-DWORD* CPattern::FindPattern(BYTE* pStartAddr, int iLength, BYTE* pPattern, const char* pMask)
+DWORD CPattern::FindPattern(BYTE* pStartAddr, int iLength, BYTE* pPattern, const char* pMask)
 {
 	BYTE* pCurAddr = pStartAddr;
+	BYTE* iEndAddr = (pStartAddr + iLength - strlen(pMask));
 
-	while (pCurAddr < (pStartAddr + iLength - sizeof(pPattern)))
+	while (pCurAddr < iEndAddr)
 	{
 		if (CompareData(pCurAddr, pPattern, pMask))
 		{
-			return (DWORD*)pCurAddr;
+			return (DWORD)pCurAddr;
 		}
 
 		pCurAddr++;

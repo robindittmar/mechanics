@@ -255,7 +255,7 @@ public:
 	bool IsSpotted();
 	int Armor();
 	bool HasHelmet();
-	DWORD MoveType();
+	unsigned long MoveType();
 	int TickBase();
 	int ShotsFired();
 	PlayerInfo GetPlayerInfo();

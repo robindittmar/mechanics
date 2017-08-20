@@ -1,7 +1,7 @@
 #ifndef __ANTIAIM_H__
 #define __ANTIAIM_H__
 
-#include "Feature.h"
+#include "IFeature.h"
 
 class CApplication;
 

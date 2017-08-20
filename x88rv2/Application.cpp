@@ -22,6 +22,24 @@ void CApplication::Run(HMODULE hModule)
 	this->Hook();
 }
 
+void CApplication::Detach()
+{
+	// Unregister listener
+	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
+
+	// Reverse order, in case of any dependencies
+	this->m_pVguiHook->Restore();
+	this->m_pClientHook->Restore();
+	this->m_pEngineModelHook->Restore();
+	this->m_pClientModeHook->Restore();
+
+	// Free console
+	delete g_pConsole;
+
+	// Free & Exit
+	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
+}
+
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
@@ -80,9 +98,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			//todo: check if fake and if sendpackets false
 			/*if (flip)
 			{*/
-				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
-				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
-				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+			pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
+			pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
+			pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
 			//}
 		}
 	}
@@ -119,26 +137,48 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 			pApp->Visuals()->NoFlash();
 		}
-		
-		// TODO: Temporary, I hope
-		if(GetAsyncKeyState(VK_DELETE) & 0x8000)
+
+		// Input handling
+		pApp->m_inputEvent.Clear();
+		pApp->m_inputHandler.CreateInput(&pApp->m_inputEvent, pApp->m_pWindow->IsVisible());
+		if (pApp->m_inputEvent.eventType == EVENT_TYPE_KEYBOARD)
 		{
-			// Unregister listener
-			pApp->GameEventManager()->RemoveListener(&pApp->m_gameEventListener);
+			if (pApp->m_inputEvent.buttons & EVENT_BTN_TOGGLEMENU &&
+				pApp->m_inputEvent.buttonProperties & EVENT_BTN_TOGGLEMENU)
+			{
+				pApp->m_pWindow->IsVisible(!pApp->m_pWindow->IsVisible());
+				if (pApp->m_pWindow->IsVisible())
+				{
+					// TODO: Xor
+					pApp->m_pGui->DisableIngameMouse();
+					pApp->m_pGui->SetDrawMouse(true);
+				}
+				else
+				{
+					// TODO: Xor
+					pApp->m_pGui->EnableIngameMouse();
+					pApp->m_pGui->SetDrawMouse(false);
+				}
+			}
+			else if (pApp->m_inputEvent.buttons & EVENT_BTN_DETACH &&
+				pApp->m_inputEvent.buttonProperties & EVENT_BTN_DETACH)
+			{
+				pApp->Detach();
+			}
+			else if (pApp->m_inputEvent.buttons & EVENT_BTN_THIRDPERSON &&
+				!(pApp->m_inputEvent.buttonProperties & EVENT_BTN_THIRDPERSON))
+			{
+				bool bNewValue = !pApp->m_visuals.GetThirdperson();
 
-			// Reverse order, in case of any dependencies
-			pApp->VguiHook()->Restore();
-			pApp->ClientHook()->Restore();
-			pApp->EngineModelHook()->Restore();
-			pApp->ClientModeHook()->Restore();
-
-			// Free console
-			delete g_pConsole;
-			
-			// Free & Exit
-			CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, pApp->m_hModule, NULL, NULL);
+				pApp->m_pGuiThirdpersonCheckbox->IsChecked(bNewValue);
+				pApp->m_visuals.SetThirdperson(bNewValue);
+			}
 		}
-		// TODO: Temporary, I hope
+
+		if (pApp->m_pWindow->IsVisible())
+		{
+			pApp->m_pWindow->ProcessEvent(&pApp->m_inputEvent);
+		}
 	}
 
 	m_pFrameStageNotify(ecx, curStage);
@@ -146,10 +186,12 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup) {
 	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	IClientEntity* pLocalEntity;
 
 	if (pApp->EngineClient()->IsInGame())
 	{
+		pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+
 		if (pLocalEntity->IsAlive())
 		{
 			pApp->Visuals()->FovChange(pViewSetup);
@@ -160,7 +202,7 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 	return m_pOverrideView(ecx, pViewSetup);
 }
 
-void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld)
+void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
 {
 	CApplication* pApp = CApplication::Instance();
 
@@ -168,10 +210,15 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
-		pApp->Visuals()->Chams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
+
+	// Call original func
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+
+	// This is necessary for stuff to work properly
+	pApp->ModelRender()->ForcedMaterialOverride(NULL);
 }
 
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
@@ -210,10 +257,26 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// Draw Menu least ;)
 			pApp->m_pWindow->Draw(pApp->Surface());
+			pApp->m_pGui->DrawMouse(pApp->Surface());
 		}
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
+}
+
+/*void BtnDown(IControl* p)
+{
+CButton* btn = (CButton*)p;
+g_pConsole->Write("Button down (%s)\n", btn->ContentText());
+}*/
+
+void BtnUp(IControl* p)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	// TODO: Idk, put this into a different function or something (due to xoring)
+	pApp->Gui()->EnableIngameMouse();
+	pApp->Detach();
 }
 
 void CApplication::Setup()
@@ -221,12 +284,8 @@ void CApplication::Setup()
 	// Setup console
 	g_pConsole = new CConsole();
 
-	// Create GUI (Window + all controls)
-	m_pWindow = new CWindow(30, 30, 500, 400, "I'm a title lel");
-	m_pWindow->AddChild(
-		new CButton(10, 10)
-	);
-	//m_pWindow->IsVisible(true);
+	// Resource manager
+	m_resourceManager.Init(this);
 
 	// Setup strings
 	CXorString clientDll("tgì§y«¦{g");
@@ -251,6 +310,7 @@ void CApplication::Setup()
 	CXorString round_end("edð¬sTà¬s");
 	CXorString vphysicsDll("a{í»dbæ±9oé®");
 	CXorString physicsSurfaceProps("A[í»dbæ±D~÷¤vhà’edõ±';´");
+	CXorString renderView("ANë¥~eàreá§e]ì§`;´ö");
 
 	// Grab engine addresses
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
@@ -271,6 +331,7 @@ void CApplication::Setup()
 	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
 	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
 	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
+	m_pRenderView = (IVRenderView*)CreateEngineInterface(renderView.ToCharArray(), NULL);
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
@@ -284,15 +345,15 @@ void CApplication::Setup()
 	/*ClientClass* lClass = m_pClient->GetAllClasses();
 	while(lClass)
 	{
-		g_pConsole->Write("%s\n", lClass->m_pNetworkName);
+	g_pConsole->Write("%s\n", lClass->m_pNetworkName);
 
-		RecvTable* pTable = lClass->m_pRecvTable;
-		for(int i = 0; i < pTable->m_nProps; i++)
-		{
-			g_pConsole->Write("\t> %s\n", pTable->m_pProps[i].m_pVarName);
-		}
+	RecvTable* pTable = lClass->m_pRecvTable;
+	for(int i = 0; i < pTable->m_nProps; i++)
+	{
+	g_pConsole->Write("\t> %s (0x%08X)\n", pTable->m_pProps[i].m_pVarName, pTable->m_pProps[i].m_Offset);
+	}
 
-		lClass = lClass->m_pNext;
+	lClass = lClass->m_pNext;
 	}*/
 
 	// Setups
@@ -300,17 +361,18 @@ void CApplication::Setup()
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
+	this->m_chams.Setup();
 	this->m_misc.Setup();
 	this->m_visuals.Setup();
 
 	// Aimbot
 	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.IsAutoshoot(false);
-	this->m_aimbot.IsAutoscope(true);
-	this->m_aimbot.IsSilentAim(false);
-	this->m_aimbot.TargetCriteria(TargetCriteriaViewangle);
-	this->m_aimbot.Speed(1.0f);
-	this->m_aimbot.Fov(360.0f);
+	this->m_aimbot.SetAutoshoot(false);
+	this->m_aimbot.SetAutoscope(true);
+	this->m_aimbot.SetSilentAim(false);
+	this->m_aimbot.SetTargetCriteria(TargetCriteriaViewangle);
+	this->m_aimbot.SetSpeed(1.0f);
+	this->m_aimbot.SetFov(360.0f);
 
 	// AA, Bhop
 	this->m_antiAim.IsEnabled(true);
@@ -318,52 +380,144 @@ void CApplication::Setup()
 
 	// ESP
 	this->m_esp.IsEnabled(true);
-	this->m_esp.ShouldDrawBoundingBox(true);
-	this->m_esp.ShouldDrawNames(true);
-	this->m_esp.ShouldDrawHealthBar(true);
-	this->m_esp.ShouldDrawHealthNumber(true);
-	this->m_esp.ShouldDrawArmorBar(false);
-	this->m_esp.ShouldDrawOwnTeam(false);
-	this->m_esp.ShouldDrawOwnModel(true);
-	this->m_esp.ShouldDrawOnlySpotted(false);
-	this->m_esp.ShouldDrawOutline(true);
+	this->m_esp.SetDrawBoundingBox(true);
+	this->m_esp.SetDrawNames(true);
+	this->m_esp.SetDrawHealthBar(true);
+	this->m_esp.SetDrawHealthNumber(true);
+	this->m_esp.SetDrawArmorBar(false);
+	this->m_esp.SetDrawOwnTeam(false);
+	this->m_esp.SetDrawOwnModel(true);
+	this->m_esp.SetDrawOnlySpotted(false);
+	this->m_esp.SetDrawOutline(true);
+
+	// Chams
+	this->m_chams.IsEnabled(true);
 
 	// Misc
 	this->m_misc.IsEnabled(true);
-	this->m_misc.IsNoRecoil(true);
-	this->m_misc.IsFakelag(false);
-	this->m_misc.IsAutoStrafe(true);
-	this->m_misc.IsNoScope(true);
-	this->m_misc.IsAutoPistol(true);
-	this->m_misc.ShowSpectators(true);
-	this->m_misc.ShowOnlyMySpectators(false);
-	this->m_misc.ShowOnlyMyTeamSpectators(false);
+	this->m_misc.SetNoRecoil(true);
+	this->m_misc.SetFakelag(false);
+	this->m_misc.SetAutoStrafe(true);
+	this->m_misc.SetNoScope(true);
+	this->m_misc.SetAutoPistol(true);
+	this->m_misc.SetShowSpectators(true);
+	this->m_misc.SetShowOnlyMySpectators(false);
+	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 
 	// Visuals
 	this->m_visuals.IsEnabled(true);
 
-	this->m_visuals.Crosshair(true);
-	this->m_visuals.Hitmarker(true);
-	this->m_visuals.IsNoSmoke(true);
-	this->m_visuals.HandsDrawStyle(HandsDrawStyleWireframe);
-	this->m_visuals.IsNoVisualRecoil(true);
-	this->m_visuals.DrawChams(false);
+	this->m_visuals.SetCrosshair(true);
+	this->m_visuals.SetHitmarker(true);
+	this->m_visuals.SetNoSmoke(true);
+	this->m_visuals.SetHandsDrawStyle(HandsDrawStyleWireframe);
+	this->m_visuals.SetNoVisualRecoil(true);
 
-	this->m_visuals.IsNoFlash(true);
-	this->m_visuals.NoFlashPercentage(0.f);
+	this->m_visuals.SetNoFlash(true);
+	this->m_visuals.SetFlashPercentage(0.f);
 
-	this->m_visuals.IsThirdperson(false);
-	this->m_visuals.ThirdpersonValue(120);
+	this->m_visuals.SetThirdperson(false);
+	this->m_visuals.SetThirdpersonDistance(120);
 
-	this->m_visuals.IsFovChange(true);
-	this->m_visuals.FovValue(130);
-	this->m_visuals.ShouldFovChangeScoped(false);
+	this->m_visuals.SetFovChange(true);
+	this->m_visuals.SetFovValue(110);
+	this->m_visuals.SetFovChangeScoped(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_gameEventListener, player_death.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_gameEventListener, round_start.ToCharArray(), false);
 	m_pGameEventManager->AddListener(&m_gameEventListener, round_end.ToCharArray(), false);
+
+	// Create all Gui stuff
+	m_pGui = CGui::Instance();
+
+	// Initialize InputHandler
+	m_inputHandler.RegisterKey(VK_DELETE, EVENT_BTN_DETACH);
+	m_inputHandler.RegisterKey(VK_INSERT, EVENT_BTN_TOGGLEMENU);
+	m_inputHandler.RegisterKey(VK_NUMPAD0, EVENT_BTN_THIRDPERSON);
+
+	// Create GUI (Window + all controls)
+	CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
+	//pBtn->SetButtonDownEventHandler(BtnDown);
+	pBtn->SetButtonUpEventHandler(BtnUp);
+
+	CCheckbox* pCheck = new CCheckbox(16, 16, 120, 32, "Autoshoot");
+	pCheck->SetEventHandler(std::bind(&CAimbot::SetAutoshoot, &m_aimbot, std::placeholders::_1));
+
+	CCheckbox* pCheck2 = new CCheckbox(16, 16, 120, 32, "Thirdperson");
+	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
+	m_pGuiThirdpersonCheckbox = pCheck2;
+
+	CSelectbox* pSelectbox = new CSelectbox(16, 16, 100, 32);
+	pSelectbox->AddOption(0, "Unspecified");
+	pSelectbox->AddOption(1, "NoHands");
+	pSelectbox->AddOption(2, "lol");
+	pSelectbox->AddOption(3, "Just testing");
+	pSelectbox->AddOption(4, "this is fun");
+	pSelectbox->AddOption(5, "nicht");
+	pSelectbox->AddOption(6, "SIEG");
+
+	CSelectbox* pSelectbox2 = new CSelectbox(132, 16, 100, 32);
+	pSelectbox2->AddOption(0, "None");
+	pSelectbox2->AddOption(1, "NoHands");
+	pSelectbox2->AddOption(2, "Wireframe");
+	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyleUntyped, &m_visuals, std::placeholders::_1));
+
+	CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
+	CCheckbox* pDrawHealthbar = new CCheckbox(16, 64, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
+	CCheckbox* pDrawHealthnumber = new CCheckbox(16, 112, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
+	CCheckbox* pDrawArmorbar = new CCheckbox(16, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
+	CCheckbox* pDrawOwnTeam = new CCheckbox(16, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
+	CCheckbox* pDrawOwnModel = new CCheckbox(16, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
+	CCheckbox* pDrawOnlySpotted = new CCheckbox(16, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
+	CCheckbox* pDrawOutline = new CCheckbox(160, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
+	CCheckbox* pDrawNames = new CCheckbox(160, 64, 128, 32, "Names", m_esp.GetDrawNames());
+
+	pDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, &m_esp, std::placeholders::_1));
+	pDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, &m_esp, std::placeholders::_1));
+	pDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, &m_esp, std::placeholders::_1));
+	pDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, &m_esp, std::placeholders::_1));
+	pDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, &m_esp, std::placeholders::_1));
+	pDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, &m_esp, std::placeholders::_1));
+	pDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, &m_esp, std::placeholders::_1));
+	pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
+	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
+
+	CTabContainer* pContainer = new CTabContainer();
+	CTabPage* pPage1 = new CTabPage("ESP");
+	CTabPage* pPage2 = new CTabPage("Tab page II");
+	CTabPage* pPage3 = new CTabPage("Tab page III");
+	CTabPage* pPage4 = new CTabPage("Tab Page IV");
+	CTabPage* pPage5 = new CTabPage("Tab Page V");
+
+	pPage1->AddChild(pDrawBoundingBox);
+	pPage1->AddChild(pDrawHealthbar);
+	pPage1->AddChild(pDrawHealthnumber);
+	pPage1->AddChild(pDrawArmorbar);
+	pPage1->AddChild(pDrawOwnTeam);
+	pPage1->AddChild(pDrawOwnModel);
+	pPage1->AddChild(pDrawOnlySpotted);
+	pPage1->AddChild(pDrawOutline);
+	pPage1->AddChild(pDrawNames);
+
+	pPage2->AddChild(pBtn);
+	pPage2->AddChild(pCheck);
+	pPage3->AddChild(pCheck2);
+
+	pPage4->AddChild(pSelectbox);
+	pPage4->AddChild(pSelectbox2);
+
+	pPage1->IsEnabled(true);
+
+	pContainer->AddChild(pPage1);
+	pContainer->AddChild(pPage2);
+	pContainer->AddChild(pPage3);
+	pContainer->AddChild(pPage4);
+	pContainer->AddChild(pPage5);
+
+	m_pWindow = new CWindow(30, 30, 500, 400, "x88rv2");
+	m_pWindow->AddChild(pContainer);
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {
@@ -373,15 +527,34 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
+	// Grab Screensize
+	m_pGui->GetScreenSize();
+
 	// Get ClientMode and CInput
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
 
+	DWORD dwInitKeyValuesTemp = (CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x68\x00\x00\x00\x00\x8B\xC8\xE8\x00\x00\x00\x00\x89\x45\xFC\xEB\x07\xC7\x45\x00\x00\x00\x00\x00\x8B\x03\x56",
+		"a----bbb----ccccccc-----ddd"
+	) + 7);
+	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
+
+	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\xE8\x00\x00\x00\x00\x80\x7D\xF8\x00\x00\x00\x85\xDB",
+		"a----cccc--ff"
+	);
+	m_pLoadFromBuffer = (LoadFromBuffer_t)(dwLoadFromBufferTemp + (*(DWORD_PTR*)(dwLoadFromBufferTemp + 1)) + 5);
+
 	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode, true);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
-	
-	m_pEngineModelHook = new VTableHook((DWORD*)this->ModelRender(), true);
+
+	m_pEngineModelHook = new VTableHook((DWORD*)this->m_pModelRender, true);
 	m_pDrawModelExecute = (DrawModelExecute_t)m_pEngineModelHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
 	m_pClientHook = new VTableHook((DWORD*) this->m_pClient, true);
@@ -390,6 +563,61 @@ void CApplication::Hook()
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 }
+
+/*void CApplication::InitKeyValues(KeyValues* keyValues, const char* pBuffer)
+{
+	DWORD dwFunc = (DWORD)m_pInitKeyValues;
+
+	__asm
+	{
+		push pBuffer;
+		mov ecx, keyValues;
+		call dwFunc;
+	}
+}*/
+
+/*void CApplication::LoadFromBuffer(KeyValues* keyValues, const char* pResourceName, const char* pBuffer)
+{
+	DWORD dwFunc = (DWORD)m_pLoadFromBuffer;
+
+	__asm
+	{
+		push 0;
+		push 0;
+		push 0;
+		push pBuffer;
+		push pResourceName;
+		mov ecx, keyValues;
+		call dwFunc;
+		add esp, 0x10;
+	}
+}*/
+
+/*IMaterial* CApplication::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgnoreZ, bool bWireframe)
+{
+	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
+
+	static CXorString xorVertexLitGeneric("An÷¶rsÉ«cLà¬ryì¡");
+	static CXorString xorUnlitGeneric("Beé«cLà¬ryì¡");
+	static CXorString xorMatName("ocè£cT ¦9}è¶");
+
+	const char* pBaseType = (bIsLit == true ? xorVertexLitGeneric.ToCharArray() : xorUnlitGeneric.ToCharArray());
+	char pMaterial[1024];
+	char pName[512];
+	KeyValues* pKeyValues;
+	static int m_iMaterialCount = 0;
+	sprintf(pMaterial, xorVmt.ToCharArray(), pBaseType, (bIsFlat ? 1 : 0), (bIgnoreZ ? 1 : 0), (bWireframe ? 1 : 0));
+	sprintf(pName, xorMatName.ToCharArray(), m_iMaterialCount++);
+
+	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
+	m_pInitKeyValues(pKeyValues, pBaseType);
+	m_pLoadFromBuffer(pKeyValues, pName, pMaterial, NULL, NULL, NULL);
+
+	IMaterial* pMat = m_pMaterialSystem->CreateMaterial(pName, pKeyValues);
+	pMat->IncrementReferenceCount();
+
+	return pMat;
+}*/
 
 // Singleton
 CApplication::CApplication()
@@ -523,4 +751,6 @@ DWORD ThreadFreeLibrary(void* pParam)
 	// Wait 1 sec for hooks to finish running
 	Sleep(1000);
 	FreeLibraryAndExitThread((HMODULE)pParam, 0);
+
+	return 0;
 }

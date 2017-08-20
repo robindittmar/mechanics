@@ -57,9 +57,6 @@
     <ClCompile Include="Bhop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Feature.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Misc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -108,14 +105,35 @@
     <ClCompile Include="murmurhash.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GuiEvent.cpp">
-      <Filter>GUI\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Gui.cpp">
       <Filter>GUI\Source Files</Filter>
     </ClCompile>
     <ClCompile Include="InputHandler.cpp">
       <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputEvent.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Checkbox.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabContainer.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TabPage.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Selectbox.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Chams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="IFeature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ResourceManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="XorString.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BaseClientDLL.h">
-      <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClientClass.h">
       <Filter>Source Engine\Header Files</Filter>
@@ -162,9 +177,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bhop.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Feature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Misc.h">
@@ -248,11 +260,50 @@
     <ClInclude Include="IPhysicsSurfaceProps.h">
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GuiEvent.h">
-      <Filter>GUI\Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="InputHandler.h">
       <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputEvent.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Checkbox.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabContainer.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TabPage.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CViewSetup.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CGlobalVars.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Selectbox.h">
+      <Filter>GUI\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyValues.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IVRenderView.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IBaseClientDLL.h">
+      <Filter>Source Engine\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IFeature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Chams.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
