@@ -377,24 +377,24 @@ void CApplication::Setup()
 	this->m_visuals.Setup();
 
 	// Aimbot
-	this->m_aimbot.IsEnabled(true);
-	this->m_aimbot.SetAutoshoot(false);
+	this->m_aimbot.SetEnabled(true);
+	this->m_aimbot.SetAutoshoot(true);
 	this->m_aimbot.SetAutoscope(true);
-	this->m_aimbot.SetSilentAim(false);
+	this->m_aimbot.SetSilentAim(true);
 	this->m_aimbot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 	this->m_aimbot.SetSpeed(1.0f);
 	this->m_aimbot.SetFov(360.0f);
 
 	// Antiaim
-	this->m_antiAim.IsEnabled(true);
+	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATICJITTERBACKWARDS);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_BACKWARDS);
 
 	// Bhop
-	this->m_bhop.IsEnabled(true);
+	this->m_bhop.SetEnabled(true);
 
 	// ESP
-	this->m_esp.IsEnabled(true);
+	this->m_esp.SetEnabled(true);
 	this->m_esp.SetDrawBoundingBox(true);
 	this->m_esp.SetDrawNames(true);
 	this->m_esp.SetDrawHealthBar(true);
@@ -406,10 +406,10 @@ void CApplication::Setup()
 	this->m_esp.SetDrawOutline(true);
 
 	// Chams
-	this->m_chams.IsEnabled(true);
+	this->m_chams.SetEnabled(true);
 
 	// Misc
-	this->m_misc.IsEnabled(true);
+	this->m_misc.SetEnabled(true);
 	this->m_misc.SetNoRecoil(true);
 	this->m_misc.SetFakelag(false);
 	this->m_misc.SetAutoStrafe(true);
@@ -420,12 +420,12 @@ void CApplication::Setup()
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 
 	// Visuals
-	this->m_visuals.IsEnabled(true);
+	this->m_visuals.SetEnabled(true);
 
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetHitmarker(true);
 	this->m_visuals.SetNoSmoke(true);
-	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
+	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
 	this->m_visuals.SetNoVisualRecoil(true);
 
 	this->m_visuals.SetNoFlash(true);
@@ -457,10 +457,19 @@ void CApplication::Setup()
 	//pBtn->SetButtonDownEventHandler(BtnDown);
 	pBtn->SetButtonUpEventHandler(BtnUp);
 
-	CCheckbox* pCheck = new CCheckbox(16, 16, 120, 32, "Autoshoot");
+	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
+	pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
+	
+	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_aimbot.GetSilentAim());
+	pSilentAim->SetEventHandler(std::bind(&CAimbot::SetSilentAim, &m_aimbot, std::placeholders::_1));
+
+	CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_aimbot.GetAutoshoot());
 	pCheck->SetEventHandler(std::bind(&CAimbot::SetAutoshoot, &m_aimbot, std::placeholders::_1));
 
-	CCheckbox* pCheck2 = new CCheckbox(16, 16, 120, 32, "Thirdperson");
+	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_aimbot.GetAutoscope());
+	pAutoScope->SetEventHandler(std::bind(&CAimbot::SetAutoscope, &m_aimbot, std::placeholders::_1));
+
+	CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
 	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
 	m_pGuiThirdpersonCheckbox = pCheck2;
 
@@ -473,7 +482,7 @@ void CApplication::Setup()
 	pSelectbox->AddOption(5, "nicht");
 	pSelectbox->AddOption(6, "SIEG");
 
-	CSelectbox* pSelectbox2 = new CSelectbox(132, 16, 100, 32);
+	CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
@@ -500,28 +509,33 @@ void CApplication::Setup()
 	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
 
 	CTabContainer* pContainer = new CTabContainer();
-	CTabPage* pPage1 = new CTabPage("ESP");
-	CTabPage* pPage2 = new CTabPage("Tab page II");
-	CTabPage* pPage3 = new CTabPage("Tab page III");
-	CTabPage* pPage4 = new CTabPage("Tab Page IV");
-	CTabPage* pPage5 = new CTabPage("Tab Page V");
+	CTabPage* pPage1 = new CTabPage("Rage");
+	CTabPage* pPage2 = new CTabPage("Legit");
+	CTabPage* pPage3 = new CTabPage("Visuals");
+	CTabPage* pPage4 = new CTabPage("Misc");
+	CTabPage* pPage5 = new CTabPage("Skin Changer");
+	CTabPage* pPage6 = new CTabPage("Config");
 
-	pPage1->AddChild(pDrawBoundingBox);
-	pPage1->AddChild(pDrawHealthbar);
-	pPage1->AddChild(pDrawHealthnumber);
-	pPage1->AddChild(pDrawArmorbar);
-	pPage1->AddChild(pDrawOwnTeam);
-	pPage1->AddChild(pDrawOwnModel);
-	pPage1->AddChild(pDrawOnlySpotted);
-	pPage1->AddChild(pDrawOutline);
-	pPage1->AddChild(pDrawNames);
+	pPage1->AddChild(pAimbot);
+	pPage1->AddChild(pSilentAim);
+	pPage1->AddChild(pCheck);
+	pPage1->AddChild(pAutoScope);
 
-	pPage2->AddChild(pBtn);
-	pPage2->AddChild(pCheck);
+	pPage3->AddChild(pDrawBoundingBox);
+	pPage3->AddChild(pDrawHealthbar);
+	pPage3->AddChild(pDrawHealthnumber);
+	pPage3->AddChild(pDrawArmorbar);
+	pPage3->AddChild(pDrawOwnTeam);
+	pPage3->AddChild(pDrawOwnModel);
+	pPage3->AddChild(pDrawOnlySpotted);
+	pPage3->AddChild(pDrawOutline);
+	pPage3->AddChild(pDrawNames);
 	pPage3->AddChild(pCheck2);
+	pPage3->AddChild(pSelectbox2);
 
 	pPage4->AddChild(pSelectbox);
-	pPage4->AddChild(pSelectbox2);
+
+	pPage6->AddChild(pBtn);
 
 	pPage1->IsEnabled(true);
 
@@ -530,8 +544,9 @@ void CApplication::Setup()
 	pContainer->AddChild(pPage3);
 	pContainer->AddChild(pPage4);
 	pContainer->AddChild(pPage5);
+	pContainer->AddChild(pPage6);
 
-	m_pWindow = new CWindow(30, 30, 500, 400, "x88rv2");
+	m_pWindow = new CWindow(30, 30, 600, 400, "x88rv2");
 	m_pWindow->AddChild(pContainer);
 
 	// Wait for the game to be ingame before hooking

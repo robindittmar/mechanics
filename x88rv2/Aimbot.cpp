@@ -171,7 +171,7 @@ bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &d
 {
 	data.penetrate_count = 4;
 	data.trace_length = 0.0f;
-	auto *wpn_data = weapon->GetWeaponInfo();
+	CWeaponInfo* wpn_data = weapon->GetWeaponInfo();
 	data.current_damage = (float)wpn_data->iDamage;
 
 	while ((data.penetrate_count > 0) && (data.current_damage >= 1.0f))
@@ -296,13 +296,25 @@ inline vec_t VectorNormalize(Vector& v)
 	return l;
 }
 
+QAngle ACalcAngle(Vector& vStartPos, Vector& vEndPos)
+{
+	Vector vRelativeDist = vEndPos - vStartPos;
+	QAngle qAngle(
+		RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
+		RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
+		0.0f
+	);
+
+	return qAngle;
+}
+
 bool CAimbot::CanHit(Vector &point, float *damage_given)
 {
-	IClientEntity* local = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
+	IClientEntity* local = (IClientEntity*)CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
 	FireBulletData data(*local->Origin() + *local->EyeOffset(), local);
 
-	Vector angles = CalcAngle(data.src, point);
+	Vector angles = ACalcAngle(data.src, point);
 	AngleVectors(angles, &data.direction);
 	VectorNormalize(data.direction);
 
