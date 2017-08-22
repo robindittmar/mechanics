@@ -1,9 +1,10 @@
 #include "Antiaim.h"
 #include "Application.h"
 
-
 CAntiAim::CAntiAim()
 {
+	m_iPitchSetting = PITCHANTIAIM_NONE;
+	m_iYawSetting = YAWANTIAIM_NONE;
 }
 
 CAntiAim::~CAntiAim()
@@ -41,7 +42,6 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
 		return;
 
-	AntiAim aa = { PitchDown, YawBackwards };
 	QAngle angles;
 	if(m_pApp->Aimbot()->HasTarget())
 	{
@@ -53,30 +53,28 @@ void CAntiAim::Update(void* pParameters)
 	}
 
 	// Pitch
-	switch (aa.pitchAA)
+	switch (m_iPitchSetting)
 	{
-	default:
-		break;
-	case PitchUp:
+	case PITCHANTIAIM_UP:
 		angles.x = -89.0f;
 		break;
-	case PitchDown:
+	case PITCHANTIAIM_DOWN:
 		angles.x = 89.0f;
+		break;
+	case PITCHANTIAIM_NONE:
+	default:
 		break;
 	}
 
-	// Yaw
-	//static int iCountFake = 0;
 	static bool bFakeAngles = true;
 	static float trigger = 0.0f;
-	switch (aa.yawAA)
+	// Yaw
+	switch (m_iYawSetting)
 	{
-	default:
-		break;
-	case YawBackwards:
+	case YAWANTIAIM_BACKWARDS:
 		angles.y -= 180.0f;
 		break;
-	case YawStaticJitterBackwards:
+	case YAWANTIAIM_STATICJITTERBACKWARDS:
 		trigger += 15.0f;
 		angles.y -= trigger > 50.0f ? -145.0f : 145.0f;
 
@@ -85,7 +83,7 @@ void CAntiAim::Update(void* pParameters)
 			trigger = 0.0f;
 		}
 		break;
-	case YawBackwardsFakeRight: // TODO: Name isn't quiet right (it's fake left/right, real other direction rnow)
+	case YAWANTIAIM_REALLEFTFAKERIGHT:
 		if(m_pApp->m_bGotSendPackets)
 		{
 			if(bFakeAngles)
@@ -101,6 +99,9 @@ void CAntiAim::Update(void* pParameters)
 			*m_pApp->m_bSendPackets = bFakeAngles;
 			bFakeAngles = !bFakeAngles;
 		}
+		break;
+	case YAWANTIAIM_NONE:
+	default:
 		break;
 	}
 

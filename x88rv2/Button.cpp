@@ -11,6 +11,8 @@ CButton::CButton(int x, int y, int w, int h, const char* pText) : IControl(x, y,
 	m_pContentText = NULL;
 	m_pContentTextW = NULL;
 	this->ContentText(pText);
+
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
 CButton::~CButton()
@@ -33,9 +35,7 @@ void CButton::ProcessEvent(CInputEvent* pEvent)
 		{
 			if(!m_bIsPressed)
 			{
-				int x = 0;
-				int y = 0;
-
+				int x = 0, y = 0;
 				this->GetAbsolutePosition(&x, &y);
 
 				// Over button
@@ -67,9 +67,7 @@ void CButton::Draw(ISurface* pSurface)
 	if (!m_bIsEnabled)
 		return;
 
-	int x = 0;
-	int y = 0;
-
+	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
 	if (m_bIsPressed)
@@ -78,18 +76,10 @@ void CButton::Draw(ISurface* pSurface)
 		pSurface->DrawSetColor(255, 255, 0, 0);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
-	// TODO
-	static unsigned long iFont = NULL;
-	if (iFont == NULL)
-	{
-		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 16, 255, 0, 0, 0x200);
-	}
-
 	int width, height;
-	pSurface->GetTextSize(iFont, m_pContentTextW, width, height);
+	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);
 
-	pSurface->DrawSetTextFont(iFont);
+	pSurface->DrawSetTextFont(m_iFont);
 	pSurface->DrawSetTextPos((x + m_iWidth / 2) - (width / 2), (y + m_iHeight / 2) - (height / 2));
 	pSurface->DrawSetTextColor(255, 255, 255, 255);
 	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);

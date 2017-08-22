@@ -125,8 +125,8 @@ void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderCon
 	if (!m_bIsEnabled)
 		return;
 
-	/*if (m_tHandsDrawStyle == HandsDrawStyleNone)
-	return;*/
+	if (m_iHandsDrawStyle == HANDSDRAWSTYLE_NONE)
+		return;
 
 	static CXorString pArms("vyè±");
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
@@ -135,24 +135,22 @@ void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderCon
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
 
-		switch (m_tHandsDrawStyle)
+		switch (m_iHandsDrawStyle)
 		{
-		case HandsDrawStyleNoHands:
+		case HANDSDRAWSTYLE_NOHANDS:
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 			break;
-		case HandsDrawStyleWireframe:
+		case HANDSDRAWSTYLE_WIREFRAME:
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, false);
 			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, true);
 			break;
+		case HANDSDRAWSTYLE_NONE:
 		default:
-			pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, false);
-			pMat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 			break;
 		}
 
 		this->m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
-		//m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 }
 

@@ -29,22 +29,33 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 
 	if (!m_bMaterialsInitialized)
 	{
+		// Grab references
 		m_pModelRender = m_pApp->ModelRender();
 		m_pDrawModelExecute = m_pApp->DrawModelExecute();
 
-		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+		// Create materials
+		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial();
 		m_pFlatVisibleCT = m_pApp->ResourceManager()->CreateMaterial();
-		m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+		m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial();
 		m_pFlatVisibleT = m_pApp->ResourceManager()->CreateMaterial();
 
+		// Colors
 		m_pFlatHiddenCT->ColorModulate(0.0f, 0.0f, 1.0f);
-		//m_pFlatVisibleCT->ColorModulate(0.0f, 1.0f, 0.0f);
+		m_pFlatVisibleCT->ColorModulate(0.0f, 1.0f, 0.0f);
 		m_pFlatHiddenT->ColorModulate(1.0f, 0.0f, 0.0f);
 		m_pFlatVisibleT->ColorModulate(1.0f, 1.0f, 0.0f);
 
-		//m_pFlatHiddenCT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-		//m_pFlatHiddenT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+		// Z-Flag
+		m_pFlatHiddenCT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+		m_pFlatHiddenT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
 
+		// Flat
+		m_pFlatHiddenCT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+		m_pFlatVisibleCT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+		m_pFlatHiddenT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+		m_pFlatVisibleT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, true);
+
+		// Don't do this again :)
 		m_bMaterialsInitialized = true;
 	}
 

@@ -245,7 +245,7 @@ void CMisc::SpectatorList()
 	int wHeader, hHeader;
 	m_pApp->Surface()->GetTextSize(fontHeader, L"Spectator List:", wHeader, hHeader);
 	m_pApp->Surface()->DrawSetTextPos(10, height / 2 - hHeader + 3);
-	m_pApp->Surface()->DrawPrintText(L"Spectator List:", lstrlenW(L"Spectator List"));
+	m_pApp->Surface()->DrawPrintText(L"Spectator List:", wcslen(L"Spectator List"));
 
 	for (int i = 0; i < (sizeof(m_Observers) / sizeof(m_Observers[0])); i++)
 	{

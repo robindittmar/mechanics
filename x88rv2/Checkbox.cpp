@@ -10,6 +10,8 @@ CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isCheck
 	m_pContentText = NULL;
 	m_pContentTextW = NULL;
 	this->ContentText(pText);
+
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
 CCheckbox::~CCheckbox()
@@ -65,24 +67,14 @@ void CCheckbox::Draw(ISurface* pSurface)
 	if (!m_bIsEnabled)
 		return;
 
-	int x = 0;
-	int y = 0;
-
+	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	// TODO
-	static unsigned long iFont = NULL;
-	if (iFont == NULL)
-	{
-		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 16, 255, 0, 0, 0x200);
-	}
-
 	int width, height;
-	pSurface->GetTextSize(iFont, m_pContentTextW, width, height);
+	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);
 
-	pSurface->DrawSetColor(255, 0, 0, 0);
 	// Draw box that holds the checkmark
+	pSurface->DrawSetColor(255, 0, 0, 0);
 	pSurface->DrawOutlinedRect(x + CHECKBOX_BOXPADDING, y + CHECKBOX_BOXPADDING, x + m_iHeight - CHECKBOX_BOXPADDING, y + m_iHeight - CHECKBOX_BOXPADDING);
 
 	// Draw checkmark if checked
@@ -96,7 +88,7 @@ void CCheckbox::Draw(ISurface* pSurface)
 		);
 	}
 
-	pSurface->DrawSetTextFont(iFont);
+	pSurface->DrawSetTextFont(m_iFont);
 	pSurface->DrawSetTextColor(255, 255, 255, 255);
 	pSurface->DrawSetTextPos(x + (CHECKBOX_BOXPADDING * 2) + CHECKBOX_BOXSIZE, (y + m_iHeight / 2) - (height / 2));
 	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);

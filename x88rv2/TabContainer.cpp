@@ -2,6 +2,7 @@
 
 CTabContainer::CTabContainer() : IControl(0, TABCONTAINER_TABHEIGHT, 0, 0)
 {
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_SUBHEADER);
 }
 
 CTabContainer::~CTabContainer()
@@ -18,8 +19,7 @@ void CTabContainer::ProcessEvent(CInputEvent* pEvent)
 		if(pEvent->buttons & EVENT_BTN_LMOUSE &&
 			pEvent->buttonProperties & EVENT_BTN_LMOUSE)
 		{
-			int x = 0;
-			int y = 0;
+			int x = 0, y = 0;
 			this->GetAbsolutePosition(&x, &y);
 	
 			m_iWidth = m_pParent->Width();
@@ -57,24 +57,17 @@ void CTabContainer::Draw(ISurface* pSurface)
 	if (!m_bIsEnabled)
 		return;
 
-	int x = 0;
-	int y = 0;
+	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 	y -= m_iY;
 
 	m_iWidth = m_pParent->Width();
 	m_iHeight = m_pParent->Height();
 
-	// TODO
-	static unsigned long iFont = NULL;
-	if (iFont == NULL)
-	{
-		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 18, 255, 0, 0, 0x200);
-	}
-
 	pSurface->DrawSetColor(255, 80, 80, 80);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + TABCONTAINER_TABHEIGHT);
+
+	pSurface->DrawSetTextFont(m_iFont);
 
 	CTabPage* pTabPage;
 	int iCountTabs = m_pChildren.size();
@@ -85,8 +78,7 @@ void CTabContainer::Draw(ISurface* pSurface)
 		
 		// Draw title
 		int width, height;
-		pSurface->GetTextSize(iFont, pTabPage->TitleW(), width, height);
-		pSurface->DrawSetTextFont(iFont);
+		pSurface->GetTextSize(m_iFont, pTabPage->TitleW(), width, height);
 		pSurface->DrawSetTextPos(((x + iSizePerTab * i) + iSizePerTab / 2) - (width / 2), (y + TABCONTAINER_TABHEIGHT / 2) - (height / 2));
 
 		if (pTabPage->IsEnabled())

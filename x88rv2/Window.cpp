@@ -9,6 +9,8 @@ CWindow::CWindow(int x, int y, int w, int h, const char* pTitle) : IControl(x, y
 	m_pTitle = NULL;
 	m_pTitleW = NULL;
 	this->Title(pTitle);
+
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_HEADER);
 }
 
 CWindow::~CWindow()
@@ -76,19 +78,11 @@ void CWindow::Draw(ISurface* pSurface)
 	// Draw titlebar
 	pSurface->DrawSetColor(255, 150, 150, 150);
 	pSurface->DrawFilledRect(m_iX, m_iY - TITLEBAR_HEIGHT, m_iX + m_iWidth, m_iY + TITLEBAR_HEIGHT);
-
-	// TODO
-	static unsigned long iFont = NULL;
-	if (iFont == NULL)
-	{
-		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 20, 255, 0, 0, 0x200);
-	}
 	
 	// Draw title
 	int width, height;
-	pSurface->GetTextSize(iFont, m_pTitleW, width, height);
-	pSurface->DrawSetTextFont(iFont);
+	pSurface->GetTextSize(m_iFont, m_pTitleW, width, height);
+	pSurface->DrawSetTextFont(m_iFont);
 	pSurface->DrawSetTextPos((m_iX + m_iWidth / 2) - (width / 2), (m_iY - TITLEBAR_HEIGHT / 2) - (height / 2));
 	pSurface->DrawSetTextColor(255, 255, 255, 255);
 	pSurface->DrawPrintText(m_pTitleW, m_iLenTitle);

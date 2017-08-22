@@ -23,7 +23,8 @@ int main(int argc, char** argv)
 		CXorString("Beé«cLà¬ryì¡"),
 		CXorString("xhmat_%d.vmt"),
 		CXorString("Counter-Strike: Global Offensive"),
-		CXorString("Tdğ¬cn÷ïD÷«|n¿âPgê vg¥qmà¬dbó§")
+		CXorString("Tdğ¬cn÷ïD÷«|n¿âPgê vg¥qmà¬dbó§"),
+		CXorString("Arial")
 	};
 	
 	CXorString byteStrings[] {

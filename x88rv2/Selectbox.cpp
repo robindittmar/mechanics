@@ -9,6 +9,8 @@ CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int select
 
 	m_iCountOptions = 0;
 	m_iSelection = selection;
+
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
 CSelectbox::~CSelectbox()
@@ -32,9 +34,7 @@ void CSelectbox::ProcessEvent(CInputEvent* pEvent)
 	{
 		if (pEvent->buttons & EVENT_BTN_LMOUSE)
 		{
-			int x = 0;
-			int y = 0;
-
+			int x = 0, y = 0;
 			this->GetAbsolutePosition(&x, &y);
 
 			CGui* pGui = CGui::Instance();
@@ -82,28 +82,18 @@ void CSelectbox::Draw(ISurface* pSurface)
 	if (!m_bIsEnabled)
 		return;
 
-	// TODO
-	static unsigned long iFont = NULL;
-	if (iFont == NULL)
-	{
-		iFont = pSurface->SCreateFont();
-		pSurface->SetFontGlyphSet(iFont, "Arial", 16, 255, 0, 0, 0x200);
-	}
-
-	int x = 0;
-	int y = 0;
-
+	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
 	int width, height;
-	pSurface->GetTextSize(iFont, m_vOptions[m_iSelection], width, height);
+	pSurface->GetTextSize(m_iFont, m_vOptions[m_iSelection], width, height);
 
 	// Draw box that holds the current selection
 	pSurface->DrawSetColor(255, 50, 50, 50);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	// Draw current selection
-	pSurface->DrawSetTextFont(iFont);
+	pSurface->DrawSetTextFont(m_iFont);
 	pSurface->DrawSetTextColor(255, 255, 255, 255);
 	pSurface->DrawSetTextPos(x + SELECTBOX_PADDING, (y + m_iHeight / 2) - (height / 2));
 	pSurface->DrawPrintText(m_vOptions[m_iSelection], m_vOptionsLength[m_iSelection]);
@@ -112,7 +102,7 @@ void CSelectbox::Draw(ISurface* pSurface)
 	if (m_bExpanded)
 	{
 		// Get size of longest string
-		pSurface->GetTextSize(iFont, m_vOptions[m_iLargestOptionStringIndex], width, height);
+		pSurface->GetTextSize(m_iFont, m_vOptions[m_iLargestOptionStringIndex], width, height);
 
 		// Save row width/height for event handling
 		m_iRowRenderWidth = width;

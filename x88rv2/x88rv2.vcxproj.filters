@@ -135,6 +135,9 @@
     <ClCompile Include="ResourceManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Slider.cpp">
+      <Filter>GUI\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="Chams.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Slider.h">
+      <Filter>GUI\Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

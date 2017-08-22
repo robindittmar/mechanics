@@ -4,6 +4,9 @@
 // Std libs
 #include <vector>
 
+// Resources
+#include "ResourceManager.h"
+
 // Event
 #include "InputEvent.h"
 

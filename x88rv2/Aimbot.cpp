@@ -10,7 +10,7 @@ CAimbot::CAimbot()
 	m_bAutoscope = false;
 	m_bDoNoRecoil = true;
 
-	m_tTargetCriteria = TargetCriteriaUnspecified;
+	m_iTargetCriteria = TARGETCRITERIA_UNSPECIFIED;
 	m_fSpeed = 1.0f;
 	m_fFov = 360.0f;
 }
@@ -491,9 +491,9 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		if (!bIsHittable)
 			continue;
 
-		switch (m_tTargetCriteria)
+		switch (m_iTargetCriteria)
 		{
-		case TargetCriteriaOrigin:
+		case TARGETCRITERIA_ORIGIN:
 			fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyHeadPos);
 			if (fOriginDist < fLowestDist)
 			{
@@ -506,7 +506,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 			}
 
 			break;
-		case TargetCriteriaViewangle:
+		case TARGETCRITERIA_VIEWANGLES:
 			// Get Origin distance for "real" FOV (independent of distance)
 			//fOriginDist = this->GetOriginDist(myHeadPos, headPos);
 
@@ -530,7 +530,8 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 				continue;
 			}
 			break;
-		case TargetCriteriaUnspecified:
+		case TARGETCRITERIA_UNSPECIFIED:
+		default:
 			m_iSelectedTarget = i;
 			vTargetPos = vEnemyHeadPos;
 
@@ -540,7 +541,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		}
 	}
 
-	if (m_tTargetCriteria != TargetCriteriaViewangle)
+	if (m_iTargetCriteria != TARGETCRITERIA_VIEWANGLES)
 	{
 		// Calculate our viewangles to aim at the enemy
 		m_qAimAngles = this->CalcAngle(vMyHeadPos, vTargetPos);

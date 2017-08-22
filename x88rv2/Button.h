@@ -28,6 +28,8 @@ private:
 	SimpleEventHandler_t m_pButtonDownHandler;
 	SimpleEventHandler_t m_pButtonUpHandler;
 
+	unsigned int m_iFont;
+
 	int m_iContentTextLen;
 	char* m_pContentText;
 	wchar_t* m_pContentTextW;

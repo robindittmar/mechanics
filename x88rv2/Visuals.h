@@ -14,12 +14,6 @@
 #define HANDSDRAWSTYLE_NOHANDS		1
 #define HANDSDRAWSTYLE_WIREFRAME	2
 
-enum HandsDrawStyles_t {
-	HandsDrawStyleNone,
-	HandsDrawStyleNoHands,
-	HandsDrawStyleWireframe
-};
-
 class IMatRenderContext;
 
 class CVisuals : public IFeature
@@ -42,9 +36,8 @@ public:
 	void SetNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
 	bool GetNoSmoke() { return m_bNoSmoke; }
 
-	void SetHandsDrawStyleUntyped(int handsDrawStyle) { m_tHandsDrawStyle = (HandsDrawStyles_t)handsDrawStyle; }
-	void SetHandsDrawStyle(HandsDrawStyles_t tHandsDrawStyle) { m_tHandsDrawStyle = tHandsDrawStyle; }
-	HandsDrawStyles_t GetHandsDrawStyle() { return m_tHandsDrawStyle; }
+	void SetHandsDrawStyle(int iHandsDrawStyle) { m_iHandsDrawStyle = iHandsDrawStyle; }
+	int GetHandsDrawStyle() { return m_iHandsDrawStyle; }
 
 	void SetNoVisualRecoil(bool bNoVisualRecoil) { m_bNoVisualRecoil = bNoVisualRecoil; }
 	bool GetNoVisualRecoil() { return m_bNoVisualRecoil; }
@@ -89,7 +82,7 @@ private:
 	float m_fFlashPercentage;
 
 	bool m_bNoSmoke;
-	HandsDrawStyles_t m_tHandsDrawStyle;
+	int m_iHandsDrawStyle;
 	bool m_bNoVisualRecoil;
 
 	bool m_bThirdperson;

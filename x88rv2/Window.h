@@ -32,6 +32,8 @@ private:
 	bool m_bIsDragging;
 	int m_iDragOffsetX, m_iDragOffsetY;
 
+	unsigned int m_iFont;
+
 	int m_iLenTitle;
 	char* m_pTitle;
 	wchar_t* m_pTitleW;

@@ -42,6 +42,8 @@ private:
 
 	std::function<void(int)> m_pEventHandler;
 
+	unsigned int m_iFont;
+
 	int m_iContentTextLen;
 	char* m_pContentText;
 	wchar_t* m_pContentTextW;

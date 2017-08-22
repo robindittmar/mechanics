@@ -100,9 +100,6 @@ public:
 	InitKeyValues_t InitKeyValues() { return m_pInitKeyValues; }
 	LoadFromBuffer_t LoadFromBuffer() { return m_pLoadFromBuffer; }
 
-	//void InitKeyValues(KeyValues*, const char*);
-	void LoadFromBuffer(KeyValues*, const char*, const char*);
-
 	// Engine Pointer
 	IVEngineClient* EngineClient() { return m_pEngineClient; }
 	IBaseClientDLL* BaseClient() { return m_pClient; }
@@ -137,7 +134,7 @@ public:
 	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
 
 	// Resource Manager
-	CResourceManager* ResourceManager() { return &m_resourceManager; }
+	CResourceManager* ResourceManager() { return m_pResourceManager; }
 
 	// Gui
 	CGui* Gui() { return m_pGui; }
@@ -180,8 +177,6 @@ private:
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
 
-	
-
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;
 	IClientEntityList* m_pEntityList;
@@ -220,7 +215,7 @@ private:
 	CGameEventListener m_gameEventListener;
 
 	// Resource Manager
-	CResourceManager m_resourceManager;
+	CResourceManager* m_pResourceManager;
 
 	// Hack GUI
 	CGui* m_pGui;

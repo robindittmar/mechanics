@@ -39,12 +39,9 @@ struct FireBulletData
 // Defines how to choose the next target for the aimbot
 // -> Origin: Chooses the target that's standing closest to you
 // -> Viewangle: Choose the target that's closest to your crosshair
-enum TargetCriteria_t
-{
-	TargetCriteriaUnspecified = 0,
-	TargetCriteriaOrigin = 1,
-	TargetCriteriaViewangle = 2
-};
+#define TARGETCRITERIA_UNSPECIFIED				0
+#define TARGETCRITERIA_ORIGIN					1
+#define TARGETCRITERIA_VIEWANGLES				2
 
 struct AimbotUpdateParam
 {
@@ -84,8 +81,8 @@ public:
 	void SetNoRecoil(bool bDoNoRecoil) { m_bDoNoRecoil = bDoNoRecoil; }
 	bool GetNoRecoil() { return m_bDoNoRecoil; }
 
-	void SetTargetCriteria(TargetCriteria_t tTargetCriteria) { m_tTargetCriteria = tTargetCriteria; }
-	TargetCriteria_t GetTargetCriteria() { return m_tTargetCriteria; }
+	void SetTargetCriteria(int iTargetCriteria) { m_iTargetCriteria = iTargetCriteria; }
+	int GetTargetCriteria() { return m_iTargetCriteria; }
 
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
 	float GetSpeed() { return m_fSpeed; }
@@ -127,7 +124,7 @@ private:
 	bool m_bSilentAim;
 	bool m_bDoNoRecoil;
 
-	TargetCriteria_t m_tTargetCriteria;
+	int m_iTargetCriteria;
 	float m_fSpeed;
 	float m_fFov;
 };

@@ -22,6 +22,7 @@ public:
 
 	void SelectTab(CTabPage* p);
 private:
+	unsigned int m_iFont;
 };
 
 #endif // __TABCONTAINER_H__

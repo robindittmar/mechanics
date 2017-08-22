@@ -33,8 +33,13 @@ void CApplication::Detach()
 	this->m_pEngineModelHook->Restore();
 	this->m_pClientModeHook->Restore();
 
+	// Free ResourceManager
+	delete g_pResourceManager;
+	g_pResourceManager = NULL;
+
 	// Free console
 	delete g_pConsole;
+	g_pConsole = NULL;
 
 	// Free & Exit
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
@@ -276,7 +281,6 @@ void BtnUp(IControl* p)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	// TODO: Idk, put this into a different function or something (due to xoring)
 	pApp->Gui()->EnableIngameMouse();
 	pApp->Detach();
 }
@@ -287,7 +291,9 @@ void CApplication::Setup()
 	g_pConsole = new CConsole();
 
 	// Resource manager
-	m_resourceManager.Init(this);
+	g_pResourceManager = new CResourceManager();
+	g_pResourceManager->Init(this);
+	m_pResourceManager = g_pResourceManager;
 
 	// Setup strings
 	CXorString clientDll("tgì§y«¦{g");
@@ -343,6 +349,9 @@ void CApplication::Setup()
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
+	// Create Resources
+	m_pResourceManager->CreateFonts();
+
 	// Print all classes & their properties
 	/*ClientClass* lClass = m_pClient->GetAllClasses();
 	while(lClass)
@@ -372,12 +381,16 @@ void CApplication::Setup()
 	this->m_aimbot.SetAutoshoot(false);
 	this->m_aimbot.SetAutoscope(true);
 	this->m_aimbot.SetSilentAim(false);
-	this->m_aimbot.SetTargetCriteria(TargetCriteriaViewangle);
+	this->m_aimbot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 	this->m_aimbot.SetSpeed(1.0f);
 	this->m_aimbot.SetFov(360.0f);
 
-	// AA, Bhop
+	// Antiaim
 	this->m_antiAim.IsEnabled(true);
+	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATICJITTERBACKWARDS);
+
+	// Bhop
 	this->m_bhop.IsEnabled(true);
 
 	// ESP
@@ -402,7 +415,7 @@ void CApplication::Setup()
 	this->m_misc.SetAutoStrafe(true);
 	this->m_misc.SetNoScope(true);
 	this->m_misc.SetAutoPistol(true);
-	this->m_misc.SetShowSpectators(true);
+	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 
@@ -412,7 +425,7 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetHitmarker(true);
 	this->m_visuals.SetNoSmoke(true);
-	this->m_visuals.SetHandsDrawStyle(HandsDrawStyleWireframe);
+	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
 
 	this->m_visuals.SetNoFlash(true);
@@ -461,10 +474,10 @@ void CApplication::Setup()
 	pSelectbox->AddOption(6, "SIEG");
 
 	CSelectbox* pSelectbox2 = new CSelectbox(132, 16, 100, 32);
-	pSelectbox2->AddOption(0, "None");
-	pSelectbox2->AddOption(1, "NoHands");
-	pSelectbox2->AddOption(2, "Wireframe");
-	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyleUntyped, &m_visuals, std::placeholders::_1));
+	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
+	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
+	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
+	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
 
 	CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
 	CCheckbox* pDrawHealthbar = new CCheckbox(16, 64, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
@@ -532,6 +545,9 @@ void CApplication::Hook()
 	// Grab Screensize
 	m_pGui->GetScreenSize();
 
+	// Create Resources
+	m_pResourceManager->CreateFonts();
+
 	// Get ClientMode and CInput
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
@@ -568,64 +584,11 @@ void CApplication::Hook()
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 }
 
-/*void CApplication::InitKeyValues(KeyValues* keyValues, const char* pBuffer)
-{
-	DWORD dwFunc = (DWORD)m_pInitKeyValues;
-
-	__asm
-	{
-		push pBuffer;
-		mov ecx, keyValues;
-		call dwFunc;
-	}
-}*/
-
-/*void CApplication::LoadFromBuffer(KeyValues* keyValues, const char* pResourceName, const char* pBuffer)
-{
-	DWORD dwFunc = (DWORD)m_pLoadFromBuffer;
-
-	__asm
-	{
-		push 0;
-		push 0;
-		push 0;
-		push pBuffer;
-		push pResourceName;
-		mov ecx, keyValues;
-		call dwFunc;
-		add esp, 0x10;
-	}
-}*/
-
-/*IMaterial* CApplication::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgnoreZ, bool bWireframe)
-{
-	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
-
-	static CXorString xorVertexLitGeneric("An÷¶rsÉ«cLà¬ryì¡");
-	static CXorString xorUnlitGeneric("Beé«cLà¬ryì¡");
-	static CXorString xorMatName("ocè£cT ¦9}è¶");
-
-	const char* pBaseType = (bIsLit == true ? xorVertexLitGeneric.ToCharArray() : xorUnlitGeneric.ToCharArray());
-	char pMaterial[1024];
-	char pName[512];
-	KeyValues* pKeyValues;
-	static int m_iMaterialCount = 0;
-	sprintf(pMaterial, xorVmt.ToCharArray(), pBaseType, (bIsFlat ? 1 : 0), (bIgnoreZ ? 1 : 0), (bWireframe ? 1 : 0));
-	sprintf(pName, xorMatName.ToCharArray(), m_iMaterialCount++);
-
-	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
-	m_pInitKeyValues(pKeyValues, pBaseType);
-	m_pLoadFromBuffer(pKeyValues, pName, pMaterial, NULL, NULL, NULL);
-
-	IMaterial* pMat = m_pMaterialSystem->CreateMaterial(pName, pKeyValues);
-	pMat->IncrementReferenceCount();
-
-	return pMat;
-}*/
-
 // Singleton
 CApplication::CApplication()
 {
+	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
+	//		 alle ptr != NULL löschen
 	m_pWindow = NULL;
 
 	m_pClientModeHook = NULL;

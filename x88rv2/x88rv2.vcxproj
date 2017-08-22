@@ -128,7 +128,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -175,6 +175,7 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Selectbox.cpp" />
+    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="TabContainer.cpp" />
     <ClCompile Include="TabPage.cpp" />
     <ClCompile Include="Vector.cpp" />
@@ -230,6 +231,7 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Selectbox.h" />
+    <ClInclude Include="Slider.h" />
     <ClInclude Include="SourceEngine.h" />
     <ClInclude Include="TabContainer.h" />
     <ClInclude Include="TabPage.h" />
