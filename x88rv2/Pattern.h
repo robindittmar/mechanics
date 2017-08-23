@@ -6,7 +6,7 @@
 class CPattern
 {
 public:
-	static bool CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask);
+	static bool CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask, int iLen);
 	static DWORD FindPattern(BYTE* pStartAddr, int iLength, BYTE* pPattern, const char* pMask);
 private:
 };

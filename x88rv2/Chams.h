@@ -17,6 +17,12 @@ public:
 	CChams();
 	~CChams();
 
+	void SetRenderTeam(bool bRender) { m_bRenderTeam = bRender; }
+	bool GetRenderTeam() { return m_bRenderTeam; }
+
+	void SetRenderLocalplayer(bool bRender) { m_bRenderLocalplayer = bRender; }
+	bool GetRenderLocalplayer() { return m_bRenderLocalplayer; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -24,6 +30,9 @@ public:
 private:
 	IVModelRender* m_pModelRender;
 	DrawModelExecute_t m_pDrawModelExecute;
+
+	bool m_bRenderTeam;
+	bool m_bRenderLocalplayer;
 
 	bool m_bMaterialsInitialized;
 	IMaterial* m_pFlatHiddenCT;

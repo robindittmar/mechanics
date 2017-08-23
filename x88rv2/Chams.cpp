@@ -27,6 +27,7 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
 	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
 
+	// Create Materials
 	if (!m_bMaterialsInitialized)
 	{
 		// Grab references
@@ -59,6 +60,7 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		m_bMaterialsInitialized = true;
 	}
 
+	// models/player
 	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
 	{
 		IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -67,24 +69,27 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		if (!pModelEntity)
 			return;
 
-		int iModelTeamNum = pModelEntity->TeamNum();
+		if (!pModelEntity->IsAlive())
+			return;
 
-		if (pModelEntity->IsAlive() &&
-			pLocalEntity != pModelEntity &&
-			pLocalEntity->TeamNum() != iModelTeamNum)
+		int iModelTeamNum = pModelEntity->TeamNum();
+		if (iModelTeamNum == pLocalEntity->TeamNum() && !m_bRenderTeam)
+			return;
+
+		if (pLocalEntity == pModelEntity && !m_bRenderLocalplayer)
+			return;
+
+		if(iModelTeamNum == 2)
 		{
-			if(iModelTeamNum == 2)
-			{
-				m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenT);
-				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-				m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleT);
-			}
-			else if(iModelTeamNum == 3)
-			{
-				m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenCT);
-				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-				m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleCT);
-			}
+			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenT);
+			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleT);
+		}
+		else if(iModelTeamNum == 3)
+		{
+			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenCT);
+			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleCT);
 		}
 	}
 }

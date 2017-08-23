@@ -1,8 +1,7 @@
 #include "Pattern.h"
 
-bool CPattern::CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask)
+bool CPattern::CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask, int iLen)
 {
-	int iLen = strlen(pMask);
 	for (int i = 0; i < iLen; i++)
 	{
 		if (pMask[i] == '-')
@@ -21,12 +20,14 @@ bool CPattern::CompareData(BYTE* pAddr, BYTE* pPattern, const char* pMask)
 
 DWORD CPattern::FindPattern(BYTE* pStartAddr, int iLength, BYTE* pPattern, const char* pMask)
 {
+	int iLen = strlen(pMask);
+
 	BYTE* pCurAddr = pStartAddr;
-	BYTE* iEndAddr = (pStartAddr + iLength - strlen(pMask));
+	BYTE* iEndAddr = (pStartAddr + iLength - iLen);
 
 	while (pCurAddr < iEndAddr)
 	{
-		if (CompareData(pCurAddr, pPattern, pMask))
+		if (CompareData(pCurAddr, pPattern, pMask, iLen))
 		{
 			return (DWORD)pCurAddr;
 		}

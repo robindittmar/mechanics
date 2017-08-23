@@ -407,6 +407,8 @@ void CApplication::Setup()
 
 	// Chams
 	this->m_chams.SetEnabled(true);
+	this->m_chams.SetRenderTeam(true);
+	this->m_chams.SetRenderLocalplayer(true);
 
 	// Misc
 	this->m_misc.SetEnabled(true);
@@ -482,10 +484,25 @@ void CApplication::Setup()
 	pSelectbox->AddOption(5, "nicht");
 	pSelectbox->AddOption(6, "SIEG");
 
+	// TODO: Groupbox -> "Antiaim" :D
+	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
+	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
+	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
+	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
+	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
+
+	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
+	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
+
 	CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
+	pSelectbox2->SetSelection(m_visuals.GetHandsDrawStyle());
 	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
 
 	CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
@@ -534,6 +551,8 @@ void CApplication::Setup()
 	pPage3->AddChild(pSelectbox2);
 
 	pPage4->AddChild(pSelectbox);
+	pPage4->AddChild(pSelectPitchAntiaim);
+	pPage4->AddChild(pSelectYawAntiaim);
 
 	pPage6->AddChild(pBtn);
 
@@ -575,13 +594,20 @@ void CApplication::Hook()
 	) + 7);
 	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
 
-	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
+	/*DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,
 		CLIENTDLL_SIZE,
 		(BYTE*)"\xE8\x00\x00\x00\x00\x80\x7D\xF8\x00\x00\x00\x85\xDB",
 		"a----cccc--ff"
 	);
-	m_pLoadFromBuffer = (LoadFromBuffer_t)(dwLoadFromBufferTemp + (*(DWORD_PTR*)(dwLoadFromBufferTemp + 1)) + 5);
+	m_pLoadFromBuffer = (LoadFromBuffer_t)(dwLoadFromBufferTemp + (*(DWORD_PTR*)(dwLoadFromBufferTemp + 1)) + 5);*/
+	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x34\x53\x8B\x5D\x0C\x89\x4C\x24\x04",
+		"abcdefghijjjjjjjq"
+	);
+	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
 
 	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode, true);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
