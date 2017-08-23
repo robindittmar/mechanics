@@ -314,7 +314,7 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_pApp->Aimbot()->IsEnabled())
+	if (!m_pApp->Aimbot()->GetEnabled())
 		return;
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
