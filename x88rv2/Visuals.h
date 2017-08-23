@@ -30,8 +30,8 @@ public:
 
 	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; }
 	bool GetNoFlash() { return m_bNoFlash; }
-	void SetFlashPercentage(int iNoFlashPercentage) { m_fFlashPercentage = iNoFlashPercentage; }
-	int GetFlashPercentage() { return m_fFlashPercentage; }
+	void SetFlashPercentage(float fNoFlashPercentage) { m_fFlashPercentage = fNoFlashPercentage; }
+	float GetFlashPercentage() { return m_fFlashPercentage; }
 
 	void SetNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
 	bool GetNoSmoke() { return m_bNoSmoke; }
