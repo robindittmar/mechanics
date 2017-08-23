@@ -137,11 +137,27 @@ void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, f
 	}
 }
 
-void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, int collisionGroup, trace_t *ptr)
+void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, int collisionGroup, trace_t *tr)
 {
 	typedef int(__fastcall* UTIL_TraceLine_t)(const Vector&, const Vector&, unsigned int, const IClientEntity*, int, trace_t*);
 	static UTIL_TraceLine_t TraceLine = (UTIL_TraceLine_t)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x7C\x56\x52", "xxxxxxxxxxx");
-	TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
+	//TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
+
+	__asm
+	{
+		mov eax, tr;
+		push eax;
+		mov ecx, collisionGroup;
+		push ecx;
+		mov edx, ignore;
+		push edx;
+		mov eax, mask;
+		push eax;
+		mov edx, vecAbsEnd;
+		mov ecx, vecAbsStart;
+		call TraceLine;
+ 		add esp, 0x10;
+	}
 }
 
 void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr)
@@ -206,8 +222,55 @@ bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* t
 
 	if (!TraceToExit)
 		return false;
+	
+	int bRet;
 
-	return TraceToExit(end, tr, start.x, start.y, start.z, vEnd.x, vEnd.y, vEnd.z, trace);
+	__asm
+	{
+		mov eax, trace;
+		push eax;
+		
+		/*push ecx;
+		
+		movss xmm0, ebp + 24h;
+		movss esp, xmm0;
+		push ecx;
+
+		movss xmm0, ebp + 20h;
+		movss esp, xmm0;
+		push ecx;
+
+		movss xmm0, vEnd;
+		movss esp, xmm0;
+		push ecx;
+
+		movss xmm0, ebp + 18h;
+		movss esp, xmm0;
+		push ecx;
+
+		movss xmm0, ebp + 14h;
+		movss esp, xmm0;
+		push ecx;
+
+		movss xmm0, */
+
+		push vEnd.z;
+		push vEnd.y;
+		push vEnd.x;
+		push start.z;
+		push start.y;
+		push start.x;
+
+		mov edx, tr;
+		mov ecx, end;
+		call TraceToExit;
+		add esp, 0x1C;
+
+		mov bRet, eax;
+	}
+	//return TraceToExit(end, tr, start.x, start.y, start.z, vEnd.x, vEnd.y, vEnd.z, trace);
+
+	return (bool)bRet;
 }
 
 inline vec_t VectorLength(const Vector& v)
@@ -410,6 +473,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	float fOriginDist;
 	float fLowestDist = 999999.0f;
 	float fDamage;
+	m_fDamage = 0.0f;
 
 	// Grab my values
 	iMyTeamNum = pLocalEntity->TeamNum();
@@ -469,6 +533,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		int boneIdx[] = { 8, 10, 72, 79 };
 		int bone = 0;
 		int boneCount = sizeof(boneIdx) / sizeof(int);
+		Vector vBonePos;
 
 		for (bone = 0; bone < boneCount; bone++)
 		{
@@ -476,27 +541,31 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 			pBoneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
 
 			// Get position
-			vEnemyHeadPos.x = pBoneMatrix->c[0][3];
-			vEnemyHeadPos.y = pBoneMatrix->c[1][3];
-			vEnemyHeadPos.z = pBoneMatrix->c[2][3];
+			vBonePos.x = pBoneMatrix->c[0][3];
+			vBonePos.y = pBoneMatrix->c[1][3];
+			vBonePos.z = pBoneMatrix->c[2][3];
 
 			// Prediction
-			vEnemyHeadPos += (*pCurEntity->Velocity() * fInputSampleTime);
+			vBonePos += (*pCurEntity->Velocity() * fInputSampleTime);
 
-			ray.Init(vMyHeadPos, vEnemyHeadPos);
-			m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-			/*float Damage = 0.f;
-			if (CanHit(vEnemyHeadPos, &Damage))
+			//ray.Init(vMyHeadPos, vEnemyHeadPos);
+			//m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+			if (CanHit(vBonePos, &fDamage))
 			{
-				g_pConsole->Write("%d\n", Damage);
+				if (fDamage > m_fDamage)
+				{
+					m_iTargetBone = bone;
+					vEnemyHeadPos = vBonePos;
+
+					m_fDamage = fDamage;
+					bIsHittable = true;
+				}
+			}
+			/*else if (trace.IsVisible(pCurEntity))
+			{
 				bIsHittable = true;
 				break;
-			}
-			else*/ if (trace.IsVisible(pCurEntity))
-			{
-				bIsHittable = true;
-				break;
-			}
+			}*/
 		}
 
 		// Nothing visible :(
@@ -632,6 +701,8 @@ void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float f
 
 void inline CAimbot::Aim(CUserCmd* pUserCmd)
 {
+	g_pConsole->Write("[Aimbot]: %.2f\n", m_fDamage);
+
 	// Write viewangles
 	pUserCmd->viewangles[0] = m_qAimAngles.x;
 	pUserCmd->viewangles[1] = m_qAimAngles.y;

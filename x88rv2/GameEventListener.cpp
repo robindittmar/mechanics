@@ -72,13 +72,15 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 		return;
+	int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
+	g_pConsole->Write("[player hurt]: %d\n", dmg_health);
 
 	// Hitmarker (TODO: It probably should go into the Visuals class,
 	//			        but the hitmarker feature is depending on a few more hooks)
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
 	if (pApp->Visuals()->GetHitmarker())
 	{
-		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
+		//int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
 		int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
 
 		if (dmg_health > 100 && hitgroup == 1)
