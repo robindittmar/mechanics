@@ -114,6 +114,8 @@ private:
 
 	bool m_bHasTarget;
 	int m_iSelectedTarget;
+	int m_iTargetBone;
+	float m_fDamage;
 	QAngle m_qAimAngles;
 
 	bool m_bIsShooting;

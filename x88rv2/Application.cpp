@@ -434,7 +434,7 @@ void CApplication::Setup()
 	this->m_visuals.SetFlashPercentage(0.f);
 
 	this->m_visuals.SetThirdperson(false);
-	this->m_visuals.SetThirdpersonDistance(120);
+	this->m_visuals.SetThirdpersonDistance(150);
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
