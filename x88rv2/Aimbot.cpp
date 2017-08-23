@@ -701,8 +701,6 @@ void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float f
 
 void inline CAimbot::Aim(CUserCmd* pUserCmd)
 {
-	g_pConsole->Write("[Aimbot]: %.2f\n", m_fDamage);
-
 	// Write viewangles
 	pUserCmd->viewangles[0] = m_qAimAngles.x;
 	pUserCmd->viewangles[1] = m_qAimAngles.y;

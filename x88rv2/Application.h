@@ -156,6 +156,7 @@ public:
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
 	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
+	static float __fastcall hk_GetViewModelFov(void* ecx, void* edx);
 private:
 	void Setup();
 	void Hook();

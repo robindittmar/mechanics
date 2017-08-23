@@ -7,6 +7,7 @@ FrameStageNotify_t CApplication::m_pFrameStageNotify;
 OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
 PaintTraverse_t CApplication::m_pPaintTraverse;
+GetViewModelFov_t CApplication::m_pGetViewModelFov;
 
 CApplication* CApplication::Instance()
 {
@@ -191,7 +192,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	m_pFrameStageNotify(ecx, curStage);
 }
 
-void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup) {
+void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup)
+{
 	CApplication* pApp = CApplication::Instance();
 	IClientEntity* pLocalEntity;
 
@@ -228,7 +230,8 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	pApp->ModelRender()->ForcedMaterialOverride(NULL);
 }
 
-void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce) {
+void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce)
+{
 	CApplication* pApp = CApplication::Instance();
 
 	if (pApp->EngineClient()->IsInGame())
@@ -269,6 +272,13 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
+}
+
+float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	return m_pGetViewModelFov(ecx) + 70.0f;
 }
 
 /*void BtnDown(IControl* p)
@@ -612,14 +622,13 @@ void CApplication::Hook()
 	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode, true);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
+	m_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
 
 	m_pEngineModelHook = new VTableHook((DWORD*)this->m_pModelRender, true);
 	m_pDrawModelExecute = (DrawModelExecute_t)m_pEngineModelHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
 	m_pClientHook = new VTableHook((DWORD*) this->m_pClient, true);
 	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
-
-	//m_pGetViewModelFov = (GetViewModelFov_t)m_pClientHook(35, );
 
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
