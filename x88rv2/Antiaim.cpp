@@ -27,11 +27,14 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	// Allow us to use (open doors, defuse bomb) and shoot normally
-	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK || pUserCmd->buttons & IN_ATTACK2)
+	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	if (activeWeapon->IsKnife() && pUserCmd->buttons & IN_ATTACK2)
+		return;
+
 	if (activeWeapon->IsNade())
 	{
 		CGrenade* activeGrenade = (CGrenade*)activeWeapon;

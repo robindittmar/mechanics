@@ -131,11 +131,12 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			}
 		}
 	}
-
-	if (curStage == FRAME_RENDER_START)
+	else if (curStage == FRAME_RENDER_START)
 	{
 		if (pApp->EngineClient()->IsInGame())
 		{
+			pApp->Misc()->DisablePostProcessing();
+
 			IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 			if (pLocalEntity->IsAlive())
 			{
@@ -278,7 +279,7 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	return m_pGetViewModelFov(ecx) + 70.0f;
+	return m_pGetViewModelFov(ecx) + 40.0f;
 }
 
 /*void BtnDown(IControl* p)
@@ -398,7 +399,7 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_BACKWARDS);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATICJITTERBACKWARDS);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -417,7 +418,7 @@ void CApplication::Setup()
 
 	// Chams
 	this->m_chams.SetEnabled(true);
-	this->m_chams.SetRenderTeam(true);
+	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(true);
 
 	// Misc
@@ -430,6 +431,7 @@ void CApplication::Setup()
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
+	this->m_misc.SetDisablePostProcessing(true);
 
 	// Visuals
 	this->m_visuals.SetEnabled(true);
@@ -448,7 +450,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(false);
+	this->m_visuals.SetFovChangeScoped(true);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
@@ -632,6 +634,8 @@ void CApplication::Hook()
 
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
+
+	m_misc.SetClanTag("HEIL HITLER");
 }
 
 // Singleton

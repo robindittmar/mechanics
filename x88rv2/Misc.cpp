@@ -13,6 +13,8 @@ void CMisc::Setup()
 {
 	m_pApp = CApplication::Instance();
 	m_pSetClanTag = (SetClanTag_t)CPattern::FindPattern((BYTE*)m_pApp->EngineDll(), 0x8C7000, (BYTE*)"\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15", "adhgezvel");
+
+	m_dwOverridePostProcessingDisable = *(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2);
 }
 
 void CMisc::Update(void* pParameters)
@@ -330,5 +332,19 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 	if (flPostponeFireReady > 0 && flPostponeFireReady - .1f < m_pApp->GlobalVars()->curtime)
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;
+	}
+}
+
+void CMisc::DisablePostProcessing()
+{
+	bool* bOverridePostProcessingDisable = (bool*)(m_dwOverridePostProcessingDisable);
+	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (m_bDisablePostProcessing && pLocalEntity->IsScoped())
+	{
+		*bOverridePostProcessingDisable = true;
+	}
+	else
+	{
+		*bOverridePostProcessingDisable = false;
 	}
 }
