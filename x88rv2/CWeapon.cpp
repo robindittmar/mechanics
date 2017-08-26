@@ -3,7 +3,7 @@
 
 int CWeapon::WeaponId()
 {
-	return *(int*)((unsigned long)this + OFFSET_ATRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
+	return *(int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
 }
 
 bool CWeapon::IsKnife()
