@@ -55,6 +55,9 @@ public:
 	void SetShowOnlyMyTeamSpectators(bool bOnlyMyTeamSpectators) { m_bOnlyMyTeamSpectators = bOnlyMyTeamSpectators; };
 	bool GetShowOnlyMyTeamSpectators() { return m_bOnlyMyTeamSpectators; };
 
+	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
+	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -67,6 +70,7 @@ public:
 	void SpectatorList();
 	void SetClanTag(const char*);
 	void AutoRevolver(CUserCmd*);
+	void DisablePostProcessing();
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
@@ -76,6 +80,9 @@ private:
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
 	bool m_bOnlyMyTeamSpectators;
+	bool m_bDisablePostProcessing;
+
+	unsigned long* m_dwOverridePostProcessingDisable;
 
 	SetClanTag_t m_pSetClanTag;
 };
