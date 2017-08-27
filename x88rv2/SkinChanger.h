@@ -32,6 +32,13 @@ public:
 
 	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
 	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
+
+	// ApplyCustomKillIcon
+	// Der vom interface --> EventManagerVTable[9] = (DWORD)FireEventClientSideThink;
+	//typedef bool(__thiscall *FireEventClientSide)(void*, IGameEvent*);
+	//FireEventClientSide fnOriginalFireEventClientSide = NULL;
+	// Perform kill icon replacements in here.
+	//bool __fastcall FireEventClientSideThink(void* ecx, void* edx, IGameEvent* pEvent) {
 private:
 	// Delete's all items of the maps
 	void DeleteModelNames();
