@@ -21,6 +21,7 @@
 #include "ESP.h"
 #include "Chams.h"
 #include "Misc.h"
+#include "Skinchanger.h"
 #include "Visuals.h"
 
 // Source Engine
@@ -133,6 +134,7 @@ public:
 	CEsp* Esp() { return (CEsp*)&m_esp; }
 	CChams* Chams() { return (CChams*)&m_chams; }
 	CMisc* Misc() { return (CMisc*)&m_misc; }
+	CSkinChanger* SkinChanger() { return (CSkinChanger*)&m_skinchanger; }
 	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
 
 	// Resource Manager
@@ -212,6 +214,7 @@ private:
 	CEsp m_esp;
 	CChams m_chams;
 	CMisc m_misc;
+	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
 
 	// Event listener
