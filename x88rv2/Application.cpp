@@ -376,48 +376,54 @@ void CApplication::Setup()
 		fclose(pFile);
 	}
 
+	CXorString csplayer("S_ÚD[é£nn÷");
+	CXorString basecombatweapon("S_Ú€vxàxfç£c\\à£gdë");
+	CXorString weaponcsbase("S_Ú•rjõ­yHÖ€vxà");
+	CXorString basecsgrenade("S_Ú€vxàDL÷§yjá§");
+
 	CNetVarManager netVarManager;
-	netVarManager.AddTable("DT_BaseEntity");
-	netVarManager.AddTable("DT_CSPlayer");
-	netVarManager.AddTable("DT_BaseCombatWeapon");
-	netVarManager.AddTable("DT_WeaponCSBase");
-	netVarManager.AddTable("DT_BaseCSGrenade");
+	//netVarManager.AddTable("DT_BaseEntity");
+	netVarManager.AddTable(csplayer.ToCharArray());
+	netVarManager.AddTable(basecombatweapon.ToCharArray());
+	netVarManager.AddTable(weaponcsbase.ToCharArray());
+	netVarManager.AddTable(basecsgrenade.ToCharArray());
 	netVarManager.LoadTables(m_pClient->GetAllClasses());
 
 	CXorString baseclass("ujö§tgä±d");
-	Offsets::m_vecOrigin = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_vecOrigin");
-	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_vecViewOffset[0]");
-	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, "DT_CSPlayer", "m_angEyeAngles");
-	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(1, "DT_CSPlayer", "m_flLowerBodyYawTarget");
-	Offsets::m_vecVelocity = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_vecVelocity[0]");
-	Offsets::m_iTeamNum = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_iTeamNum");
-	Offsets::m_lifeState = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_lifeState");
-	Offsets::m_iHealth = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_iHealth");
-	Offsets::m_ArmorValue = netVarManager.GetOffset(1, "DT_CSPlayer", "m_ArmorValue");
-	Offsets::m_bHasHelmet = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bHasHelmet");
-	Offsets::m_fFlags = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_fFlags");
-	Offsets::m_bSpotted = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_bSpotted");
-	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bGunGameImmunity");
-	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(1, "DT_CSPlayer", "m_flFlashMaxAlpha");
+	CXorString localdata("{dæ£{oä¶v");
+	Offsets::m_vecOrigin = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTó§tD÷«pbë").ToCharArray());
+	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
+	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
+	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
+	Offsets::m_vecVelocity = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
+	Offsets::m_iTeamNum = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTì–rjèŒbf").ToCharArray());
+	Offsets::m_lifeState = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTé«qnÖ¶và").ToCharArray());
+	Offsets::m_iHealth = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTìŠrjé¶").ToCharArray());
+	Offsets::m_ArmorValue = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTÄ°zd÷”vgð§").ToCharArray());
+	Offsets::m_bHasHelmet = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTçŠvxÍ§{fà¶").ToCharArray());
+	Offsets::m_fFlags = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTã„{jâ±").ToCharArray());
+	Offsets::m_bSpotted = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTç‘gdñ¶ro").ToCharArray());
+	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
+	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
 	//Offsets::m_bMoveType = netVarManager.GetOffset(1, "DT_BaseEntity", "m_bMoveType");
-	Offsets::m_bIsScoped = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bIsScoped");
-	Offsets::m_iShotsFired = netVarManager.GetOffset(2, "DT_CSPlayer", "cslocaldata", "m_iShotsFired");
-	Offsets::m_hActiveWeapon = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), "m_hActiveWeapon");
-	Offsets::m_hObserverTarget = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_hObserverTarget");
-	Offsets::m_deadflag = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "pl", "deadflag");
-	Offsets::m_nTickBase = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_nTickBase");
+	Offsets::m_bIsScoped = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTç‹dXæ­gná").ToCharArray());
+	Offsets::m_iShotsFired = netVarManager.GetOffset(2, csplayer.ToCharArray(), CXorString("txé­tjé¦vä").ToCharArray(), CXorString("zTì‘dñ±Qb÷§s").ToCharArray());
+	Offsets::m_hActiveWeapon = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTíƒtì´r\\à£gdë").ToCharArray());
+	Offsets::m_hObserverTarget = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTíuxà°an÷–vyâ§c").ToCharArray());
+	Offsets::m_deadflag = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("gg").ToCharArray(), CXorString("snä¦qgä¥").ToCharArray());
+	Offsets::m_nTickBase = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTë–~hî€vxà").ToCharArray());
 
-	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager");
-	//Offsets::m_Item = netVarManager.GetOffset(3, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
-	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager", "m_Item", "m_iItemDefinitionIndex");
-	Offsets::m_iClip1 = netVarManager.GetOffset(1, "DT_BaseCombatWeapon", "m_iClip1");
-	Offsets::m_iClip2 = netVarManager.GetOffset(1, "DT_BaseCombatWeapon", "m_iClip2");
-	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, "DT_BaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack");
+	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager");
+	//Offsets::m_Item = netVarManager.GetOffset(3, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
+	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), CXorString("zTÄ¶cyì bàveä¥ry").ToCharArray(), CXorString("zTÌ¶rf").ToCharArray(), CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
+	Offsets::m_iClip1 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõó").ToCharArray());
+	Offsets::m_iClip2 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõð").ToCharArray());
+	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), CXorString("[dæ£{Jæ¶~}à•rjõ­yOä¶v").ToCharArray(), CXorString("zTã®Yný¶Gyì¯vyüƒcä¡|").ToCharArray());
 
-	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(1, "DT_WeaponCSBase", "m_fAccuracyPenalty");
-	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(1, "DT_WeaponCSBase", "m_flPostponeFireReadyTime");
+	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(1, weaponcsbase.ToCharArray(), CXorString("zTãƒthð°vhü’reä®cr").ToCharArray());
+	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(1, weaponcsbase.ToCharArray(), CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
 
-	Offsets::m_fThrowTime = netVarManager.GetOffset(1, "DT_BaseCSGrenade", "m_fThrowTime");
+	Offsets::m_fThrowTime = netVarManager.GetOffset(1, basecsgrenade.ToCharArray(), CXorString("zTã–yêµCbè§").ToCharArray());
 
 	// Setups
 	this->m_aimbot.Setup();
@@ -480,15 +486,16 @@ void CApplication::Setup()
 	SkinItemCfg cfg;
 	cfg.m_iFallbackPaintKit = 44;
 	cfg.m_iFallbackSeed = 321;
-	cfg.m_iEntityQuality = 3;
+	cfg.m_iFallbackStatTrak = 1337;
+	cfg.m_iEntityQuality = 6;
 	m_skinchanger.AddSkinConfig(WEAPON_AK47, cfg);
 
-	cfg.m_iItemDefinitionIndex = WEAPON_KNIFE_BUTTERFLY;
+	/*cfg.m_iItemDefinitionIndex = WEAPON_KNIFE_BUTTERFLY;
 	cfg.m_iFallbackPaintKit = 38;
 	cfg.m_iEntityQuality = 3;
 	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_BUTTERFLY, cfg);
 	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_M9_BAYONET, cfg);
-	m_skinchanger.SetKnifeModel("models/weapons/v_knife_butterfly.mdl");
+	m_skinchanger.SetKnifeModel("models/weapons/v_knife_butterfly.mdl");*/
 
 	// Visuals
 	this->m_visuals.SetEnabled(true);
@@ -692,7 +699,7 @@ void CApplication::Hook()
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
-	m_misc.SetClanTag("HEIL HITLER");
+	m_misc.SetClanTag("SIEG HEIL");
 }
 
 // Singleton

@@ -104,7 +104,7 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int wepIndex)
 	*pWeapon->GetFallbackPaintKit() = this->m_mapSkinChangerCfg[wepIndex].m_iFallbackPaintKit;
 	*pWeapon->GetEntityQuality() = this->m_mapSkinChangerCfg[wepIndex].m_iEntityQuality; // quality, red, blue, etc.. 4/11 same as 0, 3 knife with star
 	*pWeapon->GetFallbackSeed() = this->m_mapSkinChangerCfg[wepIndex].m_iFallbackSeed;
-	*pWeapon->GetFallbackStatTrak() = -1; //-1 = nonst, > 0 = statcount
+	*pWeapon->GetFallbackStatTrak() = this->m_mapSkinChangerCfg[wepIndex].m_iFallbackStatTrak; //-1 = nonst, > 0 = statcount
 	*pWeapon->GetFallbackWear() = this->m_mapSkinChangerCfg[wepIndex].m_flFallbackWear; // standard, best
 	if (this->m_mapSkinChangerCfg[wepIndex].m_iItemDefinitionIndex != -1)
 		*pWeapon->GetItemDefinitionIndex() = this->m_mapSkinChangerCfg[wepIndex].m_iItemDefinitionIndex;
@@ -113,7 +113,7 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int wepIndex)
 		sprintf_s(pWeapon->GetCustomName(), 32, "%s", this->m_mapSkinChangerCfg[wepIndex].m_szCustomName);
 	}
 
-	*pWeapon->GetItemIDHigh() = 1;
+	*pWeapon->GetItemIDHigh() = -1;
 
 	return true;
 }
