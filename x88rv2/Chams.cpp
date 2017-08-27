@@ -72,20 +72,20 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		if (!pModelEntity->IsAlive())
 			return;
 
+		if (pLocalEntity == pModelEntity && !m_bRenderLocalplayer)
+			return;
+
 		int iModelTeamNum = pModelEntity->GetTeamNum();
 		if (iModelTeamNum == pLocalEntity->GetTeamNum() && !m_bRenderTeam)
 			return;
 
-		if (pLocalEntity == pModelEntity && !m_bRenderLocalplayer)
-			return;
-
-		if(iModelTeamNum == 2)
+		if(iModelTeamNum == TEAMNUM_T)
 		{
 			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenT);
 			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 			m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleT);
 		}
-		else if(iModelTeamNum == 3)
+		else if(iModelTeamNum == TEAMNUM_CT)
 		{
 			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenCT);
 			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);

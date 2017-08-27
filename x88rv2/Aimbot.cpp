@@ -1,7 +1,5 @@
 #include "Aimbot.h"
 #include "Application.h"
-#include "ray.h"
-#include "Console.h"
 
 CAimbot::CAimbot()
 {
@@ -378,6 +376,37 @@ QAngle CAimbot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
 	return qAngle;
 }
 
+void CAimbot::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
+{
+	Vector bbmin;
+	Vector bbmax;
+
+	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
+	bbmin = (hitBox->m_vecBBMin - fMod) * 0.65f;
+	bbmax = (hitBox->m_vecBBMax + fMod) * 0.65f;
+
+	Vector vPoints[] = {
+		(bbmin + bbmax) * 0.5f,
+		Vector(bbmin.x, bbmin.y, bbmin.z),
+		Vector(bbmin.x, bbmax.y, bbmin.z),
+		Vector(bbmax.x, bbmax.y, bbmin.z),
+		Vector(bbmax.x, bbmin.y, bbmin.z),
+		Vector(bbmax.x, bbmax.y, bbmax.z),
+		Vector(bbmin.x, bbmax.y, bbmax.z),
+		Vector(bbmin.x, bbmin.y, bbmax.z),
+		Vector(bbmax.x, bbmin.y, bbmax.z)
+	};
+
+	for (int i = 0; i < sizeof(vPoints) / sizeof(Vector); i++)
+	{
+		/*if (i != 0)
+			vPoints[i] = ((((vPoints[i] + vPoints[0]) * 0.5f) + vPoints[i]) * 0.5f);*/
+
+		VectorTransform(vPoints[i], boneMatrix[hitBox->m_iBone], hitBoxVectors[i]);
+	}
+}
+
+
 float CAimbot::GetOriginDist(Vector& vSource, Vector& vTarget)
 {
 	return (vTarget - vSource).Length();
@@ -400,59 +429,6 @@ void inline CAimbot::ResetTickVariables()
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
 }
-
-// COPY PASTA TEST
-void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
-{
-	Vector mins;
-	Vector maxs;
-	Vector center;
-
-	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
-	VectorTransform(hitBox->m_vecBBMin - fMod, boneMatrix[hitBox->m_iBone], mins);
-	VectorTransform(hitBox->m_vecBBMax + fMod, boneMatrix[hitBox->m_iBone], maxs);
-	center = (mins + maxs) * 0.5f;
-
-	hitBoxVectors[0] = center;
-	hitBoxVectors[1] = center;
-	hitBoxVectors[2] = center;
-	hitBoxVectors[3] = center;
-	hitBoxVectors[4] = center;
-	hitBoxVectors[5] = center;
-	hitBoxVectors[6] = center;
-
-	hitBoxVectors[1].x += hitBox->m_flRadius * 0.85f; // left ear
-	hitBoxVectors[2].x -= hitBox->m_flRadius * 0.85f; // right ear
-	hitBoxVectors[3].y += hitBox->m_flRadius * 0.85f; // face
-	hitBoxVectors[4].y -= hitBox->m_flRadius * 0.85f; // backhead
-	hitBoxVectors[5].z += hitBox->m_flRadius * 0.92f; // forehead
-	hitBoxVectors[6].z -= hitBox->m_flRadius * 0.92f; // neck or something
-	
-
-	/*Vector vPoints[] = {
-		(bbmin + bbmax) * 0.5f,
-		Vector(bbmin.x, bbmin.y, bbmin.z),
-		Vector(bbmin.x, bbmax.y, bbmin.z),
-		Vector(bbmax.x, bbmax.y, bbmin.z),
-		Vector(bbmax.x, bbmin.y, bbmin.z),
-		Vector(bbmax.x, bbmax.y, bbmax.z),
-		Vector(bbmin.x, bbmax.y, bbmax.z),
-		Vector(bbmin.x, bbmin.y, bbmax.z),
-		Vector(bbmax.x, bbmin.y, bbmax.z)
-	};*/
-
-	/*for (int index = 0; index < sizeof(vPoints) / sizeof(Vector); ++index)
-	{
-		// scale down the hitbox size a tiny bit (default is a little too big)
-		/*points[index].x *= 0.9;
-		points[index].y *= 0.9;
-		points[index].z *= 0.9;*/
-	/*
-		// transform the vector
-		VectorTransform(vPoints[index], boneMatrix[hitBox->m_iBone], hitBoxVectors[index]);
-	}*/
-}
-// COPY PASTA TEST
 
 bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 {
@@ -490,7 +466,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	mstudiobbox_t* pHitbox;
 
 	// Hitbox
-	Vector vHitbox[7];
+	Vector vHitbox[9];
 
 	float fViewangleDist;
 	float fOriginDist;
@@ -566,7 +542,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		if (!pHitbox)
 			continue;
 
-		g_pConsole->Write("Bone: %d, min: (%.2f,%.2f,%.2f), max: (%.2f,%.2f,%.2f), name: %s\n",
+		/*g_pConsole->Write("Bone: %d, min: (%.2f,%.2f,%.2f), max: (%.2f,%.2f,%.2f), name: %s\n",
 			pHitbox->m_iBone,
 			pHitbox->m_vecBBMin.x,
 			pHitbox->m_vecBBMin.y,
@@ -575,7 +551,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 			pHitbox->m_vecBBMax.y,
 			pHitbox->m_vecBBMax.z,
 			pHitbox->pszHitboxName(pHitbox->m_iBone)
-		);
+		);*/
 
 		// TODO
 		// 8, 10, 72, 79
@@ -590,7 +566,18 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			ray.Init(vMyHeadPos, vHitbox[i]);
 			pEngineTrace->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-			if (trace.IsVisible(pCurEntity))
+			/*if (CanHit(vHitbox[i], &fDamage))
+			{
+				if (fDamage > m_fDamage)
+				{
+					m_iTargetBone = i;
+					vEnemyHeadPos = vHitbox[i];
+
+					m_fDamage = fDamage;
+					bIsHittable = true;
+				}
+			}
+			else */if (trace.IsVisible(pCurEntity))
 			{
 				vEnemyHeadPos = vHitbox[i];
 				bIsHittable = true;
