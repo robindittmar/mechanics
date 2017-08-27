@@ -116,9 +116,73 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	return false;
 }
 
+//nWeaponIndex = Which one to overwrite
+bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int nWeaponIndex) {
+	// Check if this weapon has a valid override defined.
+	//if (g_SkinCFG.find(nWeaponIndex) == g_SkinCFG.end())
+	//	return false;
+
+	// Apply our changes to the fallback variables.
+	int* paintKit = pWeapon->GetFallbackPaintKit();
+	*paintKit = 44; // ak redline
+
+	int* entQuality = pWeapon->GetEntityQuality();
+	*entQuality = 6; // quality, red, blue, etc.. 4/11 same as 0, 3 knife with star
+
+	int* seed = pWeapon->GetFallbackSeed();
+	*seed = 321; // Standard idk
+
+	//If you are having issues with the StatTrak counter appearing as USER ERROR, set m_iAccountID to your XUID Low value. 
+	int* st = pWeapon->GetFallbackStatTrak();
+	*st = -1; //-1 = nonst, > 0 = statcount
+
+	float* wear = pWeapon->GetFallbackWear();
+	*wear = 0.0001f; // standard
+
+	int* index = pWeapon->GetItemDefinitionIndex();
+	*index = WEAPON_AK47;
+
+	// If a name is defined, write it now.
+	/*if (g_SkinCFG[nWeaponIndex].szWeaponName) {
+		sprintf_s(pWeapon->GetCustomName(), 32, "%s", g_SkinCFG[nWeaponIndex].szWeaponName);
+	}*/
+
+	// Edit "m_iItemIDHigh" so fallback values will be used.
+	int* idhigh = pWeapon->GetItemIDHigh();
+	*idhigh = -1;
+
+	return true;
+}
+
+bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pWeapon, int nWeaponIndex) {
+	CBaseViewModel* pViewModel = (CBaseViewModel*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)pLocal + 0x32DC)); // local -> m_hViewModel
+
+	if (!pViewModel)
+		return false;
+
+	// Get the weapon belonging to this view model.
+	DWORD hViewModelWeapon = pViewModel->GetWeapon();
+	CBaseAttributableItem* pViewModelWeapon = (CBaseAttributableItem*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle((HANDLE)hViewModelWeapon);
+
+	if (pViewModelWeapon != pWeapon)
+		return false;
+
+	// Check if an override exists for this view model.
+	int nViewModelIndex = pViewModel->GetModelIndex();
+
+	/*if (g_ViewModelCFG.find(nViewModelIndex) == g_ViewModelCFG.end())
+		return false;*/ // checks if end
+
+	// Configure model replacements.
+	pViewModel->SetWeaponModel("models/weapons/v_knife_karam.mdl", pWeapon);
+
+	return true;
+}
+
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
+	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 
 	if (curStage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 	{
@@ -129,6 +193,40 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			{
 				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
+
+			//SkinChanger
+			PlayerInfo pLocalInfo;
+			pApp->EngineClient()->GetPlayerInfo(pLocalEntity->EntIndex(), &pLocalInfo);
+
+			UINT *hWeapons = (UINT*)((DWORD)pLocalEntity + 0x2DE8); // DT_BasePlayer -> m_hMyWeapons todo:
+			for (int i = 0; hWeapons[i]; i++) {
+				CBaseAttributableItem* pWeapon = (CBaseAttributableItem*)pApp->EntityList()->GetClientEntityFromHandle((HANDLE)hWeapons[i]);
+				if (!pWeapon)
+					continue;
+
+				int nWeaponIndex = *pWeapon->GetItemDefinitionIndex();
+				/*if (nWeaponIndex == WEAPON_KNIFE_M9_BAYONET ||
+					nWeaponIndex == WEAPON_KNIFE_KARAMBIT)
+				{
+					ApplyCustomModel(pLocalEntity, pWeapon, nWeaponIndex);
+
+					if (pLocalInfo.xuidlow != *pWeapon->GetOriginalOwnerXuidLow())
+						continue;
+
+					if (pLocalInfo.xuidhigh != *pWeapon->GetOriginalOwnerXuidHigh())
+						continue;
+
+					ApplyCustomSkin(pWeapon, nWeaponIndex);
+
+					*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
+				}*/
+				if (nWeaponIndex == WEAPON_AK47)
+				{
+					ApplyCustomSkin(pWeapon, nWeaponIndex);
+
+					*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
+				}
+			}
 		}
 	}
 	else if (curStage == FRAME_RENDER_START)
@@ -137,7 +235,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		{
 			pApp->Misc()->DisablePostProcessing();
 
-			IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 			if (pLocalEntity->IsAlive())
 			{
 				pApp->Visuals()->NoSmoke();
@@ -511,7 +608,7 @@ void CApplication::Setup()
 
 	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
 	pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
-	
+
 	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_aimbot.GetSilentAim());
 	pSilentAim->SetEventHandler(std::bind(&CAimbot::SetSilentAim, &m_aimbot, std::placeholders::_1));
 
