@@ -8,6 +8,8 @@
 #ifndef __IVMODELINFO_H__
 #define __IVMODELINFO_H__
 
+#include <cstdint>
+#include <cstring>
 #include "Vector.h"
 
 //-----------------------------------------------------------------------------

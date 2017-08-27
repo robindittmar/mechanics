@@ -4,8 +4,10 @@
 #include "IFeature.h"
 #include "Vector.h"
 #include "UserCmd.h"
+#include "IVModelInfo.h"
 #include "IEngineTrace.h"
 #include "CGameTrace.h"
+#include "ray.h"
 #include "CWeapon.h"
 
 #define HITGROUP_GENERIC		0
@@ -23,7 +25,7 @@
 
 enum Hitboxes
 {
-	HITBOX_HEAD = 0,
+	HITBOX_HEAD,
 	HITBOX_NECK,
 	HITBOX_LOWER_NECK,
 	HITBOX_PELVIS,
@@ -124,6 +126,7 @@ private:
 	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
 	bool CanHit(Vector &point, float *damage_given);
 
+	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors);
 
 	float GetOriginDist(Vector& a, Vector& b);
 	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);

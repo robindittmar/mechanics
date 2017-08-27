@@ -4,14 +4,15 @@ Priority High
 ==> AUTOWALL!
 => GUI/Menu
 => ConVar->FindVar(...)
-=> Netvars
+=> Netvars [x]
 
 --------------------------------------
 Priority Medium
 --------------------------------------
 => psilent?
 => Skin changer
-=> Viewmodel changer (viewmodel position)
+=> Viewmodel changer (viewmodel position) [x]
+=> Accuracy Penalty (Hitchance)
 
 --------------------------------------
 Priority Low
