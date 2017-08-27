@@ -35,6 +35,7 @@ namespace Offsets
 	extern int m_flNextPrimaryAttack;
 	
 	// DT_WeaponCSBase
+	extern int m_fAccuracyPenalty;
 	extern int m_flPostponeFireReadyTime;
 
 	// DT_BaseCSGrenade
