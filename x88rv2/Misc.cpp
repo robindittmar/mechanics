@@ -34,7 +34,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	if (activeWeapon->IsNade() ||
 		activeWeapon->IsPistol() && !m_pApp->Visuals()->GetNoVisualRecoil()) //todo: maybe norecoil while pistol
 		return;
@@ -42,7 +42,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	if (m_pApp->Aimbot()->DidNoRecoil())
 		return;
 
-	int shotsFired = pLocalEntity->ShotsFired();
+	int shotsFired = pLocalEntity->GetShotsFired();
 	if (m_pApp->Visuals()->GetNoVisualRecoil())
 	{
 		QAngle aimPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
@@ -107,8 +107,8 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	DWORD moveType = pLocalEntity->MoveType();
-	if (!(pLocalEntity->Flags() & FL_ONGROUND) &&
+	DWORD moveType = pLocalEntity->GetMoveType();
+	if (!(pLocalEntity->GetFlags() & FL_ONGROUND) &&
 		!(moveType & MOVETYPE_NOCLIP) &&
 		!(moveType & MOVETYPE_LADDER))
 	{
@@ -165,16 +165,16 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 
 	if (!activeWeapon->IsPistol())
 		return;
 
-	if (activeWeapon->WeaponId() == WEAPON_REVOLVER)
+	if (activeWeapon->GetWeaponId() == WEAPON_REVOLVER)
 		return;
 
-	float nextattack = activeWeapon->NextPrimaryAttack();
-	float servertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
+	float nextattack = activeWeapon->GetNextPrimaryAttack();
+	float servertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
 	if (nextattack > servertime)
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;
@@ -191,7 +191,9 @@ void CMisc::SpectatorList()
 		return;
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	PlayerInfo pLocalInfo = pLocalEntity->GetPlayerInfo();
+	PlayerInfo pLocalInfo, pEntityInfo;
+	pLocalEntity->GetPlayerInfo(&pLocalInfo);
+
 	wchar_t pLocalName[256];
 	int iLocalNameLen = pLocalInfo.GetName(pLocalName, 256);
 
@@ -214,14 +216,14 @@ void CMisc::SpectatorList()
 		if (pEntity->IsDormant())
 			continue;
 
-		if (m_bOnlyMyTeamSpectators &&	pLocalEntity->TeamNum() != pEntity->TeamNum() && pEntity->TeamNum() != 1)
+		if (m_bOnlyMyTeamSpectators &&	pLocalEntity->GetTeamNum() != pEntity->GetTeamNum() && pEntity->GetTeamNum() != 1)
 			continue;
 
-		PlayerInfo pEntityInfo = pEntity->GetPlayerInfo();
+		pEntity->GetPlayerInfo(&pEntityInfo);
 		if (pEntityInfo.ishltv)
 			continue;
 
-		IClientEntity* pObserverTarget = pEntity->ObserverTarget(); //todo: crashes
+		IClientEntity* pObserverTarget = pEntity->GetObserverTarget(); //todo: crashes
 
 		if (!pObserverTarget)
 			continue;
@@ -268,12 +270,16 @@ void CMisc::SpectatorList()
 
 		if (observer && observing)
 		{
-			PlayerInfo infoObserver = observer->GetPlayerInfo();
-			PlayerInfo infoObserving = observing->GetPlayerInfo();
+			PlayerInfo infoObserver;
+			PlayerInfo infoObserving;
+
+			observer->GetPlayerInfo(&infoObserver);
+			observing->GetPlayerInfo(&infoObserving);
 
 			wchar_t observerName[256];
-			int lenObserver = infoObserver.GetName(observerName, 256);
 			wchar_t observingName[256];
+
+			int lenObserver = infoObserver.GetName(observerName, 256);
 			int lenObserving = infoObserving.GetName(observingName, 256);
 
 			wchar_t text[5] = L" -> ";
@@ -285,7 +291,10 @@ void CMisc::SpectatorList()
 				wcscpy(end, observerName);
 				wcscat(end, text);
 				wcscat(end, observingName);
-				if (wcscmp(observingName, pLocalName) == 0)
+				// @Nico: Performance? :D (strings dauern immer lange, weil mind. strlen(kürzererString) vergleiche
+				//		  einfach observing auf LocalEntity checken :) (ist auch besser wegen namechanger oder so)
+				//if (wcscmp(observingName, pLocalName) == 0)
+				if(observing == pLocalEntity)
 				{
 					m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
 				}
@@ -320,15 +329,15 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 		return;
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	if (activeWeapon->WeaponId() != WEAPON_REVOLVER)
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (activeWeapon->GetWeaponId() != WEAPON_REVOLVER)
 		return;
 
-	if (activeWeapon->Clip1() == 0)
+	if (activeWeapon->GetClip1() == 0)
 		return;
 
 	pUserCmd->buttons |= IN_ATTACK;
-	float flPostponeFireReady = activeWeapon->PostPoneFireReady();
+	float flPostponeFireReady = activeWeapon->GetPostPoneFireReady();
 	if (flPostponeFireReady > 0 && flPostponeFireReady - .1f < m_pApp->GlobalVars()->curtime)
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;

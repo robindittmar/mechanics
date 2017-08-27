@@ -31,18 +31,18 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	if (activeWeapon->IsKnife() && pUserCmd->buttons & IN_ATTACK2)
 		return;
 
 	if (activeWeapon->IsNade())
 	{
 		CGrenade* activeGrenade = (CGrenade*)activeWeapon;
-		if (activeGrenade->ThrowTime() > 0.f)
+		if (activeGrenade->GetThrowTime() > 0.f)
 			return;
 	}
 
-	if (pLocalEntity->MoveType() & MOVETYPE_LADDER)
+	if (pLocalEntity->GetMoveType() & MOVETYPE_LADDER)
 		return;
 
 	QAngle angles;

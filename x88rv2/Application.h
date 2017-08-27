@@ -11,6 +11,8 @@
 #include "Controls.h"
 #include "GameEventListener.h"
 #include "ResourceManager.h"
+#include "NetVarManager.h"
+#include "Offsets.h"
 
 // Features
 #include "Aimbot.h"

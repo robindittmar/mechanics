@@ -20,7 +20,7 @@ void CEsp::Update(void* pParameters)
 		return;
 
 	IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	int localTeam = localEntity->TeamNum();
+	int localTeam = localEntity->GetTeamNum();
 
 	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
 	{
@@ -33,7 +33,7 @@ void CEsp::Update(void* pParameters)
 			continue;
 
 		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
-		int entityTeam = pEntity->TeamNum();
+		int entityTeam = pEntity->GetTeamNum();
 
 		if (!(isLocalPlayer && m_pApp->Visuals()->GetThirdperson() && m_bDrawOwnModel ||
 			!isLocalPlayer && m_bDrawOwnTeam && entityTeam == localTeam ||
@@ -50,12 +50,12 @@ void CEsp::Update(void* pParameters)
 		Vector origin = headPos;
 
 		Color color;
-		if (entityTeam == CT_TEAMID)
+		if (entityTeam == TEAMNUM_CT)
 		{
 			color = Color(0, 0, 255);
 			headPos.z += 71;
 		}
-		else if (entityTeam == T_TEAMID)
+		else if (entityTeam == TEAMNUM_T)
 		{
 			color = Color(255, 0, 0);
 			headPos.z += 72;
@@ -70,18 +70,18 @@ void CEsp::Update(void* pParameters)
 			color = Color(255, 51, 255);
 		}
 
-		int health = pEntity->Health();
+		int health = pEntity->GetHealth();
 		if (health == 0)
 			continue;
 
-		DWORD flags = pEntity->Flags();
+		DWORD flags = pEntity->GetFlags();
 		if (flags & IN_DUCK)
 		{
 			headPos.z -= 17;
 		}
 
 		//todo: both interesting for knifebot
-		int armor = pEntity->Armor();
+		int armor = pEntity->GetArmor();
 		bool hasHelmet = pEntity->HasHelmet();
 
 		if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
@@ -313,7 +313,9 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	}
 	m_pApp->Surface()->DrawSetTextFont(font);
 
-	PlayerInfo pInfo = pEntity->GetPlayerInfo();
+	PlayerInfo pInfo;
+	pEntity->GetPlayerInfo(&pInfo);
+
 	wchar_t name[256];
 	int iLen = pInfo.GetName(name, 256);
 

@@ -72,8 +72,8 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		if (!pModelEntity->IsAlive())
 			return;
 
-		int iModelTeamNum = pModelEntity->TeamNum();
-		if (iModelTeamNum == pLocalEntity->TeamNum() && !m_bRenderTeam)
+		int iModelTeamNum = pModelEntity->GetTeamNum();
+		if (iModelTeamNum == pLocalEntity->GetTeamNum() && !m_bRenderTeam)
 			return;
 
 		if (pLocalEntity == pModelEntity && !m_bRenderLocalplayer)

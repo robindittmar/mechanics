@@ -1,12 +1,11 @@
 #ifndef __VISUALS_H__
 #define __VISUALS_H__
 
+#include "Offsets.h"
 #include "IFeature.h"
 #include "IVModelRender.h"
 #include "ClientEntity.h"
 #include "CViewSetup.h"
-
-#define OFFSET_DEADFLAG 0x31C4
 
 #define HITMARKER_DEFAULT_TIME	0.5f
 

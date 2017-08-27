@@ -3,6 +3,26 @@
 
 #include "Vector.h"
 
+void VectorITransform(Vector& in1, const matrix3x4_t& in2, Vector& out)
+{
+	float in1t[3];
+
+	in1t[0] = in1.x - in2.c[0][3];
+	in1t[1] = in1.y - in2.c[1][3];
+	in1t[2] = in1.z - in2.c[2][3];
+
+	out.x = in1t[0] * in2.c[0][0] + in1t[1] * in2.c[1][0] + in1t[2] * in2.c[2][0];
+	out.y = in1t[0] * in2.c[0][1] + in1t[1] * in2.c[1][1] + in1t[2] * in2.c[2][1];
+	out.z = in1t[0] * in2.c[0][2] + in1t[1] * in2.c[1][2] + in1t[2] * in2.c[2][2];
+}
+
+void VectorIRotate(Vector& in1, const matrix3x4_t& in2, Vector& out)
+{
+	out.x = in1.x*in2.c[0][0] + in1.y*in2.c[1][0] + in1.z*in2.c[2][0];
+	out.y = in1.x*in2.c[0][1] + in1.y*in2.c[1][1] + in1.z*in2.c[2][1];
+	out.z = in1.x*in2.c[0][2] + in1.y*in2.c[1][2] + in1.z*in2.c[2][2];
+}
+
 struct Ray_t
 {
 	__declspec(align(16)) Vector  m_Start;

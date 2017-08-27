@@ -8,6 +8,8 @@
 #ifndef __IVMODELINFO_H__
 #define __IVMODELINFO_H__
 
+#include "Vector.h"
+
 //-----------------------------------------------------------------------------
 // Forward declarations
 //-----------------------------------------------------------------------------
@@ -18,7 +20,6 @@ struct model_t;
 class CGameTrace;
 struct cplane_t;
 typedef CGameTrace trace_t;
-struct studiohdr_t;
 struct virtualmodel_t;
 typedef unsigned char byte;
 struct virtualterrainparams_t;
@@ -26,6 +27,91 @@ class CPhysCollide;
 typedef unsigned short MDLHandle_t;
 class CUtlBuffer;
 class IClientRenderable;
+
+
+// Copy pasta test
+// intersection boxes
+struct mstudiobbox_t
+{
+	int32_t	m_iBone;
+	int32_t	m_iGroup;
+	Vector	m_vecBBMin;
+	Vector	m_vecBBMax;
+	int32_t	m_iHitboxNameIndex;
+	int32_t	m_iPad01[3];
+	float	m_flRadius;
+	int32_t	m_iPad02[4];
+
+	const char* pszHitboxName(int index) // 0-whatever (usually 20)
+	{
+		if (m_iHitboxNameIndex == 0)
+			return "";
+
+		char* name = ((char*)this) + m_iHitboxNameIndex + 1; // full name
+		for (int i = 0; i < index + 1; i++) { // +1 so that if you pass 0 on the first iteration, it doesn't skip it.
+			name = (name + (strlen(name) + 1));
+		}
+		return name;
+	}
+
+	mstudiobbox_t() {}
+
+private:
+	// No copy constructors allowed
+	mstudiobbox_t(const mstudiobbox_t& vOther);
+};
+
+struct mstudiohitboxset_t
+{
+	int     sznameindex;
+
+	inline const char* pszName(void)
+	{
+		return ((char*)this) + sznameindex;
+	}
+
+	int numhitboxes;
+	int hitboxindex;
+
+	inline mstudiobbox_t* pHitbox(int i) const
+	{
+		return (mstudiobbox_t*)(((byte*)this) + hitboxindex) + i;
+	}
+};
+
+struct studiohdr_t
+{
+	unsigned char __pad0[0xAC];
+
+	int numhitboxsets;
+	int hitboxsetindex;
+
+	mstudiohitboxset_t* pHitboxSet(int i) const
+	{
+		return (mstudiohitboxset_t*)(((byte*)this) + hitboxsetindex) + i;
+	}
+
+	inline mstudiobbox_t* pHitbox(int i, int set) const
+	{
+		const mstudiohitboxset_t* s = pHitboxSet(set);
+
+		if (!s)
+			return 0;
+
+		return s->pHitbox(i);
+	}
+
+	inline int iHitboxCount(int set) const
+	{
+		const mstudiohitboxset_t* s = pHitboxSet(set);
+
+		if (!s)
+			return 0;
+
+		return s->numhitboxes;
+	}
+};
+// Copy pasta test
 
 
 //-----------------------------------------------------------------------------
@@ -86,6 +172,7 @@ public:
 		QAngle const& angles, Vector* pLightingCenter) = 0;
 
 	virtual int						GetModelContents(int modelIndex) const = 0;
+	virtual void					PADDING_001() = 0;
 	virtual studiohdr_t				*GetStudiomodel(const model_t *mod) = 0;
 	virtual int						GetModelSpriteWidth(const model_t *model) const = 0;
 	virtual int						GetModelSpriteHeight(const model_t *model) const = 0;

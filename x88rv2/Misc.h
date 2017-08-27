@@ -3,9 +3,6 @@
 
 #include "IFeature.h"
 
-#define OFFSET_NOFLASH 0xA2E4
-#define OFFSET_OBSERVER 0x3360
-
 #define MAXPACKETSCHOKED 16
 
 class CApplication;
