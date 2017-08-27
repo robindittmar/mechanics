@@ -91,3 +91,15 @@ void AngleVectors(const QAngle &angles, Vector *forward, Vector *right, Vector *
 		up->z = cr*cp;
 	}
 }
+
+float DotProduct(Vector& v1, const float* v2)
+{
+	return v1.x*v2[0] + v1.y*v2[1] + v1.z*v2[2];
+}
+
+void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out)
+{
+	out.x = DotProduct(vIn, mIn.c[0]) + mIn.c[0][3];
+	out.y = DotProduct(vIn, mIn.c[1]) + mIn.c[1][3];
+	out.z = DotProduct(vIn, mIn.c[2]) + mIn.c[2][3];
+}

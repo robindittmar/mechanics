@@ -37,11 +37,6 @@ int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
 	return 0;
 }
 
-struct mat3x4
-{
-	float c[3][4];
-};
-
 void CAimbot::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
@@ -123,7 +118,7 @@ void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, f
 {
 	current_damage *= GetHitgroupDamageMult(hitgroup);
 
-	if (enemy->Armor() > 0)
+	if (enemy->GetArmor() > 0)
 	{
 		if (hitgroup == HITGROUP_HEAD)
 		{
@@ -201,7 +196,7 @@ bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &d
 		if (data.enter_trace.fraction == 1.0f)
 			break;
 
-		if ((data.enter_trace.hitgroup <= 7) && (data.enter_trace.hitgroup > 0) && (local->TeamNum() != data.enter_trace.hit_entity->TeamNum()))
+		if ((data.enter_trace.hitgroup <= 7) && (data.enter_trace.hitgroup > 0) && (local->GetTeamNum() != data.enter_trace.hit_entity->GetTeamNum()))
 		{
 			data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
 			data.current_damage *= pow(wpn_data->flRangeModifier, data.trace_length * 0.002);
@@ -229,38 +224,12 @@ bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* t
 	{
 		mov eax, trace;
 		push eax;
-		
-		/*push ecx;
-		
-		movss xmm0, ebp + 24h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 20h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, vEnd;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 18h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 14h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, */
-
 		push vEnd.z;
 		push vEnd.y;
 		push vEnd.x;
 		push start.z;
 		push start.y;
 		push start.x;
-
 		mov edx, tr;
 		mov ecx, end;
 		call TraceToExit;
@@ -375,13 +344,13 @@ bool CAimbot::CanHit(Vector &point, float *damage_given)
 {
 	IClientEntity* local = (IClientEntity*)CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
-	FireBulletData data(*local->Origin() + *local->EyeOffset(), local);
+	FireBulletData data(*local->GetOrigin() + *local->GetEyeOffset(), local);
 
 	Vector angles = ACalcAngle(data.src, point);
 	AngleVectors(angles, &data.direction);
 	VectorNormalize(data.direction);
 
-	if (SimulateFireBullet(local, (CWeapon*)local->ActiveWeapon(), data))
+	if (SimulateFireBullet(local, (CWeapon*)local->GetActiveWeapon(), data))
 	{
 		*damage_given = data.current_damage;
 
@@ -439,6 +408,59 @@ void inline CAimbot::ResetTickVariables()
 	m_bDidNoRecoil = false;
 }
 
+// COPY PASTA TEST
+void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
+{
+	Vector mins;
+	Vector maxs;
+	Vector center;
+
+	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
+	VectorTransform(hitBox->m_vecBBMin - fMod, boneMatrix[hitBox->m_iBone], mins);
+	VectorTransform(hitBox->m_vecBBMax + fMod, boneMatrix[hitBox->m_iBone], maxs);
+	center = (mins + maxs) * 0.5f;
+
+	hitBoxVectors[0] = center;
+	hitBoxVectors[1] = center;
+	hitBoxVectors[2] = center;
+	hitBoxVectors[3] = center;
+	hitBoxVectors[4] = center;
+	hitBoxVectors[5] = center;
+	hitBoxVectors[6] = center;
+
+	hitBoxVectors[1].x += hitBox->m_flRadius * 0.85f; // left ear
+	hitBoxVectors[2].x -= hitBox->m_flRadius * 0.85f; // right ear
+	hitBoxVectors[3].y += hitBox->m_flRadius * 0.85f; // face
+	hitBoxVectors[4].y -= hitBox->m_flRadius * 0.85f; // backhead
+	hitBoxVectors[5].z += hitBox->m_flRadius * 0.92f; // forehead
+	hitBoxVectors[6].z -= hitBox->m_flRadius * 0.92f; // neck or something
+	
+
+	/*Vector vPoints[] = {
+		(bbmin + bbmax) * 0.5f,
+		Vector(bbmin.x, bbmin.y, bbmin.z),
+		Vector(bbmin.x, bbmax.y, bbmin.z),
+		Vector(bbmax.x, bbmax.y, bbmin.z),
+		Vector(bbmax.x, bbmin.y, bbmin.z),
+		Vector(bbmax.x, bbmax.y, bbmax.z),
+		Vector(bbmin.x, bbmax.y, bbmax.z),
+		Vector(bbmin.x, bbmin.y, bbmax.z),
+		Vector(bbmax.x, bbmin.y, bbmax.z)
+	};*/
+
+	/*for (int index = 0; index < sizeof(vPoints) / sizeof(Vector); ++index)
+	{
+		// scale down the hitbox size a tiny bit (default is a little too big)
+		/*points[index].x *= 0.9;
+		points[index].y *= 0.9;
+		points[index].z *= 0.9;*/
+	/*
+		// transform the vector
+		VectorTransform(vPoints[index], boneMatrix[hitBox->m_iBone], hitBoxVectors[index]);
+	}*/
+}
+// COPY PASTA TEST
+
 bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	// No selected target
@@ -462,13 +484,21 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	Vector vTargetPos;
 	QAngle qTargetAngles;
 
-	mat3x4* pBoneMatrix;
+	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 	Vector vEnemyHeadPos;
 
 	Ray_t ray;
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
 	
+	// Model stuff (hitboxes)
+	studiohdr_t* pStudioModel;
+	mstudiohitboxset_t* pHitboxSet;
+	mstudiobbox_t* pHitbox;
+
+	// Hitbox
+	Vector vHitbox[7];
+
 	float fViewangleDist;
 	float fOriginDist;
 	float fLowestDist = 999999.0f;
@@ -476,21 +506,22 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	m_fDamage = 0.0f;
 
 	// Grab my values
-	iMyTeamNum = pLocalEntity->TeamNum();
-	vMyHeadPos = *pLocalEntity->Origin() + (*pLocalEntity->Velocity() * fInputSampleTime);
-	vMyHeadPos += *pLocalEntity->EyeOffset();
-	pMyActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
+	iMyTeamNum = pLocalEntity->GetTeamNum();
+	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);
+	vMyHeadPos += *pLocalEntity->GetEyeOffset();
+	pMyActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	qLocalViewAngles = m_pApp->ClientViewAngles();
 	
 	// If we're not autoshooting or not attacking ourselves
-	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK))
+	// TODO: Aimkey?
+	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK) && !(GetAsyncKeyState(VK_MBUTTON) & 0x8000))
 		return false;
 
 	// If invalid weapon for aimbot
 	if (pMyActiveWeapon->IsKnife() ||
 		pMyActiveWeapon->IsNade() ||
 		pMyActiveWeapon->IsC4() ||
-		pMyActiveWeapon->Clip1() == 0)
+		pMyActiveWeapon->GetClip1() == 0)
 		return false;
 
 	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
@@ -505,7 +536,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		// Skip dormant entities
 		if (pCurEntity->IsDormant())
 			continue;
-
+		
 		// Can't shoot ourself
 		if (i == iLocalPlayerIdx)
 			continue;
@@ -515,7 +546,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 			continue;
 
 		// Only from enemy team & we don't want spectators or something
-		int entityTeam = pCurEntity->TeamNum();
+		int entityTeam = pCurEntity->GetTeamNum();
 		if (entityTeam == iMyTeamNum || entityTeam != 2 && entityTeam != 3)
 			continue;
 
@@ -523,30 +554,76 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		if (pCurEntity->IsInvincible())
 			continue;
 
-		// Bone ID: 8 (maybe 7=neck)
-		// 10 ca chest
-		//studiohdr_t* pModel = m_pApp->ModelInfo()->GetStudioModel(pCurEntity->GetModel());
+		if (!pCurEntity->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, m_pApp->EngineClient()->GetLastTimeStamp()))
+			continue;
+
+		const model_t* pModel = pCurEntity->GetModel();
+		if (!pModel)
+			continue;
+		
+		pStudioModel = m_pApp->ModelInfo()->GetStudiomodel(pModel);
+		if (!pStudioModel)
+			continue;
+
+		pHitboxSet = pStudioModel->pHitboxSet(0);
+		if (!pHitboxSet)
+			continue;
+
+		pHitbox = pHitboxSet->pHitbox(HITBOX_HEAD);
+		if (!pHitbox)
+			continue;
+
+		g_pConsole->Write("Bone: %d, min: (%.2f,%.2f,%.2f), max: (%.2f,%.2f,%.2f), name: %s\n",
+			pHitbox->m_iBone,
+			pHitbox->m_vecBBMin.x,
+			pHitbox->m_vecBBMin.y,
+			pHitbox->m_vecBBMin.z,
+			pHitbox->m_vecBBMax.x,
+			pHitbox->m_vecBBMax.y,
+			pHitbox->m_vecBBMax.z,
+			pHitbox->pszHitboxName(pHitbox->m_iBone)
+		);
 
 		// TODO
 		// 8, 10, 72, 79
 		bool bIsHittable = false;
-		int boneIdx[] = { 8, 10, 72, 79 };
-		int bone = 0;
-		int boneCount = sizeof(boneIdx) / sizeof(int);
-		Vector vBonePos;
+		
+		IEngineTrace* pEngineTrace = m_pApp->EngineTrace();
+		GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
 
-		for (bone = 0; bone < boneCount; bone++)
+		for(int i = 0; i < sizeof(vHitbox) / sizeof(Vector); i++)
 		{
+			vHitbox[i] += (*pCurEntity->GetVelocity() * fInputSampleTime);
+
+			ray.Init(vMyHeadPos, vHitbox[i]);
+			pEngineTrace->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+			if (trace.IsVisible(pCurEntity))
+			{
+				vEnemyHeadPos = vHitbox[i];
+				bIsHittable = true;
+				break;
+			}
+		}
+
+		//int curBone;
+		//int boneIdx[] = { 8, 10, 72, 79 };
+		//int bone = 0;
+		//int boneCount = sizeof(boneIdx) / sizeof(int);
+		//Vector vBonePos;
+		/*for (bone = 0; bone < boneCount; bone++)
+		{
+			curBone = boneIdx[bone];
+
 			// Get matrix for current bone
-			pBoneMatrix = (mat3x4*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
+			//pBoneMatrix = (matrix3x4_t*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
 
 			// Get position
-			vBonePos.x = pBoneMatrix->c[0][3];
-			vBonePos.y = pBoneMatrix->c[1][3];
-			vBonePos.z = pBoneMatrix->c[2][3];
+			vBonePos.x = boneMatrix[curBone].c[0][3];
+			vBonePos.y = boneMatrix[curBone].c[1][3];
+			vBonePos.z = boneMatrix[curBone].c[2][3];
 
 			// Prediction
-			vBonePos += (*pCurEntity->Velocity() * fInputSampleTime);
+			vBonePos += (*pCurEntity->GetVelocity() * fInputSampleTime);
 
 			//ray.Init(vMyHeadPos, vEnemyHeadPos);
 			//m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
@@ -566,7 +643,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 				bIsHittable = true;
 				break;
 			}*/
-		}
+		//}
 
 		// Nothing visible :(
 		if (!bIsHittable)
@@ -655,9 +732,9 @@ void CAimbot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 
 void CAimbot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity)
 {
-	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->ActiveWeapon();
-	float fNextattack = pActiveWeapon->NextPrimaryAttack();
-	float fServertime = pLocalEntity->TickBase() * m_pApp->GlobalVars()->interval_per_tick;
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
+	float fServertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
 
 	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
 	{

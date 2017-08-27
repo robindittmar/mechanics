@@ -12,10 +12,7 @@ struct mstudioseqdesc_t;
 struct model_t;
 class IClientRenderable;
 class Vector;
-struct studiohdr_t
-{
-	int numtextures;
-};
+struct studiohdr_t;
 class IMaterial;
 class CStudioHdr;
 

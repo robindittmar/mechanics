@@ -8,7 +8,10 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
-class matrix3x4_t;
+struct matrix3x4_t
+{
+	float c[3][4];
+};
 
 typedef float vec_t;
 // 3D Vector
@@ -214,6 +217,20 @@ public:
 	}
 	Vector	operator*(const Vector& v) const;
 	Vector	operator/(const Vector& v) const;
+	Vector operator+(float fl) const {
+		Vector n;
+		n.x = this->x + fl;
+		n.y = this->y + fl;
+		n.z = this->z + fl;
+		return n;
+	}
+	Vector operator-(float fl) const {
+		Vector n;
+		n.x = this->x - fl;
+		n.y = this->y - fl;
+		n.z = this->z - fl;
+		return n;
+	}
 	Vector	operator*(float fl) const {
 		Vector n;
 		n.x = this->x * fl;
@@ -448,5 +465,6 @@ public:
 void inline SinCos(float radians, float *sine, float *cosine);
 void VectorAngles(const float *forward, float *angles);
 void AngleVectors(const QAngle &angles, Vector *forward = NULL, Vector *right = NULL, Vector *up = NULL);
+void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out);
 
 #endif // __VECTOR_H__

@@ -6,25 +6,14 @@
 #ifndef __CLIENTENTITY_H__
 #define __CLIENTENTITY_H__
 
+#include "Offsets.h"
+#include "CWeapon.h"
 #include "PlayerInfo.h"
 
-#define OFFSET_HEALTH			0xFC
-#define OFFSET_TEAM				0xF0
-#define OFFSET_FLAGS			0x100
-#define OFFSET_EYEPOS			0x104
-#define OFFSET_ORIGIN			0x134
-#define OFFSET_ACTIVEWEAPON		0x2EE8
-#define OFFSET_ISSCOPED			0x387C
-#define OFFSET_VELOCITY			0x110
-#define OFFSET_SPOTTED			0x939
-#define OFFSET_ARMOR			0xB248
-#define OFFSET_HELMET			0xB21C
+// TODO: Couldn't find the netvar :L
+//		 (Seems to be gone? idk, people say its in "BaseEntity" -> "m_bMoveType",
+//		  but there is no "BaseEntity" (only DT_BaseEntity, which only has "movetype" with offset 0)
 #define OFFSET_MOVETYPE			0x258
-#define OFFSET_TICKBASE			0x3404
-#define OFFSET_SHOTSFIRED		0xA2A0
-#define OFFSET_SPAWNPROTECTION	0x3890
-#define OFFSET_LOWERBODYYAW		0x39D8
-#define OFFSET_EYEANGLES		0xB22C
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -96,6 +85,17 @@
 #define IN_GRENADE1		(1 << 23)	// grenade 1
 #define IN_GRENADE2		(1 << 24)	// grenade 2
 #define	IN_LOOKSPIN		(1 << 25)
+
+// m_lifeState values
+#define	LIFE_ALIVE				0 // alive
+#define	LIFE_DYING				1 // playing death animation or still falling off of a ledge waiting to hit ground
+#define	LIFE_DEAD				2 // dead. lying still.
+#define LIFE_RESPAWNABLE		3
+#define LIFE_DISCARDBODY		4
+
+// m_iTeamNum values
+#define TEAMNUM_T		2
+#define TEAMNUM_CT		3
 
 enum MoveType_t
 {
@@ -244,25 +244,26 @@ public:
 	virtual bool             IsBlurred(void) = 0;
 
 	bool IsAlive();
-	int Health();
-	int TeamNum();
-	unsigned long Flags();
-	Vector* Origin();
-	Vector* EyeOffset();
+	int GetLifestate();
+	int GetHealth();
+	int GetTeamNum();
+	unsigned long GetFlags();
+	Vector* GetOrigin();
+	Vector* GetEyeOffset();
 	bool IsScoped();
-	void* ActiveWeapon();
-	Vector* Velocity();
+	CWeapon* GetActiveWeapon();
+	Vector* GetVelocity();
 	bool IsSpotted();
-	int Armor();
+	int GetArmor();
 	bool HasHelmet();
-	unsigned long MoveType();
-	int TickBase();
-	int ShotsFired();
-	PlayerInfo GetPlayerInfo();
+	unsigned long GetMoveType();
+	int GetTickBase();
+	int GetShotsFired();
+	void GetPlayerInfo(PlayerInfo* p);
 	bool IsInvincible();
-	IClientEntity* ObserverTarget();
-	QAngle* AngEyePosition();
-	float LowerBodyYaw();
+	IClientEntity* GetObserverTarget();
+	QAngle* GetAngEyeAngles();
+	float GetLowerBodyYaw();
 };
 
 #endif // __CLIENTENTITY_H__

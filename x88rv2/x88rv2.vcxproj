@@ -171,6 +171,9 @@
     <ClCompile Include="ISurface.cpp" />
     <ClCompile Include="Misc.cpp" />
     <ClCompile Include="murmurhash.cpp" />
+    <ClCompile Include="NetVar.cpp" />
+    <ClCompile Include="NetVarManager.cpp" />
+    <ClCompile Include="Offsets.cpp" />
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -226,6 +229,9 @@
     <ClInclude Include="KeyValues.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="murmurhash.h" />
+    <ClInclude Include="NetVar.h" />
+    <ClInclude Include="NetVarManager.h" />
+    <ClInclude Include="Offsets.h" />
     <ClInclude Include="Pattern.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="ray.h" />

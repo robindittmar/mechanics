@@ -127,7 +127,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
 			if (pEntity)
 			{
-				pEntity->AngEyePosition()->y = pEntity->LowerBodyYaw();
+				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
 		}
 	}
@@ -363,20 +363,58 @@ void CApplication::Setup()
 	// Create Resources
 	m_pResourceManager->CreateFonts();
 
-	// Print all classes & their properties
-	/*ClientClass* lClass = m_pClient->GetAllClasses();
-	while(lClass)
+	// Print classes & their properties
+	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
+	if(pFile)
 	{
-	g_pConsole->Write("%s\n", lClass->m_pNetworkName);
-
-	RecvTable* pTable = lClass->m_pRecvTable;
-	for(int i = 0; i < pTable->m_nProps; i++)
-	{
-	g_pConsole->Write("\t> %s (0x%08X)\n", pTable->m_pProps[i].m_pVarName, pTable->m_pProps[i].m_Offset);
+		CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_CSPlayer");
+		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseEntity");
+		fclose(pFile);
 	}
 
-	lClass = lClass->m_pNext;
-	}*/
+	CNetVarManager netVarManager;
+	netVarManager.AddTable("DT_BaseEntity");
+	netVarManager.AddTable("DT_CSPlayer");
+	netVarManager.AddTable("DT_BaseCombatWeapon");
+	netVarManager.AddTable("DT_WeaponCSBase");
+	netVarManager.AddTable("DT_BaseCSGrenade");
+	netVarManager.LoadTables(m_pClient->GetAllClasses());
+
+	CXorString baseclass("ujö§tgä±d");
+	Offsets::m_vecOrigin = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_vecOrigin");
+	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_vecViewOffset[0]");
+	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, "DT_CSPlayer", "m_angEyeAngles");
+	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(1, "DT_CSPlayer", "m_flLowerBodyYawTarget");
+	Offsets::m_vecVelocity = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_vecVelocity[0]");
+	Offsets::m_iTeamNum = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_iTeamNum");
+	Offsets::m_lifeState = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_lifeState");
+	Offsets::m_iHealth = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_iHealth");
+	Offsets::m_ArmorValue = netVarManager.GetOffset(1, "DT_CSPlayer", "m_ArmorValue");
+	Offsets::m_bHasHelmet = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bHasHelmet");
+	Offsets::m_fFlags = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_fFlags");
+	Offsets::m_bSpotted = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_bSpotted");
+	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bGunGameImmunity");
+	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(1, "DT_CSPlayer", "m_flFlashMaxAlpha");
+	//Offsets::m_bMoveType = netVarManager.GetOffset(1, "DT_BaseEntity", "m_bMoveType");
+	Offsets::m_bIsScoped = netVarManager.GetOffset(1, "DT_CSPlayer", "m_bIsScoped");
+	Offsets::m_iShotsFired = netVarManager.GetOffset(2, "DT_CSPlayer", "cslocaldata", "m_iShotsFired");
+	Offsets::m_hActiveWeapon = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), "m_hActiveWeapon");
+	Offsets::m_hObserverTarget = netVarManager.GetOffset(2, "DT_CSPlayer", baseclass.ToCharArray(), "m_hObserverTarget");
+	Offsets::m_deadflag = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "pl", "deadflag");
+	Offsets::m_nTickBase = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_nTickBase");
+
+	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager");
+	//Offsets::m_Item = netVarManager.GetOffset(3, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
+	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, "DT_BaseCombatWeapon", baseclass.ToCharArray(), "m_AttributeManager", "m_Item", "m_iItemDefinitionIndex");
+	Offsets::m_iClip1 = netVarManager.GetOffset(1, "DT_BaseCombatWeapon", "m_iClip1");
+	Offsets::m_iClip2 = netVarManager.GetOffset(1, "DT_BaseCombatWeapon", "m_iClip2");
+	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, "DT_BaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack");
+
+	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(1, "DT_WeaponCSBase", "m_flPostponeFireReadyTime");
+
+	Offsets::m_fThrowTime = netVarManager.GetOffset(1, "DT_BaseCSGrenade", "m_fThrowTime");
 
 	// Setups
 	this->m_aimbot.Setup();

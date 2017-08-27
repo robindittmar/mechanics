@@ -1,112 +1,109 @@
-//#include "ClientEntity.h"
+#include "ClientEntity.h"
 #include "Application.h"
 
 bool IClientEntity::IsAlive()
 {
-	return (this->Health() > 0);
+	//return (this->GetHealth() > 0);
+	return (this->GetLifestate() == LIFE_ALIVE);
 }
 
-int IClientEntity::Health()
+int IClientEntity::GetLifestate()
 {
-	return *(int*)((unsigned long)this + OFFSET_HEALTH);
+	return  *(int*)((DWORD)this + Offsets::m_lifeState);
 }
 
-int IClientEntity::TeamNum()
+int IClientEntity::GetHealth()
 {
-	return *(int*)((unsigned long)this + OFFSET_TEAM);
+	return *(int*)((DWORD)this + Offsets::m_iHealth);
 }
 
-unsigned long IClientEntity::Flags()
+int IClientEntity::GetTeamNum()
 {
-	return *(unsigned long*)((unsigned long)this + OFFSET_FLAGS);
+	return *(int*)((DWORD)this + Offsets::m_iTeamNum);
 }
 
-Vector* IClientEntity::Origin()
+unsigned long IClientEntity::GetFlags()
 {
-	return (Vector*)((unsigned long)this + OFFSET_ORIGIN);
+	return *(unsigned long*)((DWORD)this + Offsets::m_fFlags);
 }
 
-Vector* IClientEntity::EyeOffset()
+Vector* IClientEntity::GetOrigin()
 {
-	return (Vector*)((unsigned long)this + OFFSET_EYEPOS);
+	return (Vector*)((DWORD)this + Offsets::m_vecOrigin);
+}
+
+Vector* IClientEntity::GetEyeOffset()
+{
+	return (Vector*)((DWORD)this + Offsets::m_vecViewOffset);
 }
 
 bool IClientEntity::IsScoped()
 {
-	return *(bool*)((unsigned long)this + OFFSET_ISSCOPED);
+	return *(bool*)((DWORD)this + Offsets::m_bIsScoped);
 }
 
-void* IClientEntity::ActiveWeapon()
+CWeapon* IClientEntity::GetActiveWeapon()
 {
-	CApplication* pApp = CApplication::Instance();
-
-	HANDLE hActiveWeapon = *(PHANDLE)((PUCHAR)this + OFFSET_ACTIVEWEAPON);
-	return (void*)pApp->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
+	HANDLE hActiveWeapon = *(HANDLE*)((UCHAR*)this + Offsets::m_hActiveWeapon);
+	return (CWeapon*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
 }
 
-Vector* IClientEntity::Velocity()
+Vector* IClientEntity::GetVelocity()
 {
-	return (Vector*)((DWORD)this + OFFSET_VELOCITY);
+	return (Vector*)((DWORD)this + Offsets::m_vecVelocity);
 }
 
 bool IClientEntity::IsSpotted()
 {
-	return *(bool*)((DWORD)this + OFFSET_SPOTTED);
+	return *(bool*)((DWORD)this + Offsets::m_bSpotted);
 }
 
-int IClientEntity::Armor()
+int IClientEntity::GetArmor()
 {
-	return *(int*)((DWORD)this + OFFSET_ARMOR);
+	return *(int*)((DWORD)this + Offsets::m_ArmorValue);
 }
 
 bool IClientEntity::HasHelmet()
 {
-	return *(bool*)((DWORD)this + OFFSET_HELMET);
+	return *(bool*)((DWORD)this + Offsets::m_bHasHelmet);
 }
 
-DWORD IClientEntity::MoveType()
+DWORD IClientEntity::GetMoveType()
 {
 	return *(DWORD*)((DWORD)this + OFFSET_MOVETYPE);
 }
 
-int IClientEntity::TickBase()
+int IClientEntity::GetTickBase()
 {
-	return *(int*)((DWORD)this + OFFSET_TICKBASE);
+	return *(int*)((DWORD)this + Offsets::m_nTickBase);
 }
 
-int IClientEntity::ShotsFired()
+int IClientEntity::GetShotsFired()
 {
-	return *(int*)((DWORD)this + OFFSET_SHOTSFIRED);
+	return *(int*)((DWORD)this + Offsets::m_iShotsFired);
 }
 
-PlayerInfo IClientEntity::GetPlayerInfo()
+void IClientEntity::GetPlayerInfo(PlayerInfo* p)
 {
-	CApplication* pApp = CApplication::Instance();
-
-	PlayerInfo pInfo;
-	pApp->EngineClient()->GetPlayerInfo(this->EntIndex(), &pInfo);
-
-	return pInfo;
+	CApplication::Instance()->EngineClient()->GetPlayerInfo(this->EntIndex(), p);
 }
 
 bool IClientEntity::IsInvincible()
 {
-	return *(bool*)((DWORD)this + OFFSET_SPAWNPROTECTION);
+	return *(bool*)((DWORD)this + Offsets::m_bGunGameImmunity);
 }
 
-IClientEntity* IClientEntity::ObserverTarget()
+IClientEntity* IClientEntity::GetObserverTarget()
 {
-	CApplication* pApp = CApplication::Instance();
-
-	return pApp->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)this + OFFSET_OBSERVER)); // todo: crashes...
+	return CApplication::Instance()->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)this + Offsets::m_hObserverTarget)); // todo: crashes...
 }
 
-QAngle* IClientEntity::AngEyePosition()
+QAngle* IClientEntity::GetAngEyeAngles()
 {
-	return (QAngle*)((DWORD)this + OFFSET_EYEANGLES);
+	return (QAngle*)((DWORD)this + Offsets::m_angEyeAngles);
 }
 
-float IClientEntity::LowerBodyYaw()
+float IClientEntity::GetLowerBodyYaw()
 {
-	return *(float*)((DWORD)this + OFFSET_LOWERBODYYAW);
+	return *(float*)((DWORD)this + Offsets::m_flLowerBodyYawTarget);
 }

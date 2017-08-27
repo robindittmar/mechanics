@@ -94,7 +94,7 @@ void CVisuals::NoFlash()
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + OFFSET_NOFLASH) = 255.0f - (255.0f * (1.0f - m_fFlashPercentage));
+	*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f - (255.0f * (1.0f - m_fFlashPercentage));
 }
 
 void CVisuals::NoSmoke()
@@ -204,7 +204,7 @@ void CVisuals::ThirdpersonAntiAim()
 	if (m_pApp->Input()->m_fCameraInThirdPerson)
 	{
 		IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
-		*(Vector*)((DWORD)pLocalEntity + OFFSET_DEADFLAG + 0x4) = m_pApp->LastTickAngles();
+		*(Vector*)((DWORD)pLocalEntity + Offsets::m_deadflag + 0x4) = m_pApp->LastTickAngles();
 	}
 }
 

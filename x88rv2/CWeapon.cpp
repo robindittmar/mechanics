@@ -1,14 +1,13 @@
 #include "CWeapon.h"
 
-
-int CWeapon::WeaponId()
+int CWeapon::GetWeaponId()
 {
-	return *(int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
+	return *(int*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
 }
 
 bool CWeapon::IsKnife()
 {
-	int weaponId = this->WeaponId();
+	int weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_KNIFE ||
 		weaponId == WEAPON_KNIFE_BAYONET ||
 		weaponId == WEAPON_KNIFE_FLIP ||
@@ -27,7 +26,7 @@ bool CWeapon::IsKnife()
 
 bool CWeapon::IsSniper()
 {
-	int weaponId = this->WeaponId();
+	int weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_AWP ||
 		weaponId == WEAPON_SSG08 ||
 		weaponId == WEAPON_G3SG1 ||
@@ -38,7 +37,7 @@ bool CWeapon::IsSniper()
 
 bool CWeapon::IsNade()
 {
-	int weaponId = this->WeaponId();
+	int weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_HEGRENADE ||
 		weaponId == WEAPON_INCGRENADE ||
 		weaponId == WEAPON_DECOY ||
@@ -51,12 +50,12 @@ bool CWeapon::IsNade()
 
 bool CWeapon::IsC4()
 {
-	return (this->WeaponId() == WEAPON_C4);
+	return (this->GetWeaponId() == WEAPON_C4);
 }
 
 bool CWeapon::IsPistol()
 {
-	int weaponId = this->WeaponId();
+	int weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_DEAGLE ||
 		weaponId == WEAPON_REVOLVER ||
 		weaponId == WEAPON_FIVESEVEN ||
@@ -73,27 +72,27 @@ bool CWeapon::IsPistol()
 
 bool CWeapon::IsTaser()
 {
-	return (this->WeaponId() == WEAPON_TASER);
+	return (this->GetWeaponId() == WEAPON_TASER);
 }
 
-int CWeapon::Clip1()
+int CWeapon::GetClip1()
 {
-	return *(int*)((unsigned long)this + OFFSET_CLIP1);
+	return *(int*)((unsigned long)this + Offsets::m_iClip1);
 }
 
-int CWeapon::Clip2()
+int CWeapon::GetClip2()
 {
-	return *(int*)((unsigned long)this + OFFSET_CLIP2);
+	return *(int*)((unsigned long)this + Offsets::m_iClip2);
 }
 
-float CWeapon::NextPrimaryAttack()
+float CWeapon::GetNextPrimaryAttack()
 {
-	return *(float*)((unsigned long)this + OFFSET_NEXTPRIMARYATTACK);
+	return *(float*)((unsigned long)this + Offsets::m_flNextPrimaryAttack);
 }
 
-float CGrenade::ThrowTime()
+float CGrenade::GetThrowTime()
 {
-	return *(float*)((unsigned long)this + OFFSET_THROWTIME);
+	return *(float*)((unsigned long)this + Offsets::m_fThrowTime);
 }
 
 CWeaponInfo* CWeapon::GetWeaponInfo()
@@ -102,7 +101,7 @@ CWeaponInfo* CWeapon::GetWeaponInfo()
 	return ((GetWeaponData_t)(*(void***)this)[446])(this);
 }
 
-float CWeapon::PostPoneFireReady()
+float CWeapon::GetPostPoneFireReady()
 {
-	return *(float*)((unsigned long)this + OFFSET_POSTPONEFIREREADY);
+	return *(float*)((unsigned long)this + Offsets::m_flPostponeFireReadyTime);
 }

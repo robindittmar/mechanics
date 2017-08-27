@@ -6,12 +6,6 @@
 #include "ISurface.h"
 #include "ClientEntity.h"
 
-#define EnableHealthbar true
-#define EnableArmorbar false
-
-#define CT_TEAMID 3
-#define T_TEAMID 2
-
 class CApplication;
 
 class CEsp : public IFeature
@@ -20,32 +14,32 @@ public:
 	CEsp();
 	~CEsp();
 
-	void SetDrawBoundingBox(bool bDrawBoundingBox) { m_bDrawBoundingBox = bDrawBoundingBox; };
-	bool GetDrawBoundingBox() { return m_bDrawBoundingBox; };
+	void SetDrawBoundingBox(bool bDrawBoundingBox) { m_bDrawBoundingBox = bDrawBoundingBox; }
+	bool GetDrawBoundingBox() { return m_bDrawBoundingBox; }
 
-	void SetDrawHealthBar(bool bDrawHealthBar) { m_bDrawHealthBar = bDrawHealthBar; };
-	bool GetDrawHealthBar() { return m_bDrawHealthBar; };
+	void SetDrawHealthBar(bool bDrawHealthBar) { m_bDrawHealthBar = bDrawHealthBar; }
+	bool GetDrawHealthBar() { return m_bDrawHealthBar; }
 
-	void SetDrawHealthNumber(bool bDrawHealthNumber) { m_bDrawHealthNumber = bDrawHealthNumber; };
-	bool GetDrawHealthNumber() { return m_bDrawHealthNumber; };
+	void SetDrawHealthNumber(bool bDrawHealthNumber) { m_bDrawHealthNumber = bDrawHealthNumber; }
+	bool GetDrawHealthNumber() { return m_bDrawHealthNumber; }
 
-	void SetDrawArmorBar(bool bDrawArmorBar) { m_bDrawArmorBar = bDrawArmorBar; };
-	bool GetDrawArmorBar() { return m_bDrawArmorBar; };
+	void SetDrawArmorBar(bool bDrawArmorBar) { m_bDrawArmorBar = bDrawArmorBar; }
+	bool GetDrawArmorBar() { return m_bDrawArmorBar; }
 
-	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; };
-	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; };
+	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; }
+	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; }
 
-	void SetDrawOwnModel(bool bDrawOwnModel) { m_bDrawOwnModel = bDrawOwnModel; };
-	bool GetDrawOwnModel() { return m_bDrawOwnModel; };
+	void SetDrawOwnModel(bool bDrawOwnModel) { m_bDrawOwnModel = bDrawOwnModel; }
+	bool GetDrawOwnModel() { return m_bDrawOwnModel; }
 
-	void SetDrawOnlySpotted(bool bDrawOnlySpotted) { m_bDrawOnlySpotted = bDrawOnlySpotted; };
-	bool GetDrawOnlySpotted() { return m_bDrawOnlySpotted; };
+	void SetDrawOnlySpotted(bool bDrawOnlySpotted) { m_bDrawOnlySpotted = bDrawOnlySpotted; }
+	bool GetDrawOnlySpotted() { return m_bDrawOnlySpotted; }
 
-	void SetDrawOutline(bool bDrawOutlineEsp) { m_bDrawOutline = bDrawOutlineEsp; };
-	bool GetDrawOutline() { return m_bDrawOutline; };
+	void SetDrawOutline(bool bDrawOutlineEsp) { m_bDrawOutline = bDrawOutlineEsp; }
+	bool GetDrawOutline() { return m_bDrawOutline; }
 
-	void SetDrawNames(bool bDrawNames) { m_bDrawNames = bDrawNames; };
-	bool GetDrawNames() { return m_bDrawNames; };
+	void SetDrawNames(bool bDrawNames) { m_bDrawNames = bDrawNames; }
+	bool GetDrawNames() { return m_bDrawNames; }
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
