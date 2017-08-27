@@ -366,18 +366,21 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// Print classes & their properties
-	FILE* pFile = fopen("C:\\Users\\Nico\\Documents\\Visual Studio 2017\\Projects\\x88rv2\\Debug\\dump.txt", "w");
+	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
 	if (pFile)
 	{
-		CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
-		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_CSPlayer");
+		//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
 		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
 		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseEntity");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
 		fclose(pFile);
 	}
 
 	CNetVarManager netVarManager;
 	netVarManager.AddTable("DT_BaseEntity");
+	netVarManager.AddTable("DT_BasePlayer");
 	netVarManager.AddTable("DT_CSPlayer");
 	netVarManager.AddTable("DT_BaseCombatWeapon");
 	netVarManager.AddTable("DT_WeaponCSBase");
@@ -385,6 +388,9 @@ void CApplication::Setup()
 	netVarManager.LoadTables(m_pClient->GetAllClasses());
 
 	CXorString baseclass("ujö§tgä±d");
+	Offsets::m_nModelIndex = netVarManager.GetOffset(1, "DT_BaseEntity", "m_nModelIndex");
+	Offsets::m_hMyWeapons = netVarManager.GetOffset(2, "DT_BasePlayer", baseclass.ToCharArray(), "m_hMyWeapons");
+	Offsets::m_hViewModel = netVarManager.GetOffset(1, "DT_BasePlayer", "m_hViewModel[0]");
 	Offsets::m_vecOrigin = netVarManager.GetOffset(7, "DT_CSPlayer", baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), "m_vecOrigin");
 	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, "DT_CSPlayer", baseclass.ToCharArray(), "localdata", "m_vecViewOffset[0]");
 	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, "DT_CSPlayer", "m_angEyeAngles");
@@ -477,18 +483,21 @@ void CApplication::Setup()
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
-	SkinItemCfg cfg;
-	cfg.m_iFallbackPaintKit = 44;
-	cfg.m_iFallbackSeed = 321;
-	cfg.m_iEntityQuality = 3;
-	m_skinchanger.AddSkinConfig(WEAPON_AK47, cfg);
-
-	cfg.m_iItemDefinitionIndex = WEAPON_KNIFE_BUTTERFLY;
-	cfg.m_iFallbackPaintKit = 38;
-	cfg.m_iEntityQuality = 3;
-	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_BUTTERFLY, cfg);
-	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_M9_BAYONET, cfg);
-	m_skinchanger.SetKnifeModel("models/weapons/v_knife_butterfly.mdl");
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_AK47,
+		new CSkinMetadata(
+			-1,
+			44,
+			321,
+			1337,
+			4,
+			"SIEG HEIL"
+		)
+	);
+	this->m_skinchanger.AddModelReplacement(
+		"models/weapons/v_knife_default_t.mdl",
+		"models/weapons/v_knife_butterfly.mdl"
+	);
 
 	// Visuals
 	this->m_visuals.SetEnabled(true);

@@ -3,16 +3,20 @@
 
 CSkinChanger::CSkinChanger()
 {
-	m_pKnifeModel = NULL;
+	//m_pKnifeModel = NULL;
 }
 
 CSkinChanger::~CSkinChanger()
 {
-	if (m_pKnifeModel)
-		delete[] m_pKnifeModel;
+	this->DeleteModelNames();
+	this->DeleteSkinMetadata();
+
+	// Clean up KnifeModel
+	/*if (m_pKnifeModel)
+		delete[] m_pKnifeModel;*/
 }
 
-void CSkinChanger::SetKnifeModel(const char* pModel)
+/*void CSkinChanger::SetKnifeModel(const char* pModel)
 {
 	if (m_pKnifeModel)
 		delete[] m_pKnifeModel;
@@ -20,13 +24,14 @@ void CSkinChanger::SetKnifeModel(const char* pModel)
 	int iLen = strlen(pModel);
 	m_pKnifeModel = new char[iLen + 1];
 	memcpy(m_pKnifeModel, pModel, iLen + 1);
-}
+}*/
 
 void CSkinChanger::Setup()
 {
 	m_pApp = CApplication::Instance();
+
 	//int defaultCtKnife = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_default_ct.mdl");
-	this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
+	/*this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
 
 	//int defaultTKnife = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_default_t.mdl");
 	this->m_mapModelCfg[WEAPON_KNIFE_T] = "models/weapons/v_knife_default_t.mdl";
@@ -44,18 +49,38 @@ void CSkinChanger::Setup()
 	this->m_mapModelCfg[WEAPON_KNIFE_M9_BAYONET] = "models/weapons/v_knife_karam.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_PUSH] = "models/weapons/v_knife_push.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_SURVIVAL_BOWIE] = "models/weapons/v_knife_survival_bowie.mdl";
-	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";
+	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";*/
 }
 
 void CSkinChanger::Update(void* pParameters)
 {
-	IClientEntity* pLocalEntity = (IClientEntity*)pParameters;
+	if (!m_bIsEnabled)
+		return;
 
 	PlayerInfo pLocalInfo;
-	m_pApp->EngineClient()->GetPlayerInfo(pLocalEntity->EntIndex(), &pLocalInfo);
+	IClientEntity* pLocalEntity = (IClientEntity*)pParameters;
+	pLocalEntity->GetPlayerInfo(&pLocalInfo);
 
-	CBaseAttributableItem* pWeapon = (CBaseAttributableItem*)pLocalEntity->GetActiveWeapon();
-	if (pWeapon)
+	CBaseAttributableItem* pWeapon;
+	HANDLE* hMyWeapons = pLocalEntity->GetWeapons();
+
+	if(!hMyWeapons)
+		return;
+
+	for(int i = 0; hMyWeapons[i]; i++)
+	{
+		pWeapon = (CBaseAttributableItem*)m_pApp->EntityList()->GetClientEntityFromHandle(hMyWeapons[i]);
+		if (!pWeapon)
+			continue;
+
+		int iWeaponId = *pWeapon->GetItemDefinitionIndex();
+		
+		this->ApplyCustomModel(pLocalEntity, pWeapon);
+		// TODO: Check if your gun
+		this->ApplyCustomSkin(pWeapon, iWeaponId);
+		*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
+	}
+	/*if (pWeapon)
 	{
 		int wepIndex = *pWeapon->GetItemDefinitionIndex();
 
@@ -67,53 +92,108 @@ void CSkinChanger::Update(void* pParameters)
 
 			*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
 		}
-	}
+	}*/
 }
 
-
-
-
-
-bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pWeapon, int modelIndex)
+void CSkinChanger::ClearReplacements()
 {
-	if (!m_bIsEnabled)
+	this->DeleteModelNames();
+	this->DeleteSkinMetadata();
+
+	m_mapModelMetadata.clear();
+	m_mapSkinMetadata.clear();
+}
+
+void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)
+{
+	int iModelId = m_pApp->ModelInfo()->GetModelIndex(pOld);
+
+	int iLenNew = strlen(pNew) + 1;
+	char* pTemp = new char[iLenNew];
+	memcpy(pTemp, pNew, iLenNew);
+
+	m_mapModelMetadata[iModelId] = pTemp;
+}
+
+void CSkinChanger::AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin)
+{
+	m_mapSkinMetadata[iWeaponId] = pSkin;
+}
+
+bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem)
+{
+	CBaseViewModel* pViewModel = pLocal->GetViewModel();
+	// No viewmodel :s
+	if (!pViewModel)
 		return false;
 
-	CWeapon* temp = (CWeapon*)pWeapon;
-	if (temp->IsKnife())
+	int iModelIdx = pViewModel->GetModelIndex();
+	// We have no mapping
+	if (m_mapModelMetadata.find(iModelIdx) == m_mapModelMetadata.end())
+		return false;
+
+	// Grab Replacement model & set it
+	int iNewModelIdx = m_pApp->ModelInfo()->GetModelIndex(m_mapModelMetadata[iModelIdx]);
+	if (iNewModelIdx <= 0)
+		return false;
+
+	pItem->SetModelIndex(iNewModelIdx);
+	pViewModel->SetModelIndex(iNewModelIdx);
+	return true;
+}
+
+bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId)
+{
+	if (m_mapSkinMetadata.find(iWeaponId) == m_mapSkinMetadata.end())
+		return false;
+
+	CSkinMetadata* pSkin = this->m_mapSkinMetadata[iWeaponId];
+	*pWeapon->GetFallbackPaintKit() = pSkin->m_iFallbackPaintKit;
+	*pWeapon->GetEntityQuality() = pSkin->m_iEntityQuality;
+	*pWeapon->GetFallbackSeed() = pSkin->m_iFallbackSeed;
+	*pWeapon->GetFallbackStatTrak() = pSkin->m_iFallbackStatTrak;
+	*pWeapon->GetFallbackWear() = pSkin->m_fFallbackWear;
+
+	if (pSkin->m_iItemDefinitionIndex != -1)
 	{
-		CBaseViewModel* pViewModel = (CBaseViewModel*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)pLocal + 0x32DC)); // local -> m_hViewModel
-
-		if (!pViewModel)
-			return false;
-
-		pViewModel->SetWeaponModel(m_pKnifeModel, pWeapon);
+		*pWeapon->GetItemDefinitionIndex() = pSkin->m_iItemDefinitionIndex;
 	}
 
+	if (pSkin->m_pCustomName)
+	{
+		int iLen = strlen(pSkin->m_pCustomName);
+		if (iLen > 32)
+			pSkin->m_pCustomName[32] = '\0';
+
+		sprintf(pWeapon->GetCustomName(), "%s", pSkin->m_pCustomName);
+	}
+
+	*pWeapon->GetItemIDHigh() = -1;
 	return true;
 }
 
-bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int wepIndex)
+void CSkinChanger::DeleteModelNames()
 {
-	if (!m_bIsEnabled)
-		return false;
+	// Clean up Model names
+	const char* pCurrent;
+	for (std::unordered_map<int, const char*>::iterator it = m_mapModelMetadata.begin(); it != m_mapModelMetadata.end(); it++)
+	{
+		pCurrent = it->second;
 
-	if (this->m_mapSkinChangerCfg.find(wepIndex) == this->m_mapSkinChangerCfg.end())
-		return false;
-
-	*pWeapon->GetFallbackPaintKit() = this->m_mapSkinChangerCfg[wepIndex].m_iFallbackPaintKit;
-	*pWeapon->GetEntityQuality() = this->m_mapSkinChangerCfg[wepIndex].m_iEntityQuality; // quality, red, blue, etc.. 4/11 same as 0, 3 knife with star
-	*pWeapon->GetFallbackSeed() = this->m_mapSkinChangerCfg[wepIndex].m_iFallbackSeed;
-	*pWeapon->GetFallbackStatTrak() = -1; //-1 = nonst, > 0 = statcount
-	*pWeapon->GetFallbackWear() = this->m_mapSkinChangerCfg[wepIndex].m_flFallbackWear; // standard, best
-	if (this->m_mapSkinChangerCfg[wepIndex].m_iItemDefinitionIndex != -1)
-		*pWeapon->GetItemDefinitionIndex() = this->m_mapSkinChangerCfg[wepIndex].m_iItemDefinitionIndex;
-
-	if (this->m_mapSkinChangerCfg[wepIndex].m_szCustomName) {
-		sprintf_s(pWeapon->GetCustomName(), 32, "%s", this->m_mapSkinChangerCfg[wepIndex].m_szCustomName);
+		if (pCurrent)
+			delete pCurrent;
 	}
+}
 
-	*pWeapon->GetItemIDHigh() = 1;
+void CSkinChanger::DeleteSkinMetadata()
+{
+	// Clean up SkinMetadata
+	CSkinMetadata* pCurrent;
+	for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadata.begin(); it != m_mapSkinMetadata.end(); it++)
+	{
+		pCurrent = it->second;
 
-	return true;
+		if (pCurrent)
+			delete pCurrent;
+	}
 }

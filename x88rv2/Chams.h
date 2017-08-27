@@ -33,6 +33,7 @@ private:
 
 	bool m_bRenderTeam;
 	bool m_bRenderLocalplayer;
+	bool m_bRenderZIndex;
 
 	bool m_bMaterialsInitialized;
 	IMaterial* m_pFlatHiddenCT;

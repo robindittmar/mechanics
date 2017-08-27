@@ -124,7 +124,7 @@ void CNetVarManager::DumpTable(FILE* pFile, RecvTable* pTable, int iLevel)
 		if (pProp->m_RecvType == SendPropType::DPT_DataTable)
 		{
 			printTabs(pFile, iLevel + 1);
-			fprintf(pFile, "(%s) ", pProp->m_pVarName);
+			fprintf(pFile, "[%s (0x%X)] ", pProp->m_pVarName, pProp->m_Offset);
 
 			DumpTable(pFile, pProp->m_pDataTable, iLevel + 1);
 		}

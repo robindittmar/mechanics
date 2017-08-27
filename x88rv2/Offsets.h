@@ -3,6 +3,11 @@
 
 namespace Offsets
 {
+	// DT_BaseEntity
+	extern int m_nModelIndex;
+	extern int m_hMyWeapons;
+	extern int m_hViewModel;
+
 	// DT_CSPlayer
 	extern int m_vecOrigin;
 	extern int m_vecViewOffset;

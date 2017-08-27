@@ -72,12 +72,12 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		if (!pModelEntity->IsAlive())
 			return;
 
-		if (pLocalEntity == pModelEntity && !m_bRenderLocalplayer)
-			return;
+		/*if (!m_pApp->Visuals()->GetThirdperson() && pLocalEntity == pModelEntity && !m_bRenderLocalplayer)
+			return;*/
 
 		int iModelTeamNum = pModelEntity->GetTeamNum();
-		if (iModelTeamNum == pLocalEntity->GetTeamNum() && !m_bRenderTeam)
-			return;
+		/*if (pLocalEntity->GetTeamNum() == iModelTeamNum && !m_bRenderTeam && !m_bRenderLocalplayer)
+			return;*/
 
 		if(iModelTeamNum == TEAMNUM_T)
 		{

@@ -232,7 +232,9 @@ public:
 	//virtual IClientModelRenderable*  GetClientModelRenderable() = 0;
 	virtual IClientAlphaProperty*      GetClientAlphaProperty() = 0;
 };
- 
+
+class CBaseViewModel;
+
 class IClientEntity : public IClientUnknown, public IClientRenderable, public IClientNetworkable, public IClientThinkable
 {
 public:
@@ -243,6 +245,8 @@ public:
 	virtual bool             GetSoundSpatialization(SpatializationInfo_t info) = 0;
 	virtual bool             IsBlurred(void) = 0;
 
+	void SetModelIndex(int idx);
+
 	bool IsAlive();
 	int GetLifestate();
 	int GetHealth();
@@ -252,6 +256,7 @@ public:
 	Vector* GetEyeOffset();
 	bool IsScoped();
 	CWeapon* GetActiveWeapon();
+	void** GetWeapons();
 	Vector* GetVelocity();
 	bool IsSpotted();
 	int GetArmor();
@@ -264,6 +269,8 @@ public:
 	IClientEntity* GetObserverTarget();
 	QAngle* GetAngEyeAngles();
 	float GetLowerBodyYaw();
+	int GetModelIndex();
+	CBaseViewModel* GetViewModel();
 };
 
 #define OFFSET_ITEMIDHIGH		0x1F0
@@ -280,7 +287,8 @@ public:
 #define OFFSET_ITEM					0x40
 #define OFFSET_ITEMDEFINITIONINDEX	0x1D8
 //todo: change inline to .cpp
-class CBaseAttributableItem : public IClientUnknown, public IClientRenderable, public IClientNetworkable {
+class CBaseAttributableItem : public IClientEntity
+{
 public:
 	inline int* GetItemDefinitionIndex() {
 		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemDefinitionIndex
@@ -328,15 +336,12 @@ public:
 	}
 };
 
-#define OFFSET_MODELINDEX 0x254
 #define OFFSET_OWNER 0x29BC
 #define OFFSET_WEAPON 0x29B8
-class CBaseViewModel : public IClientUnknown, public IClientRenderable, public IClientNetworkable {
+
+class CBaseViewModel : public IClientEntity
+{
 public:
-	inline int GetModelIndex() {
-		// DT_BaseViewModel -> m_nModelIndex
-		return *(int*)((unsigned long)this + OFFSET_MODELINDEX);
-	}
 	inline unsigned long GetOwner() {
 		// DT_BaseViewModel -> m_hOwner
 		return *(unsigned long*)((unsigned long)this + OFFSET_OWNER);
@@ -345,9 +350,9 @@ public:
 		// DT_BaseViewModel -> m_hWeapon
 		return *(unsigned long*)((unsigned long)this + OFFSET_WEAPON);
 	}
-	inline void SetWeaponModel(const char* Filename, IClientUnknown* Weapon) {
-		typedef void (__thiscall *FindMaterial_t)(void*, char const*, IClientUnknown*);
-		return ((FindMaterial_t)(*(void***)this)[242])(this, Filename, Weapon);
+	inline void SetWeaponModel(const char* pFilename, IClientUnknown* pWeapon) {
+		typedef void (__thiscall *SetWeaponModel_t)(void*, char const*, IClientUnknown*);
+		return ((SetWeaponModel_t)(*(void***)this)[242])(this, pFilename, pWeapon);
 	}
 };
 

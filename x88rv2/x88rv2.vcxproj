@@ -179,6 +179,7 @@
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Selectbox.cpp" />
     <ClCompile Include="SkinChanger.cpp" />
+    <ClCompile Include="SkinMetadata.cpp" />
     <ClCompile Include="Slider.cpp" />
     <ClCompile Include="TabContainer.cpp" />
     <ClCompile Include="TabPage.cpp" />
@@ -239,6 +240,7 @@
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Selectbox.h" />
     <ClInclude Include="SkinChanger.h" />
+    <ClInclude Include="SkinMetadata.h" />
     <ClInclude Include="Slider.h" />
     <ClInclude Include="SourceEngine.h" />
     <ClInclude Include="TabContainer.h" />

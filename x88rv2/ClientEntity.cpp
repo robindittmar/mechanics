@@ -1,6 +1,11 @@
 #include "ClientEntity.h"
 #include "Application.h"
 
+void IClientEntity::SetModelIndex(int idx)
+{
+	*(int*)((DWORD)this + Offsets::m_nModelIndex) = idx;
+}
+
 bool IClientEntity::IsAlive()
 {
 	//return (this->GetHealth() > 0);
@@ -46,6 +51,11 @@ CWeapon* IClientEntity::GetActiveWeapon()
 {
 	HANDLE hActiveWeapon = *(HANDLE*)((UCHAR*)this + Offsets::m_hActiveWeapon);
 	return (CWeapon*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(hActiveWeapon);
+}
+
+void** IClientEntity::GetWeapons()
+{
+	return (HANDLE*)((DWORD)this + Offsets::m_hMyWeapons);
 }
 
 Vector* IClientEntity::GetVelocity()
@@ -106,4 +116,15 @@ QAngle* IClientEntity::GetAngEyeAngles()
 float IClientEntity::GetLowerBodyYaw()
 {
 	return *(float*)((DWORD)this + Offsets::m_flLowerBodyYawTarget);
+}
+
+int IClientEntity::GetModelIndex()
+{
+	return *(int*)((DWORD)this + Offsets::m_nModelIndex);
+}
+
+CBaseViewModel* IClientEntity::GetViewModel()
+{
+	void* pViewModel = *(void**)((DWORD)this + Offsets::m_hViewModel);
+	return (CBaseViewModel*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(pViewModel);
 }

@@ -1,23 +1,19 @@
 #ifndef __SKINCHANGER_H__
 #define __SKINCHANGER_H__
 
-#include "IFeature.h"
-#include "ClientEntity.h"
-
+// Std lib
 #include <unordered_map>
 
-struct SkinItemCfg {
-	int m_iItemDefinitionIndex = -1;
-	int m_iFallbackPaintKit = 0;
-	int m_iFallbackSeed = 0;
-	int m_iFallbackStatTrak = -1;
-	int m_iEntityQuality = 4;
-	char* m_szCustomName = nullptr;
-	float m_flFallbackWear = 0.00001f;
-};
+// Source SDK
+#include "ClientEntity.h"
+
+// Custom
+#include "IFeature.h"
+#include "SkinMetadata.h"
 
 class CApplication;
 
+// Hint: also changes models :D
 class CSkinChanger : public IFeature
 {
 public:
@@ -27,18 +23,22 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
-	void SetKnifeModel(const char* pModel);
+	void ClearReplacements();
 
-	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pWeapon, int nWeaponIndex);
-	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int nWeaponIndex);
+	// pNew won't be affected
+	void AddModelReplacement(const char* pOld, const char* pNew);
+	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
+	void AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin);
 
-	void AddSkinConfig(int wepId, SkinItemCfg& cfg) { m_mapSkinChangerCfg[wepId] = cfg; }
+	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
+	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
 private:
-	char* m_pKnifeModel;
+	// Delete's all items of the maps
+	void DeleteModelNames();
+	void DeleteSkinMetadata();
 
-	std::unordered_map<int, SkinItemCfg> m_mapSkinChangerCfg;
-	std::unordered_map<int, const char*> m_mapModelCfg;
-	std::unordered_map<int, int> m_mapWeaponDict;
+	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
+	std::unordered_map<int, const char*> m_mapModelMetadata;
 };
 
 #endif // __SKINCHANGER_H__
