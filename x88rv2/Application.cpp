@@ -116,69 +116,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	return false;
 }
 
-//nWeaponIndex = Which one to overwrite
-bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int nWeaponIndex) {
-	// Check if this weapon has a valid override defined.
-	//if (g_SkinCFG.find(nWeaponIndex) == g_SkinCFG.end())
-	//	return false;
-
-	// Apply our changes to the fallback variables.
-	int* paintKit = pWeapon->GetFallbackPaintKit();
-	*paintKit = 44; // ak redline
-
-	int* entQuality = pWeapon->GetEntityQuality();
-	*entQuality = 6; // quality, red, blue, etc.. 4/11 same as 0, 3 knife with star
-
-	int* seed = pWeapon->GetFallbackSeed();
-	*seed = 321; // Standard idk
-
-	//If you are having issues with the StatTrak counter appearing as USER ERROR, set m_iAccountID to your XUID Low value. 
-	int* st = pWeapon->GetFallbackStatTrak();
-	*st = -1; //-1 = nonst, > 0 = statcount
-
-	float* wear = pWeapon->GetFallbackWear();
-	*wear = 0.0001f; // standard
-
-	int* index = pWeapon->GetItemDefinitionIndex();
-	*index = WEAPON_AK47;
-
-	// If a name is defined, write it now.
-	/*if (g_SkinCFG[nWeaponIndex].szWeaponName) {
-		sprintf_s(pWeapon->GetCustomName(), 32, "%s", g_SkinCFG[nWeaponIndex].szWeaponName);
-	}*/
-
-	// Edit "m_iItemIDHigh" so fallback values will be used.
-	int* idhigh = pWeapon->GetItemIDHigh();
-	*idhigh = -1;
-
-	return true;
-}
-
-bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pWeapon, int nWeaponIndex) {
-	CBaseViewModel* pViewModel = (CBaseViewModel*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle(*(HANDLE*)((DWORD)pLocal + 0x32DC)); // local -> m_hViewModel
-
-	if (!pViewModel)
-		return false;
-
-	// Get the weapon belonging to this view model.
-	DWORD hViewModelWeapon = pViewModel->GetWeapon();
-	CBaseAttributableItem* pViewModelWeapon = (CBaseAttributableItem*)CApplication::Instance()->EntityList()->GetClientEntityFromHandle((HANDLE)hViewModelWeapon);
-
-	if (pViewModelWeapon != pWeapon)
-		return false;
-
-	// Check if an override exists for this view model.
-	int nViewModelIndex = pViewModel->GetModelIndex();
-
-	/*if (g_ViewModelCFG.find(nViewModelIndex) == g_ViewModelCFG.end())
-		return false;*/ // checks if end
-
-	// Configure model replacements.
-	pViewModel->SetWeaponModel("models/weapons/v_knife_karam.mdl", pWeapon);
-
-	return true;
-}
-
 void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -186,7 +123,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 	if (curStage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 	{
-		if (pApp->EngineClient()->IsInGame())
+		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
 			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
 			if (pEntity)
@@ -194,39 +131,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
 
-			//SkinChanger
-			PlayerInfo pLocalInfo;
-			pApp->EngineClient()->GetPlayerInfo(pLocalEntity->EntIndex(), &pLocalInfo);
-
-			UINT *hWeapons = (UINT*)((DWORD)pLocalEntity + 0x2DE8); // DT_BasePlayer -> m_hMyWeapons todo:
-			for (int i = 0; hWeapons[i]; i++) {
-				CBaseAttributableItem* pWeapon = (CBaseAttributableItem*)pApp->EntityList()->GetClientEntityFromHandle((HANDLE)hWeapons[i]);
-				if (!pWeapon)
-					continue;
-
-				int nWeaponIndex = *pWeapon->GetItemDefinitionIndex();
-				/*if (nWeaponIndex == WEAPON_KNIFE_M9_BAYONET ||
-					nWeaponIndex == WEAPON_KNIFE_KARAMBIT)
-				{
-					ApplyCustomModel(pLocalEntity, pWeapon, nWeaponIndex);
-
-					if (pLocalInfo.xuidlow != *pWeapon->GetOriginalOwnerXuidLow())
-						continue;
-
-					if (pLocalInfo.xuidhigh != *pWeapon->GetOriginalOwnerXuidHigh())
-						continue;
-
-					ApplyCustomSkin(pWeapon, nWeaponIndex);
-
-					*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
-				}*/
-				if (nWeaponIndex == WEAPON_AK47)
-				{
-					ApplyCustomSkin(pWeapon, nWeaponIndex);
-
-					*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
-				}
-			}
+			pApp->SkinChanger()->Update(pLocalEntity);
 		}
 	}
 	else if (curStage == FRAME_RENDER_START)
@@ -461,8 +366,8 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// Print classes & their properties
-	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
-	if(pFile)
+	FILE* pFile = fopen("C:\\Users\\Nico\\Documents\\Visual Studio 2017\\Projects\\x88rv2\\Debug\\dump.txt", "w");
+	if (pFile)
 	{
 		CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
 		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_CSPlayer");
@@ -521,6 +426,7 @@ void CApplication::Setup()
 	this->m_esp.Setup();
 	this->m_chams.Setup();
 	this->m_misc.Setup();
+	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
 
 	// Aimbot
@@ -569,6 +475,21 @@ void CApplication::Setup()
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 	this->m_misc.SetDisablePostProcessing(true);
 
+	// SkinChanger
+	this->m_skinchanger.SetEnabled(true);
+	SkinItemCfg cfg;
+	cfg.m_iFallbackPaintKit = 44;
+	cfg.m_iFallbackSeed = 321;
+	cfg.m_iEntityQuality = 3;
+	m_skinchanger.AddSkinConfig(WEAPON_AK47, cfg);
+
+	cfg.m_iItemDefinitionIndex = WEAPON_KNIFE_BUTTERFLY;
+	cfg.m_iFallbackPaintKit = 38;
+	cfg.m_iEntityQuality = 3;
+	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_BUTTERFLY, cfg);
+	m_skinchanger.AddSkinConfig(WEAPON_KNIFE_M9_BAYONET, cfg);
+	m_skinchanger.SetKnifeModel("models/weapons/v_knife_butterfly.mdl");
+
 	// Visuals
 	this->m_visuals.SetEnabled(true);
 
@@ -586,7 +507,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(true);
+	this->m_visuals.SetFovChangeScoped(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);

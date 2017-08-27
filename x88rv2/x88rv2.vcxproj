@@ -178,6 +178,7 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Selectbox.cpp" />
+    <ClCompile Include="SkinChanger.cpp" />
     <ClCompile Include="Slider.cpp" />
     <ClCompile Include="TabContainer.cpp" />
     <ClCompile Include="TabPage.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Selectbox.h" />
+    <ClInclude Include="SkinChanger.h" />
     <ClInclude Include="Slider.h" />
     <ClInclude Include="SourceEngine.h" />
     <ClInclude Include="TabContainer.h" />

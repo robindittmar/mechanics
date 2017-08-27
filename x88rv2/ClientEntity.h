@@ -284,7 +284,7 @@ class CBaseAttributableItem : public IClientUnknown, public IClientRenderable, p
 public:
 	inline int* GetItemDefinitionIndex() {
 		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemDefinitionIndex
-		return (int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
+		return (int*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
 	}
 	inline int* GetItemIDHigh() {
 		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemIDHigh
