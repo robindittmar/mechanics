@@ -3,28 +3,13 @@
 
 CSkinChanger::CSkinChanger()
 {
-	//m_pKnifeModel = NULL;
 }
 
 CSkinChanger::~CSkinChanger()
 {
 	this->DeleteModelNames();
 	this->DeleteSkinMetadata();
-
-	// Clean up KnifeModel
-	/*if (m_pKnifeModel)
-		delete[] m_pKnifeModel;*/
 }
-
-/*void CSkinChanger::SetKnifeModel(const char* pModel)
-{
-	if (m_pKnifeModel)
-		delete[] m_pKnifeModel;
-
-	int iLen = strlen(pModel);
-	m_pKnifeModel = new char[iLen + 1];
-	memcpy(m_pKnifeModel, pModel, iLen + 1);
-}*/
 
 void CSkinChanger::Setup()
 {

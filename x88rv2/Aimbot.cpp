@@ -568,7 +568,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			ray.Init(vMyHeadPos, vHitbox[i]);
 			pEngineTrace->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-			/*if (CanHit(vHitbox[i], &fDamage))
+			if (CanHit(vHitbox[i], &fDamage))
 			{
 				if (fDamage > m_fDamage)
 				{
@@ -579,7 +579,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 					bIsHittable = true;
 				}
 			}
-			else */if (trace.IsVisible(pCurEntity))
+			else if (trace.IsVisible(pCurEntity))
 			{
 				vEnemyHeadPos = vHitbox[i];
 				bIsHittable = true;

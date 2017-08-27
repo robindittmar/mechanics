@@ -12,22 +12,16 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("models/player"),
-		CXorString("cl_mouseenable 0"),
-		CXorString("cl_mouseenable 1"),
-		CXorString("tgÚ¯x~ö§reä {n¥ò"),
-		CXorString("tgÚ¯x~ö§reä {n¥ó"),
-		CXorString("VEngineRenderView014"),
-		// "VertexLitGeneric" : "UnlitGeneric"
-		CXorString("VertexLitGeneric"),
-		CXorString("UnlitGeneric"),
-		CXorString("An÷¶rsÉ«cLà¬ryì¡"),
-		CXorString("Beé«cLà¬ryì¡"),
-		CXorString("xhmat_%d.vmt"),
-		CXorString("Counter-Strike: Global Offensive"),
-		CXorString("Tdğ¬cn÷ïD÷«|n¿âPgê vg¥qmà¬dbó§"),
-		CXorString("Arial"),
-		CXorString("baseclass")
+		CXorString("m_AttributeManager"),
+		CXorString("m_Item"),
+		CXorString("m_iItemDefinitionIndex"),
+		CXorString("m_iClip1"),
+		CXorString("m_iClip2"),
+		CXorString("LocalActiveWeaponData"),
+		CXorString("m_flNextPrimaryAttack"),
+		CXorString("m_fAccuracyPenalty"),
+		CXorString("m_flPostponeFireReadyTime"),
+		CXorString("m_fThrowTime"),
 	};
 	
 	CXorString byteStrings[]{
