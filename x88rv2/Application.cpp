@@ -484,11 +484,15 @@ void CApplication::Setup()
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
 	SkinItemCfg cfg;
-	cfg.m_iFallbackPaintKit = 44;
-	cfg.m_iFallbackSeed = 321;
-	cfg.m_iFallbackStatTrak = 1337;
+	cfg.m_iFallbackPaintKit = 625;
+	m_skinchanger.AddSkinConfig(WEAPON_ELITE, cfg);
+
+	cfg.m_iFallbackPaintKit = 165;
 	cfg.m_iEntityQuality = 6;
-	m_skinchanger.AddSkinConfig(WEAPON_AK47, cfg);
+	m_skinchanger.AddSkinConfig(WEAPON_SCAR20, cfg);
+
+	cfg.m_iFallbackPaintKit = 438;
+	m_skinchanger.AddSkinConfig(WEAPON_G3SG1, cfg);
 
 	/*cfg.m_iItemDefinitionIndex = WEAPON_KNIFE_BUTTERFLY;
 	cfg.m_iFallbackPaintKit = 38;
