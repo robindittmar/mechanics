@@ -122,8 +122,6 @@ public:
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
-
-	float CAimbot::GetDamage(const Vector& point);
 private:
 	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
 	bool CanHit(Vector &point, float *damage_given);

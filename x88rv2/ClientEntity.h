@@ -286,7 +286,7 @@ public:
 #define OFFSET_ATTRIBUTEMANAGER		0x2D70
 #define OFFSET_ITEM					0x40
 #define OFFSET_ITEMDEFINITIONINDEX	0x1D8
-//todo: change inline to .cpp
+//todo: change inline to .cpp and NETVARS!!!!!!!!!
 class CBaseAttributableItem : public IClientEntity
 {
 public:
