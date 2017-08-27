@@ -12,16 +12,11 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("m_AttributeManager"),
-		CXorString("m_Item"),
-		CXorString("m_iItemDefinitionIndex"),
-		CXorString("m_iClip1"),
-		CXorString("m_iClip2"),
-		CXorString("LocalActiveWeaponData"),
-		CXorString("m_flNextPrimaryAttack"),
-		CXorString("m_fAccuracyPenalty"),
-		CXorString("m_flPostponeFireReadyTime"),
-		CXorString("m_fThrowTime"),
+		CXorString("models/weapons/v_knife_default_t.mdl"),
+		CXorString("models/weapons/v_knife_butterfly.mdl"),
+		CXorString("m_nModelIndex"),
+		CXorString("m_hMyWeapons"),
+		CXorString("m_hViewModel[0]")
 	};
 	
 	CXorString byteStrings[]{

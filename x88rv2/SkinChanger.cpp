@@ -49,35 +49,24 @@ void CSkinChanger::Update(void* pParameters)
 	CBaseAttributableItem* pWeapon;
 	HANDLE* hMyWeapons = pLocalEntity->GetWeapons();
 
-	if(!hMyWeapons)
+	if (!hMyWeapons)
 		return;
 
-	for(int i = 0; hMyWeapons[i]; i++)
+	for (int i = 0; hMyWeapons[i]; i++)
 	{
 		pWeapon = (CBaseAttributableItem*)m_pApp->EntityList()->GetClientEntityFromHandle(hMyWeapons[i]);
 		if (!pWeapon)
 			continue;
 
 		int iWeaponId = *pWeapon->GetItemDefinitionIndex();
-		
+
 		this->ApplyCustomModel(pLocalEntity, pWeapon);
-		// TODO: Check if your gun
+		if (pLocalInfo.xuidlow != *pWeapon->GetOriginalOwnerXuidLow()) //todo: skin only mine
+			continue;
 		this->ApplyCustomSkin(pWeapon, iWeaponId);
+
 		*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
 	}
-	/*if (pWeapon)
-	{
-		int wepIndex = *pWeapon->GetItemDefinitionIndex();
-
-		//todo: animation fix, skin not being applied
-		//pApp->SkinChanger()->ApplyCustomModel(pLocalEntity, pWeapon, wepIndex);
-		if (pLocalInfo.xuidlow == *pWeapon->GetOriginalOwnerXuidLow()) //todo: skin only mine
-		{
-			m_pApp->SkinChanger()->ApplyCustomSkin(pWeapon, wepIndex);
-
-			*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
-		}
-	}*/
 }
 
 void CSkinChanger::ClearReplacements()

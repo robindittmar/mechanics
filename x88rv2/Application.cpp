@@ -382,10 +382,12 @@ void CApplication::Setup()
 	CXorString basecombatweapon("S_Ú€vxàxfç£c\\à£gdë");
 	CXorString weaponcsbase("S_Ú•rjõ­yHÖ€vxà");
 	CXorString basecsgrenade("S_Ú€vxàDL÷§yjá§");
+	CXorString baseentity("S_Ú€vxà‡yì¶n");
+	CXorString baseplayer("S_Ú€vxà’{jü§e");
 
 	CNetVarManager netVarManager;
-	netVarManager.AddTable("DT_BaseEntity");
-	netVarManager.AddTable("DT_BasePlayer");
+	netVarManager.AddTable(baseentity.ToCharArray());
+	netVarManager.AddTable(baseplayer.ToCharArray());
 	netVarManager.AddTable(csplayer.ToCharArray());
 	netVarManager.AddTable(basecombatweapon.ToCharArray());
 	netVarManager.AddTable(weaponcsbase.ToCharArray());
@@ -394,9 +396,9 @@ void CApplication::Setup()
 
 	CXorString baseclass("ujö§tgä±d");
 	CXorString localdata("{dæ£{oä¶v");
-	Offsets::m_nModelIndex = netVarManager.GetOffset(1, "DT_BaseEntity", "m_nModelIndex");
-	Offsets::m_hMyWeapons = netVarManager.GetOffset(2, "DT_BasePlayer", baseclass.ToCharArray(), "m_hMyWeapons");
-	Offsets::m_hViewModel = netVarManager.GetOffset(1, "DT_BasePlayer", "m_hViewModel[0]");
+	Offsets::m_nModelIndex = netVarManager.GetOffset(1, baseentity.ToCharArray(), CXorString("zTëxoà®^eá§o").ToCharArray());
+	Offsets::m_hMyWeapons = netVarManager.GetOffset(2, baseplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTín\\à£gdë±").ToCharArray());
+	Offsets::m_hViewModel = netVarManager.GetOffset(1, baseplayer.ToCharArray(), CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
 	Offsets::m_vecOrigin = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
@@ -496,13 +498,12 @@ void CApplication::Setup()
 			44,
 			321,
 			1337,
-			4,
-			"SIEG HEIL"
+			4
 		)
 	);
 	this->m_skinchanger.AddModelReplacement(
-		"models/weapons/v_knife_default_t.mdl",
-		"models/weapons/v_knife_butterfly.mdl"
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
 	);
 
 	// Visuals
