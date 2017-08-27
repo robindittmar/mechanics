@@ -204,6 +204,7 @@ public:
 	int GetClip2();
 	float GetNextPrimaryAttack();
 	CWeaponInfo* GetWeaponInfo();
+	float GetAccuracyPenalty();
 	float GetPostPoneFireReady();
 private:
 };

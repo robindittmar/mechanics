@@ -101,6 +101,11 @@ CWeaponInfo* CWeapon::GetWeaponInfo()
 	return ((GetWeaponData_t)(*(void***)this)[446])(this);
 }
 
+float CWeapon::GetAccuracyPenalty()
+{
+	return *(float*)((unsigned long)this + Offsets::m_fAccuracyPenalty);
+}
+
 float CWeapon::GetPostPoneFireReady()
 {
 	return *(float*)((unsigned long)this + Offsets::m_flPostponeFireReadyTime);

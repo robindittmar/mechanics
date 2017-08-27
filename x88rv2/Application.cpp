@@ -414,6 +414,7 @@ void CApplication::Setup()
 	Offsets::m_iClip2 = netVarManager.GetOffset(1, "DT_BaseCombatWeapon", "m_iClip2");
 	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, "DT_BaseCombatWeapon", "LocalActiveWeaponData", "m_flNextPrimaryAttack");
 
+	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(1, "DT_WeaponCSBase", "m_fAccuracyPenalty");
 	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(1, "DT_WeaponCSBase", "m_flPostponeFireReadyTime");
 
 	Offsets::m_fThrowTime = netVarManager.GetOffset(1, "DT_BaseCSGrenade", "m_fThrowTime");

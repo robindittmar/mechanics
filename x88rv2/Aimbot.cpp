@@ -481,6 +481,8 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	pMyActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	qLocalViewAngles = m_pApp->ClientViewAngles();
 	
+	//g_pConsole->Write("%f\n", pMyActiveWeapon->GetAccuracyPenalty());
+
 	// If we're not autoshooting or not attacking ourselves
 	// TODO: Aimkey?
 	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK) && !(GetAsyncKeyState(VK_MBUTTON) & 0x8000))

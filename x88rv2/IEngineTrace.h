@@ -144,9 +144,6 @@
 #define SURF_HITBOX		0x8000	// surface is part of a hitbox
 
 
-
-
-
 class IHandleEntity;
 struct Ray_t;
 class CGameTrace;

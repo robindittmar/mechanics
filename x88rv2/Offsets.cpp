@@ -31,6 +31,7 @@ namespace Offsets
 	int m_iClip2;
 	int m_flNextPrimaryAttack;
 
+	int m_fAccuracyPenalty;
 	int m_flPostponeFireReadyTime;
 
 	int m_fThrowTime;
