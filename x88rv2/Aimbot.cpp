@@ -218,41 +218,16 @@ bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &d
 bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* trace)
 {
 	typedef bool(__fastcall* TraceToExitFn)(Vector&, trace_t&, float, float, float, float, float, float, trace_t*);
-	static TraceToExitFn TraceToExit = (TraceToExitFn)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xEC\x30\xF3\x0F\x10\x75", "xxxxxxxxxx");
+	static TraceToExitFn TraceToExit = (TraceToExitFn)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xEC\x30\xF3\x0F\x10\x75", "atehunpyqx");
 
 	if (!TraceToExit)
 		return false;
 	
 	int bRet;
-
 	__asm
 	{
 		mov eax, trace;
 		push eax;
-		
-		/*push ecx;
-		
-		movss xmm0, ebp + 24h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 20h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, vEnd;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 18h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, ebp + 14h;
-		movss esp, xmm0;
-		push ecx;
-
-		movss xmm0, */
 
 		push vEnd.z;
 		push vEnd.y;
@@ -268,7 +243,6 @@ bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* t
 
 		mov bRet, eax;
 	}
-	//return TraceToExit(end, tr, start.x, start.y, start.z, vEnd.x, vEnd.y, vEnd.z, trace);
 
 	return (bool)bRet;
 }
@@ -316,8 +290,10 @@ bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
 
 	if (enter_material == exit_material)
 	{
-		if (exit_material == 87 || exit_material == 85)combined_penetration_modifier = 3.0f;
-		else if (exit_material == 76)combined_penetration_modifier = 2.0f;
+		if (exit_material == 87 || exit_material == 85)
+			combined_penetration_modifier = 3.0f;
+		else if (exit_material == 76)
+			combined_penetration_modifier = 2.0f;
 	}
 
 	float v34 = fmaxf(0.f, 1.0f / combined_penetration_modifier);
@@ -389,13 +365,6 @@ bool CAimbot::CanHit(Vector &point, float *damage_given)
 	}
 	return false;
 }
-
-
-
-
-
-
-
 
 
 
@@ -550,6 +519,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			//ray.Init(vMyHeadPos, vEnemyHeadPos);
 			//m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+
 			if (CanHit(vBonePos, &fDamage))
 			{
 				if (fDamage > m_fDamage)

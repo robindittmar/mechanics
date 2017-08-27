@@ -265,4 +265,89 @@ public:
 	float LowerBodyYaw();
 };
 
+#define OFFSET_ITEMIDHIGH		0x1F0
+#define OFFSET_ACCOUNTID		0x1F8
+#define OFFSET_ENTITYQUALITY	0x1DC
+#define OFFSET_CUSTOMNAME		0x26C
+#define OFFSET_XUIDLOW			0x3168
+#define OFFSET_XUIDHIGH			0x316C
+#define OFFSET_FALLBACKKIT		0x3170
+#define OFFSET_FALLBACKSEED		0x3174
+#define OFFSET_FALLBACKWEAR		0x3178
+#define OFFSET_FALLBACKSTATTRAK	0x317C
+#define OFFSET_ATTRIBUTEMANAGER		0x2D70
+#define OFFSET_ITEM					0x40
+#define OFFSET_ITEMDEFINITIONINDEX	0x1D8
+//todo: change inline to .cpp
+class CBaseAttributableItem : public IClientUnknown, public IClientRenderable, public IClientNetworkable {
+public:
+	inline int* GetItemDefinitionIndex() {
+		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemDefinitionIndex
+		return (int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMDEFINITIONINDEX);
+	}
+	inline int* GetItemIDHigh() {
+		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemIDHigh
+		return (int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ITEMIDHIGH);
+	}
+	inline int* GetAccountID() {
+		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iAccountID
+		return (int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ACCOUNTID);
+	}
+	inline int* GetEntityQuality() {
+		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iEntityQuality
+		return (int*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_ENTITYQUALITY);
+	}
+	inline char* GetCustomName() {
+		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_szCustomName
+		return (char*)((unsigned long)this + OFFSET_ATTRIBUTEMANAGER + OFFSET_ITEM + OFFSET_CUSTOMNAME);
+	}
+	inline int* GetOriginalOwnerXuidLow() {
+		// DT_BaseAttributableItem -> m_OriginalOwnerXuidLow
+		return (int*)((unsigned long)this + OFFSET_XUIDLOW);
+	}
+	inline int* GetOriginalOwnerXuidHigh() {
+		// DT_BaseAttributableItem -> m_OriginalOwnerXuidHigh
+		return (int*)((unsigned long)this + OFFSET_XUIDHIGH);
+	}
+	inline int* GetFallbackPaintKit() {
+		// DT_BaseAttributableItem -> m_nFallbackPaintKit
+		return (int*)((unsigned long)this + OFFSET_FALLBACKKIT);
+	}
+	inline int* GetFallbackSeed() {
+		// DT_BaseAttributableItem -> m_nFallbackSeed
+		return (int*)((unsigned long)this + OFFSET_FALLBACKSEED);
+	}
+	inline float* GetFallbackWear() {
+		// DT_BaseAttributableItem -> m_flFallbackWear
+		return (float*)((unsigned long)this + OFFSET_FALLBACKWEAR);
+	}
+	inline int* GetFallbackStatTrak() {
+		// DT_BaseAttributableItem -> m_nFallbackStatTrak
+		return (int*)((unsigned long)this + OFFSET_FALLBACKSTATTRAK);
+	}
+};
+
+#define OFFSET_MODELINDEX 0x254
+#define OFFSET_OWNER 0x29BC
+#define OFFSET_WEAPON 0x29B8
+class CBaseViewModel : public IClientUnknown, public IClientRenderable, public IClientNetworkable {
+public:
+	inline int GetModelIndex() {
+		// DT_BaseViewModel -> m_nModelIndex
+		return *(int*)((unsigned long)this + OFFSET_MODELINDEX);
+	}
+	inline unsigned long GetOwner() {
+		// DT_BaseViewModel -> m_hOwner
+		return *(unsigned long*)((unsigned long)this + OFFSET_OWNER);
+	}
+	inline unsigned long GetWeapon() {
+		// DT_BaseViewModel -> m_hWeapon
+		return *(unsigned long*)((unsigned long)this + OFFSET_WEAPON);
+	}
+	inline void SetWeaponModel(const char* Filename, IClientUnknown* Weapon) {
+		typedef void (__thiscall *FindMaterial_t)(void*, char const*, IClientUnknown*);
+		return ((FindMaterial_t)(*(void***)this)[242])(this, Filename, Weapon);
+	}
+};
+
 #endif // __CLIENTENTITY_H__
