@@ -492,17 +492,18 @@ void CApplication::Setup()
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
 	this->m_skinchanger.AddSkinReplacement(
-		WEAPON_AK47,
+		WEAPON_KNIFE_M9_BAYONET,
 		new CSkinMetadata(
+			WEAPON_KNIFE_BUTTERFLY,
+			38,
+			0,
 			-1,
-			44,
-			321,
-			1337,
-			4
+			3
 		)
 	);
 	this->m_skinchanger.AddModelReplacement(
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
+		"models/weapons/v_knife_m9_bay.mdl",
+		//CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
 	);
 

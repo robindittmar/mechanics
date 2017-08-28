@@ -113,6 +113,10 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 
 	pItem->SetModelIndex(iNewModelIdx);
 	pViewModel->SetModelIndex(iNewModelIdx);
+
+	//todo: only works while sv_cheats 1 -> see discord, clientstate deltatick = -1
+	m_pApp->EngineClient()->ExecuteClientCmd("cl_fullupdate");
+
 	return true;
 }
 
@@ -122,16 +126,17 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 		return false;
 
 	CSkinMetadata* pSkin = this->m_mapSkinMetadata[iWeaponId];
-	*pWeapon->GetFallbackPaintKit() = pSkin->m_iFallbackPaintKit;
-	*pWeapon->GetEntityQuality() = pSkin->m_iEntityQuality;
-	*pWeapon->GetFallbackSeed() = pSkin->m_iFallbackSeed;
-	*pWeapon->GetFallbackStatTrak() = pSkin->m_iFallbackStatTrak;
-	*pWeapon->GetFallbackWear() = pSkin->m_fFallbackWear;
 
 	if (pSkin->m_iItemDefinitionIndex != -1)
 	{
 		*pWeapon->GetItemDefinitionIndex() = pSkin->m_iItemDefinitionIndex;
 	}
+
+	*pWeapon->GetFallbackPaintKit() = pSkin->m_iFallbackPaintKit;
+	*pWeapon->GetEntityQuality() = pSkin->m_iEntityQuality;
+	*pWeapon->GetFallbackSeed() = pSkin->m_iFallbackSeed;
+	*pWeapon->GetFallbackStatTrak() = pSkin->m_iFallbackStatTrak;
+	*pWeapon->GetFallbackWear() = pSkin->m_fFallbackWear;
 
 	if (pSkin->m_pCustomName)
 	{
