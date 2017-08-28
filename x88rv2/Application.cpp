@@ -8,6 +8,8 @@ OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
 PaintTraverse_t CApplication::m_pPaintTraverse;
 GetViewModelFov_t CApplication::m_pGetViewModelFov;
+RecvVarProxy_t CApplication::m_pSequenceProxy;
+FireEventClientSide_t CApplication::m_pFireEventClientSide;
 
 CApplication* CApplication::Instance()
 {
@@ -28,7 +30,11 @@ void CApplication::Detach()
 	// Unregister listener
 	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
 
+	// Restore proxy functions
+	m_pProxyProp->m_ProxyFn = this->m_pSequenceProxy;
+
 	// Reverse order, in case of any dependencies
+	this->m_pGameEventManagerHook->Restore();
 	this->m_pVguiHook->Restore();
 	this->m_pClientHook->Restore();
 	this->m_pEngineModelHook->Restore();
@@ -284,6 +290,104 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 	return m_pGetViewModelFov(ecx) + 40.0f;
 }
 
+void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	// Make the incoming data editable.
+	CRecvProxyData* pData = const_cast<CRecvProxyData*>(pDataConst);
+
+	// Confirm that we are replacing our view model and not someone elses.
+	CBaseViewModel* pViewModel = (CBaseViewModel*)pStruct;
+
+	if (pViewModel) {
+		IClientEntity* pOwner = pApp->EntityList()->GetClientEntityFromHandle(pViewModel->GetOwner());
+
+		// Compare the owner entity of this view model to the local player entity.
+		if (pOwner && pOwner->EntIndex() == pApp->EngineClient()->GetLocalPlayer()) {
+			// Get the filename of the current view model.
+			const model_t* pModel = pApp->ModelInfo()->GetModel(pViewModel->GetModelIndex());
+			const char* szModel = pApp->ModelInfo()->GetModelName(pModel);
+
+			// Store the current sequence.
+			int m_nSequence = pData->m_Value.m_Int;
+
+			if (!strcmp(szModel, "models/weapons/v_knife_butterfly.mdl")) {
+				// Fix animations for the Butterfly Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_DRAW:
+					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2); break;
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03); break;
+				default:
+					m_nSequence++;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_falchion_advanced.mdl")) {
+				// Fix animations for the Falchion Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_FALCHION_IDLE1; break;
+				case SEQUENCE_DEFAULT_HEAVY_MISS1:
+					m_nSequence = RandomInt(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP); break;
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence = RandomInt(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02); break;
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				default:
+					m_nSequence--;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_push.mdl")) {
+				// Fix animations for the Shadow Daggers.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_DAGGERS_IDLE1; break;
+				case SEQUENCE_DEFAULT_LIGHT_MISS1:
+				case SEQUENCE_DEFAULT_LIGHT_MISS2:
+					m_nSequence = RandomInt(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5); break;
+				case SEQUENCE_DEFAULT_HEAVY_MISS1:
+					m_nSequence = RandomInt(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1); break;
+				case SEQUENCE_DEFAULT_HEAVY_HIT1:
+				case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence += 3; break;
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				default:
+					m_nSequence += 2;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_survival_bowie.mdl")) {
+				// Fix animations for the Bowie Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_BOWIE_IDLE1; break;
+				default:
+					m_nSequence--;
+				}
+			}
+
+			// Set the fixed sequence.
+			pData->m_Value.m_Int = m_nSequence;
+		}
+	}
+
+	// Call original function with the modified data.
+	pApp->m_pSequenceProxy(pData, pStruct, pOut);
+}
+
+bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
+{
+	//g_pConsole->Write("%s\n", pEvent->GetName());
+	return m_pFireEventClientSide(ecx, pEvent);
+}
+
 /*void BtnDown(IControl* p)
 {
 CButton* btn = (CButton*)p;
@@ -390,6 +494,7 @@ void CApplication::Setup()
 	netVarManager.AddTable(baseplayer.ToCharArray());
 	netVarManager.AddTable(csplayer.ToCharArray());
 	netVarManager.AddTable(basecombatweapon.ToCharArray());
+	//netVarManager.AddTable("DT_BaseAttributableItem");
 	netVarManager.AddTable(weaponcsbase.ToCharArray());
 	netVarManager.AddTable(basecsgrenade.ToCharArray());
 	netVarManager.LoadTables(m_pClient->GetAllClasses());
@@ -424,6 +529,7 @@ void CApplication::Setup()
 	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager");
 	//Offsets::m_Item = netVarManager.GetOffset(3, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
 	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), CXorString("zTÄ¶cyì bàveä¥ry").ToCharArray(), CXorString("zTÌ¶rf").ToCharArray(), CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
+	//Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(1, "DT_BaseAttributableItem", "m_iItemDefinitionIndex");
 	Offsets::m_iClip1 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõó").ToCharArray());
 	Offsets::m_iClip2 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõð").ToCharArray());
 	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), CXorString("[dæ£{Jæ¶~}à•rjõ­yOä¶v").ToCharArray(), CXorString("zTã®Yný¶Gyì¯vyüƒcä¡|").ToCharArray());
@@ -491,6 +597,12 @@ void CApplication::Setup()
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
+
+	// Nicos Knife
+	this->m_skinchanger.AddModelReplacement(
+		"models/weapons/v_knife_m9_bay.mdl",
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray()
+	);
 	this->m_skinchanger.AddSkinReplacement(
 		WEAPON_KNIFE_M9_BAYONET,
 		new CSkinMetadata(
@@ -501,163 +613,175 @@ void CApplication::Setup()
 			3
 		)
 	);
+
+	// Robins Knife
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_KNIFE_T,
+		new CSkinMetadata(
+			WEAPON_KNIFE_BUTTERFLY,
+			38,
+			0,
+			-1,
+			3
+		)
+	);
 	this->m_skinchanger.AddModelReplacement(
-		"models/weapons/v_knife_m9_bay.mdl",
-		//CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
 	);
 
-	// Visuals
-	this->m_visuals.SetEnabled(true);
 
-	this->m_visuals.SetCrosshair(true);
-	this->m_visuals.SetHitmarker(true);
-	this->m_visuals.SetNoSmoke(true);
-	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
-	this->m_visuals.SetNoVisualRecoil(true);
+// Visuals
+this->m_visuals.SetEnabled(true);
 
-	this->m_visuals.SetNoFlash(true);
-	this->m_visuals.SetFlashPercentage(0.f);
+this->m_visuals.SetCrosshair(true);
+this->m_visuals.SetHitmarker(true);
+this->m_visuals.SetNoSmoke(true);
+this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
+this->m_visuals.SetNoVisualRecoil(true);
 
-	this->m_visuals.SetThirdperson(false);
-	this->m_visuals.SetThirdpersonDistance(150);
+this->m_visuals.SetNoFlash(true);
+this->m_visuals.SetFlashPercentage(0.f);
 
-	this->m_visuals.SetFovChange(true);
-	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(false);
+this->m_visuals.SetThirdperson(false);
+this->m_visuals.SetThirdpersonDistance(150);
 
-	// Register Event Handlers
-	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, player_death.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, round_start.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, round_end.ToCharArray(), false);
+this->m_visuals.SetFovChange(true);
+this->m_visuals.SetFovValue(110);
+this->m_visuals.SetFovChangeScoped(false);
 
-	// Create all Gui stuff
-	m_pGui = CGui::Instance();
+// Register Event Handlers
+m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
+m_pGameEventManager->AddListener(&m_gameEventListener, player_death.ToCharArray(), false);
+m_pGameEventManager->AddListener(&m_gameEventListener, round_start.ToCharArray(), false);
+m_pGameEventManager->AddListener(&m_gameEventListener, round_end.ToCharArray(), false);
 
-	// Initialize InputHandler
-	m_inputHandler.RegisterKey(VK_DELETE, EVENT_BTN_DETACH);
-	m_inputHandler.RegisterKey(VK_INSERT, EVENT_BTN_TOGGLEMENU);
-	m_inputHandler.RegisterKey(VK_NUMPAD0, EVENT_BTN_THIRDPERSON);
+// Create all Gui stuff
+m_pGui = CGui::Instance();
 
-	// Create GUI (Window + all controls)
-	CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
-	//pBtn->SetButtonDownEventHandler(BtnDown);
-	pBtn->SetButtonUpEventHandler(BtnUp);
+// Initialize InputHandler
+m_inputHandler.RegisterKey(VK_DELETE, EVENT_BTN_DETACH);
+m_inputHandler.RegisterKey(VK_INSERT, EVENT_BTN_TOGGLEMENU);
+m_inputHandler.RegisterKey(VK_NUMPAD0, EVENT_BTN_THIRDPERSON);
 
-	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
-	pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
+// Create GUI (Window + all controls)
+CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
+//pBtn->SetButtonDownEventHandler(BtnDown);
+pBtn->SetButtonUpEventHandler(BtnUp);
 
-	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_aimbot.GetSilentAim());
-	pSilentAim->SetEventHandler(std::bind(&CAimbot::SetSilentAim, &m_aimbot, std::placeholders::_1));
+CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
+pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
 
-	CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_aimbot.GetAutoshoot());
-	pCheck->SetEventHandler(std::bind(&CAimbot::SetAutoshoot, &m_aimbot, std::placeholders::_1));
+CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_aimbot.GetSilentAim());
+pSilentAim->SetEventHandler(std::bind(&CAimbot::SetSilentAim, &m_aimbot, std::placeholders::_1));
 
-	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_aimbot.GetAutoscope());
-	pAutoScope->SetEventHandler(std::bind(&CAimbot::SetAutoscope, &m_aimbot, std::placeholders::_1));
+CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_aimbot.GetAutoshoot());
+pCheck->SetEventHandler(std::bind(&CAimbot::SetAutoshoot, &m_aimbot, std::placeholders::_1));
 
-	CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
-	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
-	m_pGuiThirdpersonCheckbox = pCheck2;
+CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_aimbot.GetAutoscope());
+pAutoScope->SetEventHandler(std::bind(&CAimbot::SetAutoscope, &m_aimbot, std::placeholders::_1));
 
-	CSelectbox* pSelectbox = new CSelectbox(16, 16, 100, 32);
-	pSelectbox->AddOption(0, "Unspecified");
-	pSelectbox->AddOption(1, "NoHands");
-	pSelectbox->AddOption(2, "lol");
-	pSelectbox->AddOption(3, "Just testing");
-	pSelectbox->AddOption(4, "this is fun");
-	pSelectbox->AddOption(5, "nicht");
-	pSelectbox->AddOption(6, "SIEG");
+CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
+pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
+m_pGuiThirdpersonCheckbox = pCheck2;
 
-	// TODO: Groupbox -> "Antiaim" :D
-	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
-	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
+CSelectbox* pSelectbox = new CSelectbox(16, 16, 100, 32);
+pSelectbox->AddOption(0, "Unspecified");
+pSelectbox->AddOption(1, "NoHands");
+pSelectbox->AddOption(2, "lol");
+pSelectbox->AddOption(3, "Just testing");
+pSelectbox->AddOption(4, "this is fun");
+pSelectbox->AddOption(5, "nicht");
+pSelectbox->AddOption(6, "SIEG");
 
-	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
-	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
+// TODO: Groupbox -> "Antiaim" :D
+CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
+pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
+pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
+pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
+pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
 
-	CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
-	pSelectbox2->SetSelection(m_visuals.GetHandsDrawStyle());
-	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
+CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
+pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
+pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
+pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
+pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
+pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
 
-	CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
-	CCheckbox* pDrawHealthbar = new CCheckbox(16, 64, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
-	CCheckbox* pDrawHealthnumber = new CCheckbox(16, 112, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
-	CCheckbox* pDrawArmorbar = new CCheckbox(16, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
-	CCheckbox* pDrawOwnTeam = new CCheckbox(16, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
-	CCheckbox* pDrawOwnModel = new CCheckbox(16, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
-	CCheckbox* pDrawOnlySpotted = new CCheckbox(16, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
-	CCheckbox* pDrawOutline = new CCheckbox(160, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
-	CCheckbox* pDrawNames = new CCheckbox(160, 64, 128, 32, "Names", m_esp.GetDrawNames());
+CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
+pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
+pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
+pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
+pSelectbox2->SetSelection(m_visuals.GetHandsDrawStyle());
+pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
 
-	pDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, &m_esp, std::placeholders::_1));
-	pDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, &m_esp, std::placeholders::_1));
-	pDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, &m_esp, std::placeholders::_1));
-	pDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, &m_esp, std::placeholders::_1));
-	pDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, &m_esp, std::placeholders::_1));
-	pDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, &m_esp, std::placeholders::_1));
-	pDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, &m_esp, std::placeholders::_1));
-	pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
-	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
+CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
+CCheckbox* pDrawHealthbar = new CCheckbox(16, 64, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
+CCheckbox* pDrawHealthnumber = new CCheckbox(16, 112, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
+CCheckbox* pDrawArmorbar = new CCheckbox(16, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
+CCheckbox* pDrawOwnTeam = new CCheckbox(16, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
+CCheckbox* pDrawOwnModel = new CCheckbox(16, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
+CCheckbox* pDrawOnlySpotted = new CCheckbox(16, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
+CCheckbox* pDrawOutline = new CCheckbox(160, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
+CCheckbox* pDrawNames = new CCheckbox(160, 64, 128, 32, "Names", m_esp.GetDrawNames());
 
-	CTabContainer* pContainer = new CTabContainer();
-	CTabPage* pPage1 = new CTabPage("Rage");
-	CTabPage* pPage2 = new CTabPage("Legit");
-	CTabPage* pPage3 = new CTabPage("Visuals");
-	CTabPage* pPage4 = new CTabPage("Misc");
-	CTabPage* pPage5 = new CTabPage("Skin Changer");
-	CTabPage* pPage6 = new CTabPage("Config");
+pDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, &m_esp, std::placeholders::_1));
+pDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, &m_esp, std::placeholders::_1));
+pDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, &m_esp, std::placeholders::_1));
+pDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, &m_esp, std::placeholders::_1));
+pDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, &m_esp, std::placeholders::_1));
+pDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, &m_esp, std::placeholders::_1));
+pDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, &m_esp, std::placeholders::_1));
+pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
+pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
 
-	pPage1->AddChild(pAimbot);
-	pPage1->AddChild(pSilentAim);
-	pPage1->AddChild(pCheck);
-	pPage1->AddChild(pAutoScope);
+CTabContainer* pContainer = new CTabContainer();
+CTabPage* pPage1 = new CTabPage("Rage");
+CTabPage* pPage2 = new CTabPage("Legit");
+CTabPage* pPage3 = new CTabPage("Visuals");
+CTabPage* pPage4 = new CTabPage("Misc");
+CTabPage* pPage5 = new CTabPage("Skin Changer");
+CTabPage* pPage6 = new CTabPage("Config");
 
-	pPage3->AddChild(pDrawBoundingBox);
-	pPage3->AddChild(pDrawHealthbar);
-	pPage3->AddChild(pDrawHealthnumber);
-	pPage3->AddChild(pDrawArmorbar);
-	pPage3->AddChild(pDrawOwnTeam);
-	pPage3->AddChild(pDrawOwnModel);
-	pPage3->AddChild(pDrawOnlySpotted);
-	pPage3->AddChild(pDrawOutline);
-	pPage3->AddChild(pDrawNames);
-	pPage3->AddChild(pCheck2);
-	pPage3->AddChild(pSelectbox2);
+pPage1->AddChild(pAimbot);
+pPage1->AddChild(pSilentAim);
+pPage1->AddChild(pCheck);
+pPage1->AddChild(pAutoScope);
 
-	pPage4->AddChild(pSelectbox);
-	pPage4->AddChild(pSelectPitchAntiaim);
-	pPage4->AddChild(pSelectYawAntiaim);
+pPage3->AddChild(pDrawBoundingBox);
+pPage3->AddChild(pDrawHealthbar);
+pPage3->AddChild(pDrawHealthnumber);
+pPage3->AddChild(pDrawArmorbar);
+pPage3->AddChild(pDrawOwnTeam);
+pPage3->AddChild(pDrawOwnModel);
+pPage3->AddChild(pDrawOnlySpotted);
+pPage3->AddChild(pDrawOutline);
+pPage3->AddChild(pDrawNames);
+pPage3->AddChild(pCheck2);
+pPage3->AddChild(pSelectbox2);
 
-	pPage6->AddChild(pBtn);
+pPage4->AddChild(pSelectbox);
+pPage4->AddChild(pSelectPitchAntiaim);
+pPage4->AddChild(pSelectYawAntiaim);
 
-	pPage1->IsEnabled(true);
+pPage6->AddChild(pBtn);
 
-	pContainer->AddChild(pPage1);
-	pContainer->AddChild(pPage2);
-	pContainer->AddChild(pPage3);
-	pContainer->AddChild(pPage4);
-	pContainer->AddChild(pPage5);
-	pContainer->AddChild(pPage6);
+pPage1->IsEnabled(true);
 
-	m_pWindow = new CWindow(30, 30, 600, 400, "x88rv2");
-	m_pWindow->AddChild(pContainer);
+pContainer->AddChild(pPage1);
+pContainer->AddChild(pPage2);
+pContainer->AddChild(pPage3);
+pContainer->AddChild(pPage4);
+pContainer->AddChild(pPage5);
+pContainer->AddChild(pPage6);
 
-	// Wait for the game to be ingame before hooking
-	while (!m_pEngineClient->IsInGame()) {
-		Sleep(100);
-	}
+m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
+m_pWindow->AddChild(pContainer);
+
+// Wait for the game to be ingame before hooking
+while (!m_pEngineClient->IsInGame()) {
+	Sleep(100);
+}
 }
 
 void CApplication::Hook()
@@ -680,13 +804,6 @@ void CApplication::Hook()
 	) + 7);
 	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
 
-	/*DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
-		(BYTE*)this->m_dwClientDll,
-		CLIENTDLL_SIZE,
-		(BYTE*)"\xE8\x00\x00\x00\x00\x80\x7D\xF8\x00\x00\x00\x85\xDB",
-		"a----cccc--ff"
-	);
-	m_pLoadFromBuffer = (LoadFromBuffer_t)(dwLoadFromBufferTemp + (*(DWORD_PTR*)(dwLoadFromBufferTemp + 1)) + 5);*/
 	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,
 		CLIENTDLL_SIZE,
@@ -709,6 +826,37 @@ void CApplication::Hook()
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
+	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager, true);
+	m_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
+
+	CXorString xorBaseViewModel("TIä±r]ì§`Fê¦rg");
+	CXorString xorSequence("zTë‘rzð§yhà");
+	// Search for the 'CBaseViewModel' class.
+	for (ClientClass* pClass = this->m_pClient->GetAllClasses(); pClass; pClass = pClass->m_pNext) {
+		if (!strcmp(pClass->m_pNetworkName, xorBaseViewModel.ToCharArray())) {
+			// Search for the 'm_nModelIndex' property.
+			RecvTable* pClassTable = pClass->m_pRecvTable;
+
+			for (int nIndex = 0; nIndex < pClassTable->m_nProps; nIndex++) {
+				RecvProp* pProp = &pClassTable->m_pProps[nIndex];
+
+				if (!pProp || strcmp(pProp->m_pVarName, xorSequence.ToCharArray()))
+					continue;
+
+				// Store the original proxy function.
+				this->m_pSequenceProxy = (RecvVarProxy_t)pProp->m_ProxyFn;
+
+				// Replace the proxy function with our sequence changer.
+				m_pProxyProp = pProp;
+				m_pProxyProp->m_ProxyFn = (RecvVarProxy_t)CApplication::hk_SetViewModelSequence;
+
+				break;
+			}
+
+			break;
+		}
+	}
+
 	m_misc.SetClanTag(".mechanics");
 }
 
@@ -723,6 +871,7 @@ CApplication::CApplication()
 	m_pEngineModelHook = NULL;
 	m_pClientHook = NULL;
 	m_pVguiHook = NULL;
+	m_pGameEventManagerHook = NULL;
 
 	m_bGotSendPackets = false;
 }
@@ -733,6 +882,9 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pGameEventManagerHook)
+		delete m_pGameEventManagerHook;
+
 	if (m_pVguiHook)
 		delete m_pVguiHook;
 

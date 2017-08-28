@@ -287,6 +287,7 @@ public:
 #define OFFSET_ITEM					0x40
 #define OFFSET_ITEMDEFINITIONINDEX	0x1D8
 //todo: change inline to .cpp and NETVARS!!!!!!!!!
+// get/set
 class CBaseAttributableItem : public IClientEntity
 {
 public:
@@ -342,13 +343,13 @@ public:
 class CBaseViewModel : public IClientEntity
 {
 public:
-	inline unsigned long GetOwner() {
+	inline void* GetOwner() {
 		// DT_BaseViewModel -> m_hOwner
-		return *(unsigned long*)((unsigned long)this + OFFSET_OWNER);
+		return *(void**)((unsigned long)this + OFFSET_OWNER);
 	}
-	inline unsigned long GetWeapon() {
+	inline void* GetWeapon() {
 		// DT_BaseViewModel -> m_hWeapon
-		return *(unsigned long*)((unsigned long)this + OFFSET_WEAPON);
+		return *(void**)((unsigned long)this + OFFSET_WEAPON);
 	}
 	inline void SetWeaponModel(const char* pFilename, IClientUnknown* pWeapon) {
 		typedef void (__thiscall *SetWeaponModel_t)(void*, char const*, IClientUnknown*);

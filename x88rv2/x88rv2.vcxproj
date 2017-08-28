@@ -242,12 +242,11 @@
     <ClInclude Include="SkinChanger.h" />
     <ClInclude Include="SkinMetadata.h" />
     <ClInclude Include="Slider.h" />
-    <ClInclude Include="SourceEngine.h" />
     <ClInclude Include="TabContainer.h" />
     <ClInclude Include="TabPage.h" />
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Vector.h" />
-    <ClInclude Include="VEngineClient.h" />
+    <ClInclude Include="IVEngineClient.h" />
     <ClInclude Include="VTableHook.h" />
     <ClInclude Include="Visuals.h" />
     <ClInclude Include="Window.h" />

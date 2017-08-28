@@ -18,7 +18,36 @@ enum class SendPropType {
 	DPT_NUMSendPropTypes
 };
 
-class RecvTable;
+class RecvProp;
+class RecvTable {
+public:
+	RecvProp *m_pProps;
+	int m_nProps;
+	void *m_pDecoder;
+	char *m_pNetTableName;
+	bool m_bInitialized;
+	bool m_bInMainList;
+};
+
+struct DVariant {
+	union {
+		float m_Float;
+		long m_Int;
+		char* m_pString;
+		void* m_pData;
+		float m_Vector[3];
+		__int64 m_Int64;
+	};
+
+	int	m_Type;
+};
+
+struct CRecvProxyData {
+	const RecvProp* m_pRecvProp;
+	DVariant m_Value;
+	int m_iElement;
+	int m_ObjectID;
+};
 
 class RecvProp {
 public:
@@ -37,16 +66,6 @@ public:
 	int m_ElementStride;
 	int m_nElements;
 	const char *m_pParentArrayPropName;
-};
-
-class RecvTable {
-public:
-	RecvProp *m_pProps;
-	int m_nProps;
-	void *m_pDecoder;
-	char *m_pNetTableName;
-	bool m_bInitialized;
-	bool m_bInMainList;
 };
 
 class ClientClass {
