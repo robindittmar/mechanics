@@ -600,14 +600,14 @@ void CApplication::Setup()
 
 	// Nicos Knife
 	this->m_skinchanger.AddModelReplacement(
-		"models/weapons/v_knife_m9_bay.mdl",
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray()
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg").ToCharArray()
 	);
 	this->m_skinchanger.AddSkinReplacement(
 		WEAPON_KNIFE_M9_BAYONET,
 		new CSkinMetadata(
-			WEAPON_KNIFE_BUTTERFLY,
-			38,
+			WEAPON_KNIFE_BAYONET,
+			568,
 			0,
 			-1,
 			3
@@ -795,6 +795,14 @@ void CApplication::Hook()
 	// Get ClientMode and CInput
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
+
+	this->m_pClientState = **(IClientState***)(CPattern::FindPattern(
+		(BYTE*)this->EngineDll(),
+		ENGINEDLL_SIZE,
+		(BYTE*)"\xA1\x00\x00\x00\x00\x8B\x80\x00\x00\x00\x00\xC3",
+		"a----gh----e"
+	) + 1);
+
 
 	DWORD dwInitKeyValuesTemp = (CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,

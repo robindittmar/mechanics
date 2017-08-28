@@ -15,23 +15,26 @@ void CSkinChanger::Setup()
 {
 	m_pApp = CApplication::Instance();
 
-	//int defaultCtKnife = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_default_ct.mdl");
 	/*this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
 
-	//int defaultTKnife = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_default_t.mdl");
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_T] = "models/weapons/v_knife_default_t.mdl";
 
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg"
 	this->m_mapModelCfg[WEAPON_KNIFE_BAYONET] = "models/weapons/v_knife_bayonet.mdl";
+
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_BUTTERFLY] = "models/weapons/v_knife_butterfly.mdl";
+
 	this->m_mapModelCfg[WEAPON_KNIFE_FALCHION] = "models/weapons/v_knife_falchion_advanced.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_FLIP] = "models/weapons/v_knife_flip.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_GUT] = "models/weapons/v_knife_gut.mdl";
 
-	//int karambitKnife = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_karam.mdl");
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{"
+	this->m_mapModelCfg[WEAPON_KNIFE_M9_BAYONET] = "models/weapons/v_knife_m9_bay.mdl";
+
 	this->m_mapModelCfg[WEAPON_KNIFE_KARAMBIT] = "models/weapons/v_knife_karam.mdl";
 
-	//int m9Bayonet = m_pApp->ModelInfo()->GetModelIndex("models/weapons/v_knife_m9_bay.mdl");
-	this->m_mapModelCfg[WEAPON_KNIFE_M9_BAYONET] = "models/weapons/v_knife_karam.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_PUSH] = "models/weapons/v_knife_push.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_SURVIVAL_BOWIE] = "models/weapons/v_knife_survival_bowie.mdl";
 	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";*/
@@ -113,10 +116,12 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 
 	pItem->SetModelIndex(iNewModelIdx);
 	pViewModel->SetModelIndex(iNewModelIdx);
-
-	//todo: only works while sv_cheats 1 -> see discord, clientstate deltatick = -1
-	m_pApp->EngineClient()->ExecuteClientCmd("cl_fullupdate");
-
+	static bool test = false;
+	if (!test)
+	{
+		m_pApp->ClientState()->ForceFullUpdate();
+		test = true;
+	}
 	return true;
 }
 

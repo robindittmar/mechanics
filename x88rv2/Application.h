@@ -61,6 +61,7 @@
 #define RAD2DEG(x)	((x * 180.0f) / PI_F)
 
 #define CLIENTDLL_SIZE	0x50E5000
+#define ENGINEDLL_SIZE	0x8C7000
 
 typedef bool(__thiscall *CreateMove_t)(void*, float, CUserCmd*);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
@@ -124,6 +125,7 @@ public:
 	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
+	IClientState* ClientState() { return m_pClientState; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
@@ -209,6 +211,7 @@ private:
 	CGlobalVars* m_pGlobalVars;
 	IGameEventManager2* m_pGameEventManager;
 	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
+	IClientState* m_pClientState;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;

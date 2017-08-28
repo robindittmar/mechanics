@@ -12,12 +12,8 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("models/weapons/v_knife_default_t.mdl"),
-		CXorString("models/weapons/v_knife_butterfly.mdl"),
-		CXorString("m_nModelIndex"),
-		CXorString("m_hMyWeapons"),
-		CXorString("m_nSequence"),
-		CXorString("CBaseViewModel")
+		CXorString("models/weapons/v_knife_m9_bay.mdl"),
+		CXorString("models/weapons/v_knife_bayonet.mdl")
 	};
 	
 	CXorString byteStrings[]{
