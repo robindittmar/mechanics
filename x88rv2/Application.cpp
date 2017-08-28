@@ -8,6 +8,8 @@ OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
 PaintTraverse_t CApplication::m_pPaintTraverse;
 GetViewModelFov_t CApplication::m_pGetViewModelFov;
+RecvVarProxy_t CApplication::m_pSequenceProxy;
+FireEventClientSide_t CApplication::m_pFireEventClientSide;
 
 CApplication* CApplication::Instance()
 {
@@ -28,7 +30,11 @@ void CApplication::Detach()
 	// Unregister listener
 	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
 
+	// Restore proxy functions
+	m_pProxyProp->m_ProxyFn = this->m_pSequenceProxy;
+
 	// Reverse order, in case of any dependencies
+	this->m_pGameEventManagerHook->Restore();
 	this->m_pVguiHook->Restore();
 	this->m_pClientHook->Restore();
 	this->m_pEngineModelHook->Restore();
@@ -284,6 +290,104 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 	return m_pGetViewModelFov(ecx) + 40.0f;
 }
 
+void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	// Make the incoming data editable.
+	CRecvProxyData* pData = const_cast<CRecvProxyData*>(pDataConst);
+
+	// Confirm that we are replacing our view model and not someone elses.
+	CBaseViewModel* pViewModel = (CBaseViewModel*)pStruct;
+
+	if (pViewModel) {
+		IClientEntity* pOwner = pApp->EntityList()->GetClientEntityFromHandle(pViewModel->GetOwner());
+
+		// Compare the owner entity of this view model to the local player entity.
+		if (pOwner && pOwner->EntIndex() == pApp->EngineClient()->GetLocalPlayer()) {
+			// Get the filename of the current view model.
+			const model_t* pModel = pApp->ModelInfo()->GetModel(pViewModel->GetModelIndex());
+			const char* szModel = pApp->ModelInfo()->GetModelName(pModel);
+
+			// Store the current sequence.
+			int m_nSequence = pData->m_Value.m_Int;
+
+			if (!strcmp(szModel, "models/weapons/v_knife_butterfly.mdl")) {
+				// Fix animations for the Butterfly Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_DRAW:
+					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2); break;
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03); break;
+				default:
+					m_nSequence++;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_falchion_advanced.mdl")) {
+				// Fix animations for the Falchion Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_FALCHION_IDLE1; break;
+				case SEQUENCE_DEFAULT_HEAVY_MISS1:
+					m_nSequence = RandomInt(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP); break;
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence = RandomInt(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02); break;
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				default:
+					m_nSequence--;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_push.mdl")) {
+				// Fix animations for the Shadow Daggers.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_DAGGERS_IDLE1; break;
+				case SEQUENCE_DEFAULT_LIGHT_MISS1:
+				case SEQUENCE_DEFAULT_LIGHT_MISS2:
+					m_nSequence = RandomInt(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5); break;
+				case SEQUENCE_DEFAULT_HEAVY_MISS1:
+					m_nSequence = RandomInt(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1); break;
+				case SEQUENCE_DEFAULT_HEAVY_HIT1:
+				case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
+				case SEQUENCE_DEFAULT_LOOKAT01:
+					m_nSequence += 3; break;
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				default:
+					m_nSequence += 2;
+				}
+			}
+			else if (!strcmp(szModel, "models/weapons/v_knife_survival_bowie.mdl")) {
+				// Fix animations for the Bowie Knife.
+				switch (m_nSequence) {
+				case SEQUENCE_DEFAULT_DRAW:
+				case SEQUENCE_DEFAULT_IDLE1:
+					break;
+				case SEQUENCE_DEFAULT_IDLE2:
+					m_nSequence = SEQUENCE_BOWIE_IDLE1; break;
+				default:
+					m_nSequence--;
+				}
+			}
+
+			// Set the fixed sequence.
+			pData->m_Value.m_Int = m_nSequence;
+		}
+	}
+
+	// Call original function with the modified data.
+	pApp->m_pSequenceProxy(pData, pStruct, pOut);
+}
+
+bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
+{
+	//g_pConsole->Write("%s\n", pEvent->GetName());
+	return m_pFireEventClientSide(ecx, pEvent);
+}
+
 /*void BtnDown(IControl* p)
 {
 CButton* btn = (CButton*)p;
@@ -390,6 +494,7 @@ void CApplication::Setup()
 	netVarManager.AddTable(baseplayer.ToCharArray());
 	netVarManager.AddTable(csplayer.ToCharArray());
 	netVarManager.AddTable(basecombatweapon.ToCharArray());
+	//netVarManager.AddTable("DT_BaseAttributableItem");
 	netVarManager.AddTable(weaponcsbase.ToCharArray());
 	netVarManager.AddTable(basecsgrenade.ToCharArray());
 	netVarManager.LoadTables(m_pClient->GetAllClasses());
@@ -424,6 +529,7 @@ void CApplication::Setup()
 	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager");
 	//Offsets::m_Item = netVarManager.GetOffset(3, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
 	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), CXorString("zTÄ¶cyì bàveä¥ry").ToCharArray(), CXorString("zTÌ¶rf").ToCharArray(), CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
+	//Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(1, "DT_BaseAttributableItem", "m_iItemDefinitionIndex");
 	Offsets::m_iClip1 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõó").ToCharArray());
 	Offsets::m_iClip2 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõð").ToCharArray());
 	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), CXorString("[dæ£{Jæ¶~}à•rjõ­yOä¶v").ToCharArray(), CXorString("zTã®Yný¶Gyì¯vyüƒcä¡|").ToCharArray());
@@ -501,10 +607,20 @@ void CApplication::Setup()
 			4
 		)
 	);
-	this->m_skinchanger.AddModelReplacement(
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_KNIFE_T,
+		new CSkinMetadata(
+			WEAPON_KNIFE_BUTTERFLY,
+			44,
+			0,
+			-1,
+			3
+		)
+	);
+	/*this->m_skinchanger.AddModelReplacement(
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
-	);
+	);*/
 
 	// Visuals
 	this->m_visuals.SetEnabled(true);
@@ -650,7 +766,7 @@ void CApplication::Setup()
 	pContainer->AddChild(pPage5);
 	pContainer->AddChild(pPage6);
 
-	m_pWindow = new CWindow(30, 30, 600, 400, "x88rv2");
+	m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
 	m_pWindow->AddChild(pContainer);
 
 	// Wait for the game to be ingame before hooking
@@ -679,13 +795,6 @@ void CApplication::Hook()
 	) + 7);
 	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
 
-	/*DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
-		(BYTE*)this->m_dwClientDll,
-		CLIENTDLL_SIZE,
-		(BYTE*)"\xE8\x00\x00\x00\x00\x80\x7D\xF8\x00\x00\x00\x85\xDB",
-		"a----cccc--ff"
-	);
-	m_pLoadFromBuffer = (LoadFromBuffer_t)(dwLoadFromBufferTemp + (*(DWORD_PTR*)(dwLoadFromBufferTemp + 1)) + 5);*/
 	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,
 		CLIENTDLL_SIZE,
@@ -708,6 +817,37 @@ void CApplication::Hook()
 	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
 	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
+	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager, true);
+	m_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
+
+	CXorString xorBaseViewModel("TIä±r]ì§`Fê¦rg");
+	CXorString xorSequence("zTë‘rzð§yhà");
+	// Search for the 'CBaseViewModel' class.
+	for (ClientClass* pClass = this->m_pClient->GetAllClasses(); pClass; pClass = pClass->m_pNext) {
+		if (!strcmp(pClass->m_pNetworkName, xorBaseViewModel.ToCharArray())) {
+			// Search for the 'm_nModelIndex' property.
+			RecvTable* pClassTable = pClass->m_pRecvTable;
+
+			for (int nIndex = 0; nIndex < pClassTable->m_nProps; nIndex++) {
+				RecvProp* pProp = &pClassTable->m_pProps[nIndex];
+
+				if (!pProp || strcmp(pProp->m_pVarName, xorSequence.ToCharArray()))
+					continue;
+
+				// Store the original proxy function.
+				this->m_pSequenceProxy = (RecvVarProxy_t)pProp->m_ProxyFn;
+
+				// Replace the proxy function with our sequence changer.
+				m_pProxyProp = pProp;
+				m_pProxyProp->m_ProxyFn = (RecvVarProxy_t)CApplication::hk_SetViewModelSequence;
+
+				break;
+			}
+
+			break;
+		}
+	}
+
 	m_misc.SetClanTag(".mechanics");
 }
 
@@ -722,6 +862,7 @@ CApplication::CApplication()
 	m_pEngineModelHook = NULL;
 	m_pClientHook = NULL;
 	m_pVguiHook = NULL;
+	m_pGameEventManagerHook = NULL;
 
 	m_bGotSendPackets = false;
 }
@@ -732,6 +873,9 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pGameEventManagerHook)
+		delete m_pGameEventManagerHook;
+
 	if (m_pVguiHook)
 		delete m_pVguiHook;
 

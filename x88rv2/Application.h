@@ -26,7 +26,7 @@
 
 // Source Engine
 #include "CreateInterface.h"
-#include "VEngineClient.h"
+#include "IVEngineClient.h"
 #include "IBaseClientDLL.h"
 #include "ClientEntity.h"
 #include "ClientEntityList.h"
@@ -68,6 +68,8 @@ typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
 typedef float(__thiscall* GetViewModelFov_t)(void*);
+typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
+typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
@@ -92,6 +94,7 @@ public:
 	VTableHook* EngineModelHook() { return m_pEngineModelHook; }
 	VTableHook* ClientHook() { return m_pClientHook; }
 	VTableHook* VguiHook() { return m_pVguiHook; }
+	VTableHook* GameEventManagerHook() { return m_pGameEventManagerHook; }
 
 	// Exposed callable engine functions
 	CreateMove_t CreateMove() { return m_pCreateMove; }
@@ -99,6 +102,9 @@ public:
 	OverrideView_t OverrideView() { return m_pOverrideView; }
 	DrawModelExecute_t DrawModelExecute() { return m_pDrawModelExecute; }
 	PaintTraverse_t PaintTraverse() { return m_pPaintTraverse; }
+	GetViewModelFov_t GetViewModelFov() { return m_pGetViewModelFov; }
+	RecvVarProxy_t SequenceProxy() { return m_pSequenceProxy; }
+	FireEventClientSide_t FireEventClientSide() { return m_pFireEventClientSide; }
 
 	InitKeyValues_t InitKeyValues() { return m_pInitKeyValues; }
 	LoadFromBuffer_t LoadFromBuffer() { return m_pLoadFromBuffer; }
@@ -161,6 +167,8 @@ public:
 	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
 	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
 	static float __fastcall hk_GetViewModelFov(void* ecx, void* edx);
+	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
+	static bool __fastcall hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent);
 private:
 	void Setup();
 	void Hook();
@@ -171,6 +179,7 @@ private:
 	VTableHook* m_pEngineModelHook;
 	VTableHook* m_pClientHook;
 	VTableHook* m_pVguiHook;
+	VTableHook* m_pGameEventManagerHook;
 
 	static CreateMove_t m_pCreateMove;
 	static FrameStageNotify_t m_pFrameStageNotify;
@@ -178,7 +187,11 @@ private:
 	static DrawModelExecute_t m_pDrawModelExecute;
 	static PaintTraverse_t m_pPaintTraverse;
 	static GetViewModelFov_t m_pGetViewModelFov;
-
+	static RecvVarProxy_t m_pSequenceProxy;
+	static FireEventClientSide_t m_pFireEventClientSide;
+	//---TEMP
+	RecvProp* m_pProxyProp;
+	//---TEMP
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
 

@@ -16,7 +16,8 @@ int main(int argc, char** argv)
 		CXorString("models/weapons/v_knife_butterfly.mdl"),
 		CXorString("m_nModelIndex"),
 		CXorString("m_hMyWeapons"),
-		CXorString("m_hViewModel[0]")
+		CXorString("m_nSequence"),
+		CXorString("CBaseViewModel")
 	};
 	
 	CXorString byteStrings[]{

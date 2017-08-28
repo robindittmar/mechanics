@@ -5,6 +5,7 @@ Priority High
 => GUI/Menu
 => ConVar->FindVar(...)
 => Netvars [x]
+ => Proxy Hooks (Netvars)
 
 --------------------------------------
 Priority Medium
