@@ -3,8 +3,8 @@
 ///
 
 
-#ifndef __VENGINECLIENT_H__
-#define __VENGINECLIENT_H__
+#ifndef __IVENGINECLIENT_H__
+#define __IVENGINECLIENT_H__
 
 // include file instead?
 #define NULL 0
@@ -267,4 +267,4 @@ public:
 };
 
 
-#endif // __VENGINECLIENT_H__
+#endif // __IVENGINECLIENT_H__

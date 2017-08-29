@@ -428,6 +428,8 @@ void inline CAimbot::ResetTickVariables()
 	m_bHasTarget = false;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
+	
+	m_fDamage = 0.0f;
 }
 
 bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
@@ -472,7 +474,6 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	float fOriginDist;
 	float fLowestDist = 999999.0f;
 	float fDamage;
-	m_fDamage = 0.0f;
 
 	// Grab my values
 	iMyTeamNum = pLocalEntity->GetTeamNum();

@@ -209,6 +209,7 @@
     <ClInclude Include="ClientEntityList.h" />
     <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="IClientState.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="IGameEvent.h" />
     <ClInclude Include="IGameEventManager.h" />

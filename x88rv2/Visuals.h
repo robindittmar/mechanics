@@ -7,7 +7,7 @@
 #include "ClientEntity.h"
 #include "CViewSetup.h"
 
-#define HITMARKER_DEFAULT_TIME	0.5f
+#define HITMARKER_DEFAULT_TIME		1.0f
 
 #define HANDSDRAWSTYLE_NONE			0
 #define HANDSDRAWSTYLE_NOHANDS		1
@@ -75,7 +75,8 @@ private:
 	bool m_bCrosshair;
 
 	bool m_bHitmarker;
-	float m_fDrawHitmarker;
+	float m_fDrawHitmarkerTime;
+	float m_fDrawHitmarkerStartTime;
 
 	bool m_bNoFlash;
 	float m_fFlashPercentage;
