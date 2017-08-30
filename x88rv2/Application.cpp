@@ -287,7 +287,7 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	return m_pGetViewModelFov(ecx) + 40.0f;
+	return m_pGetViewModelFov(ecx) + 20.0f;
 }
 
 void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
@@ -312,7 +312,7 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 			// Store the current sequence.
 			int m_nSequence = pData->m_Value.m_Int;
 
-			if (!strcmp(szModel, "models/weapons/v_knife_butterfly.mdl")) {
+			if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray())) {
 				// Fix animations for the Butterfly Knife.
 				switch (m_nSequence) {
 				case SEQUENCE_DEFAULT_DRAW:
@@ -323,7 +323,7 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 					m_nSequence++;
 				}
 			}
-			else if (!strcmp(szModel, "models/weapons/v_knife_falchion_advanced.mdl")) {
+			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®").ToCharArray())) {
 				// Fix animations for the Falchion Knife.
 				switch (m_nSequence) {
 				case SEQUENCE_DEFAULT_IDLE2:
@@ -339,7 +339,7 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 					m_nSequence--;
 				}
 			}
-			else if (!strcmp(szModel, "models/weapons/v_knife_push.mdl")) {
+			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé").ToCharArray())) {
 				// Fix animations for the Shadow Daggers.
 				switch (m_nSequence) {
 				case SEQUENCE_DEFAULT_IDLE2:
@@ -360,7 +360,7 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 					m_nSequence += 2;
 				}
 			}
-			else if (!strcmp(szModel, "models/weapons/v_knife_survival_bowie.mdl")) {
+			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{").ToCharArray())) {
 				// Fix animations for the Bowie Knife.
 				switch (m_nSequence) {
 				case SEQUENCE_DEFAULT_DRAW:
@@ -609,7 +609,7 @@ void CApplication::Setup()
 		WEAPON_KNIFE_M9_BAYONET,
 		new CSkinMetadata(
 			WEAPON_KNIFE_BAYONET,
-			568,
+			416,
 			0,
 			-1,
 			3

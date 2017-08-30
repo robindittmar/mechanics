@@ -14,7 +14,9 @@ void CSkinChanger::Setup()
 {
 	m_pApp = CApplication::Instance();
 
-	/*this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
+	/*
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{"
+	this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
 
 	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_T] = "models/weapons/v_knife_default_t.mdl";
@@ -25,18 +27,30 @@ void CSkinChanger::Setup()
 	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_BUTTERFLY] = "models/weapons/v_knife_butterfly.mdl";
 
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_FALCHION] = "models/weapons/v_knife_falchion_advanced.mdl";
+	
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¤{bõìzoé"
 	this->m_mapModelCfg[WEAPON_KNIFE_FLIP] = "models/weapons/v_knife_flip.mdl";
+
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¥b«¯sg"
 	this->m_mapModelCfg[WEAPON_KNIFE_GUT] = "models/weapons/v_knife_gut.mdl";
 
 	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{"
 	this->m_mapModelCfg[WEAPON_KNIFE_M9_BAYONET] = "models/weapons/v_knife_m9_bay.mdl";
 
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®"
 	this->m_mapModelCfg[WEAPON_KNIFE_KARAMBIT] = "models/weapons/v_knife_karam.mdl";
 
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé"
 	this->m_mapModelCfg[WEAPON_KNIFE_PUSH] = "models/weapons/v_knife_push.mdl";
+
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{"
 	this->m_mapModelCfg[WEAPON_KNIFE_SURVIVAL_BOWIE] = "models/weapons/v_knife_survival_bowie.mdl";
-	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";*/
+
+	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¶vhñ«tjéìzoé"
+	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";
+	*/
 }
 
 void CSkinChanger::Update(void* pParameters)
