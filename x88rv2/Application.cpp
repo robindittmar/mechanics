@@ -287,7 +287,7 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	return m_pGetViewModelFov(ecx) + 40.0f;
+	return m_pGetViewModelFov(ecx) + 20.0f;
 }
 
 void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
@@ -607,7 +607,7 @@ void CApplication::Setup()
 		WEAPON_KNIFE_M9_BAYONET,
 		new CSkinMetadata(
 			WEAPON_KNIFE_BAYONET,
-			568,
+			416,
 			0,
 			-1,
 			3
