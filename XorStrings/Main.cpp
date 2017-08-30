@@ -25,22 +25,36 @@ int main(int argc, char** argv)
 		19,
 		19
 	};
-
-	FILE* fp = fopen("xor.txt", "w");
-	int countstr = sizeof(strings) / sizeof(CXorString);
-	for (int i = 0; i < countstr; i++)
+	
+	int iLen;
+	char pBuffer[1024];
+	FILE* pFileRead = fopen("plain.txt", "r");
+	FILE* pFileWrite = fopen("xor.txt", "w");
+	//int countstr = sizeof(strings) / sizeof(CXorString);
+	while(fgets(pBuffer, 1024, pFileRead))
 	{
-		fprintf(fp, "%s\n", strings[i].ToCharArray());
-	}
-	fclose(fp);
+		iLen = strlen(pBuffer);
+		for(int i = 0; i < iLen; i++)
+		{
+			if (pBuffer[i] == '\n')
+			{
+				pBuffer[i] = '\0';
+				break;
+			}
+		}
 
-	fp = fopen("xor_byte.txt", "w");
+		fprintf(pFileWrite, "%s\n", CXorString(pBuffer).ToCharArray());
+	}
+	fclose(pFileRead);
+	fclose(pFileWrite);
+
+	pFileWrite = fopen("xor_byte.txt", "w");
 	int countbytestr = sizeof(byteStrings) / sizeof(CXorString);
 	for (int i = 0; i < countbytestr; i++)
 	{
-		printByteString(fp, byteStrings[i].ToCharArray(), lenBytes[i]);
+		printByteString(pFileWrite, byteStrings[i].ToCharArray(), lenBytes[i]);
 	}
-	fclose(fp);
+	fclose(pFileWrite);
 
 	uint32_t player_hurt = murmurhash("player_hurt", strlen("player_hurt"), 0xB16B00B5);
 	uint32_t player_death = murmurhash("player_death", strlen("player_death"), 0xB16B00B5);

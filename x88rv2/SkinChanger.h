@@ -7,10 +7,12 @@
 // Source SDK
 #include "ClientEntity.h"
 #include "IClientState.h"
+#include "IGameEvent.h"
 
 // Custom
 #include "IFeature.h"
 #include "SkinMetadata.h"
+#include "murmurhash.h"
 
 #define SEQUENCE_DEFAULT_DRAW 0
 #define SEQUENCE_DEFAULT_IDLE1 1
@@ -61,9 +63,12 @@ public:
 	void AddModelReplacement(const char* pOld, const char* pNew);
 	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
 	void AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin);
+	// pNew won't be affected
+	void AddKillIconReplacement(const char* pOld, const char* pNew);
 
 	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
 	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
+	bool ApplyCustomKillIcon(IGameEvent* pEvent);
 
 	// ApplyCustomKillIcon
 	// Der vom interface --> EventManagerVTable[9] = (DWORD)FireEventClientSideThink;
@@ -75,9 +80,11 @@ private:
 	// Delete's all items of the maps
 	void DeleteModelNames();
 	void DeleteSkinMetadata();
+	void DeleteKillIcons();
 	// TODO: ApplyCustomKillIcon map & aufräum zeugs, dann @ Application aus dem Hook hier nen PRE-eventhandler aufrufen, der bei player_kill die weapon ändert (m_mapDeathNote[weapon])
 	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
 	std::unordered_map<int, const char*> m_mapModelMetadata;
+	std::unordered_map<uint32_t, const char*> m_mapKillIcon;
 };
 
 #endif // __SKINCHANGER_H__

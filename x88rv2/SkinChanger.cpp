@@ -7,8 +7,7 @@ CSkinChanger::CSkinChanger()
 
 CSkinChanger::~CSkinChanger()
 {
-	this->DeleteModelNames();
-	this->DeleteSkinMetadata();
+	this->ClearReplacements();
 }
 
 void CSkinChanger::Setup()
@@ -76,9 +75,11 @@ void CSkinChanger::ClearReplacements()
 {
 	this->DeleteModelNames();
 	this->DeleteSkinMetadata();
+	this->DeleteKillIcons();
 
 	m_mapModelMetadata.clear();
 	m_mapSkinMetadata.clear();
+	m_mapKillIcon.clear();
 }
 
 void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)
@@ -95,6 +96,17 @@ void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)
 void CSkinChanger::AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin)
 {
 	m_mapSkinMetadata[iWeaponId] = pSkin;
+}
+
+void CSkinChanger::AddKillIconReplacement(const char* pOld, const char* pNew)
+{
+	uint32_t iHash = murmurhash(pOld, strlen(pOld), 0xB16B00B5);
+
+	int iLen = strlen(pNew) + 1;
+	char* pNewWeap = new char[iLen];
+	memcpy(pNewWeap, pNew, iLen);
+
+	m_mapKillIcon[iHash] = pNewWeap;
 }
 
 bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem)
@@ -156,6 +168,28 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 	return true;
 }
 
+bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
+{
+	static CXorString xorPlayerDeath("ggä»ryÚ¦rjñª");
+	static CXorString xorWeapon("`nä²xe");
+
+	if (!pEvent)
+		return false;
+
+	if (strcmp(pEvent->GetName(), xorPlayerDeath.ToCharArray()))
+		return false;
+
+	// Check if we have a replacement weapon
+	const char* pWeapon = pEvent->GetString(xorWeapon.ToCharArray());
+	uint32_t iHash = murmurhash(pWeapon, strlen(pWeapon), 0xB16B00B5);
+	if (m_mapKillIcon.find(iHash) == m_mapKillIcon.end())
+		return false;
+
+	// Override weapon
+	pEvent->SetString(xorWeapon.ToCharArray(), m_mapKillIcon[iHash]);
+	return true;
+}
+
 void CSkinChanger::DeleteModelNames()
 {
 	// Clean up Model names
@@ -165,7 +199,7 @@ void CSkinChanger::DeleteModelNames()
 		pCurrent = it->second;
 
 		if (pCurrent)
-			delete pCurrent;
+			delete[] pCurrent;
 	}
 }
 
@@ -179,5 +213,17 @@ void CSkinChanger::DeleteSkinMetadata()
 
 		if (pCurrent)
 			delete pCurrent;
+	}
+}
+
+void CSkinChanger::DeleteKillIcons()
+{
+	const char* pCurrent;
+	for(std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIcon.begin(); it != m_mapKillIcon.end(); it++)
+	{
+		pCurrent = it->second;
+
+		if (pCurrent)
+			delete[] pCurrent;
 	}
 }

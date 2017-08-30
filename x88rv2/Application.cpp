@@ -384,7 +384,9 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 
 bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
 {
-	//g_pConsole->Write("%s\n", pEvent->GetName());
+	CApplication* pApp = CApplication::Instance();
+	pApp->m_skinchanger.ApplyCustomKillIcon(pEvent);
+
 	return m_pFireEventClientSide(ecx, pEvent);
 }
 
@@ -613,13 +615,17 @@ void CApplication::Setup()
 			3
 		)
 	);
+	this->m_skinchanger.AddKillIconReplacement(
+		CXorString("|eì¤rTèûHiä»xeà¶").ToCharArray(),
+		CXorString("ujü­ynñ").ToCharArray()
+	);
 
 	// Robins Knife
 	this->m_skinchanger.AddSkinReplacement(
 		WEAPON_KNIFE_T,
 		new CSkinMetadata(
-			WEAPON_KNIFE_BUTTERFLY,
-			38,
+			WEAPON_KNIFE_KARAMBIT,
+			416,
 			0,
 			-1,
 			3
@@ -627,9 +633,12 @@ void CApplication::Setup()
 	);
 	this->m_skinchanger.AddModelReplacement(
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®").ToCharArray()
 	);
-
+	this->m_skinchanger.AddKillIconReplacement(
+		CXorString("|eì¤rTñ").ToCharArray(),
+		CXorString("|eì¤rTî£ejè ~").ToCharArray()
+	);
 
 	// Visuals
 	this->m_visuals.SetEnabled(true);
