@@ -11,10 +11,11 @@ class CApplication;
 #define PITCHANTIAIM_DOWN						2
 
 // Yaw
-#define YAWANTIAIM_NONE						0
+#define YAWANTIAIM_NONE							0
 #define YAWANTIAIM_BACKWARDS					1
 #define YAWANTIAIM_STATICJITTERBACKWARDS		2
 #define YAWANTIAIM_REALLEFTFAKERIGHT			3
+#define YAWANTIAIM_GHETTOFAKELBY				4
 
 class CAntiAim : public IFeature
 {
@@ -28,11 +29,15 @@ public:
 	void SetYawSetting(int iYawSetting) { m_iYawSetting = iYawSetting; }
 	int GetYawSetting() { return m_iYawSetting; }
 
+	bool IsFake() { return m_bIsFake; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
 	int m_iPitchSetting;
 	int m_iYawSetting;
+
+	bool m_bIsFake;
 };
 
 #endif // __ANTIAIM_H__

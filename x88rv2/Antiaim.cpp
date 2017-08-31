@@ -46,7 +46,7 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	QAngle angles;
-	if(m_pApp->Aimbot()->HasTarget())
+	if (m_pApp->Aimbot()->HasTarget())
 	{
 		angles = *m_pApp->Aimbot()->GetAimAngles();
 	}
@@ -71,13 +71,21 @@ void CAntiAim::Update(void* pParameters)
 
 	static bool bFakeAngles = true;
 	static float trigger = 0.0f;
+
+	static bool flip = true;
+	static float lastLby;
+	static float flipAngle;
 	// Yaw
 	switch (m_iYawSetting)
 	{
 	case YAWANTIAIM_BACKWARDS:
+		m_bIsFake = false;
+
 		angles.y -= 180.0f;
 		break;
 	case YAWANTIAIM_STATICJITTERBACKWARDS:
+		m_bIsFake = false;
+
 		trigger += 15.0f;
 		angles.y -= trigger > 50.0f ? -145.0f : 145.0f;
 
@@ -87,24 +95,51 @@ void CAntiAim::Update(void* pParameters)
 		}
 		break;
 	case YAWANTIAIM_REALLEFTFAKERIGHT:
-		if(m_pApp->m_bGotSendPackets)
-		{
-			if(bFakeAngles)
-			{
-				angles.y += 90.0f;
-			}
-			else
-			{
-				//angles.y -= 180.0f;
-				angles.y -= 90.0f;
-			}
+		m_bIsFake = true;
 
-			*m_pApp->m_bSendPackets = bFakeAngles;
-			bFakeAngles = !bFakeAngles;
+		if (bFakeAngles)
+		{
+			angles.y += 90.0f;
 		}
+		else
+		{
+			angles.y -= 90.0f;
+		}
+
+		*m_pApp->m_bSendPackets = bFakeAngles;
+		bFakeAngles = !bFakeAngles;
+		break;
+	case YAWANTIAIM_GHETTOFAKELBY:
+		m_bIsFake = true;
+
+		if (pLocalEntity->GetLowerBodyYaw() != lastLby)
+			flip = !flip;
+
+		if (flip)
+		{
+			flipAngle = 180.0f;
+		}
+		else
+		{
+			flipAngle = 0.0f;
+		}
+
+		if (bFakeAngles)
+		{
+			angles.y += 90.0f + flipAngle;
+		}
+		else
+		{
+			angles.y += -90.0f + flipAngle;
+		}
+		*m_pApp->m_bSendPackets = bFakeAngles;
+
+		lastLby = pLocalEntity->GetLowerBodyYaw();
+		bFakeAngles = !bFakeAngles;
 		break;
 	case YAWANTIAIM_NONE:
 	default:
+		m_bIsFake = false;
 		break;
 	}
 

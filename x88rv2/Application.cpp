@@ -187,6 +187,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update AntiAim
 			pApp->AntiAim()->Update(pUserCmd);
 
+
 			// Correct movement & angles
 			CorrectMovement(pUserCmd, qOldAngles);
 			NormalizeAngles(pUserCmd);
@@ -195,12 +196,13 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
 			//todo: check if fake and if sendpackets false
-			/*if (flip)
-			{*/
-			pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
-			pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
-			pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
-			//}
+			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFake() ||
+				pApp->m_bSendPackets && !pApp->AntiAim()->IsFake())
+			{
+				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
+				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
+				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+			}
 		}
 	}
 
@@ -645,7 +647,7 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATICJITTERBACKWARDS);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_GHETTOFAKELBY);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
