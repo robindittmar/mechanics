@@ -3,11 +3,37 @@
 
 CChams::CChams()
 {
+	m_pModelRender = NULL;
+	m_pDrawModelExecute = NULL;
+
 	m_bMaterialsInitialized = false;
+
+	m_bRenderTeam = false;
+	m_bRenderLocalplayer = false;
+	m_bIgnoreZIndex = false;
+	m_bFlatModels = false;
+
+	m_pFlatHiddenCT = NULL;
+	m_pFlatVisibleCT = NULL;
+	m_pFlatHiddenT = NULL;
+	m_pFlatVisibleT = NULL;
+
+	m_pLitHiddenCT = NULL;
+	m_pLitVisibleCT = NULL;
+	m_pLitHiddenT = NULL;
+	m_pLitVisibleT = NULL;
+
+	m_pHiddenCT = NULL;
+	m_pVisibleCT = NULL;
+	m_pHiddenT = NULL;
+	m_pVisibleT = NULL;
 }
 
 CChams::~CChams()
 {
+	// Only used to decrement reference count. shit won't be reinitialized,
+	// since the destructor is called on getting destroyed
+	this->ReloadMaterials();
 }
 
 void CChams::Setup()
@@ -19,12 +45,37 @@ void CChams::Update(void* pParameters)
 {
 }
 
+void CChams::SetFlatModels(bool bFlatModels)
+{
+	m_bFlatModels = bFlatModels;
+
+	if(m_bFlatModels)
+	{
+		m_pHiddenCT = m_pFlatHiddenCT;
+		m_pVisibleCT = m_pFlatVisibleCT;
+		m_pHiddenT = m_pFlatHiddenT;
+		m_pVisibleT = m_pFlatVisibleT;
+	}
+	else
+	{
+		m_pHiddenCT = m_pLitHiddenCT;
+		m_pVisibleCT = m_pLitVisibleCT;
+		m_pHiddenT = m_pLitHiddenT;
+		m_pVisibleT = m_pLitVisibleT;
+	}
+}
+
 void CChams::ReloadMaterials()
 {
 	m_pFlatHiddenCT->DecrementReferenceCount();
 	m_pFlatVisibleCT->DecrementReferenceCount();
 	m_pFlatHiddenT->DecrementReferenceCount();
 	m_pFlatVisibleT->DecrementReferenceCount();
+
+	m_pLitHiddenCT->DecrementReferenceCount();
+	m_pLitVisibleCT->DecrementReferenceCount();
+	m_pLitHiddenT->DecrementReferenceCount();
+	m_pLitVisibleT->DecrementReferenceCount();
 
 	m_bMaterialsInitialized = false;
 }
@@ -45,10 +96,15 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		m_pDrawModelExecute = m_pApp->DrawModelExecute();
 
 		// Create materials
-		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
-		m_pFlatVisibleCT = m_pApp->ResourceManager()->CreateMaterial(true);
-		m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
-		m_pFlatVisibleT = m_pApp->ResourceManager()->CreateMaterial(true);
+		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+		m_pFlatVisibleCT = m_pApp->ResourceManager()->CreateMaterial(false, true);
+		m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+		m_pFlatVisibleT = m_pApp->ResourceManager()->CreateMaterial(false, true);
+
+		m_pLitHiddenCT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
+		m_pLitVisibleCT = m_pApp->ResourceManager()->CreateMaterial(true, false);
+		m_pLitHiddenT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
+		m_pLitVisibleT = m_pApp->ResourceManager()->CreateMaterial(true, false);
 
 		// Colors
 		m_pFlatHiddenCT->ColorModulate(0.0f, 0.0f, 1.0f);
@@ -56,15 +112,13 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		m_pFlatHiddenT->ColorModulate(1.0f, 0.0f, 0.0f);
 		m_pFlatVisibleT->ColorModulate(1.0f, 1.0f, 0.0f);
 
-		// Z-Flag
-		/*m_pFlatHiddenCT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-		m_pFlatHiddenT->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);*/
+		m_pLitHiddenCT->ColorModulate(0.0, 0.0, 1.0f);
+		m_pLitVisibleCT->ColorModulate(0.0f, 1.0f, 0.0f);
+		m_pLitHiddenT->ColorModulate(1.0f, 0.0f, 0.0f);
+		m_pLitVisibleT->ColorModulate(1.0f, 1.0f, 0.0f);
 
-		// Flat
-		/*m_pFlatHiddenCT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
-		m_pFlatVisibleCT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
-		m_pFlatHiddenT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);
-		m_pFlatVisibleT->SetMaterialVarFlag(MATERIAL_VAR_FLAT, false);*/
+		// Force Chams to actually "load" into the pointers
+		this->SetFlatModels(m_bFlatModels);
 
 		// Don't do this again :)
 		m_bMaterialsInitialized = true;
@@ -94,15 +148,21 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 
 		if(iModelTeamNum == TEAMNUM_T)
 		{
-			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenT);
-			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-			m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleT);
+			if(m_bIgnoreZIndex)
+			{
+				m_pModelRender->ForcedMaterialOverride(m_pHiddenT);
+				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			}
+			m_pModelRender->ForcedMaterialOverride(m_pVisibleT);
 		}
 		else if(iModelTeamNum == TEAMNUM_CT)
 		{
-			m_pModelRender->ForcedMaterialOverride(m_pFlatHiddenCT);
-			m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-			m_pModelRender->ForcedMaterialOverride(m_pFlatVisibleCT);
+			if(m_bIgnoreZIndex)
+			{
+				m_pModelRender->ForcedMaterialOverride(m_pHiddenCT);
+				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			}
+			m_pModelRender->ForcedMaterialOverride(m_pVisibleCT);
 		}
 	}
 }

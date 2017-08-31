@@ -668,6 +668,8 @@ void CApplication::Setup()
 	this->m_chams.SetEnabled(true);
 	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(true);
+	this->m_chams.SetIgnoreZIndex(true);
+	this->m_chams.SetFlatModels(false);
 
 	// Misc
 	this->m_misc.SetEnabled(true);
@@ -765,7 +767,7 @@ void CApplication::Setup()
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
 	pSelectYawAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
 
-	CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
+	CSelectbox* pSelectbox2 = new CSelectbox(304, 16, 128, 32);
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
@@ -792,6 +794,30 @@ void CApplication::Setup()
 	pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
 	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
 
+	CCheckbox* pChamsDrawOwnTeam = new CCheckbox(304, 112, 128, 32, "Chams Own Team", m_chams.GetRenderTeam());
+	CCheckbox* pChamsDrawOwnModel = new CCheckbox(304, 160, 128, 32, "Chams Own Model", m_chams.GetRenderLocalplayer());
+	CCheckbox* pChamsIgnoreZ = new CCheckbox(304, 208, 128, 32, "Chams Ignore Z", m_chams.GetIgnoreZIndex());
+	CCheckbox* pChamsFlatModels = new CCheckbox(304, 256, 128, 32, "Chams Flat Models", m_chams.GetFlatModels());
+
+	pChamsDrawOwnTeam->SetEventHandler(std::bind(&CChams::SetRenderTeam, &m_chams, std::placeholders::_1));
+	pChamsDrawOwnModel->SetEventHandler(std::bind(&CChams::SetRenderLocalplayer, &m_chams, std::placeholders::_1));
+	pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, &m_chams, std::placeholders::_1));
+	pChamsFlatModels->SetEventHandler(std::bind(&CChams::SetFlatModels, &m_chams, std::placeholders::_1));
+
+	CSlider* pSlider = new CSlider(16, 125, 200, 20);
+	//pSlider->SetEventHandler(std::bind(&SliderUpdateValue, std::placeholders::_1));
+
+	CSlider* pSlider2 = new CSlider(232, 16, 20, 200, 0.0f, SLIDER_ORIENTATION_VERTICAL, true);
+	//pSlider2->SetEventHandler(std::bind(&SliderUpdateValue, std::placeholders::_1));
+
+	CSlider* pSliderFlashAmnt = new CSlider(304, 64, 128, 32, m_visuals.GetFlashPercentage());
+	pSliderFlashAmnt->SetEventHandler(std::bind(&CVisuals::SetFlashPercentage, &m_visuals, std::placeholders::_1));
+
+	CSlider* pSliderFov = new CSlider(563, 5, 32, 350, m_visuals.GetFovValue(), SLIDER_ORIENTATION_VERTICAL, true, 1.0f, 180.0f);
+	pSliderFov->SetEventHandler(std::bind(&CVisuals::SetFovValue, &m_visuals, std::placeholders::_1));
+
+	CLabel* pLabelWip = new CLabel(0, 0, 600, 400, "[WIP]", RM_FONT_HEADER, LABEL_ORIENTATION_CENTER, Color(255, 255, 0, 0));
+
 	CTabContainer* pContainer = new CTabContainer();
 	CTabPage* pPage1 = new CTabPage("Rage");
 	CTabPage* pPage2 = new CTabPage("Legit");
@@ -805,6 +831,8 @@ void CApplication::Setup()
 	pPage1->AddChild(pCheck);
 	pPage1->AddChild(pAutoScope);
 
+	pPage2->AddChild(pLabelWip);
+
 	pPage3->AddChild(pDrawBoundingBox);
 	pPage3->AddChild(pDrawHealthbar);
 	pPage3->AddChild(pDrawHealthnumber);
@@ -816,6 +844,12 @@ void CApplication::Setup()
 	pPage3->AddChild(pDrawNames);
 	pPage3->AddChild(pCheck2);
 	pPage3->AddChild(pSelectbox2);
+	pPage3->AddChild(pSliderFlashAmnt);
+	pPage3->AddChild(pSliderFov);
+	pPage3->AddChild(pChamsDrawOwnTeam);
+	pPage3->AddChild(pChamsDrawOwnModel);
+	pPage3->AddChild(pChamsIgnoreZ);
+	pPage3->AddChild(pChamsFlatModels);
 
 	pPage4->AddChild(pSelectbox);
 	pPage4->AddChild(pSelectPitchAntiaim);
@@ -823,15 +857,8 @@ void CApplication::Setup()
 
 	pPage6->AddChild(pBtn);
 	pPage6->AddChild(new CColorPicker());
-	pPage6->AddChild(
-		new CSlider(
-			16,
-			125,
-			200,
-			20
-		)
-	);
-
+	pPage6->AddChild(pSlider);
+	pPage6->AddChild(pSlider2);
 
 	pPage1->SetEnabled(true);
 

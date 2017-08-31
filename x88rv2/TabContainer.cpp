@@ -50,14 +50,10 @@ void CTabContainer::OnMouseMove(int mx, int my)
 
 	int iSizePerTab = m_iWidth / m_iCountTabs;
 	int iCurX;
-	int iCurY = y;
-	int iCurWidth = iSizePerTab;
-	int iCurHeight = TABCONTAINER_TABHEIGHT;
-
 	for (int i = 0; i < m_iCountTabs; i++)
 	{
 		iCurX = x + (iSizePerTab * i);
-		if (pGui->IsMouseInRect(iCurX, iCurY, iCurWidth, iCurHeight))
+		if (pGui->IsMouseInRect(iCurX, y, iSizePerTab, TABCONTAINER_TABHEIGHT))
 		{
 			m_iMouseOverTab = i;
 			break;
@@ -65,8 +61,10 @@ void CTabContainer::OnMouseMove(int mx, int my)
 	}
 }
 
-void CTabContainer::OnClicked()
+void CTabContainer::OnMouseDown(int mx, int my)
 {
+	m_iTabMouseDown = -1;
+
 	CGui* pGui = CGui::Instance();
 
 	int x = 0, y = 0;
@@ -74,19 +72,34 @@ void CTabContainer::OnClicked()
 
 	int iSizePerTab = m_iWidth / m_iCountTabs;
 	int iCurX;
-	int iCurY = y;
-	int iCurWidth = iSizePerTab;
-	int iCurHeight = TABCONTAINER_TABHEIGHT;
-
 	for (int i = 0; i < m_iCountTabs; i++)
 	{
 		iCurX = x + (iSizePerTab * i);
-		if (pGui->IsMouseInRect(iCurX, iCurY, iCurWidth, iCurHeight))
+		if (pGui->IsMouseInRect(iCurX, y, iSizePerTab, TABCONTAINER_TABHEIGHT))
 		{
-			this->SelectTab(i);
+			m_iTabMouseDown = i;
 			break;
 		}
 	}
+}
+
+void CTabContainer::OnMouseUp(int mx, int my)
+{
+	if (m_iTabMouseDown == -1)
+		return;
+
+	CGui* pGui = CGui::Instance();
+
+	int x = 0, y = 0;
+	this->GetAbsolutePosition(&x, &y);
+
+	int iSizePerTab = m_iWidth / m_iCountTabs;
+	if (pGui->IsMouseInRect(x + (iSizePerTab * m_iTabMouseDown), y, iSizePerTab, TABCONTAINER_TABHEIGHT))
+	{
+		this->SelectTab(m_iTabMouseDown);
+	}
+
+	m_iTabMouseDown = -1;
 }
 
 void CTabContainer::AddChild(IControl* pControl)

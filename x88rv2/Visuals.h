@@ -46,8 +46,8 @@ public:
 	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; }
 	int GetThirdpersonValue() { return m_iThirdpersonValue; }
 
-	void SetFovChange(int bFovChange) { m_bFovChange = bFovChange; }
-	int GetFovChange() { return m_bFovChange; }
+	void SetFovChange(bool bFovChange) { m_bFovChange = bFovChange; }
+	bool GetFovChange() { return m_bFovChange; }
 	void SetFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; }
 	int GetFovChangeScoped() { return m_bFovChangeScoped; }
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
