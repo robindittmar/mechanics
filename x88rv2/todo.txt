@@ -11,7 +11,7 @@ Priority High
 Priority Medium
 --------------------------------------
 => psilent?
-=> Skin changer
+=> Skin changer [x]
 => Viewmodel changer (viewmodel position) [x]
 => Accuracy Penalty (Hitchance)
 
@@ -20,5 +20,5 @@ Priority Low
 --------------------------------------
 => https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events
 => Antiaim Wall detection
-=> Multipoint visibility check
+=> Multipoint visibility check [(kind of) x]
 => AntiAim target von aimbot wenn möglich, sonst closest to origin

@@ -22,7 +22,8 @@ public:
 	void SelectTab(int idx);
 
 	virtual void OnMouseMove(int mx, int my);
-	virtual void OnClicked();
+	virtual void OnMouseDown(int mx, int my);
+	virtual void OnMouseUp(int mx, int my);
 
 	virtual void AddChild(IControl* pControl);
 
@@ -31,6 +32,7 @@ private:
 	std::vector<CLabel*> m_vLabels;
 
 	int m_iCountTabs;
+	int m_iTabMouseDown;
 	int m_iMouseOverTab, m_iSelectedTab;
 };
 
