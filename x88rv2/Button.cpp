@@ -3,63 +3,21 @@
 
 CButton::CButton(int x, int y, int w, int h, const char* pText) : IControl(x, y, w, h)
 {
-	m_bIsPressed = false;
+	m_pButtonClicked = NULL;
 
-	m_pButtonDownHandler = NULL;
-	m_pButtonUpHandler = NULL;
-
-	m_pContentText = NULL;
-	m_pContentTextW = NULL;
-	this->ContentText(pText);
-
-	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
+	// Add Label as child so we get correct positioning (also autocleanup)
+	m_pLabel = new CLabel(0, 0, w, h, pText, RM_FONT_NORMAL, LABEL_ORIENTATION_CENTER);
+	this->AddChild(m_pLabel);
 }
 
 CButton::~CButton()
 {
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
-
-	if (m_pContentText)
-		delete[] m_pContentText;
 }
 
-void CButton::ProcessEvent(CInputEvent* pEvent)
+void CButton::OnClicked()
 {
-	if (!m_bIsEnabled)
-		return;
-
-	if(pEvent->eventType == EVENT_TYPE_MOUSE)
-	{
-		if(pEvent->buttons & EVENT_BTN_LMOUSE)
-		{
-			if(!m_bIsPressed)
-			{
-				int x = 0, y = 0;
-				this->GetAbsolutePosition(&x, &y);
-
-				// Over button
-				if (CGui::Instance()->IsMouseInRect(x, y, m_iWidth, m_iHeight))
-				{
-					// Mouse down
-					if(pEvent->buttonProperties & EVENT_BTN_LMOUSE)
-					{
-						m_bIsPressed = true;
-
-						if (m_pButtonDownHandler)
-							m_pButtonDownHandler(this);
-					}
-				}
-			}
-			else if(!(pEvent->buttonProperties & EVENT_BTN_LMOUSE))
-			{
-				m_bIsPressed = false;
-
-				if (m_pButtonUpHandler)
-					m_pButtonUpHandler(this);
-			}
-		}
-	}
+	if (m_pButtonClicked)
+		m_pButtonClicked(this);
 }
 
 void CButton::Draw(ISurface* pSurface)
@@ -70,33 +28,15 @@ void CButton::Draw(ISurface* pSurface)
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	if (m_bIsPressed)
-		pSurface->DrawSetColor(255, 0, 255, 0);
+	// Draw button box
+	if (m_bMouseDown)
+		pSurface->DrawSetColor(g_clrButtonDown);
+	else if (m_bMouseOver)
+		pSurface->DrawSetColor(g_clrButtonOver);
 	else
-		pSurface->DrawSetColor(255, 255, 0, 0);
+		pSurface->DrawSetColor(g_clrButton);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
-	int width, height;
-	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);
-
-	pSurface->DrawSetTextFont(m_iFont);
-	pSurface->DrawSetTextPos((x + m_iWidth / 2) - (width / 2), (y + m_iHeight / 2) - (height / 2));
-	pSurface->DrawSetTextColor(255, 255, 255, 255);
-	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);
-}
-
-void CButton::ContentText(const char* pText)
-{
-	if (m_pContentText)
-		delete[] m_pContentText;
-
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
-
-	m_iContentTextLen = strlen(pText) + 1;
-	m_pContentText = new char[m_iContentTextLen];
-	memcpy(m_pContentText, pText, m_iContentTextLen);
-
-	m_pContentTextW = new wchar_t[m_iContentTextLen];
-	mbstowcs(m_pContentTextW, m_pContentText, m_iContentTextLen);
+	// Draw label
+	m_pLabel->Draw(pSurface);
 }

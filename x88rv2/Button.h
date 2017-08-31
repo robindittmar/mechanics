@@ -7,6 +7,11 @@
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "Label.h"
+
+const Color g_clrButton(255, 0, 0, 0);
+const Color g_clrButtonOver(255, 50, 50, 50);
+const Color g_clrButtonDown(255, 100, 100, 100);
 
 class CButton : public IControl
 {
@@ -14,25 +19,13 @@ public:
 	CButton(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "btn");
 	~CButton();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
+	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
-	void SetButtonDownEventHandler(SimpleEventHandler_t onDown) { m_pButtonDownHandler = onDown; }
-	void SetButtonUpEventHandler(SimpleEventHandler_t onUp) { m_pButtonUpHandler = onUp; }
-
-	void ContentText(const char* pText);
-	const char* ContentText() { return (const char*)m_pContentText; }
+	void SetButtonClickEventHandler(SimpleEventHandler_t onClicked) { m_pButtonClicked = onClicked; }
 private:
-	bool m_bIsPressed;
-	
-	SimpleEventHandler_t m_pButtonDownHandler;
-	SimpleEventHandler_t m_pButtonUpHandler;
-
-	unsigned int m_iFont;
-
-	int m_iContentTextLen;
-	char* m_pContentText;
-	wchar_t* m_pContentTextW;
+	CLabel* m_pLabel;
+	SimpleEventHandler_t m_pButtonClicked;
 };
 
 #endif // __BUTTON_H__

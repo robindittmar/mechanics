@@ -1,9 +1,5 @@
 #include "VTableHook.h"
 
-VTableHook::VTableHook()
-{
-}
-
 VTableHook::VTableHook(DWORD* pObj, bool bReplace)
 {
 	m_pObj = pObj;
@@ -35,6 +31,11 @@ DWORD VTableHook::Hook(UINT index, DWORD* pFunc)
 	m_pNewVTable[index] = (DWORD)pFunc;
 
 	return m_pOldVTable[index];
+}
+
+void VTableHook::Rehook()
+{
+	*m_pObj = (DWORD)m_pNewVTable;
 }
 
 void VTableHook::Restore()

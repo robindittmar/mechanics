@@ -3,6 +3,7 @@
 
 #include <Windows.h>
 #include "ISurface.h"
+#include "Vector.h"
 
 class CGui
 {

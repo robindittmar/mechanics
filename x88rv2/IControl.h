@@ -10,8 +10,8 @@
 // Event
 #include "InputEvent.h"
 
-// SDK Render utils
-#include "ISurface.h"
+// GUI Stuff (rendering etc)
+#include "Gui.h"
 
 /*
  * TODO:	- Hover effects?
@@ -26,14 +26,17 @@ public:
 	IControl(int x = 0, int y = 0, int w = 0, int h = 0);
 	~IControl();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	// Internal control events
+	virtual void OnMouseMove(int mx, int my);
+	virtual void OnMouseDown(int mx, int my);
+	virtual void OnMouseUp(int mx, int my);
+	virtual void OnClicked();
 
 	/// <summary>
 	/// Adds child to container,
 	/// the container will take care of cleaning up the child controls
 	/// </summary>
-	bool AddChild(IControl* pControl);
+	virtual void AddChild(IControl* pControl);
 
 	/// <summary>
 	/// Returns the absolute position of the control
@@ -41,9 +44,14 @@ public:
 	/// </summary>
 	virtual void GetAbsolutePosition(int* pX, int* pY);
 
-	void IsEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
-	bool IsEnabled() { return m_bIsEnabled; }
+	// ProcessEvent & Draw
+	virtual void ProcessEvent(CInputEvent* pEvent);
+	virtual void Draw(ISurface* pSurface);
 
+	void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
+	bool GetEnabled() { return m_bIsEnabled; }
+
+	void SetBoundaries(int x, int y, int w, int h);
 	int X() { return m_iX; }
 	int Y() { return m_iY; }
 	int Width() { return m_iWidth; }
@@ -59,6 +67,10 @@ protected:
 	int m_iHeight;
 	IControl* m_pParent;
 	std::vector<IControl*> m_pChildren;
+
+	bool m_bHitcheckForMouseMove;
+	bool m_bMouseOver;
+	bool m_bMouseDown;
 };
 
 typedef void(*SimpleEventHandler_t)(IControl*);

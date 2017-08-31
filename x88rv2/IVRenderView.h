@@ -1,16 +1,13 @@
 #ifndef __IVRENDERVIEW_H__
 #define __IVRENDERVIEW_H__
 
+#include "Vector.h"
+
 // How many networked area portals do we allow?
 #define MAX_AREA_STATE_BYTES		32
 #define MAX_AREA_PORTAL_STATE_BYTES 24
 
 class colorVec;
-
-class Vector2D
-{
-	float x, y;
-};
 
 enum ERenderDepthMode
 {

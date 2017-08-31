@@ -52,6 +52,91 @@ void CApplication::Detach()
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
 }
 
+void CApplication::LoadSkinChangerConfig()
+{
+	// Nicos Knife
+	this->m_skinchanger.AddModelReplacement(
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg").ToCharArray()
+	);
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_KNIFE_M9_BAYONET,
+		new CSkinMetadata(
+			WEAPON_KNIFE_BAYONET,
+			416,
+			0,
+			-1,
+			3
+		)
+	);
+	this->m_skinchanger.AddKillIconReplacement(
+		CXorString("|eì¤rTèûHiä»xeà¶").ToCharArray(),
+		CXorString("ujü­ynñ").ToCharArray()
+	);
+
+	// Robins Knifes (T -> Karambit Fade Stattrak)
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_KNIFE_T,
+		new CSkinMetadata(
+			WEAPON_KNIFE_KARAMBIT,
+			38,
+			0,
+			1337,
+			3
+		)
+	);
+	this->m_skinchanger.AddModelReplacement(
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®").ToCharArray()
+	);
+	this->m_skinchanger.AddKillIconReplacement(
+		CXorString("|eì¤rTñ").ToCharArray(),
+		CXorString("|eì¤rTî£ejè ~").ToCharArray()
+	);
+
+	// Robins Knifes (CT -> Karambit Fade Stattrak)
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_KNIFE,
+		new CSkinMetadata(
+			WEAPON_KNIFE_KARAMBIT,
+			38,
+			0,
+			1337,
+			3
+		)
+	);
+	this->m_skinchanger.AddModelReplacement(
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{").ToCharArray(),
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®").ToCharArray()
+	);
+	this->m_skinchanger.AddKillIconReplacement(
+		CXorString("|eì¤rTá§qjð®cTæ¶").ToCharArray(),
+		CXorString("|eì¤rTî£ejè ~").ToCharArray()
+	);
+}
+
+void CApplication::Unhook()
+{
+	this->m_pClientModeHook->Restore();
+	this->m_pEngineModelHook->Restore();
+	this->m_pClientHook->Restore();
+	this->m_pVguiHook->Restore();
+	this->m_pGameEventManagerHook->Restore();
+
+	this->m_bIsHooked = false;
+}
+
+void CApplication::Rehook()
+{
+	this->m_pClientModeHook->Rehook();
+	this->m_pEngineModelHook->Rehook();
+	this->m_pClientHook->Rehook();
+	this->m_pVguiHook->Rehook();
+	this->m_pGameEventManagerHook->Rehook();
+
+	this->m_bIsHooked = true;
+}
+
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
@@ -187,7 +272,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			{
 				bool bNewValue = !pApp->m_visuals.GetThirdperson();
 
-				pApp->m_pGuiThirdpersonCheckbox->IsChecked(bNewValue);
+				pApp->m_pGuiThirdpersonCheckbox->SetChecked(bNewValue);
 				pApp->m_visuals.SetThirdperson(bNewValue);
 			}
 		}
@@ -396,7 +481,7 @@ CButton* btn = (CButton*)p;
 g_pConsole->Write("Button down (%s)\n", btn->ContentText());
 }*/
 
-void BtnUp(IControl* p)
+void DetachBtnClick(IControl* p)
 {
 	CApplication* pApp = CApplication::Instance();
 
@@ -431,10 +516,6 @@ void CApplication::Setup()
 	CXorString VguiPanel("ALÐ‹H[ä¬rgµò.");
 	CXorString VguiSurface("ALÐ‹HXð°qjæ§'8´");
 	CXorString GameEventListener("lÔ\a`nÃ\xfkÆ\adeÔ\r`y¥z\x17", 0xF12B);
-	CXorString player_hurt("ggä»ryÚªbyñ");
-	CXorString player_death("ggä»ryÚ¦rjñª");
-	CXorString round_start("edð¬sTö¶vyñ");
-	CXorString round_end("edð¬sTà¬s");
 	CXorString vphysicsDll("a{í»dbæ±9oé®");
 	CXorString physicsSurfaceProps("A[í»dbæ±D~÷¤vhà’edõ±';´");
 	CXorString renderView("ANë¥~eàreá§e]ì§`;´ö");
@@ -469,6 +550,7 @@ void CApplication::Setup()
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
 	// Create Resources
+	m_pResourceManager->CreateTextures();
 	m_pResourceManager->CreateFonts();
 
 	// Print classes & their properties
@@ -599,47 +681,9 @@ void CApplication::Setup()
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
-
-	// Nicos Knife
-	this->m_skinchanger.AddModelReplacement(
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{").ToCharArray(),
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg").ToCharArray()
-	);
-	this->m_skinchanger.AddSkinReplacement(
-		WEAPON_KNIFE_M9_BAYONET,
-		new CSkinMetadata(
-			WEAPON_KNIFE_BAYONET,
-			416,
-			0,
-			-1,
-			3
-		)
-	);
-	this->m_skinchanger.AddKillIconReplacement(
-		CXorString("|eì¤rTèûHiä»xeà¶").ToCharArray(),
-		CXorString("ujü­ynñ").ToCharArray()
-	);
-
-	// Robins Knife
-	this->m_skinchanger.AddSkinReplacement(
-		WEAPON_KNIFE_T,
-		new CSkinMetadata(
-			WEAPON_KNIFE_KARAMBIT,
-			416,
-			0,
-			-1,
-			3
-		)
-	);
-	this->m_skinchanger.AddModelReplacement(
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®").ToCharArray()
-	);
-	this->m_skinchanger.AddKillIconReplacement(
-		CXorString("|eì¤rTñ").ToCharArray(),
-		CXorString("|eì¤rTî£ejè ~").ToCharArray()
-	);
-
+	// TODO: Config und sowas
+	this->LoadSkinChangerConfig();
+	
 	// Visuals
 	this->m_visuals.SetEnabled(true);
 
@@ -660,10 +704,13 @@ void CApplication::Setup()
 	this->m_visuals.SetFovChangeScoped(false);
 
 	// Register Event Handlers
-	m_pGameEventManager->AddListener(&m_gameEventListener, player_hurt.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, player_death.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, round_start.ToCharArray(), false);
-	m_pGameEventManager->AddListener(&m_gameEventListener, round_end.ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("txÚ¥vfàsbö¡xeë§tà¦").ToCharArray(), false); // cs_game_disconnected
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("d|ì¶tcÚ¶rjè").ToCharArray(), false); // switch_team
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚªbyñ").ToCharArray(), false); // player_hurt
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ¦rjñª").ToCharArray(), false); // player_death
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
 
 	// Create all Gui stuff
 	m_pGui = CGui::Instance();
@@ -675,8 +722,7 @@ void CApplication::Setup()
 
 	// Create GUI (Window + all controls)
 	CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
-	//pBtn->SetButtonDownEventHandler(BtnDown);
-	pBtn->SetButtonUpEventHandler(BtnUp);
+	pBtn->SetButtonClickEventHandler(DetachBtnClick);
 
 	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
 	pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
@@ -715,7 +761,7 @@ void CApplication::Setup()
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
-	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
+	pSelectYawAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
 
 	CSelectbox* pSelectbox2 = new CSelectbox(260, 16, 100, 32);
 	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
@@ -774,8 +820,18 @@ void CApplication::Setup()
 	pPage4->AddChild(pSelectYawAntiaim);
 
 	pPage6->AddChild(pBtn);
+	pPage6->AddChild(new CColorPicker());
+	pPage6->AddChild(
+		new CSlider(
+			16,
+			125,
+			200,
+			20
+		)
+	);
 
-	pPage1->IsEnabled(true);
+
+	pPage1->SetEnabled(true);
 
 	pContainer->AddChild(pPage1);
 	pContainer->AddChild(pPage2);
@@ -875,6 +931,9 @@ void CApplication::Hook()
 	}
 
 	m_misc.SetClanTag(".mechanics");
+
+	this->m_bIsHooked = true;
+	this->m_bInitialHookDone = true;
 }
 
 // Singleton
@@ -891,6 +950,9 @@ CApplication::CApplication()
 	m_pGameEventManagerHook = NULL;
 
 	m_bGotSendPackets = false;
+
+	m_bInitialHookDone = false;
+	m_bIsHooked = false;
 }
 
 CApplication::CApplication(CApplication const&)

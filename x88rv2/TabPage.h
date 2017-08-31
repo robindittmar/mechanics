@@ -1,12 +1,11 @@
 #ifndef __TABPAGE_H__
 #define __TABPAGE_H__
 
-// Std lib
-
-
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+
+#define TABCONTAINER_TABHEIGHT	40
 
 class CTabPage : public IControl
 {
@@ -14,18 +13,13 @@ public:
 	CTabPage(const char* pTitle = "tbpg");
 	~CTabPage();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	int GetTitleLength() { return m_iTitleLen; }
 
-	int TitleLength() { return m_iLenTitle; }
-
-	void Title(const char* pTitle);
-	const char* Title() { return (const char*)m_pTitle; }
-	const wchar_t* TitleW() { return (const wchar_t*)m_pTitleW; }
+	void SetTitle(const char* pTitle);
+	const char* GetTitle() { return (const char*)m_pTitle; }
 private:
-	int m_iLenTitle;
+	int m_iTitleLen;
 	char* m_pTitle;
-	wchar_t* m_pTitleW;
 };
 
 #endif // __TABPAGE_H__

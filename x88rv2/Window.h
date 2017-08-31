@@ -18,6 +18,10 @@ public:
 	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "Window");
 	~CWindow();
 
+	virtual void OnMouseMove(int mx, int my);
+	virtual void OnMouseDown();
+	virtual void OnMouseUp();
+
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 

@@ -10,6 +10,11 @@ CResourceManager::CResourceManager()
 
 CResourceManager::~CResourceManager()
 {
+	ISurface* pSurface = m_pApp->Surface();
+	for(std::unordered_map<int, int>::iterator it = m_mapTextures.begin(); it != m_mapTextures.end(); it++)
+	{
+		pSurface->DeleteTextureByID(it->second);
+	}
 }
 
 void CResourceManager::Init(CApplication* pApp)
@@ -35,13 +40,45 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 
 	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 	m_pApp->InitKeyValues()(pKeyValues, pBaseType);
-	// TODO: Idk
 	m_pApp->LoadFromBuffer()(pKeyValues, pName, pMaterial, NULL, NULL, NULL);
 
 	IMaterial* pMat = m_pApp->MaterialSystem()->CreateMaterial(pName, pKeyValues);
 	pMat->IncrementReferenceCount();
 
 	return pMat;
+}
+
+void CResourceManager::CreateTextures()
+{
+	ISurface* pSurface = m_pApp->Surface();
+
+	int textureCursor = pSurface->CreateNewTextureID(true);
+	int textureColorFade = pSurface->CreateNewTextureID(true);
+
+	unsigned char pTexCursor[] = { 0, 0, 150, 255 };
+
+	int curR, curG, curB;
+	unsigned char pTexColorFade[360 * 4];
+	for(int y = 0; y < 360 * 4; y += 4)
+	{
+		this->HslToRgb(y, 1.0f, 1.0f, curR, curG, curB);
+
+		pTexColorFade[y] = curR;
+		pTexColorFade[y + 1] = curG;
+		pTexColorFade[y + 2] = curB;
+		pTexColorFade[y + 3] = 255; // Alpha
+	}
+
+	pSurface->DrawSetTextureRGBA(textureCursor, pTexCursor, 1, 1);
+	pSurface->DrawSetTextureRGBA(textureColorFade, pTexColorFade, 1, 360);
+
+	m_mapTextures[RM_TEXTURE_CURSOR] = textureCursor;
+	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
+}
+
+int CResourceManager::GetTexture(int textureId)
+{
+	return m_mapTextures[textureId];
 }
 
 void CResourceManager::CreateFonts()
@@ -66,4 +103,66 @@ void CResourceManager::CreateFonts()
 unsigned int CResourceManager::GetFont(int fontId)
 {
 	return m_mapFonts[fontId];
+}
+
+void CResourceManager::HslToRgb(int h, float s, float l, int& r, int &g, int& b)
+{
+	double      hh, p, q, t, ff;
+	long        i;
+
+	if (s <= 0.0) {       // < is bogus, just shuts up warnings
+		r = l;
+		g = l;
+		b = l;
+		return;
+	}
+	hh = h;
+	if (hh >= 360.0) hh = 0.0;
+	hh /= 60.0;
+	i = (long)hh;
+	ff = hh - i;
+	p = l * (1.0 - s);
+	q = l * (1.0 - (s * ff));
+	t = l * (1.0 - (s * (1.0 - ff)));
+
+	p *= 255.0f;
+	q *= 255.0f;
+	t *= 255.0f;
+
+	double ll = l * 255.0f;
+
+	switch (i)
+	{
+	case 0:
+		r = ll;
+		g = t;
+		b = p;
+		break;
+	case 1:
+		r = q;
+		g = ll;
+		b = p;
+		break;
+	case 2:
+		r = p;
+		g = ll;
+		b = t;
+		break;
+	case 3:
+		r = p;
+		g = q;
+		b = ll;
+		break;
+	case 4:
+		r = t;
+		g = p;
+		b = ll;
+		break;
+	case 5:
+	default:
+		r = ll;
+		g = p;
+		b = q;
+		break;
+	}
 }

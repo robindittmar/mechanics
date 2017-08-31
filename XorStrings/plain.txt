@@ -1,4 +1,3 @@
-knife_m9_bayonet
-bayonet
-knife_t
-knife_karambit
+game_newmap
+cs_game_disconnected
+switch_team

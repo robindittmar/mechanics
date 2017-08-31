@@ -8,5 +8,7 @@
 #include "Button.h"
 #include "Checkbox.h"
 #include "Selectbox.h"
+#include "Slider.h"
+#include "ColorPicker.h"
 
 #endif // __CONTROLS_H__

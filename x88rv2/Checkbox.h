@@ -7,10 +7,19 @@
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "Label.h"
 
 #define CHECKBOX_BOXPADDING		5
 #define CHECKBOX_BOXSIZE		30
 #define CHECKBOX_FILLERPADDING	3
+
+const Color g_clrCheckboxBorder(255, 0, 0, 0);
+const Color g_clrCheckboxBorderHover(255, 25, 25, 25);
+const Color g_clrCheckboxFiller(255, 25, 25, 25);
+const Color g_clrCheckboxFillerHover(255, 25, 25, 100);
+
+const Color g_clrCheckboxText(255, 255, 255, 255);
+const Color g_clrCheckboxTextHover(255, 200, 200, 200);
 
 class CCheckbox : public IControl
 {
@@ -18,27 +27,18 @@ public:
 	CCheckbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "cbx", bool isChecked = false);
 	~CCheckbox();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
+	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
-	void IsChecked(bool bIsChecked) { m_bIsChecked = bIsChecked; }
-	bool IsChecked() { return m_bIsChecked; }
+	void SetChecked(bool bIsChecked) { m_bIsChecked = bIsChecked; }
+	bool GetChecked() { return m_bIsChecked; }
 
 	void SetEventHandler(std::function<void(bool)> pEventHandler) { m_pEventHandler = pEventHandler; }
-
-	void ContentText(const char* pText);
-	const char* ContentText() { return (const char*)m_pContentText; }
 private:
-	bool m_bIsClicked;
+	CLabel* m_pLabel;
+
 	bool m_bIsChecked;
-
 	std::function<void(bool)> m_pEventHandler;
-
-	unsigned int m_iFont;
-
-	int m_iContentTextLen;
-	char* m_pContentText;
-	wchar_t* m_pContentTextW;
 };
 
 #endif // __CHECKBOX_H__

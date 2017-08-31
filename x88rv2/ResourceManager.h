@@ -1,11 +1,14 @@
 #ifndef __RESOURCEMANAGER_H__
 #define __RESOURCEMANAGER_H__
 
-#include <map>
+#include <unordered_map>
 
 #include "IMaterialSystem.h"
 #include "ISurface.h"
 #include "KeyValues.h"
+
+#define RM_TEXTURE_CURSOR		0
+#define RM_TEXTURE_COLORFADE	1
 
 #define RM_FONT_NORMAL			0
 #define RM_FONT_HEADER			1
@@ -22,12 +25,18 @@ public:
 	void Init(CApplication* pApp);
 	IMaterial* CreateMaterial(bool bIsLit = false, bool bIsFlat = true, bool bIgnoreZ = false, bool bWireframe = false);
 
+	void CreateTextures();
+	int GetTexture(int textureId);
+
 	void CreateFonts();
 	unsigned int GetFont(int fontId);
 private:
+	void HslToRgb(int h, float s, float l, int& r, int &g, int& b);
+
 	int m_iMaterialCount;
 
-	std::map<int, unsigned int> m_mapFonts;
+	std::unordered_map<int, int> m_mapTextures;
+	std::unordered_map<int, unsigned int> m_mapFonts;
 
 	CApplication* m_pApp;
 };

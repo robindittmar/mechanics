@@ -10,8 +10,8 @@
 #endif
 
 #include "CreateInterface.h"
+#include "Vector.h"
 
-class Color;
 class ITexture;
 
 class IImage;
@@ -25,6 +25,24 @@ typedef unsigned long HFont;
 
 
 //SRC only defines
+
+struct Vertex_t
+{
+	Vertex_t() {}
+	Vertex_t(const Vector2D &pos, const Vector2D &coord = Vector2D(0, 0))
+	{
+		m_Position = pos;
+		m_TexCoord = coord;
+	}
+	void Init(const Vector2D &pos, const Vector2D &coord = Vector2D(0, 0))
+	{
+		m_Position = pos;
+		m_TexCoord = coord;
+	}
+
+	Vector2D	m_Position;
+	Vector2D	m_TexCoord;
+};
 
 enum FontDrawType_t
 {
@@ -128,15 +146,25 @@ class ISurface// : public IAppSystem
 public:
 	void DrawSetColor(Color color);
 	void DrawSetColor(int a, int r, int g, int b);
+	void DrawLine(int x0, int y0, int x1, int y1);
 	void DrawFilledRect(int x0, int y0, int x1, int y1);
 	void DrawOutlinedRect(int x0, int y0, int x1, int y1);
-	void DrawLine(int x0, int y0, int x1, int y1);
+	void DrawOutlinedCircle(int x, int y, int radius, int segments);
+
+	int CreateNewTextureID(bool procedural = false);
+	void DrawSetTextureRGBA(int id, const unsigned char* rgba, int wide, int tall);
+	void DrawSetTexture(int id);
+	void DrawTexturedRect(int x0, int y0, int x1, int y1);
+	void DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices);
+	bool DeleteTextureByID(int id);
+
+	unsigned int SCreateFont();
+	bool SetFontGlyphSet(unsigned int font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0);
+	void DrawSetTextFont(unsigned int font);
+	void DrawSetTextColor(Color color);
 	void DrawSetTextColor(int r, int g, int b, int a);
 	void DrawSetTextPos(int x, int y);
 	void DrawPrintText(const wchar_t *text, int textLen, FontDrawType_t drawType = FONT_DRAW_DEFAULT);
-	bool SetFontGlyphSet(unsigned int font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0);
-	unsigned int SCreateFont();
-	void DrawSetTextFont(unsigned int font);
 	void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall);
 };
 

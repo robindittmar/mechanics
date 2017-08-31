@@ -1,15 +1,17 @@
 #ifndef __TABCONTAINER_H__
 #define __TABCONTAINER_H__
 
-// Std lib
-
-
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "Label.h"
 #include "TabPage.h"
 
-#define TABCONTAINER_TABHEIGHT	40
+const Color g_clrTab(255, 80, 80, 80);
+const Color g_clrTabOver(255, 100, 100, 100);
+const Color g_clrTabSelected(255, 120, 120, 120);
+
+//const Color g_clrTabText(255, 255, 255, 255);
 
 class CTabContainer : public IControl
 {
@@ -17,12 +19,19 @@ public:
 	CTabContainer();
 	~CTabContainer();
 	
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	void SelectTab(int idx);
 
-	void SelectTab(CTabPage* p);
+	virtual void OnMouseMove(int mx, int my);
+	virtual void OnClicked();
+
+	virtual void AddChild(IControl* pControl);
+
+	virtual void Draw(ISurface* pSurface);
 private:
-	unsigned int m_iFont;
+	std::vector<CLabel*> m_vLabels;
+
+	int m_iCountTabs;
+	int m_iMouseOverTab, m_iSelectedTab;
 };
 
 #endif // __TABCONTAINER_H__

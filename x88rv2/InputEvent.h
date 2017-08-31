@@ -19,9 +19,11 @@ public:
 	~CInputEvent();
 
 	void Clear();
+	bool DidMouseMove();
 
 	int eventType;
 	int mousex, mousey;
+	int mousex_old, mousey_old;
 	int buttons;
 	int buttonProperties; // Down = 1, Up = 0
 private:

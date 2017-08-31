@@ -1,55 +1,110 @@
 #include "TabContainer.h"
 
-CTabContainer::CTabContainer() : IControl(0, TABCONTAINER_TABHEIGHT, 0, 0)
+CTabContainer::CTabContainer() : IControl(0, 0, 0, 0)
 {
-	m_iFont = g_pResourceManager->GetFont(RM_FONT_SUBHEADER);
+	m_iCountTabs = 0;
+
+	m_iMouseOverTab = -1;
+	m_iSelectedTab = -1;
 }
 
 CTabContainer::~CTabContainer()
 {
+	// Cleanup labels
+	CLabel* pCurrent;
+	for(std::vector<CLabel*>::iterator it = m_vLabels.begin(); it != m_vLabels.end(); it++)
+	{
+		pCurrent = *it;
+
+		if (pCurrent)
+			delete pCurrent;
+	}
 }
 
-void CTabContainer::ProcessEvent(CInputEvent* pEvent)
+void CTabContainer::SelectTab(int idx)
 {
-	if (!m_bIsEnabled)
-		return;
+	m_iSelectedTab = -1;
 
-	if(pEvent->eventType == EVENT_TYPE_MOUSE)
+	for(int i = 0; i < m_iCountTabs; i++)
 	{
-		if(pEvent->buttons & EVENT_BTN_LMOUSE &&
-			pEvent->buttonProperties & EVENT_BTN_LMOUSE)
+		if(i == idx)
 		{
-			int x = 0, y = 0;
-			this->GetAbsolutePosition(&x, &y);
-	
-			m_iWidth = m_pParent->Width();
-			m_iHeight = m_pParent->Height();
-
-			int iCountTabs = m_pChildren.size();
-			int iSizePerTab = m_iWidth / iCountTabs;
-
-			int iCurX;
-			int iCurY = y - m_iY;
-			int iCurWidth = iSizePerTab;
-			int iCurHeight = TABCONTAINER_TABHEIGHT;
-
-			CGui* pGui = CGui::Instance();
-			CTabPage* pTabPage;
-			for (int i = 0; i < iCountTabs; i++)
-			{
-				pTabPage = (CTabPage*)m_pChildren[i];
-
-				iCurX = x + (iSizePerTab * i);
-				if(pGui->IsMouseInRect(iCurX, iCurY, iCurWidth, iCurHeight))
-				{
-					this->SelectTab(pTabPage);
-					break;
-				}
-			}
+			m_pChildren[i]->SetEnabled(true);
+			m_iSelectedTab = i;
+		}
+		else
+		{
+			m_pChildren[i]->SetEnabled(false);
 		}
 	}
+}
 
-	IControl::ProcessEvent(pEvent);
+void CTabContainer::OnMouseMove(int mx, int my)
+{
+	m_iMouseOverTab = -1;
+
+	CGui* pGui = CGui::Instance();
+
+	int x = 0, y = 0;
+	this->GetAbsolutePosition(&x, &y);
+
+	int iSizePerTab = m_iWidth / m_iCountTabs;
+	int iCurX;
+	int iCurY = y;
+	int iCurWidth = iSizePerTab;
+	int iCurHeight = TABCONTAINER_TABHEIGHT;
+
+	for (int i = 0; i < m_iCountTabs; i++)
+	{
+		iCurX = x + (iSizePerTab * i);
+		if (pGui->IsMouseInRect(iCurX, iCurY, iCurWidth, iCurHeight))
+		{
+			m_iMouseOverTab = i;
+			break;
+		}
+	}
+}
+
+void CTabContainer::OnClicked()
+{
+	CGui* pGui = CGui::Instance();
+
+	int x = 0, y = 0;
+	this->GetAbsolutePosition(&x, &y);
+
+	int iSizePerTab = m_iWidth / m_iCountTabs;
+	int iCurX;
+	int iCurY = y;
+	int iCurWidth = iSizePerTab;
+	int iCurHeight = TABCONTAINER_TABHEIGHT;
+
+	for (int i = 0; i < m_iCountTabs; i++)
+	{
+		iCurX = x + (iSizePerTab * i);
+		if (pGui->IsMouseInRect(iCurX, iCurY, iCurWidth, iCurHeight))
+		{
+			this->SelectTab(i);
+			break;
+		}
+	}
+}
+
+void CTabContainer::AddChild(IControl* pControl)
+{
+	IControl::AddChild(pControl);
+
+	m_vLabels.push_back(
+		new CLabel(
+			0,
+			0,
+			0,
+			0,
+			((CTabPage*)pControl)->GetTitle(),
+			RM_FONT_SUBHEADER,
+			LABEL_ORIENTATION_CENTER
+		)
+	);
+	m_iCountTabs++;
 }
 
 void CTabContainer::Draw(ISurface* pSurface)
@@ -59,51 +114,39 @@ void CTabContainer::Draw(ISurface* pSurface)
 
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
-	y -= m_iY;
 
 	m_iWidth = m_pParent->Width();
 	m_iHeight = m_pParent->Height();
 
-	pSurface->DrawSetColor(255, 80, 80, 80);
+	pSurface->DrawSetColor(g_clrTab);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + TABCONTAINER_TABHEIGHT);
 
-	pSurface->DrawSetTextFont(m_iFont);
-
-	CTabPage* pTabPage;
-	int iCountTabs = m_pChildren.size();
-	int iSizePerTab = m_iWidth / iCountTabs;
-	for(int i = 0; i < iCountTabs; i++)
+	int iSizePerTab = m_iWidth / m_iCountTabs;
+	int iCurX;
+	int iCurY = y;
+	int iCurWidth = iSizePerTab;
+	int iCurHeight = TABCONTAINER_TABHEIGHT;
+	
+	CLabel* pLabel;
+	for(int i = 0; i < m_iCountTabs; i++)
 	{
-		pTabPage = (CTabPage*)m_pChildren[i];
-		
-		// Draw title
-		int width, height;
-		pSurface->GetTextSize(m_iFont, pTabPage->TitleW(), width, height);
-		pSurface->DrawSetTextPos(((x + iSizePerTab * i) + iSizePerTab / 2) - (width / 2), (y + TABCONTAINER_TABHEIGHT / 2) - (height / 2));
+		iCurX = x + (iSizePerTab * i);
+		pLabel = (CLabel*)m_vLabels[i];
 
-		if (pTabPage->IsEnabled())
-			pSurface->DrawSetTextColor(255, 255, 0, 0);
-		else
-			pSurface->DrawSetTextColor(255, 255, 255, 255);
+		if(m_iSelectedTab == i)
+		{
+			pSurface->DrawSetColor(g_clrTabSelected);
+			pSurface->DrawFilledRect(iCurX, iCurY, iCurX + iCurWidth, iCurY + iCurHeight);
+		}
+		else if(m_iMouseOverTab == i && m_bMouseOver)
+		{
+			pSurface->DrawSetColor(g_clrTabOver);
+			pSurface->DrawFilledRect(iCurX, iCurY, iCurX + iCurWidth, iCurY + iCurHeight);
+		}
 
-		pSurface->DrawPrintText(pTabPage->TitleW(), pTabPage->TitleLength());
+		pLabel->SetBoundaries(iCurX, iCurY, iCurWidth, iCurHeight);
+		pLabel->Draw(pSurface);
 	}
 
 	IControl::Draw(pSurface);
-}
-
-void CTabContainer::SelectTab(CTabPage* p)
-{
-	// Disable all tabs that aren't passed as argument
-	CTabPage* pTabPage;
-	for(std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)
-	{
-		pTabPage = (CTabPage*)*it;
-		if(pTabPage != p)
-		{
-			pTabPage->IsEnabled(false);
-		}
-	}
-
-	p->IsEnabled(true);
 }

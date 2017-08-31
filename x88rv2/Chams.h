@@ -26,6 +26,7 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
+	void ReloadMaterials();
 	void Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 private:
 	IVModelRender* m_pModelRender;

@@ -19,6 +19,9 @@ private:
 	// (as they shouldn't be called by anyone else anyway)
 	//
 	// Also pEvent will never be NULL when they get called
+	void game_newmap(IGameEvent* pEvent);
+	void cs_game_disconnected(IGameEvent* pEvent);
+	void switch_team(IGameEvent* pEvent);
 	void player_hurt(IGameEvent* pEvent);
 	void player_death(IGameEvent* pEvent);
 	void round_start(IGameEvent* pEvent);

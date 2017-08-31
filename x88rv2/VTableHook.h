@@ -4,12 +4,13 @@
 class VTableHook
 {
 public:
-	VTableHook();
 	VTableHook(DWORD* pObj, bool bReplace);
 	~VTableHook();
-	DWORD Hook(UINT index, DWORD* pFunc);
-	void Restore();
 
+	DWORD Hook(UINT index, DWORD* pFunc);
+
+	void Rehook();
+	void Restore();
 private:
 	DWORD m_dwLen;
 	void CalculateLength();

@@ -90,6 +90,17 @@ public:
 	void Run(HMODULE hModule);
 	void Detach();
 
+	// TODO: REMOVE
+	void LoadSkinChangerConfig();
+	// TODO: REMOVE
+
+	// Hook helper
+	bool GetInitialHookDone() { return m_bInitialHookDone; }
+	bool GetHooked() { return m_bIsHooked; }
+
+	void Unhook();
+	void Rehook();
+
 	// VTable Hooks
 	VTableHook* ClientModeHook() { return m_pClientModeHook; }
 	VTableHook* EngineModelHook() { return m_pEngineModelHook; }
@@ -177,6 +188,8 @@ private:
 
 	HMODULE m_hModule;
 
+	bool m_bInitialHookDone;
+	bool m_bIsHooked;
 	VTableHook* m_pClientModeHook;
 	VTableHook* m_pEngineModelHook;
 	VTableHook* m_pClientHook;

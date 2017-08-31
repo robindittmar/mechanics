@@ -2,64 +2,24 @@
 
 CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isChecked) : IControl(x, y, w, h)
 {
-	m_bIsClicked = false;
 	m_bIsChecked = isChecked;
-
 	m_pEventHandler = NULL;
 
-	m_pContentText = NULL;
-	m_pContentTextW = NULL;
-	this->ContentText(pText);
-
-	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
+	int offsetX = (CHECKBOX_BOXPADDING * 2) + CHECKBOX_BOXSIZE;
+	m_pLabel = new CLabel(offsetX, 0, m_iWidth - offsetX, m_iHeight, pText, RM_FONT_NORMAL);
+	this->AddChild(m_pLabel);
 }
 
 CCheckbox::~CCheckbox()
 {
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
-
-	if (m_pContentText)
-		delete[] m_pContentText;
 }
 
-void CCheckbox::ProcessEvent(CInputEvent* pEvent)
+void CCheckbox::OnClicked()
 {
-	if (!m_bIsEnabled)
-		return;
+	m_bIsChecked = !m_bIsChecked;
 
-	if (pEvent->eventType == EVENT_TYPE_MOUSE)
-	{
-		if (pEvent->buttons & EVENT_BTN_LMOUSE)
-		{
-			if(!m_bIsClicked)
-			{
-				int x = 0;
-				int y = 0;
-
-				this->GetAbsolutePosition(&x, &y);
-
-				// Over checkbox
-				if (CGui::Instance()->IsMouseInRect(x, y, m_iWidth, m_iHeight))
-				{
-					// Mouse down
-					if (pEvent->buttonProperties & EVENT_BTN_LMOUSE)
-					{
-						m_bIsClicked = true;
-					}
-				}
-			}
-			// Not clicked & mouse up
-			else if (!(pEvent->buttonProperties & EVENT_BTN_LMOUSE))
-			{
-				m_bIsClicked = false;
-				m_bIsChecked = !m_bIsChecked;
-
-				if (m_pEventHandler)
-					m_pEventHandler(m_bIsChecked);
-			}
-		}
-	}
+	if (m_pEventHandler)
+		m_pEventHandler(m_bIsChecked);
 }
 
 void CCheckbox::Draw(ISurface* pSurface)
@@ -70,16 +30,30 @@ void CCheckbox::Draw(ISurface* pSurface)
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	int width, height;
-	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);
+	Color borderColor;
+	Color fillColor;
+	Color textColor;
+	if(m_bMouseOver)
+	{
+		borderColor = g_clrCheckboxBorderHover;
+		fillColor = g_clrCheckboxFillerHover;
+		textColor = g_clrCheckboxTextHover;
+	}
+	else
+	{
+		borderColor = g_clrCheckboxBorder;
+		fillColor = g_clrCheckboxFiller;
+		textColor = g_clrCheckboxText;
+	}
 
 	// Draw box that holds the checkmark
-	pSurface->DrawSetColor(255, 0, 0, 0);
+	pSurface->DrawSetColor(borderColor);
 	pSurface->DrawOutlinedRect(x + CHECKBOX_BOXPADDING, y + CHECKBOX_BOXPADDING, x + m_iHeight - CHECKBOX_BOXPADDING, y + m_iHeight - CHECKBOX_BOXPADDING);
 
 	// Draw checkmark if checked
-	if(m_bIsChecked)
+	if (m_bIsChecked)
 	{
+		pSurface->DrawSetColor(fillColor);
 		pSurface->DrawFilledRect(
 			x + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING,
 			y + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING,
@@ -88,24 +62,7 @@ void CCheckbox::Draw(ISurface* pSurface)
 		);
 	}
 
-	pSurface->DrawSetTextFont(m_iFont);
-	pSurface->DrawSetTextColor(255, 255, 255, 255);
-	pSurface->DrawSetTextPos(x + (CHECKBOX_BOXPADDING * 2) + CHECKBOX_BOXSIZE, (y + m_iHeight / 2) - (height / 2));
-	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);
-}
-
-void CCheckbox::ContentText(const char* pText)
-{
-	if (m_pContentText)
-		delete[] m_pContentText;
-
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
-
-	m_iContentTextLen = strlen(pText) + 1;
-	m_pContentText = new char[m_iContentTextLen];
-	memcpy(m_pContentText, pText, m_iContentTextLen);
-
-	m_pContentTextW = new wchar_t[m_iContentTextLen];
-	mbstowcs(m_pContentTextW, m_pContentText, m_iContentTextLen);
+	// Draw label
+	m_pLabel->SetTextColor(textColor);
+	m_pLabel->Draw(pSurface);
 }

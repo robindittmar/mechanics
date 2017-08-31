@@ -33,7 +33,9 @@ void CInputHandler::CreateInput(CInputEvent* pEvent, bool bCreateMouseEvent)
 				pEvent->eventType = EVENT_TYPE_MOUSE;
 				pEvent->mousex = m_pGui->MouseX();
 				pEvent->mousey = m_pGui->MouseY();
-
+				pEvent->mousex_old = oldMouseX;
+				pEvent->mousey_old = oldMouseY;
+				
 				oldMouseX = m_pGui->MouseX();
 				oldMouseY = m_pGui->MouseY();
 				// Can't have mouse & keyboard event at the same time :P

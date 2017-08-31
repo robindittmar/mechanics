@@ -32,6 +32,14 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 
 		switch(iNameHash)
 		{
+		case 0xf65971fe: // game_newmap
+			this->game_newmap(pEvent);
+			break;
+		case 0x85d0b7d7: // cs_game_disconnected
+			this->cs_game_disconnected(pEvent);
+			break;
+		case 0x9f08124d: // switch_team
+			break;
 		case 0x5b325b2c: // player_hurt
 			this->player_hurt(pEvent);
 			break;
@@ -53,6 +61,35 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 int CGameEventListener::GetEventDebugID(void)
 {
 	return CEL_PROCEED_EVENT_HANDLING;
+}
+
+void CGameEventListener::game_newmap(IGameEvent* pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	if (!pApp->GetHooked() && pApp->GetInitialHookDone())
+	{
+		g_pConsole->Write("Rehooking...\n");
+		pApp->Rehook();
+	}
+
+	pApp->Chams()->ReloadMaterials();
+}
+
+void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+	
+	if(pApp->GetHooked())
+	{
+		g_pConsole->Write("Unhooking...\n");
+		pApp->Unhook();
+	}
+}
+
+void CGameEventListener::switch_team(IGameEvent* pEvent)
+{
+	
 }
 
 void CGameEventListener::player_hurt(IGameEvent* pEvent)

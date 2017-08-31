@@ -22,6 +22,18 @@ CWindow::~CWindow()
 		delete[] m_pTitle;
 }
 
+void CWindow::OnMouseMove(int mx, int my)
+{
+}
+
+void CWindow::OnMouseDown()
+{
+}
+
+void CWindow::OnMouseUp()
+{
+}
+
 void CWindow::ProcessEvent(CInputEvent* pEvent)
 {
 	if (!m_bIsEnabled)
@@ -29,6 +41,10 @@ void CWindow::ProcessEvent(CInputEvent* pEvent)
 
 	CGui* pGui = CGui::Instance();
 
+	// TODO: I'm struggling to move these into the above events
+	//       => OnMouseMove, OnMouseDown & OnMouseUp, since
+	//		 GetAbsolutePosition won't return the Titlebar.
+	//		 x, y, w and height define the ClientArea of a window
 	if(pEvent->eventType == EVENT_TYPE_MOUSE)
 	{
 		if(pEvent->buttons & EVENT_BTN_LMOUSE)

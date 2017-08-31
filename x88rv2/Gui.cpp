@@ -59,10 +59,20 @@ void CGui::DrawMouse(ISurface* pSurface)
 {
 	if(m_bDrawMouse)
 	{
-		pSurface->DrawSetColor(255, 0, 0, 128);
-		pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX, m_iMouseY + 10);
+		pSurface->DrawSetColor(255, 255, 255, 255);
+		pSurface->DrawSetTexture(g_pResourceManager->GetTexture(RM_TEXTURE_CURSOR));
+
+		// TODO:
+		Vertex_t v[4];
+		v[0].Init(Vector2D((float)m_iMouseX, (float)m_iMouseY));
+		v[1].Init(Vector2D((float)m_iMouseX + 20.0f, (float)m_iMouseY + 10.0f));
+		v[2].Init(Vector2D((float)m_iMouseX + 7.5f, (float)m_iMouseY + 10.0f));
+		v[3].Init(Vector2D((float)m_iMouseX, (float)m_iMouseY + 20.0f));
+		pSurface->DrawTexturedPolygon(4, v, false);
+
+		/*pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX, m_iMouseY + 10);
 		pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX + 10, m_iMouseY);
-		pSurface->DrawLine(m_iMouseX + 10, m_iMouseY, m_iMouseX, m_iMouseY + 10);
+		pSurface->DrawLine(m_iMouseX + 10, m_iMouseY, m_iMouseX, m_iMouseY + 10);*/
 	}
 }
 
