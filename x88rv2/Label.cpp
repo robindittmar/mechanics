@@ -57,6 +57,11 @@ void CLabel::Draw(ISurface* pSurface)
 	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);
 }
 
+void CLabel::GetTextSize(ISurface* pSurface, int& width, int& height)
+{
+	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);
+}
+
 void CLabel::SetContentText(const char* pText)
 {
 	if (m_pContentText)

@@ -30,6 +30,8 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
+	void GetTextSize(ISurface* pSurface, int& width, int& height);
+
 	void SetTextColor(Color c) { m_cTextColor = c; }
 	Color GetTextColor() { return m_cTextColor; }
 

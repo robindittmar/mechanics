@@ -153,6 +153,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bhop.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Canvas.cpp" />
     <ClCompile Include="Chams.cpp" />
     <ClCompile Include="Checkbox.cpp" />
     <ClCompile Include="ClientEntity.cpp" />
@@ -162,9 +163,11 @@
     <ClCompile Include="CWeapon.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="ESP.cpp" />
+    <ClCompile Include="Groupbox.cpp" />
     <ClCompile Include="IFeature.cpp" />
     <ClCompile Include="GameEventListener.cpp" />
     <ClCompile Include="Gui.cpp" />
+    <ClCompile Include="IMatRenderContext.cpp" />
     <ClCompile Include="InputEvent.cpp" />
     <ClCompile Include="IControl.cpp" />
     <ClCompile Include="IMaterialSystem.cpp" />
@@ -195,8 +198,10 @@
     <ClInclude Include="Aimbot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />
+    <ClInclude Include="Canvas.h" />
     <ClInclude Include="Chams.h" />
     <ClInclude Include="ColorPicker.h" />
+    <ClInclude Include="Groupbox.h" />
     <ClInclude Include="IBaseClientDLL.h" />
     <ClInclude Include="Bhop.h" />
     <ClInclude Include="Button.h" />
@@ -213,6 +218,8 @@
     <ClInclude Include="ClientFrameStage.h" />
     <ClInclude Include="Console.h" />
     <ClInclude Include="IClientState.h" />
+    <ClInclude Include="IMatRenderContext.h" />
+    <ClInclude Include="INetChannelInfo.h" />
     <ClInclude Include="InputEvent.h" />
     <ClInclude Include="IGameEvent.h" />
     <ClInclude Include="IGameEventManager.h" />
@@ -228,12 +235,14 @@
     <ClInclude Include="IMaterial.h" />
     <ClInclude Include="IMaterialSystem.h" />
     <ClInclude Include="IPhysicsSurfaceProps.h" />
+    <ClInclude Include="IRefCounted.h" />
     <ClInclude Include="ISurface.h" />
     <ClInclude Include="IVModelInfo.h" />
     <ClInclude Include="IVModelRender.h" />
     <ClInclude Include="IVRenderView.h" />
     <ClInclude Include="KeyValues.h" />
     <ClInclude Include="Label.h" />
+    <ClInclude Include="MathDefs.h" />
     <ClInclude Include="Misc.h" />
     <ClInclude Include="murmurhash.h" />
     <ClInclude Include="NetVar.h" />

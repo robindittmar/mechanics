@@ -67,15 +67,29 @@ void CChams::SetFlatModels(bool bFlatModels)
 
 void CChams::ReloadMaterials()
 {
-	m_pFlatHiddenCT->DecrementReferenceCount();
-	m_pFlatVisibleCT->DecrementReferenceCount();
-	m_pFlatHiddenT->DecrementReferenceCount();
-	m_pFlatVisibleT->DecrementReferenceCount();
+	if(m_pFlatHiddenCT)
+		m_pFlatHiddenCT->DecrementReferenceCount();
 
-	m_pLitHiddenCT->DecrementReferenceCount();
-	m_pLitVisibleCT->DecrementReferenceCount();
-	m_pLitHiddenT->DecrementReferenceCount();
-	m_pLitVisibleT->DecrementReferenceCount();
+	if (m_pFlatVisibleCT)
+		m_pFlatVisibleCT->DecrementReferenceCount();
+
+	if (m_pFlatHiddenT)
+		m_pFlatHiddenT->DecrementReferenceCount();
+
+	if (m_pFlatVisibleT)
+		m_pFlatVisibleT->DecrementReferenceCount();
+
+	if (m_pLitHiddenCT)
+		m_pLitHiddenCT->DecrementReferenceCount();
+
+	if (m_pLitVisibleCT)
+		m_pLitVisibleCT->DecrementReferenceCount();
+
+	if (m_pLitHiddenT)
+		m_pLitHiddenT->DecrementReferenceCount();
+
+	if (m_pLitVisibleT)
+		m_pLitVisibleT->DecrementReferenceCount();
 
 	m_bMaterialsInitialized = false;
 }

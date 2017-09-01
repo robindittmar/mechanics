@@ -8,39 +8,37 @@
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "Canvas.h"
 
 #define TITLEBAR_HEIGHT	30
+
+const Color g_clrTitlebar(255, 150, 150, 150);
+const Color g_clrClientRegion(150, 230, 230, 230);
 
 class CWindow : public IControl
 {
 public:
 	// x, y, w, h define the client area of the window
-	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "Window");
+	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "wnd");
 	~CWindow();
 
 	virtual void OnMouseMove(int mx, int my);
-	virtual void OnMouseDown();
-	virtual void OnMouseUp();
+	virtual void OnMouseDown(int mx, int my);
+	virtual void OnMouseUp(int mx, int my);
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
+	virtual void AddChild(IControl* pControl);
 	virtual void Draw(ISurface* pSurface);
 
 	void IsVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
 	bool IsVisible() { return m_bIsVisible; }
-
-	void Title(const char* pTitle);
-	const char* Title() { return (const char*)m_pTitle; }
 private:
+	CCanvas* m_pCanvas;
+	CLabel* m_pLabelTitle;
+
 	bool m_bIsVisible;
 
 	bool m_bIsDragging;
 	int m_iDragOffsetX, m_iDragOffsetY;
-
-	unsigned int m_iFont;
-
-	int m_iLenTitle;
-	char* m_pTitle;
-	wchar_t* m_pTitleW;
 };
 
 #endif // __GUI_WINDOW_H__

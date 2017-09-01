@@ -1,6 +1,7 @@
 #ifndef __IVRENDERVIEW_H__
 #define __IVRENDERVIEW_H__
 
+#include "IRefCounted.h"
 #include "Vector.h"
 
 // How many networked area portals do we allow?
@@ -54,13 +55,6 @@ struct WorldListInfo_t
 	int		m_LeafCount;
 	LeafIndex_t*		m_pLeafList;
 	LeafFogVolume_t*	m_pLeafFogVolume;
-};
-
-class IRefCounted
-{
-public:
-	virtual int AddRef() = 0;
-	virtual int Release() = 0;
 };
 
 class IWorldRenderList : public IRefCounted

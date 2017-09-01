@@ -13,6 +13,7 @@
 #include "ResourceManager.h"
 #include "NetVarManager.h"
 #include "Offsets.h"
+#include "MathDefs.h"
 
 // Features
 #include "Aimbot.h"
@@ -55,10 +56,6 @@
 
 #define RECOIL_COMPENSATION 2
 #define RECOIL_TRACKING 0.4499999f
-
-#define PI_F		3.1415f
-#define DEG2RAD(x)	((x / 180.0f) * PI_F)
-#define RAD2DEG(x)	((x * 180.0f) / PI_F)
 
 #define CLIENTDLL_SIZE	0x50E5000
 #define ENGINEDLL_SIZE	0x8C7000

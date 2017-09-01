@@ -6,6 +6,8 @@ IControl::IControl(int x, int y, int w, int h)
 	m_pParent = NULL;
 
 	m_bHitcheckForMouseMove = true;
+	m_bHitcheckForMouseUp = true;
+
 	m_bMouseOver = false;
 	m_bMouseDown = false;
 
@@ -65,17 +67,17 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 
 	CGui* pGui = CGui::Instance();
 
-	if(pEvent->eventType == EVENT_TYPE_MOUSE)
+	if (pEvent->eventType == EVENT_TYPE_MOUSE)
 	{
 		int x = 0, y = 0;
 		this->GetAbsolutePosition(&x, &y);
 
 		m_bMouseOver = pGui->IsMouseInRect(x, y, m_iWidth, m_iHeight);
-		if(m_bMouseOver) // Mouse inside control
+		if (m_bMouseOver) // Mouse inside control
 		{
-			if(pEvent->buttons & EVENT_BTN_LMOUSE)
+			if (pEvent->buttons & EVENT_BTN_LMOUSE)
 			{
-				if(pEvent->buttonProperties & EVENT_BTN_LMOUSE) // Button down
+				if (pEvent->buttonProperties & EVENT_BTN_LMOUSE) // Button down
 				{
 					this->OnMouseDown(pEvent->mousex, pEvent->mousey);
 					m_bMouseDown = true;
@@ -84,14 +86,14 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 				{
 					this->OnMouseUp(pEvent->mousex, pEvent->mousey);
 
-					if(m_bMouseDown)
+					if (m_bMouseDown)
 					{
 						this->OnClicked();
 						m_bMouseDown = false;
 					}
 				}
 			}
-			else if(pEvent->DidMouseMove())
+			else if (pEvent->DidMouseMove())
 			{
 				this->OnMouseMove(pEvent->mousex, pEvent->mousey);
 			}
@@ -103,6 +105,9 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 				pEvent->buttons & EVENT_BTN_LMOUSE &&
 				!(pEvent->buttonProperties & EVENT_BTN_LMOUSE))
 			{
+				if (!m_bHitcheckForMouseUp)
+					this->OnMouseUp(pEvent->mousex, pEvent->mousey);
+
 				m_bMouseDown = false;
 			}
 

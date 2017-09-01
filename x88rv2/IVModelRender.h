@@ -4,6 +4,9 @@
 #include "Vector.h"
 
 
+#define DECLARE_POINTER_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
+DECLARE_POINTER_HANDLE(StudioDecalHandle_t);
+
 //-----------------------------------------------------------------------------
 // forward declarations
 //-----------------------------------------------------------------------------
@@ -20,10 +23,66 @@ class LightCacheHandle_t;
 
 class DrawModelInfo_t;
 
+struct studioloddata_t
+{
+	// not needed - this is really the same as studiohwdata_t.m_NumStudioMeshes
+	//int					m_NumMeshes; 
+	void				*m_pMeshData; // there are studiohwdata_t.m_NumStudioMeshes of these.
+	float				m_SwitchPoint;
+	// one of these for each lod since we can switch to simpler materials on lower lods.
+	int					numMaterials;
+	IMaterial			**ppMaterials; /* will have studiohdr_t.numtextures elements allocated */
+									   // hack - this needs to go away.
+	int					*pMaterialFlags; /* will have studiohdr_t.numtextures elements allocated */
+
+										 // For decals on hardware morphing, we must actually do hardware skinning
+										 // For this to work, we have to hope that the total # of bones used by
+										 // hw flexed verts is < than the max possible for the dx level we're running under
+	int					*m_pHWMorphDecalBoneRemap;
+	int					m_nDecalBoneCount;
+};
+
+struct studiohwdata_t
+{
+	int					m_RootLOD;	// calced and clamped, nonzero for lod culling
+	int					m_NumLODs;
+	studioloddata_t		*m_pLODs;
+	int					m_NumStudioMeshes;
+
+	inline float LODMetric(float unitSphereSize) const { return (unitSphereSize != 0.0f) ? (100.0f / unitSphereSize) : 0.0f; }
+	inline int GetLODForMetric(float lodMetric) const
+	{
+		if (!m_NumLODs)
+			return 0;
+
+		// shadow lod is specified on the last lod with a negative switch
+		// never consider shadow lod as viable candidate
+		int numLODs = (m_pLODs[m_NumLODs - 1].m_SwitchPoint < 0.0f) ? m_NumLODs - 1 : m_NumLODs;
+
+		for (int i = m_RootLOD; i < numLODs - 1; i++)
+		{
+			if (m_pLODs[i + 1].m_SwitchPoint > lodMetric)
+				return i;
+		}
+
+		return numLODs - 1;
+	}
+};
+
+
 //-----------------------------------------------------------------------------
 // Model rendering state
 //-----------------------------------------------------------------------------
-class DrawModelState_t;
+struct DrawModelState_t
+{
+	studiohdr_t*			m_pStudioHdr;
+	studiohwdata_t*			m_pStudioHWData;
+	IClientRenderable*		m_pRenderable;
+	const matrix3x4_t*		m_pModelToWorld;
+	StudioDecalHandle_t		m_decals;
+	int						m_drawFlags;
+	int						m_lod;
+};
 
 //-----------------------------------------------------------------------------
 // Model Rendering + instance data
@@ -136,6 +195,10 @@ public:
 	virtual int	DrawModelEx(ModelRenderInfo_t &pInfo) = 0;
 
 	virtual int	DrawModelExStaticProp(ModelRenderInfo_t &pInfo) = 0;
+
+	virtual void Unknown1() = 0;
+	virtual void Unknown2() = 0;
+	virtual void Unknown3() = 0;
 
 	virtual bool DrawModelSetup(ModelRenderInfo_t &pInfo, DrawModelState_t *pState, matrix3x4_t *pCustomBoneToWorld, matrix3x4_t** ppBoneToWorldOut) = 0;
 	virtual void DrawModelExecute(const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld = NULL) = 0;

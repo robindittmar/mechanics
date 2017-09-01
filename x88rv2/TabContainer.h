@@ -9,6 +9,7 @@
 
 const Color g_clrTab(255, 80, 80, 80);
 const Color g_clrTabOver(255, 100, 100, 100);
+const Color g_clrTabMouseDown(255, 110, 110, 110);
 const Color g_clrTabSelected(255, 120, 120, 120);
 
 //const Color g_clrTabText(255, 255, 255, 255);

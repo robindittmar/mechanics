@@ -1,6 +1,9 @@
 #include "Application.h"
 #include "Vector.h"
 #include <math.h>
+#include "IMatRenderContext.h"
+
+//QAngle const&              GetRenderAngles(void) // VTable idx 12 @LocalEntity
 
 CreateMove_t CApplication::m_pCreateMove;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
@@ -313,9 +316,37 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
-		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		//pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		//pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
+
+	/*IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
+
+	if(pLocalEntity == pRenderEntity && pApp->Visuals()->GetThirdperson())
+	{
+		matrix3x4_t pMyMat[MAXSTUDIOBONES];
+		Vector origin = *pLocalEntity->GetOrigin();
+		QAngle ang = *pLocalEntity->GetAngEyeAngles();
+		ang.y = 90.0f;
+
+		for(int i = 0; i < MAXSTUDIOBONES; i++)
+		{
+			//origin = Vector(pCustomBoneToWorld[i].c[3]);
+			origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
+			origin.y = pCustomBoneToWorld[i].c[1][3];
+			origin.z = pCustomBoneToWorld[i].c[2][3];
+
+			AngleMatrix(ang, origin, pMyMat[i]);
+			//pCustomBoneToWorld->c[3][0] += 50.0f;
+			//pCustomBoneToWorld->c[3][1] += 50.0f;
+		
+			//pRenderInfo->pModelToWorld
+			//pCustomBoneToWorld->c[3][2] += 50.0f;
+		}
+
+		m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
+	}*/
 
 	// Call original func
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
@@ -772,15 +803,16 @@ void CApplication::Setup()
 	pSelectbox2->SetSelection(m_visuals.GetHandsDrawStyle());
 	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
 
-	CCheckbox* pDrawBoundingBox = new CCheckbox(16, 16, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
-	CCheckbox* pDrawHealthbar = new CCheckbox(16, 64, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
-	CCheckbox* pDrawHealthnumber = new CCheckbox(16, 112, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
-	CCheckbox* pDrawArmorbar = new CCheckbox(16, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
-	CCheckbox* pDrawOwnTeam = new CCheckbox(16, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
-	CCheckbox* pDrawOwnModel = new CCheckbox(16, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
-	CCheckbox* pDrawOnlySpotted = new CCheckbox(16, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
-	CCheckbox* pDrawOutline = new CCheckbox(160, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
-	CCheckbox* pDrawNames = new CCheckbox(160, 64, 128, 32, "Names", m_esp.GetDrawNames());
+	CGroupbox* pGroupbox = new CGroupbox(16, 16, 292, 312, "ESP");
+	CCheckbox* pDrawBoundingBox = new CCheckbox(4, 4, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
+	CCheckbox* pDrawHealthbar = new CCheckbox(4, 52, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
+	CCheckbox* pDrawHealthnumber = new CCheckbox(4, 100, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
+	CCheckbox* pDrawArmorbar = new CCheckbox(4, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
+	CCheckbox* pDrawOwnTeam = new CCheckbox(4, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
+	CCheckbox* pDrawOwnModel = new CCheckbox(4, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
+	CCheckbox* pDrawOnlySpotted = new CCheckbox(4, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
+	CCheckbox* pDrawOutline = new CCheckbox(136, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
+	CCheckbox* pDrawNames = new CCheckbox(136, 64, 128, 32, "Names", m_esp.GetDrawNames());
 
 	pDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, &m_esp, std::placeholders::_1));
 	pDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, &m_esp, std::placeholders::_1));
@@ -791,6 +823,16 @@ void CApplication::Setup()
 	pDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, &m_esp, std::placeholders::_1));
 	pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
 	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
+
+	pGroupbox->AddChild(pDrawBoundingBox);
+	pGroupbox->AddChild(pDrawHealthbar);
+	pGroupbox->AddChild(pDrawHealthnumber);
+	pGroupbox->AddChild(pDrawArmorbar);
+	pGroupbox->AddChild(pDrawOwnTeam);
+	pGroupbox->AddChild(pDrawOwnModel);
+	pGroupbox->AddChild(pDrawOnlySpotted);
+	pGroupbox->AddChild(pDrawOutline);
+	pGroupbox->AddChild(pDrawNames);
 
 	CCheckbox* pChamsDrawOwnTeam = new CCheckbox(304, 112, 128, 32, "Chams Own Team", m_chams.GetRenderTeam());
 	CCheckbox* pChamsDrawOwnModel = new CCheckbox(304, 160, 128, 32, "Chams Own Model", m_chams.GetRenderLocalplayer());
@@ -816,6 +858,10 @@ void CApplication::Setup()
 
 	CLabel* pLabelWip = new CLabel(0, 0, 600, 400, "[WIP]", RM_FONT_HEADER, LABEL_ORIENTATION_CENTER, Color(255, 255, 0, 0));
 
+	CGroupbox* groupBox = new CGroupbox(16, 16, 400, 300, "This is a CGroupbox");
+	CButton* pGroupBtn = new CButton();
+	groupBox->AddChild(pGroupBtn);
+
 	CTabContainer* pContainer = new CTabContainer();
 	CTabPage* pPage1 = new CTabPage("Rage");
 	CTabPage* pPage2 = new CTabPage("Legit");
@@ -831,7 +877,7 @@ void CApplication::Setup()
 
 	pPage2->AddChild(pLabelWip);
 
-	pPage3->AddChild(pDrawBoundingBox);
+	/*pPage3->AddChild(pDrawBoundingBox);
 	pPage3->AddChild(pDrawHealthbar);
 	pPage3->AddChild(pDrawHealthnumber);
 	pPage3->AddChild(pDrawArmorbar);
@@ -839,7 +885,8 @@ void CApplication::Setup()
 	pPage3->AddChild(pDrawOwnModel);
 	pPage3->AddChild(pDrawOnlySpotted);
 	pPage3->AddChild(pDrawOutline);
-	pPage3->AddChild(pDrawNames);
+	pPage3->AddChild(pDrawNames);*/
+	pPage3->AddChild(pGroupbox);
 	pPage3->AddChild(pCheck2);
 	pPage3->AddChild(pSelectbox2);
 	pPage3->AddChild(pSliderFlashAmnt);
@@ -853,12 +900,12 @@ void CApplication::Setup()
 	pPage4->AddChild(pSelectPitchAntiaim);
 	pPage4->AddChild(pSelectYawAntiaim);
 
+	pPage5->AddChild(groupBox);
+
 	pPage6->AddChild(pBtn);
 	pPage6->AddChild(new CColorPicker());
 	pPage6->AddChild(pSlider);
 	pPage6->AddChild(pSlider2);
-
-	pPage1->SetEnabled(true);
 
 	pContainer->AddChild(pPage1);
 	pContainer->AddChild(pPage2);
@@ -866,6 +913,7 @@ void CApplication::Setup()
 	pContainer->AddChild(pPage4);
 	pContainer->AddChild(pPage5);
 	pContainer->AddChild(pPage6);
+	pContainer->SelectTab(0);
 
 	m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
 	m_pWindow->AddChild(pContainer);

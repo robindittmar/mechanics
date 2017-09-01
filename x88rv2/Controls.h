@@ -5,6 +5,8 @@
 #include "Window.h"
 #include "TabContainer.h"
 #include "TabPage.h"
+#include "Groupbox.h"
+#include "Label.h"
 #include "Button.h"
 #include "Checkbox.h"
 #include "Selectbox.h"

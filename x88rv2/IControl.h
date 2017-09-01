@@ -69,6 +69,8 @@ protected:
 	std::vector<IControl*> m_pChildren;
 
 	bool m_bHitcheckForMouseMove;
+	bool m_bHitcheckForMouseUp;
+
 	bool m_bMouseOver;
 	bool m_bMouseDown;
 };

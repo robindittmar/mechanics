@@ -4,6 +4,7 @@ CTabContainer::CTabContainer() : IControl(0, 0, 0, 0)
 {
 	m_iCountTabs = 0;
 
+	m_iTabMouseDown = -1;
 	m_iMouseOverTab = -1;
 	m_iSelectedTab = -1;
 }
@@ -149,6 +150,11 @@ void CTabContainer::Draw(ISurface* pSurface)
 		if(m_iSelectedTab == i)
 		{
 			pSurface->DrawSetColor(g_clrTabSelected);
+			pSurface->DrawFilledRect(iCurX, iCurY, iCurX + iCurWidth, iCurY + iCurHeight);
+		}
+		else if(m_iTabMouseDown == i)
+		{
+			pSurface->DrawSetColor(g_clrTabMouseDown);
 			pSurface->DrawFilledRect(iCurX, iCurY, iCurX + iCurWidth, iCurY + iCurHeight);
 		}
 		else if(m_iMouseOverTab == i && m_bMouseOver)

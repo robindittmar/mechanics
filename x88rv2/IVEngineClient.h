@@ -6,6 +6,8 @@
 #ifndef __IVENGINECLIENT_H__
 #define __IVENGINECLIENT_H__
 
+#include "INetChannelInfo.h"
+
 // include file instead?
 #define NULL 0
 
@@ -19,7 +21,6 @@ class ISpatialQuery;
 class model_t;
 class Frustum_t;
 class AudioState_t;
-class INetChannelInfo;
 class matrix3x4_t;
 class CPhysCollide;
 class Color;

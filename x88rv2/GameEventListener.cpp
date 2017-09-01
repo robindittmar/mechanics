@@ -39,6 +39,7 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 			this->cs_game_disconnected(pEvent);
 			break;
 		case 0x9f08124d: // switch_team
+			this->switch_team(pEvent);
 			break;
 		case 0x5b325b2c: // player_hurt
 			this->player_hurt(pEvent);
