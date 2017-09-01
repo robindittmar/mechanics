@@ -325,6 +325,25 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
+
+
+	char pBuffer[16];
+	snprintf(pBuffer, 16, "%.3f", pEntity->GetLowerBodyYaw());
+	wchar_t pBuffW[16];
+	mbstowcs(pBuffW, pBuffer, 16);
+	int len = lstrlenW(pBuffW);
+
+	m_pApp->Surface()->DrawSetTextPos(posX + width / 2 + 5, posY - height + 5);
+	m_pApp->Surface()->DrawPrintText(pBuffW, len);
+
+	char pBuffer1[16];
+	snprintf(pBuffer1, 16, "%.3f", m_pApp->LastTickAngles().y);
+	wchar_t pBuffW1[16];
+	mbstowcs(pBuffW1, pBuffer1, 16);
+	int len1 = lstrlenW(pBuffW1);
+
+	m_pApp->Surface()->DrawSetTextPos(posX + width / 2 + 5, posY - height + 20);
+	m_pApp->Surface()->DrawPrintText(pBuffW1, len1);
 }
 
 

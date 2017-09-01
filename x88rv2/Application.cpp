@@ -198,12 +198,13 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
 			//todo: check if fake and if sendpackets false
-			/*if (flip)
-			{*/
-			pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
-			pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
-			pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
-			//}
+			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFake() ||
+				pApp->m_bSendPackets && !pApp->AntiAim()->IsFake())
+			{
+				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
+				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
+				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
+			}
 		}
 	}
 
@@ -219,9 +220,13 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
-			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
-			if (pEntity)
+			for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
 			{
+				IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(i);
+
+				if (!pEntity)
+					continue;
+
 				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
 
@@ -301,9 +306,9 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 		if (pLocalEntity->IsAlive())
 		{
 			pApp->Visuals()->FovChange(pViewSetup);
-			pApp->Visuals()->Thirdperson();
 			pApp->Visuals()->NoVisualRecoil(pViewSetup);
 		}
+		pApp->Visuals()->Thirdperson();
 	}
 	return m_pOverrideView(ecx, pViewSetup);
 }
@@ -676,7 +681,7 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATICJITTERBACKWARDS);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_GHETTOFAKELBY);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -716,7 +721,7 @@ void CApplication::Setup()
 	this->m_skinchanger.SetEnabled(true);
 	// TODO: Config und sowas
 	this->LoadSkinChangerConfig();
-	
+
 	// Visuals
 	this->m_visuals.SetEnabled(true);
 
