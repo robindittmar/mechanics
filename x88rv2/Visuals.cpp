@@ -175,10 +175,11 @@ void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 void CVisuals::Thirdperson()
 {
 	static Vector vecAngles;
-
-	if (!m_bThirdperson || !m_bIsEnabled)
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	bool localIsAlive = pLocalEntity->IsAlive();
+	if (!m_bThirdperson || !m_bIsEnabled || !localIsAlive)
 	{
-		if (m_pApp->Input()->m_fCameraInThirdPerson)
+		if (m_pApp->Input()->m_fCameraInThirdPerson || !localIsAlive)
 		{
 			m_pApp->Input()->m_fCameraInThirdPerson = false;
 			m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, 0);

@@ -187,7 +187,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update AntiAim
 			pApp->AntiAim()->Update(pUserCmd);
 
-
 			// Correct movement & angles
 			CorrectMovement(pUserCmd, qOldAngles);
 			NormalizeAngles(pUserCmd);
@@ -218,9 +217,13 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
-			IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(pApp->Aimbot()->SelectedTarget());
-			if (pEntity)
+			for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
 			{
+				IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(i);
+
+				if (!pEntity)
+					continue;
+
 				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
 
@@ -300,9 +303,9 @@ void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* 
 		if (pLocalEntity->IsAlive())
 		{
 			pApp->Visuals()->FovChange(pViewSetup);
-			pApp->Visuals()->Thirdperson();
 			pApp->Visuals()->NoVisualRecoil(pViewSetup);
 		}
+		pApp->Visuals()->Thirdperson();
 	}
 	return m_pOverrideView(ecx, pViewSetup);
 }
@@ -687,7 +690,7 @@ void CApplication::Setup()
 	this->m_skinchanger.SetEnabled(true);
 	// TODO: Config und sowas
 	this->LoadSkinChangerConfig();
-	
+
 	// Visuals
 	this->m_visuals.SetEnabled(true);
 
