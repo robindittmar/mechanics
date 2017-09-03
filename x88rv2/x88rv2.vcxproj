@@ -148,7 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Aimbot.cpp" />
+    <ClCompile Include="Ragebot.cpp" />
     <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Bhop.cpp" />
@@ -188,6 +188,7 @@
     <ClCompile Include="Slider.cpp" />
     <ClCompile Include="TabContainer.cpp" />
     <ClCompile Include="TabPage.cpp" />
+    <ClCompile Include="Triggerbot.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VTableHook.cpp" />
     <ClCompile Include="Visuals.cpp" />
@@ -195,7 +196,7 @@
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Aimbot.h" />
+    <ClInclude Include="Ragebot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />
     <ClInclude Include="Canvas.h" />
@@ -258,6 +259,7 @@
     <ClInclude Include="Slider.h" />
     <ClInclude Include="TabContainer.h" />
     <ClInclude Include="TabPage.h" />
+    <ClInclude Include="Triggerbot.h" />
     <ClInclude Include="UserCmd.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="IVEngineClient.h" />

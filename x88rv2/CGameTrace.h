@@ -23,9 +23,9 @@ struct cplane_t
 
 struct csurface_t
 {
-	const char     *name;
-	short          surfaceProps;
-	unsigned short flags;         // BUGBUG: These are declared per surface, not per material, but this database is per-material now
+	const char*		name;
+	short			surfaceProps;
+	unsigned short	flags;         // BUGBUG: These are declared per surface, not per material, but this database is per-material now
 };
 
 class CBaseTrace
@@ -68,7 +68,8 @@ public:
 	bool DidHitNonWorldEntity() const;
 	int GetEntityIndex() const;
 	bool DidHit() const;
-	bool IsVisible(IClientEntity* pTarget) const;
+	bool IsVisible() const;
+	bool IsEntityVisible(IClientEntity* pTarget = NULL) const;
 
 public:
 
@@ -132,7 +133,12 @@ inline bool CGameTrace::DidHit() const
 	return fraction < 1 || allsolid || startsolid;
 }
 
-inline bool CGameTrace::IsVisible(IClientEntity* pTarget) const
+inline bool CGameTrace::IsVisible() const
+{
+	return (fraction > 0.97f);
+}
+
+inline bool CGameTrace::IsEntityVisible(IClientEntity* pTarget) const
 {
 	return ((fraction > 0.97f) || (hit_entity == pTarget));
 }

@@ -167,14 +167,22 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		if (pLocalEntity->IsAlive())
 		{
 			// Save Viewangles before doing stuff
-			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
-			QAngle qOldAngles = pApp->ClientViewAngles();
+			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
+			QAngle qOldAngles = pApp->GetClientViewAngles();
 
+			// Create instance of CreateMoveParam
+			CreateMoveParam createMoveParam = { fInputSampleTime, pUserCmd };
+
+			// TODO @Nico: Muss AutoRevolver hier oben stehen? :) 
+			//			(ich meine ist im endeffekt echt latte, aber ist halt schöner
+			//			 alles von misc zusammen so. Vllt hier weil wegen muss vor Aimbot executed werden?
+			//			 -> dann bitte entsprechenden kommentar dran, danke <3)
 			pApp->Misc()->AutoRevolver(pUserCmd);
 
 			// Update Aimbot
-			AimbotUpdateParam aimBotParam = { fInputSampleTime, pUserCmd };
-			pApp->Aimbot()->Update((void*)&aimBotParam);
+			pApp->Ragebot()->Update((void*)&createMoveParam);
+			// Update Triggerbot
+			pApp->Triggerbot()->Update((void*)&createMoveParam);
 
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
@@ -195,7 +203,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			NormalizeAngles(pUserCmd);
 
 			// Set ViewAngles we prepared for display
-			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
+			pApp->EngineClient()->SetViewAngles(pApp->GetClientViewAngles());
 
 			//todo: check if fake and if sendpackets false
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFake() ||
@@ -321,8 +329,8 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
-		//pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		//pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 
 	/*IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
@@ -338,11 +346,12 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 		for(int i = 0; i < MAXSTUDIOBONES; i++)
 		{
 			//origin = Vector(pCustomBoneToWorld[i].c[3]);
-			origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
-			origin.y = pCustomBoneToWorld[i].c[1][3];
-			origin.z = pCustomBoneToWorld[i].c[2][3];
+			//origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
+			//origin.y = pCustomBoneToWorld[i].c[1][3];
+			//origin.z = pCustomBoneToWorld[i].c[2][3];
 
-			AngleMatrix(ang, origin, pMyMat[i]);
+			AngleMatrix(ang, pInfo.origin, pMyMat[i]);
+
 			//pCustomBoneToWorld->c[3][0] += 50.0f;
 			//pCustomBoneToWorld->c[3][1] += 50.0f;
 		
@@ -660,7 +669,8 @@ void CApplication::Setup()
 	Offsets::m_fThrowTime = netVarManager.GetOffset(1, basecsgrenade.ToCharArray(), CXorString("zTã–yêµCbè§").ToCharArray());
 
 	// Setups
-	this->m_aimbot.Setup();
+	this->m_ragebot.Setup();
+	this->m_triggerbot.Setup();
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
@@ -670,13 +680,16 @@ void CApplication::Setup()
 	this->m_visuals.Setup();
 
 	// Aimbot
-	this->m_aimbot.SetEnabled(true);
-	this->m_aimbot.SetAutoshoot(true);
-	this->m_aimbot.SetAutoscope(true);
-	this->m_aimbot.SetSilentAim(true);
-	this->m_aimbot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
-	this->m_aimbot.SetSpeed(1.0f);
-	this->m_aimbot.SetFov(360.0f);
+	this->m_ragebot.SetEnabled(true);
+	this->m_ragebot.SetAutoshoot(true);
+	this->m_ragebot.SetAutoscope(true);
+	this->m_ragebot.SetSilentAim(true);
+	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
+	this->m_ragebot.SetSpeed(1.0f);
+	this->m_ragebot.SetFov(360.0f);
+
+	// Triggerbot
+	this->m_triggerbot.SetEnabled(true);
 
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
@@ -762,17 +775,17 @@ void CApplication::Setup()
 	CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
 	pBtn->SetButtonClickEventHandler(DetachBtnClick);
 
-	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_aimbot.GetEnabled());
-	pAimbot->SetEventHandler(std::bind(&CAimbot::SetEnabled, &m_aimbot, std::placeholders::_1));
+	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_ragebot.GetEnabled());
+	pAimbot->SetEventHandler(std::bind(&CRagebot::SetEnabled, &m_ragebot, std::placeholders::_1));
 
-	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_aimbot.GetSilentAim());
-	pSilentAim->SetEventHandler(std::bind(&CAimbot::SetSilentAim, &m_aimbot, std::placeholders::_1));
+	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_ragebot.GetSilentAim());
+	pSilentAim->SetEventHandler(std::bind(&CRagebot::SetSilentAim, &m_ragebot, std::placeholders::_1));
 
-	CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_aimbot.GetAutoshoot());
-	pCheck->SetEventHandler(std::bind(&CAimbot::SetAutoshoot, &m_aimbot, std::placeholders::_1));
+	CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_ragebot.GetAutoshoot());
+	pCheck->SetEventHandler(std::bind(&CRagebot::SetAutoshoot, &m_ragebot, std::placeholders::_1));
 
-	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_aimbot.GetAutoscope());
-	pAutoScope->SetEventHandler(std::bind(&CAimbot::SetAutoscope, &m_aimbot, std::placeholders::_1));
+	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_ragebot.GetAutoscope());
+	pAutoScope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, &m_ragebot, std::placeholders::_1));
 
 	CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
 	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));

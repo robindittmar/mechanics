@@ -73,7 +73,7 @@ struct FireBulletData
 #define TARGETCRITERIA_ORIGIN					1
 #define TARGETCRITERIA_VIEWANGLES				2
 
-struct AimbotUpdateParam
+struct CreateMoveParam
 {
 	float fInputSampleTime;
 	CUserCmd* pUserCmd;
@@ -82,11 +82,11 @@ struct AimbotUpdateParam
 class IVEngineClient;
 class IClientEntityList;
 
-class CAimbot : public IFeature
+class CRagebot : public IFeature
 {
 public:
-	CAimbot();
-	~CAimbot();
+	CRagebot();
+	~CRagebot();
 
 	// Returns wether or not the Aimbot has got a target
 	bool HasTarget() { return m_bHasTarget; }

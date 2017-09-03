@@ -51,9 +51,6 @@
     <ClCompile Include="CreateInterface.cpp">
       <Filter>Source Engine\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Aimbot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Bhop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -168,6 +165,12 @@
     <ClCompile Include="IMatRenderContext.cpp">
       <Filter>Source Engine\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Triggerbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Ragebot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -199,9 +202,6 @@
     </ClInclude>
     <ClInclude Include="Vector.h">
       <Filter>Source Engine\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Aimbot.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Bhop.h">
       <Filter>Header Files</Filter>
@@ -378,6 +378,12 @@
       <Filter>Source Engine\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MathDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Triggerbot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Ragebot.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

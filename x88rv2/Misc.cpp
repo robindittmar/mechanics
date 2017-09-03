@@ -25,7 +25,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
 	if (!m_bIsEnabled ||
 		!m_bNoRecoil ||
-		m_pApp->Aimbot()->DidNoRecoil() ||
+		m_pApp->Ragebot()->DidNoRecoil() ||
 		!(pUserCmd->buttons & IN_ATTACK))
 	{
 		m_pApp->m_oldAimPunchAngle.x = 0;
@@ -39,7 +39,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 		activeWeapon->IsPistol() && !m_pApp->Visuals()->GetNoVisualRecoil()) //todo: maybe norecoil while pistol
 		return;
 
-	if (m_pApp->Aimbot()->DidNoRecoil())
+	if (m_pApp->Ragebot()->DidNoRecoil())
 		return;
 
 	int shotsFired = pLocalEntity->GetShotsFired();
@@ -56,7 +56,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 		m_pApp->m_viewAngle.x += (m_pApp->m_oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
 		m_pApp->m_viewAngle.y += (m_pApp->m_oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
 
-		m_pApp->ClientViewAngles(m_pApp->m_viewAngle);
+		m_pApp->SetClientViewAngles(m_pApp->m_viewAngle);
 
 		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
@@ -325,7 +325,7 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_pApp->Aimbot()->GetEnabled())
+	if (!m_pApp->Ragebot()->GetEnabled())
 		return;
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
