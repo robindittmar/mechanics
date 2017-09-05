@@ -22,7 +22,7 @@ float GetOutgoingLatency()
 	INetChannelInfo *nci = CApplication::Instance()->EngineClient()->GetNetChannelInfo();
 	if (nci)
 	{
-		float OutgoingLatency = nci->GetAvgLatency(FLOW_OUTGOING);
+		float OutgoingLatency = nci->GetLatency(FLOW_OUTGOING);
 		return OutgoingLatency;
 	}
 	else
@@ -182,14 +182,22 @@ void CAntiAim::Update(void* pParameters)
 	{
 		angles.y += flFakeAngle * 2;
 	}
-
+	
+	bool lbyUpdate = false;
 	if (m_pApp->m_flOldLby != pLocalEntity->GetLowerBodyYaw())
 	{
 		m_pApp->m_flOldLby = pLocalEntity->GetLowerBodyYaw();
 		m_pApp->m_flRealLbyUpdateTime = m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
+		lbyUpdate = true;
+	}
+	
+	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
+	{
+		m_pApp->m_bLbyUpdate = true;
+		angles.y += 180;
 	}
 
-	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.1 < m_pApp->GlobalVars()->curtime;
+	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.2 < m_pApp->GlobalVars()->curtime;
 
 	pUserCmd->viewangles[0] = angles.x;
 	pUserCmd->viewangles[1] = angles.y;

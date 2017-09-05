@@ -197,6 +197,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update AutoStrafe
 			pApp->Misc()->AutoStrafe(pUserCmd);
 
+			// Jumpscout fix
+			pApp->Misc()->JumpScout(pUserCmd);
+
 			// Update AntiAim
 			pApp->AntiAim()->Update(pUserCmd);
 
@@ -747,14 +750,14 @@ void CApplication::Setup()
 	this->m_ragebot.SetFov(360.0f);
 
 	// Triggerbot
-	this->m_triggerbot.SetEnabled(true);
+	this->m_triggerbot.SetEnabled(false);
 
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT); // 10 fake lby test
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT); 
 
-																 // Bhop
+	// Bhop
 	this->m_bhop.SetEnabled(true);
 
 	// ESP
@@ -787,6 +790,7 @@ void CApplication::Setup()
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 	this->m_misc.SetDisablePostProcessing(true);
+	this->m_misc.SetJumpScout(true);
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
