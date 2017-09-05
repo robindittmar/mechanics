@@ -53,6 +53,9 @@ public:
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int GetFovValue() { return m_iFovValue; }
 
+	void SetDrawLbyIndicator(bool bLbyIndicator) { m_bLbyIndicator = bLbyIndicator; }
+	bool GetDrawLbyIndicator() { return m_bLbyIndicator; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -91,6 +94,8 @@ private:
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
+
+	bool m_bLbyIndicator;
 };
 
 #endif // __VISUALS_H__

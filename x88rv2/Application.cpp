@@ -166,6 +166,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 		if (pLocalEntity->IsAlive())
 		{
+			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
+
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->ClientViewAngles());
 			QAngle qOldAngles = pApp->ClientViewAngles();
@@ -198,13 +200,18 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->SetViewAngles(pApp->ClientViewAngles());
 
 			//todo: check if fake and if sendpackets false
-			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFake() ||
-				pApp->m_bSendPackets && !pApp->AntiAim()->IsFake())
+			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
+				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
+				pApp->m_bLbyUpdate)
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
 				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
 			}
+		}
+		else
+		{
+			pApp->m_bLBY = false;
 		}
 	}
 
@@ -321,37 +328,9 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
-		//pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		//pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
-
-	/*IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-	IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
-
-	if(pLocalEntity == pRenderEntity && pApp->Visuals()->GetThirdperson())
-	{
-		matrix3x4_t pMyMat[MAXSTUDIOBONES];
-		Vector origin = *pLocalEntity->GetOrigin();
-		QAngle ang = *pLocalEntity->GetAngEyeAngles();
-		ang.y = 90.0f;
-
-		for(int i = 0; i < MAXSTUDIOBONES; i++)
-		{
-			//origin = Vector(pCustomBoneToWorld[i].c[3]);
-			origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
-			origin.y = pCustomBoneToWorld[i].c[1][3];
-			origin.z = pCustomBoneToWorld[i].c[2][3];
-
-			AngleMatrix(ang, origin, pMyMat[i]);
-			//pCustomBoneToWorld->c[3][0] += 50.0f;
-			//pCustomBoneToWorld->c[3][1] += 50.0f;
-		
-			//pRenderInfo->pModelToWorld
-			//pCustomBoneToWorld->c[3][2] += 50.0f;
-		}
-
-		m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
-	}*/
 
 	// Call original func
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
@@ -398,6 +377,57 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Menu least ;)
 			pApp->m_pWindow->Draw(pApp->Surface());
 			pApp->m_pGui->DrawMouse(pApp->Surface());
+
+			if (pApp->Visuals()->GetDrawLbyIndicator())
+			{
+				IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+				// todo. draw lby auslagern
+				static unsigned long font = NULL;
+				if (font == NULL)
+				{
+					font = pApp->Surface()->SCreateFont();
+					pApp->Surface()->SetFontGlyphSet(font, "Arial-Black", 20, 255, 0, 0, 0x200);
+				}
+				pApp->Surface()->DrawSetTextFont(font);
+
+				if (pApp->m_bLBY)
+					pApp->Surface()->DrawSetTextColor(255, 0, 255, 0);
+				else
+					pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+
+				int w, h;
+				pApp->EngineClient()->GetScreenSize(w, h);
+				pApp->Surface()->DrawSetTextPos(25, h - 55);
+				pApp->Surface()->DrawPrintText(L"LBY", 4);
+
+				static unsigned long font1 = NULL;
+				if (font1 == NULL)
+				{
+					font1 = pApp->Surface()->SCreateFont();
+					pApp->Surface()->SetFontGlyphSet(font1, "Arial-Black", 14, 255, 0, 0, 0x200);
+				}
+				pApp->Surface()->DrawSetTextFont(font1);
+				pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+
+				char pBuffer[16];
+				snprintf(pBuffer, 16, "%i", (int)pLocalEntity->GetLowerBodyYaw());
+				wchar_t pBuffW[16];
+				mbstowcs(pBuffW, pBuffer, 16);
+				int len = lstrlenW(pBuffW);
+
+				pApp->Surface()->DrawSetTextPos(65, h - 57);
+				pApp->Surface()->DrawPrintText(pBuffW, len);
+
+				char pBuffer1[16];
+
+				snprintf(pBuffer1, 16, "%i", (int)pApp->m_qLastTickAngles.y);
+				wchar_t pBuffW1[16];
+				mbstowcs(pBuffW1, pBuffer1, 16);
+				int len1 = lstrlenW(pBuffW1);
+
+				pApp->Surface()->DrawSetTextPos(65, h - 46);
+				pApp->Surface()->DrawPrintText(pBuffW1, len1);
+			}
 		}
 	}
 
@@ -681,9 +711,9 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_GHETTOFAKELBY);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT); // 10 fake lby test
 
-	// Bhop
+																 // Bhop
 	this->m_bhop.SetEnabled(true);
 
 	// ESP
@@ -730,6 +760,7 @@ void CApplication::Setup()
 	this->m_visuals.SetNoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
 	this->m_visuals.SetNoVisualRecoil(true);
+	this->m_visuals.SetDrawLbyIndicator(true);
 
 	this->m_visuals.SetNoFlash(true);
 	this->m_visuals.SetFlashPercentage(0.f);
@@ -739,7 +770,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(false);
+	this->m_visuals.SetFovChangeScoped(true);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
@@ -750,7 +781,7 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
 
-	// Create all Gui stuff
+																										  // Create all Gui stuff
 	m_pGui = CGui::Instance();
 
 	// Initialize InputHandler
@@ -788,17 +819,18 @@ void CApplication::Setup()
 	pSelectbox->AddOption(6, "SIEG");
 
 	// TODO: Groupbox -> "Antiaim" :D
-	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
+	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch", this->AntiAim()->GetPitchSetting());
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
 	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
 
-	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
+	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw", this->AntiAim()->GetYawSetting());
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT (NAME VIEL ZU LANG LOL)");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT");
+	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALRIGHTFAKELEFT, "REAL RIGHT FAKE LEFT");
 	pSelectYawAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
 
 	CSelectbox* pSelectbox2 = new CSelectbox(304, 16, 128, 32);
