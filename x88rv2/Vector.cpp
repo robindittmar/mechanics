@@ -99,16 +99,16 @@ float DotProduct(Vector& v1, const float* v2)
 
 void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out)
 {
-	out.x = DotProduct(vIn, mIn.c[0]) + mIn.c[0][3];
-	out.y = DotProduct(vIn, mIn.c[1]) + mIn.c[1][3];
-	out.z = DotProduct(vIn, mIn.c[2]) + mIn.c[2][3];
+	out.x = DotProduct(vIn, mIn[0]) + mIn[0][3];
+	out.y = DotProduct(vIn, mIn[1]) + mIn[1][3];
+	out.z = DotProduct(vIn, mIn[2]) + mIn[2][3];
 }
 
 void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out)
 {
-	out.c[0][column] = in.x;
-	out.c[1][column] = in.y;
-	out.c[2][column] = in.z;
+	out[0][column] = in.x;
+	out[1][column] = in.y;
+	out[2][column] = in.z;
 }
 
 void AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix)
@@ -126,23 +126,23 @@ void AngleMatrix(const QAngle &angles, matrix3x4_t& matrix)
 	SinCos(DEG2RAD(angles[2]), &sr, &cr);
 
 	// matrix = (YAW * PITCH) * ROLL
-	matrix.c[0][0] = cp*cy;
-	matrix.c[1][0] = cp*sy;
-	matrix.c[2][0] = -sp;
+	matrix[0][0] = cp*cy;
+	matrix[1][0] = cp*sy;
+	matrix[2][0] = -sp;
 
 	float crcy = cr*cy;
 	float crsy = cr*sy;
 	float srcy = sr*cy;
 	float srsy = sr*sy;
-	matrix.c[0][1] = sp*srcy - crsy;
-	matrix.c[1][1] = sp*srsy + crcy;
-	matrix.c[2][1] = sr*cp;
+	matrix[0][1] = sp*srcy - crsy;
+	matrix[1][1] = sp*srsy + crcy;
+	matrix[2][1] = sr*cp;
 
-	matrix.c[0][2] = (sp*crcy + srsy);
-	matrix.c[1][2] = (sp*crsy - srcy);
-	matrix.c[2][2] = cr*cp;
+	matrix[0][2] = (sp*crcy + srsy);
+	matrix[1][2] = (sp*crsy - srcy);
+	matrix[2][2] = cr*cp;
 
-	matrix.c[0][3] = 0.0f;
-	matrix.c[1][3] = 0.0f;
-	matrix.c[2][3] = 0.0f;
+	matrix[0][3] = 0.0f;
+	matrix[1][3] = 0.0f;
+	matrix[2][3] = 0.0f;
 }

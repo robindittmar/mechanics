@@ -6,6 +6,7 @@
 #ifndef __IVENGINECLIENT_H__
 #define __IVENGINECLIENT_H__
 
+#include "PlayerInfo.h"
 #include "INetChannelInfo.h"
 
 // include file instead?
@@ -18,10 +19,10 @@ class SurfInfo;
 class IMaterial;
 class IMaterialSystem;
 class ISpatialQuery;
-class model_t;
+struct model_t;
 class Frustum_t;
 class AudioState_t;
-class matrix3x4_t;
+struct matrix3x4_t;
 class CPhysCollide;
 class Color;
 class IAchievementMgr;

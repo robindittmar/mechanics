@@ -87,13 +87,13 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	QAngle angles;
-	if (m_pApp->Aimbot()->HasTarget())
+	if (m_pApp->Ragebot()->HasTarget())
 	{
-		angles = *m_pApp->Aimbot()->GetAimAngles();
+		angles = *m_pApp->Ragebot()->GetAimAngles();
 	}
 	else
 	{
-		angles = m_pApp->ClientViewAngles();
+		angles = m_pApp->GetClientViewAngles();
 	}
 
 	static bool bFakeAngles = true;

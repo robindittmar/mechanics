@@ -1,7 +1,7 @@
-#include "Aimbot.h"
+#include "Ragebot.h"
 #include "Application.h"
 
-CAimbot::CAimbot()
+CRagebot::CRagebot()
 {
 	m_bSilentAim = false;
 	m_bAutoshoot = true;
@@ -13,11 +13,11 @@ CAimbot::CAimbot()
 	m_fFov = 360.0f;
 }
 
-CAimbot::~CAimbot()
+CRagebot::~CRagebot()
 {
 }
 
-void CAimbot::Setup()
+void CRagebot::Setup()
 {
 	m_pApp = CApplication::Instance();
 
@@ -35,7 +35,7 @@ int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
 	return 0;
 }
 
-void CAimbot::Update(void* pParameters)
+void CRagebot::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;
@@ -43,14 +43,14 @@ void CAimbot::Update(void* pParameters)
 	this->ResetTickVariables();
 
 	// Local vars
-	AimbotUpdateParam* pParam;
+	CreateMoveParam* pParam;
 	CUserCmd* pUserCmd;
 	IClientEntity* pLocalEntity;
 	// TODO
 	//*m_pApp->m_bSendPackets = true;
 
 	// Initialize local variables
-	pParam = (AimbotUpdateParam*)pParameters;
+	pParam = (CreateMoveParam*)pParameters;
 	pUserCmd = pParam->pUserCmd;
 	pLocalEntity = m_pEntityList->GetClientEntity(m_pEngineClient->GetLocalPlayer());
 
@@ -62,7 +62,7 @@ void CAimbot::Update(void* pParameters)
 	// (we do so before applying NoRecoil :D)
 	if (!this->m_bSilentAim)
 	{
-		m_pApp->ClientViewAngles(m_qAimAngles);
+		m_pApp->SetClientViewAngles(m_qAimAngles);
 	}
 
 	// Do NoRecoil
@@ -338,7 +338,7 @@ QAngle ACalcAngle(Vector& vStartPos, Vector& vEndPos)
 	return qAngle;
 }
 
-bool CAimbot::CanHit(Vector &point, float *damage_given)
+bool CRagebot::CanHit(Vector &point, float *damage_given)
 {
 	IClientEntity* local = (IClientEntity*)CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
@@ -364,7 +364,7 @@ bool CAimbot::CanHit(Vector &point, float *damage_given)
 
 
 
-QAngle CAimbot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
+QAngle CRagebot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
 {
 	Vector vRelativeDist = vEndPos - vStartPos;
 	QAngle qAngle(
@@ -376,11 +376,12 @@ QAngle CAimbot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
 	return qAngle;
 }
 
-void CAimbot::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
+void CRagebot::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
 {
 	Vector bbmin;
 	Vector bbmax;
-
+	
+	// TODO: Try FixHitbox instead (trace from edge points to center and use trace.endpos as new edge)
 	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
 	bbmin = (hitBox->m_vecBBMin - fMod) * 0.65f;
 	bbmax = (hitBox->m_vecBBMax + fMod) * 0.65f;
@@ -407,12 +408,12 @@ void CAimbot::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, V
 }
 
 
-float CAimbot::GetOriginDist(Vector& vSource, Vector& vTarget)
+float CRagebot::GetOriginDist(Vector& vSource, Vector& vTarget)
 {
 	return (vTarget - vSource).Length();
 }
 
-float CAimbot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/)
+float CRagebot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/)
 {
 	QAngle qDist = qTarget - qSource;
 	qDist.Normalize();
@@ -423,7 +424,7 @@ float CAimbot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOrigi
 	return fAng;
 }
 
-void inline CAimbot::ResetTickVariables()
+void inline CRagebot::ResetTickVariables()
 {
 	m_bHasTarget = false;
 	m_bIsShooting = false;
@@ -432,7 +433,7 @@ void inline CAimbot::ResetTickVariables()
 	m_fDamage = 0.0f;
 }
 
-bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
+bool CRagebot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	// No selected target
 	m_iSelectedTarget = -1;
@@ -480,7 +481,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);
 	vMyHeadPos += *pLocalEntity->GetEyeOffset();
 	pMyActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-	qLocalViewAngles = m_pApp->ClientViewAngles();
+	qLocalViewAngles = m_pApp->GetClientViewAngles();
 	
 	//g_pConsole->Write("%f\n", pMyActiveWeapon->GetAccuracyPenalty());
 
@@ -569,7 +570,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			ray.Init(vMyHeadPos, vHitbox[i]);
 			pEngineTrace->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-			if (trace.IsVisible(pCurEntity))
+			if (trace.IsEntityVisible(pCurEntity))
 			{
 				vEnemyHeadPos = vHitbox[i];
 				bIsHittable = true;
@@ -697,7 +698,7 @@ bool CAimbot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 	return (m_iSelectedTarget != -1);
 }
 
-void CAimbot::ApplyNoRecoil(IClientEntity* pLocalEntity)
+void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 {
 	// If we have no recoil activated in the aimbot, do it
 	// (and remember that we did!)
@@ -714,7 +715,7 @@ void CAimbot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 	}
 }
 
-void CAimbot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity)
+void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity)
 {
 	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
@@ -748,7 +749,7 @@ void CAimbot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalE
 	}
 }
 
-void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
+void inline CRagebot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime)
 {
 	if (fNextPrimaryAttack <= fServerTime)
 	{
@@ -760,7 +761,7 @@ void inline CAimbot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float f
 	}
 }
 
-void inline CAimbot::Aim(CUserCmd* pUserCmd)
+void inline CRagebot::Aim(CUserCmd* pUserCmd)
 {
 	// Write viewangles
 	pUserCmd->viewangles[0] = m_qAimAngles.x;

@@ -16,7 +16,8 @@
 #include "MathDefs.h"
 
 // Features
-#include "Aimbot.h"
+#include "Ragebot.h"
+#include "Triggerbot.h"
 #include "Antiaim.h"
 #include "Bhop.h"
 #include "ESP.h"
@@ -144,7 +145,8 @@ public:
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 
 	// Features
-	CAimbot* Aimbot() { return (CAimbot*)&m_aimbot; }
+	CRagebot* Ragebot() { return (CRagebot*)&m_ragebot; }
+	CTriggerbot* Triggerbot() { return (CTriggerbot*)&m_triggerbot; }
 	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim; }
 	CBhop* Bhop() { return (CBhop*)&m_bhop; }
 	CEsp* Esp() { return (CEsp*)&m_esp; }
@@ -160,8 +162,8 @@ public:
 	CGui* Gui() { return m_pGui; }
 
 	// Client ViewAngles
-	QAngle& ClientViewAngles() { return m_qClientViewAngles; }
-	void ClientViewAngles(QAngle& q) { m_qClientViewAngles = q; }
+	QAngle& GetClientViewAngles() { return m_qClientViewAngles; }
+	void SetClientViewAngles(QAngle& q) { m_qClientViewAngles = q; }
 
 	// Viewangles of last tick
 	QAngle LastTickAngles() { return m_qLastTickAngles; }
@@ -242,7 +244,8 @@ private:
 	QAngle m_qLastTickAngles;
 
 	// Features
-	CAimbot m_aimbot;
+	CRagebot m_ragebot;
+	CTriggerbot m_triggerbot;
 	CAntiAim m_antiAim;
 	CBhop m_bhop;
 	CEsp m_esp;
