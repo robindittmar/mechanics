@@ -178,9 +178,9 @@ void CAntiAim::Update(void* pParameters)
 		break;
 	}
 
-	if (m_bIsFakeYaw && NextLBYUpdate())
+	if (m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets)
 	{
-		angles.y += flFakeAngle * 2;
+		angles.y += -flRealAngle + flFakeAngle;
 	}
 	
 	bool lbyUpdate = false;
@@ -194,7 +194,7 @@ void CAntiAim::Update(void* pParameters)
 	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
 	{
 		m_pApp->m_bLbyUpdate = true;
-		angles.y += 180;
+		angles.y += RandomInt(-180, 180);
 	}
 
 	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.2 < m_pApp->GlobalVars()->curtime;

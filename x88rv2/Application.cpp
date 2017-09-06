@@ -815,7 +815,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(true);
+	this->m_visuals.SetFovChangeScoped(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
