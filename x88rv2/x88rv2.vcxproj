@@ -183,6 +183,8 @@
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Selectbox.cpp" />
+    <ClCompile Include="SelectboxItem.cpp" />
+    <ClCompile Include="SelectboxPopup.cpp" />
     <ClCompile Include="SkinChanger.cpp" />
     <ClCompile Include="SkinMetadata.cpp" />
     <ClCompile Include="Slider.cpp" />
@@ -254,6 +256,8 @@
     <ClInclude Include="ray.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Selectbox.h" />
+    <ClInclude Include="SelectboxItem.h" />
+    <ClInclude Include="SelectboxPopup.h" />
     <ClInclude Include="SkinChanger.h" />
     <ClInclude Include="SkinMetadata.h" />
     <ClInclude Include="Slider.h" />

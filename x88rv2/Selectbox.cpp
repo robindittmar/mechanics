@@ -1,31 +1,37 @@
 #include "Selectbox.h"
+#include "Window.h"
 
 CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int selection) : IControl(x, y, w, h)
 {
-	m_bExpanded = false;
-
-	m_iLenLargestOptionString = -1;
-	m_iLargestOptionStringIndex = -1;
-
 	m_iCountOptions = 0;
 	m_iSelection = selection;
 
-	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
+	m_bPopupInitialized = false;
+	m_pPopup = new CSelectboxPopup(0, h - 1);
+
+	m_pLabel = new CLabel(0, -20, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pSelectionLabel = new CLabel(SELECTBOX_PADDING, 0, w, h);
+
+	this->AddChild(m_pLabel);
+	this->AddChild(m_pSelectionLabel);
 }
 
 CSelectbox::~CSelectbox()
 {
-	wchar_t* pCurrent;
-	for(std::vector<wchar_t*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
+	if (m_pPopup)
+		delete m_pPopup;
+
+	CSelectboxItem* pCurrent;
+	for(std::vector<CSelectboxItem*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
 	{
 		pCurrent = *it;
 
 		if (pCurrent)
-			delete[] pCurrent;
+			delete pCurrent;
 	}
 }
 
-void CSelectbox::ProcessEvent(CInputEvent* pEvent)
+/*void CSelectbox::ProcessEvent(CInputEvent* pEvent)
 {
 	if (!m_bIsEnabled)
 		return;
@@ -61,7 +67,7 @@ void CSelectbox::ProcessEvent(CInputEvent* pEvent)
 								m_iSelection = i;
 
 								if (m_pEventHandler)
-									m_pEventHandler(m_vOptionIds[m_iSelection]);
+									m_pEventHandler(m_vOptions[m_iSelection]->GetId());
 
 								break;
 							}
@@ -75,6 +81,19 @@ void CSelectbox::ProcessEvent(CInputEvent* pEvent)
 			}
 		}
 	}
+}*/
+
+void CSelectbox::OnClicked()
+{
+	CWindow* pWindow = (CWindow*)this->GetParentWindow();
+
+	if (!m_bPopupInitialized)
+	{
+		m_pPopup->SetSelectbox(this);
+		m_pPopup->SetParentWindow(pWindow);
+	}
+
+	pWindow->SetPopup(m_pPopup);
 }
 
 void CSelectbox::Draw(ISurface* pSurface)
@@ -85,61 +104,30 @@ void CSelectbox::Draw(ISurface* pSurface)
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	int width, height;
-	pSurface->GetTextSize(m_iFont, m_vOptions[m_iSelection], width, height);
-
 	// Draw box that holds the current selection
 	pSurface->DrawSetColor(255, 50, 50, 50);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
-	// Draw current selection
-	pSurface->DrawSetTextFont(m_iFont);
-	pSurface->DrawSetTextColor(255, 255, 255, 255);
-	pSurface->DrawSetTextPos(x + SELECTBOX_PADDING, (y + m_iHeight / 2) - (height / 2));
-	pSurface->DrawPrintText(m_vOptions[m_iSelection], m_vOptionsLength[m_iSelection]);
-
-	// Draw all other options if expanded :)
-	if (m_bExpanded)
-	{
-		// Get size of longest string
-		pSurface->GetTextSize(m_iFont, m_vOptions[m_iLargestOptionStringIndex], width, height);
-
-		// Save row width/height for event handling
-		m_iRowRenderWidth = width;
-		m_iRowRenderHeight = height;
-
-		// Render popup box first
-		pSurface->DrawSetColor(255, 50, 50, 50);
-		pSurface->DrawFilledRect(x, y + m_iHeight, x + width, y + m_iHeight + ((height + SELECTBOX_PADDING) * m_iCountOptions));
-
-		// Render options
-		int iCurY = y + m_iHeight + SELECTBOX_PADDING;
-		pSurface->DrawSetTextColor(255, 255, 255, 255);
-		for (int i = 0; i < m_iCountOptions; i++)
-		{
-			pSurface->DrawSetTextPos(x + SELECTBOX_PADDING, iCurY);
-			pSurface->DrawPrintText(m_vOptions[i], m_vOptionsLength[i]);
-
-			iCurY += height + SELECTBOX_PADDING;
-		}
-	}
+	// Draw labels
+	IControl::Draw(pSurface);
 }
 
 void CSelectbox::AddOption(int id, const char* text)
 {
-	int iLen = strlen(text);
-	wchar_t* pOption = new wchar_t[iLen + 1];
-	mbstowcs(pOption, text, iLen);
-
-	m_vOptionIds.push_back(id);
+	CSelectboxItem* pOption = new CSelectboxItem(id, text);
 	m_vOptions.push_back(pOption);
-	m_vOptionsLength.push_back(iLen);
-
-	if(iLen > m_iLenLargestOptionString)
-	{
-		m_iLenLargestOptionString = iLen;
-		m_iLargestOptionStringIndex = m_iCountOptions;
-	}
+	m_pPopup->AddOption(m_iCountOptions, text, pOption->GetContentTextLength());
 
 	m_iCountOptions++;
+}
+
+void CSelectbox::SetSelection(int iSelection)
+{
+	m_iSelection = iSelection;
+
+	if (m_iSelection >= 0 && m_iSelection < m_iCountOptions)
+		m_pSelectionLabel->SetContentText(m_vOptions[m_iSelection]->GetContentText());
+
+	if (m_pEventHandler)
+		m_pEventHandler(m_vOptions[m_iSelection]->GetId());
 }

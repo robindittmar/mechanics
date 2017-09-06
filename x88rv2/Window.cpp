@@ -8,6 +8,8 @@ CWindow::CWindow(int x, int y, int w, int h, const char* pTitle) : IControl(x, y
 	m_bIsVisible = false;
 	m_bIsDragging = false;
 
+	m_pPopup = NULL;
+
 	m_pLabelTitle = new CLabel(0, 0, w, TITLEBAR_HEIGHT, pTitle, RM_FONT_HEADER, LABEL_ORIENTATION_CENTER);
 	m_pCanvas = new CCanvas(0, TITLEBAR_HEIGHT, m_iWidth, m_iHeight - TITLEBAR_HEIGHT, g_clrClientRegion);
 
@@ -64,6 +66,14 @@ void CWindow::AddChild(IControl* pControl)
 	m_pCanvas->AddChild(pControl);
 }
 
+void CWindow::ProcessEvent(CInputEvent* pEvent)
+{
+	if (m_pPopup)
+		m_pPopup->ProcessEvent(pEvent);
+	else
+		IControl::ProcessEvent(pEvent);
+}
+
 void CWindow::Draw(ISurface* pSurface)
 {
 	if (!m_bIsVisible || !m_bIsEnabled)
@@ -76,4 +86,8 @@ void CWindow::Draw(ISurface* pSurface)
 	// Client region is drawn by m_pCanvas
 
 	IControl::Draw(pSurface);
+
+	// Render Popup if we have one
+	if (m_pPopup)
+		m_pPopup->Draw(pSurface);
 }

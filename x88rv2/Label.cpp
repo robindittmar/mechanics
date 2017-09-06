@@ -30,6 +30,9 @@ void CLabel::Draw(ISurface* pSurface)
 	if (!m_bIsEnabled)
 		return;
 
+	if (!m_pContentTextW)
+		return;
+
 	int x = 0, y = 0, w, h, frameX, frameY;
 	this->GetAbsolutePosition(&x, &y);
 	pSurface->GetTextSize(m_iFont, m_pContentTextW, w, h);
@@ -69,6 +72,13 @@ void CLabel::SetContentText(const char* pText)
 
 	if (m_pContentTextW)
 		delete[] m_pContentTextW;
+
+	if (!pText)
+	{
+		m_pContentText = NULL;
+		m_pContentTextW = NULL;
+		return;
+	}
 
 	m_iContentTextLen = strlen(pText) + 1;
 	m_pContentText = new char[m_iContentTextLen];

@@ -184,13 +184,21 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 
 bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 {
+	static CXorString xorAttacker("vñ£t`à°");
 	static CXorString xorPlayerDeath("ggä»ryÚ¦rjñª");
 	static CXorString xorWeapon("`nä²xe");
 
+	// Check if event is valid
 	if (!pEvent)
 		return false;
 
+	// Check if we are in player_death event
 	if (strcmp(pEvent->GetName(), xorPlayerDeath.ToCharArray()))
+		return false;
+
+	// Check if attacker is us :)
+	IVEngineClient* pEngine = m_pApp->EngineClient();
+	if (pEngine->GetPlayerForUserID(pEvent->GetInt(xorAttacker.ToCharArray())) != pEngine->GetLocalPlayer())
 		return false;
 
 	// Check if we have a replacement weapon

@@ -20,7 +20,7 @@ public:
 		int y = 0,
 		int w = 0,
 		int h = 0,
-		const char* pText = "",
+		const char* pText = NULL,
 		int font = RM_FONT_NORMAL,
 		int orientation = LABEL_ORIENTATION_LEFT,
 		Color color = Color(255, 255, 255, 255)

@@ -48,6 +48,8 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
+	IControl* GetParentWindow();
+
 	void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool GetEnabled() { return m_bIsEnabled; }
 

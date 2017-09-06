@@ -27,13 +27,20 @@ public:
 	virtual void OnMouseUp(int mx, int my);
 
 	virtual void AddChild(IControl* pControl);
+
+	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
 	void IsVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
 	bool IsVisible() { return m_bIsVisible; }
+
+	void SetPopup(IControl* pPopup) { m_pPopup = pPopup; }
+	IControl* GetPopup() { return m_pPopup; }
 private:
 	CCanvas* m_pCanvas;
 	CLabel* m_pLabelTitle;
+
+	IControl* m_pPopup;
 
 	bool m_bIsVisible;
 

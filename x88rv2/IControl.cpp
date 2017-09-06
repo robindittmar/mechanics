@@ -141,6 +141,14 @@ void IControl::Draw(ISurface* pSurface)
 	}
 }
 
+IControl* IControl::GetParentWindow()
+{
+	if (m_pParent == NULL)
+		return this;
+
+	return m_pParent->GetParentWindow();
+}
+
 void IControl::SetBoundaries(int x, int y, int w, int h)
 {
 	m_iX = x;

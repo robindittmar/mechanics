@@ -28,6 +28,7 @@ void CBhop::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 		
+	// TODO: Warum GetAsyncKeyState statt pUserCmd->buttons?
 	DWORD flags = pLocalEntity->GetFlags();
 	if (!m_pApp->EngineClient()->Con_IsVisible() &&
 		GetAsyncKeyState(VK_SPACE) & 0x8000)
