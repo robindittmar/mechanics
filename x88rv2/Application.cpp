@@ -746,8 +746,16 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoscope(true);
 	this->m_ragebot.SetSilentAim(true);
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
-	this->m_ragebot.SetSpeed(1.0f);
-	this->m_ragebot.SetFov(360.0f);
+	this->m_ragebot.SetCheckHitbox(HITBOX_HEAD, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_CHEST, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_LEFT_FOOT, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_RIGHT_FOOT, true);
+	/// TEST
+	for (int i = 0; i < HITBOX_MAX; i++)
+	{
+		this->m_ragebot.SetCheckHitbox(i, true);
+	}
+	/// TEST
 
 	// Triggerbot
 	this->m_triggerbot.SetEnabled(false);

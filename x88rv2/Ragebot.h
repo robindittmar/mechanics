@@ -114,11 +114,8 @@ public:
 	void SetTargetCriteria(int iTargetCriteria) { m_iTargetCriteria = iTargetCriteria; }
 	int GetTargetCriteria() { return m_iTargetCriteria; }
 
-	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
-	float GetSpeed() { return m_fSpeed; }
-	
-	void SetFov(float fFov) { m_fFov = fFov; }
-	float GetFov() { return m_fFov; }
+	void SetCheckHitbox(int iHitbox, bool bCheckHitbox) { m_bCheckHitbox[iHitbox] = bCheckHitbox; }
+	bool GetCheckHitbox(int iHitbox) { return m_bCheckHitbox[iHitbox]; }
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -158,8 +155,7 @@ private:
 	bool m_bDoNoRecoil;
 
 	int m_iTargetCriteria;
-	float m_fSpeed;
-	float m_fFov;
+	bool m_bCheckHitbox[HITBOX_MAX];
 };
 
 #endif // __AIMBOT_H__

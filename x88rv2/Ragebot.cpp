@@ -9,8 +9,11 @@ CRagebot::CRagebot()
 	m_bDoNoRecoil = true;
 
 	m_iTargetCriteria = TARGETCRITERIA_UNSPECIFIED;
-	m_fSpeed = 1.0f;
-	m_fFov = 360.0f;
+	
+	for (int i = 0; i < HITBOX_MAX; i++)
+	{
+		m_bCheckHitbox[i] = false;
+	}
 }
 
 CRagebot::~CRagebot()
@@ -542,53 +545,50 @@ bool CRagebot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 		if (!pHitboxSet)
 			continue;
 
-		pHitbox = pHitboxSet->pHitbox(HITBOX_HEAD);
-		if (!pHitbox)
-			continue;
-
-		/*g_pConsole->Write("Bone: %d, min: (%.2f,%.2f,%.2f), max: (%.2f,%.2f,%.2f), name: %s\n",
-			pHitbox->m_iBone,
-			pHitbox->m_vecBBMin.x,
-			pHitbox->m_vecBBMin.y,
-			pHitbox->m_vecBBMin.z,
-			pHitbox->m_vecBBMax.x,
-			pHitbox->m_vecBBMax.y,
-			pHitbox->m_vecBBMax.z,
-			pHitbox->pszHitboxName(pHitbox->m_iBone)
-		);*/
-
-		// TODO
-		// 8, 10, 72, 79
 		bool bIsHittable = false;
-		
 		IEngineTrace* pEngineTrace = m_pApp->EngineTrace();
-		GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
-
-		for(int i = 0; i < sizeof(vHitbox) / sizeof(Vector); i++)
+		for (int i = 0; i < HITBOX_MAX; i++)
 		{
-			vHitbox[i] += (*pCurEntity->GetVelocity() * fInputSampleTime);
+			if (!m_bCheckHitbox[i])
+				continue;
 
-			ray.Init(vMyHeadPos, vHitbox[i]);
-			pEngineTrace->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-			if (trace.IsEntityVisible(pCurEntity))
+			pHitbox = pHitboxSet->pHitbox(i);
+			if (!pHitbox)
+				continue;
+
+			GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
+			// TODO: FixHitbox?
+
+			for (int i = 0; i < sizeof(vHitbox) / sizeof(Vector); i++)
 			{
-				vEnemyHeadPos = vHitbox[i];
-				bIsHittable = true;
-				break;
-			}
-			else if (CanHit(vHitbox[i], &fDamage))
-			{
-				if (fDamage > m_fDamage)
+				vHitbox[i] += (*pCurEntity->GetVelocity() * fInputSampleTime);
+
+				ray.Init(vMyHeadPos, vHitbox[i]);
+				pEngineTrace->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
+				if (trace.IsEntityVisible(pCurEntity))
 				{
-					m_iTargetBone = i;
 					vEnemyHeadPos = vHitbox[i];
-
-					m_fDamage = fDamage;
 					bIsHittable = true;
+					break;
+				}
+				else if (CanHit(vHitbox[i], &fDamage))
+				{
+					if (fDamage > m_fDamage)
+					{
+						m_iTargetBone = i;
+						vEnemyHeadPos = vHitbox[i];
+
+						m_fDamage = fDamage;
+						bIsHittable = true;
+					}
 				}
 			}
+
+			if (bIsHittable)
+				break;
 		}
 
+		// TODO: Don't delete this yet pls
 		//int curBone;
 		//int boneIdx[] = { 8, 10, 72, 79 };
 		//int bone = 0;
@@ -658,12 +658,7 @@ bool CRagebot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
 
 			// Calculate our fov to the enemy
 			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles/*, fOriginDist*/));
-			// TODO: GetViewangleDist doesn't return a nice FOV, as it doesn't take fOriginDist into account (RIGHT NOW!)
-			if (fViewangleDist > m_fFov)
-			{
-				continue;
-			}
-			else if (fViewangleDist < fLowestDist)
+			if (fViewangleDist < fLowestDist)
 			{
 				fLowestDist = fViewangleDist;
 
