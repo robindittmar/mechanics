@@ -55,19 +55,23 @@ public:
 	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
 	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
 
+	void SetJumpScout(bool bJumpScout) { m_bJumpScout = bJumpScout; };
+	bool GetJumpScout() { return m_bJumpScout; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
-	void NoRecoil(CUserCmd*);
-	void Fakelag(CUserCmd*);
-	void AutoStrafe(CUserCmd*);
+	void NoRecoil(CUserCmd* pUserCmd);
+	void Fakelag(CUserCmd* pUserCmd);
+	void AutoStrafe(CUserCmd* pUserCmd);
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
-	void AutoPistol(CUserCmd*);
+	void AutoPistol(CUserCmd* pUserCmd);
 	void SpectatorList();
 	void SetClanTag(const char*);
-	void AutoRevolver(CUserCmd*);
+	void AutoRevolver(CUserCmd* pUserCmd);
 	void DisablePostProcessing();
+	void JumpScout(CUserCmd* pUserCmd);
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
@@ -78,6 +82,7 @@ private:
 	bool m_bOnlyMySpectators;
 	bool m_bOnlyMyTeamSpectators;
 	bool m_bDisablePostProcessing;
+	bool m_bJumpScout;
 
 	unsigned long* m_dwOverridePostProcessingDisable;
 

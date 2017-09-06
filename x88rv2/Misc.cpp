@@ -294,7 +294,7 @@ void CMisc::SpectatorList()
 				// @Nico: Performance? :D (strings dauern immer lange, weil mind. strlen(kürzererString) vergleiche
 				//		  einfach observing auf LocalEntity checken :) (ist auch besser wegen namechanger oder so)
 				//if (wcscmp(observingName, pLocalName) == 0)
-				if(observing == pLocalEntity)
+				if (observing == pLocalEntity)
 				{
 					m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
 				}
@@ -330,6 +330,9 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (!activeWeapon)
+		return;
+
 	if (activeWeapon->GetWeaponId() != WEAPON_REVOLVER)
 		return;
 
@@ -355,5 +358,29 @@ void CMisc::DisablePostProcessing()
 	else
 	{
 		*bOverridePostProcessingDisable = false;
+	}
+}
+
+void CMisc::JumpScout(CUserCmd* pUserCmd)
+{
+	if (!m_bJumpScout)
+		return;
+
+	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
+
+	if (!pActiveWeapon)
+		return;
+
+	if (pActiveWeapon->GetWeaponId() == WEAPON_SSG08)
+	{
+		if (!(pLocalEntity->GetFlags() & FL_ONGROUND))
+		{
+			bool isAtPeakOfJump = fabs(pLocalEntity->GetVelocity()->z) <= 5.0f;
+			if (!isAtPeakOfJump)
+			{
+				pUserCmd->buttons &= ~IN_ATTACK;
+			}
+		}
 	}
 }

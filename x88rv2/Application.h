@@ -173,6 +173,14 @@ public:
 	bool* m_bSendPackets;
 	bool m_bGotSendPackets;
 
+	//todo: change!!!
+	bool m_bLBY;
+	float m_flOldLby;
+	float m_flLbyUpdateTime;
+	float m_flRealLbyUpdateTime;
+	float m_flPredLbyUpdateTime;
+	bool m_bLbyUpdate;
+
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
