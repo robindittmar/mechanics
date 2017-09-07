@@ -33,6 +33,7 @@
 #include "ClientEntity.h"
 #include "ClientEntityList.h"
 #include "ClientFrameStage.h"
+#include "ICvar.h"
 #include "UserCmd.h"
 #include "IVModelInfo.h"
 #include "IEngineTrace.h"
@@ -55,7 +56,6 @@
 #define OFFSET_VIEWPUNCHANGLE 0x64
 #define OFFSET_GLOBALS 0x1B
 
-#define RECOIL_COMPENSATION 2
 #define RECOIL_TRACKING 0.4499999f
 
 #define CLIENTDLL_SIZE	0x50E5000
@@ -99,6 +99,9 @@ public:
 	void Unhook();
 	void Rehook();
 
+	void SetRecoilCompensation(float recoilCompensation) { m_flRecoilCompensation = recoilCompensation; }
+	float GetRecoilCompensation() { return m_flRecoilCompensation; }
+
 	// VTable Hooks
 	VTableHook* ClientModeHook() { return m_pClientModeHook; }
 	VTableHook* EngineModelHook() { return m_pEngineModelHook; }
@@ -135,6 +138,7 @@ public:
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
 	IClientState* ClientState() { return m_pClientState; }
+	ICVar* CVar() { return m_pCVar; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
@@ -195,6 +199,8 @@ private:
 
 	HMODULE m_hModule;
 
+	float m_flRecoilCompensation;
+
 	bool m_bInitialHookDone;
 	bool m_bIsHooked;
 	VTableHook* m_pClientModeHook;
@@ -232,6 +238,7 @@ private:
 	IGameEventManager2* m_pGameEventManager;
 	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
 	IClientState* m_pClientState;
+	ICVar* m_pCVar;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
@@ -239,6 +246,7 @@ private:
 	DWORD m_dwVgui2Dll;
 	DWORD m_dwVguiSurfaceDll;
 	DWORD m_dwVPhysicsDll;
+	DWORD m_dwVStdLibDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;

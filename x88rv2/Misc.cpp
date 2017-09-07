@@ -14,6 +14,9 @@ void CMisc::Setup()
 	m_pApp = CApplication::Instance();
 	m_pSetClanTag = (SetClanTag_t)CPattern::FindPattern((BYTE*)m_pApp->EngineDll(), 0x8C7000, (BYTE*)"\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15", "adhgezvel");
 
+	m_xorName.String("yjè§");
+	m_xorName.Xor();
+
 	m_dwOverridePostProcessingDisable = *(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2);
 }
 
@@ -46,20 +49,20 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	if (m_pApp->Visuals()->GetNoVisualRecoil())
 	{
 		QAngle aimPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-		pUserCmd->viewangles[0] -= aimPunch.x * RECOIL_COMPENSATION;
-		pUserCmd->viewangles[1] -= aimPunch.y * RECOIL_COMPENSATION;
+		pUserCmd->viewangles[0] -= aimPunch.x * m_pApp->GetRecoilCompensation();
+		pUserCmd->viewangles[1] -= aimPunch.y * m_pApp->GetRecoilCompensation();
 	}
 	else {
 		m_pApp->EngineClient()->GetViewAngles(m_pApp->m_viewAngle);
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
 
-		m_pApp->m_viewAngle.x += (m_pApp->m_oldAimPunchAngle.x - aimPunchAngle.x * RECOIL_COMPENSATION);
-		m_pApp->m_viewAngle.y += (m_pApp->m_oldAimPunchAngle.y - aimPunchAngle.y * RECOIL_COMPENSATION);
+		m_pApp->m_viewAngle.x += (m_pApp->m_oldAimPunchAngle.x - aimPunchAngle.x * m_pApp->GetRecoilCompensation());
+		m_pApp->m_viewAngle.y += (m_pApp->m_oldAimPunchAngle.y - aimPunchAngle.y * m_pApp->GetRecoilCompensation());
 
 		m_pApp->SetClientViewAngles(m_pApp->m_viewAngle);
 
-		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * m_pApp->GetRecoilCompensation();
+		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * m_pApp->GetRecoilCompensation();
 	}
 }
 
@@ -383,4 +386,40 @@ void CMisc::JumpScout(CUserCmd* pUserCmd)
 			}
 		}
 	}
+}
+
+void CMisc::SetName(const char* newName)
+{
+	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
+	int callbackNum = pName->callback;
+	pName->callback = NULL;
+	pName->SetValue(newName);
+	pName->callback = callbackNum;
+}
+
+void CMisc::SpamNameFix()
+{
+	if (!m_bSpamNameFix)
+		return;
+
+	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
+	int callbackNum = pName->callback;
+	pName->callback = NULL;
+	pName->SetValue("\n\xAD\xAD\xAD");
+	pName->callback = callbackNum;
+}
+
+void CMisc::NoName(bool shouldNoName)
+{
+	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
+	pName->callback = NULL;
+
+	static const char* oldName = pName->value;
+
+	if (shouldNoName)
+	{
+		pName->SetValue("\n");
+	}
+	else
+		pName->SetValue(oldName);
 }

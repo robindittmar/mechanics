@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ConVar.cpp" />
     <ClCompile Include="Ragebot.cpp" />
     <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -198,6 +199,8 @@
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ConVar.h" />
+    <ClInclude Include="ICVar.h" />
     <ClInclude Include="Ragebot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />

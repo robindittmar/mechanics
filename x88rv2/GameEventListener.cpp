@@ -30,7 +30,7 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 	{
 		uint32_t iNameHash = murmurhash(pEvent->GetName(), strlen(pEvent->GetName()), 0xB16B00B5);
 
-		switch(iNameHash)
+		switch (iNameHash)
 		{
 		case 0xf65971fe: // game_newmap
 			this->game_newmap(pEvent);
@@ -74,14 +74,16 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 		pApp->Rehook();
 	}
 
+	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();
 }
 
 void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
-	
-	if(pApp->GetHooked())
+
+	if (pApp->GetHooked())
 	{
 		g_pConsole->Write("Unhooking...\n");
 		pApp->Unhook();
@@ -90,7 +92,7 @@ void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 
 void CGameEventListener::switch_team(IGameEvent* pEvent)
 {
-	
+
 }
 
 void CGameEventListener::player_hurt(IGameEvent* pEvent)

@@ -700,11 +700,11 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 	if (m_bDoNoRecoil)
 	{
 		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-		m_qAimAngles.x -= aimPunchAngle.x * RECOIL_COMPENSATION;
-		m_qAimAngles.y -= aimPunchAngle.y * RECOIL_COMPENSATION;
+		m_qAimAngles.x -= aimPunchAngle.x * m_pApp->GetRecoilCompensation();
+		m_qAimAngles.y -= aimPunchAngle.y * m_pApp->GetRecoilCompensation();
 
-		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * RECOIL_COMPENSATION;
-		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * RECOIL_COMPENSATION;
+		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * m_pApp->GetRecoilCompensation();
+		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * m_pApp->GetRecoilCompensation();
 
 		m_bDidNoRecoil = true;
 	}

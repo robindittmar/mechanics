@@ -348,28 +348,28 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 
 	if(pLocalEntity == pRenderEntity && pApp->Visuals()->GetThirdperson())
 	{
-		matrix3x4_t pMyMat[MAXSTUDIOBONES];
-		Vector origin = *pLocalEntity->GetOrigin();
-		QAngle ang = *pLocalEntity->GetAngEyeAngles();
-		ang.y = 90.0f;
+	matrix3x4_t pMyMat[MAXSTUDIOBONES];
+	Vector origin = *pLocalEntity->GetOrigin();
+	QAngle ang = *pLocalEntity->GetAngEyeAngles();
+	ang.y = 90.0f;
 
-		for(int i = 0; i < MAXSTUDIOBONES; i++)
-		{
-			//origin = Vector(pCustomBoneToWorld[i].c[3]);
-			//origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
-			//origin.y = pCustomBoneToWorld[i].c[1][3];
-			//origin.z = pCustomBoneToWorld[i].c[2][3];
+	for(int i = 0; i < MAXSTUDIOBONES; i++)
+	{
+	//origin = Vector(pCustomBoneToWorld[i].c[3]);
+	//origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
+	//origin.y = pCustomBoneToWorld[i].c[1][3];
+	//origin.z = pCustomBoneToWorld[i].c[2][3];
 
-			AngleMatrix(ang, pInfo.origin, pMyMat[i]);
+	AngleMatrix(ang, pInfo.origin, pMyMat[i]);
 
-			//pCustomBoneToWorld->c[3][0] += 50.0f;
-			//pCustomBoneToWorld->c[3][1] += 50.0f;
-		
-			//pRenderInfo->pModelToWorld
-			//pCustomBoneToWorld->c[3][2] += 50.0f;
-		}
+	//pCustomBoneToWorld->c[3][0] += 50.0f;
+	//pCustomBoneToWorld->c[3][1] += 50.0f;
 
-		m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
+	//pRenderInfo->pModelToWorld
+	//pCustomBoneToWorld->c[3][2] += 50.0f;
+	}
+
+	m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
 	}*/
 
 	// Call original func
@@ -633,12 +633,14 @@ void CApplication::Setup()
 	this->m_dwVgui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
 	this->m_dwVguiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(vphysicsDll.ToCharArray());
+	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(CXorString("axÒ¶{bÁÏsgÈ").ToCharArray());
 	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVgui2Dll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVguiSurfaceDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -648,12 +650,16 @@ void CApplication::Setup()
 	m_pRenderView = (IVRenderView*)CreateEngineInterface(renderView.ToCharArray(), NULL);
 	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
 	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
+	m_pCVar = (ICVar*)CreateVStdLibInterface(CXorString("ANÎ•~e‡Åaj˜Ú'<").ToCharArray(), NULL);
+
 	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)CreateVPhysicsInterface(physicsSurfaceProps.ToCharArray(), NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
+
+	SetRecoilCompensation(atof(m_pCVar->FindVar(CXorString("`n‰≤xe⁄∞rhÍ´{Tˆ°vg‡").ToCharArray())->value));
 
 	// Create Resources
 	m_pResourceManager->CreateTextures();
@@ -748,22 +754,26 @@ void CApplication::Setup()
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 	this->m_ragebot.SetCheckHitbox(HITBOX_HEAD, true);
 	this->m_ragebot.SetCheckHitbox(HITBOX_CHEST, true);
-	this->m_ragebot.SetCheckHitbox(HITBOX_LEFT_FOOT, true);
-	this->m_ragebot.SetCheckHitbox(HITBOX_RIGHT_FOOT, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_PELVIS, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_RIGHT_FOREARM, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_LEFT_FOREARM, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_RIGHT_CALF, true);
+	this->m_ragebot.SetCheckHitbox(HITBOX_LEFT_CALF, true);
+
 	/// TEST
-	for (int i = 0; i < HITBOX_MAX; i++)
+	/*for (int i = 0; i < HITBOX_MAX; i++)
 	{
-		this->m_ragebot.SetCheckHitbox(i, true);
-	}
+	this->m_ragebot.SetCheckHitbox(i, true);
+	}*/
 	/// TEST
 
 	// Triggerbot
-	this->m_triggerbot.SetEnabled(false);
+	this->m_triggerbot.SetEnabled(true);
 
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT); 
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -799,6 +809,7 @@ void CApplication::Setup()
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 	this->m_misc.SetDisablePostProcessing(true);
 	this->m_misc.SetJumpScout(true);
+	this->m_misc.SetSpamNameFix(false);
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
@@ -870,6 +881,9 @@ void CApplication::Setup()
 	pSelectbox->AddOption(4, "this is fun");
 	pSelectbox->AddOption(5, "nicht");
 	pSelectbox->AddOption(6, "SIEG");
+
+	CCheckbox* pNoName = new CCheckbox(16, 160, 120, 32, "NoName", m_misc.GetNoName());
+	pNoName->SetEventHandler(std::bind(&CMisc::NoName, &m_misc, std::placeholders::_1));
 
 	// TODO: Groupbox -> "Antiaim" :D
 	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch", this->AntiAim()->GetPitchSetting());
@@ -989,6 +1003,7 @@ void CApplication::Setup()
 	pPage4->AddChild(pSelectbox);
 	pPage4->AddChild(pSelectPitchAntiaim);
 	pPage4->AddChild(pSelectYawAntiaim);
+	pPage4->AddChild(pNoName);
 
 	pPage5->AddChild(groupBox);
 
