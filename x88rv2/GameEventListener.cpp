@@ -68,11 +68,11 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	if (!pApp->GetHooked() && pApp->GetInitialHookDone())
+	/*if (!pApp->GetHooked() && pApp->GetInitialHookDone())
 	{
 		g_pConsole->Write("Rehooking...\n");
 		pApp->Rehook();
-	}
+	}*/
 
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Misc()->SpamNameFix();
@@ -82,12 +82,12 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
-
-	if (pApp->GetHooked())
+	
+	/*if(pApp->GetHooked())
 	{
 		g_pConsole->Write("Unhooking...\n");
 		pApp->Unhook();
-	}
+	}*/
 }
 
 void CGameEventListener::switch_team(IGameEvent* pEvent)
