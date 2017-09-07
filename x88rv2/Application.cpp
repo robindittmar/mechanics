@@ -175,6 +175,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Create instance of CreateMoveParam
 			CreateMoveParam createMoveParam = { fInputSampleTime, pUserCmd };
 
+			// Grab targets
+			pApp->m_targetSelector.SelectTargets(fInputSampleTime);
+
 			// TODO @Nico: Muss AutoRevolver hier oben stehen? :) 
 			//			(ich meine ist im endeffekt echt latte, aber ist halt schöner
 			//			 alles von misc zusammen so. Vllt hier weil wegen muss vor Aimbot executed werden?
@@ -729,6 +732,15 @@ void CApplication::Setup()
 
 	Offsets::m_fThrowTime = netVarManager.GetOffset(1, basecsgrenade.ToCharArray(), CXorString("zTã–yêµCbè§").ToCharArray());
 
+	// Target Selector
+	this->m_targetSelector.Setup(this);
+	this->m_targetSelector.SetMultipoint(false);
+	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_FULLVISIBLE);
+	for (int i = 0; i < TARGET_HITBOX_COUNT; i++)
+	{
+		this->m_targetSelector.SetCheckHitbox(i, true);
+	}
+
 	// Setups
 	this->m_ragebot.Setup();
 	this->m_triggerbot.Setup();
@@ -745,17 +757,8 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoshoot(true);
 	this->m_ragebot.SetAutoscope(true);
 	this->m_ragebot.SetSilentAim(true);
+	this->m_ragebot.SetAutoReload(true);
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
-	this->m_ragebot.SetCheckHitbox(HITBOX_HEAD, true);
-	this->m_ragebot.SetCheckHitbox(HITBOX_CHEST, true);
-	this->m_ragebot.SetCheckHitbox(HITBOX_LEFT_FOOT, true);
-	this->m_ragebot.SetCheckHitbox(HITBOX_RIGHT_FOOT, true);
-	/// TEST
-	for (int i = 0; i < HITBOX_MAX; i++)
-	{
-		this->m_ragebot.SetCheckHitbox(i, true);
-	}
-	/// TEST
 
 	// Triggerbot
 	this->m_triggerbot.SetEnabled(false);

@@ -14,6 +14,7 @@
 #include "NetVarManager.h"
 #include "Offsets.h"
 #include "MathDefs.h"
+#include "TargetSelector.h"
 
 // Features
 #include "Ragebot.h"
@@ -72,7 +73,6 @@ typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
-
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
@@ -143,6 +143,8 @@ public:
 	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
 	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll; }
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
+
+	CTargetSelector* TargetSelector() { return &m_targetSelector; }
 
 	// Features
 	CRagebot* Ragebot() { return (CRagebot*)&m_ragebot; }
@@ -242,6 +244,8 @@ private:
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;
+
+	CTargetSelector m_targetSelector;
 
 	// Features
 	CRagebot m_ragebot;

@@ -7,13 +7,9 @@ CRagebot::CRagebot()
 	m_bAutoshoot = true;
 	m_bAutoscope = false;
 	m_bDoNoRecoil = true;
+	m_bAutoReload = true;
 
 	m_iTargetCriteria = TARGETCRITERIA_UNSPECIFIED;
-	
-	for (int i = 0; i < HITBOX_MAX; i++)
-	{
-		m_bCheckHitbox[i] = false;
-	}
 }
 
 CRagebot::~CRagebot()
@@ -24,19 +20,19 @@ void CRagebot::Setup()
 {
 	m_pApp = CApplication::Instance();
 
+	m_pTargetSelector = m_pApp->TargetSelector();
 	m_pEngineClient = m_pApp->EngineClient();
 	m_pEntityList = m_pApp->EntityList();
 }
 
-int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
+/*int GetBoneByName(CApplication* pApp, IClientEntity* player, const char* bone)
 {
-	/*studiohdr_t pStudioModel = pApp->ModelInfo()->GetStudioModel(player->GetModel());
+	studiohdr_t pStudioModel = pApp->ModelInfo()->GetStudioModel(player->GetModel());
 	if (!pStudioModel)
 		return -1;
 
-	*/
 	return 0;
-}
+}*/
 
 void CRagebot::Update(void* pParameters)
 {
@@ -49,17 +45,45 @@ void CRagebot::Update(void* pParameters)
 	CreateMoveParam* pParam;
 	CUserCmd* pUserCmd;
 	IClientEntity* pLocalEntity;
-	// TODO
-	//*m_pApp->m_bSendPackets = true;
+	CWeapon* pMyActiveWeapon;
 
 	// Initialize local variables
 	pParam = (CreateMoveParam*)pParameters;
 	pUserCmd = pParam->pUserCmd;
+
 	pLocalEntity = m_pEntityList->GetClientEntity(m_pEngineClient->GetLocalPlayer());
+	if (!pLocalEntity)
+		return;
+
+	pMyActiveWeapon = pLocalEntity->GetActiveWeapon();
+	if (!pMyActiveWeapon)
+		return;
+
+	// Aimbot invalid weapons
+	if (pMyActiveWeapon->IsKnife() ||
+		pMyActiveWeapon->IsNade() ||
+		pMyActiveWeapon->IsC4())
+		return;
+
+	// Clip empty?
+	if (pMyActiveWeapon->GetClip1() == 0)
+	{
+		if(m_bAutoReload)
+			pUserCmd->buttons |= IN_RELOAD;
+		
+		return;
+	}
 
 	// Choose target
-	if (!this->ChooseTarget(pParam->fInputSampleTime, pUserCmd))
+	m_pTarget = m_pTargetSelector->GetTarget(m_iTargetCriteria);
+	if (!m_pTarget) // This should never happen
 		return;
+
+	if (!m_pTarget->GetValid())
+		return;
+
+	// Copy target angles
+	m_qAimAngles = *m_pTarget->GetAimAngles();
 
 	// Set ClientViewAngles if we don't have silentaim activated
 	// (we do so before applying NoRecoil :D)
@@ -72,10 +96,6 @@ void CRagebot::Update(void* pParameters)
 	this->ApplyNoRecoil(pLocalEntity);
 	// Apply viewangles & shoot if necessary
 	this->ApplyViewanglesAndShoot(pUserCmd, pLocalEntity);
-	
-	// TODO
-	//if (this->m_bIsShooting)
-	//	*m_pApp->m_bSendPackets = false;
 }
 
 inline bool DidHitWorld(IClientEntity* m_pEnt)
@@ -341,7 +361,7 @@ QAngle ACalcAngle(Vector& vStartPos, Vector& vEndPos)
 	return qAngle;
 }
 
-bool CRagebot::CanHit(Vector &point, float *damage_given)
+/*bool CRagebot::CanHit(Vector &point, float *damage_given)
 {
 	IClientEntity* local = (IClientEntity*)CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
@@ -358,340 +378,282 @@ bool CRagebot::CanHit(Vector &point, float *damage_given)
 		return true;
 	}
 	return false;
-}
+}*/
 
-
-
-
-
-
-
-
-QAngle CRagebot::CalcAngle(Vector& vStartPos, Vector& vEndPos)
-{
-	Vector vRelativeDist = vEndPos - vStartPos;
-	QAngle qAngle(
-		RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
-		RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
-		0.0f
-	);
-
-	return qAngle;
-}
-
-void CRagebot::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
-{
-	Vector bbmin;
-	Vector bbmax;
-	
-	// TODO: Try FixHitbox instead (trace from edge points to center and use trace.endpos as new edge)
-	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
-	bbmin = (hitBox->m_vecBBMin - fMod) * 0.65f;
-	bbmax = (hitBox->m_vecBBMax + fMod) * 0.65f;
-
-	Vector vPoints[] = {
-		(bbmin + bbmax) * 0.5f,
-		Vector(bbmin.x, bbmin.y, bbmin.z),
-		Vector(bbmin.x, bbmax.y, bbmin.z),
-		Vector(bbmax.x, bbmax.y, bbmin.z),
-		Vector(bbmax.x, bbmin.y, bbmin.z),
-		Vector(bbmax.x, bbmax.y, bbmax.z),
-		Vector(bbmin.x, bbmax.y, bbmax.z),
-		Vector(bbmin.x, bbmin.y, bbmax.z),
-		Vector(bbmax.x, bbmin.y, bbmax.z)
-	};
-
-	for (int i = 0; i < sizeof(vPoints) / sizeof(Vector); i++)
-	{
-		/*if (i != 0)
-			vPoints[i] = ((((vPoints[i] + vPoints[0]) * 0.5f) + vPoints[i]) * 0.5f);*/
-
-		VectorTransform(vPoints[i], boneMatrix[hitBox->m_iBone], hitBoxVectors[i]);
-	}
-}
-
-
-float CRagebot::GetOriginDist(Vector& vSource, Vector& vTarget)
-{
-	return (vTarget - vSource).Length();
-}
-
-float CRagebot::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/)
-{
-	QAngle qDist = qTarget - qSource;
-	qDist.Normalize();
-	float fAng = qDist.Length();
-
-	// Causes weird angles to have giant "fovs"
-	//return (sinf(DEG2RAD(fAng)) * fOriginDistance);
-	return fAng;
-}
 
 void inline CRagebot::ResetTickVariables()
 {
-	m_bHasTarget = false;
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
 	
 	m_fDamage = 0.0f;
 }
 
-bool CRagebot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
-{
-	// No selected target
-	m_iSelectedTarget = -1;
-
-	int iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
-	IClientEntity* pLocalEntity = m_pEntityList->GetClientEntity(iLocalPlayerIdx);
-	IClientEntity* pCurEntity;
-	CWeapon* pMyActiveWeapon;
-	QAngle qAimAngles;
-	QAngle qLocalViewAngles;
-
-	// Return if localplayer invalid
-	if (!pLocalEntity)
-		return false;
-	
-	// Get headpos & add eyeoffset
-	Vector vMyHeadPos;
-	int iMyTeamNum;
-
-	Vector vTargetPos;
-	QAngle qTargetAngles;
-
-	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
-	Vector vEnemyHeadPos;
-
-	Ray_t ray;
-	trace_t trace;
-	CTraceFilterSkipEntity traceFilter(pLocalEntity);
-	
-	// Model stuff (hitboxes)
-	studiohdr_t* pStudioModel;
-	mstudiohitboxset_t* pHitboxSet;
-	mstudiobbox_t* pHitbox;
-
-	// Hitbox
-	Vector vHitbox[9];
-
-	float fViewangleDist;
-	float fOriginDist;
-	float fLowestDist = 999999.0f;
-	float fDamage;
-
-	// Grab my values
-	iMyTeamNum = pLocalEntity->GetTeamNum();
-	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);
-	vMyHeadPos += *pLocalEntity->GetEyeOffset();
-	pMyActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-	qLocalViewAngles = m_pApp->GetClientViewAngles();
-	
-	//g_pConsole->Write("%f\n", pMyActiveWeapon->GetAccuracyPenalty());
-
-	// If we're not autoshooting or not attacking ourselves
-	// TODO: Aimkey?
-	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK) && !(GetAsyncKeyState(VK_MBUTTON) & 0x8000))
-		return false;
-
-	// If invalid weapon for aimbot
-	if (pMyActiveWeapon->IsKnife() ||
-		pMyActiveWeapon->IsNade() ||
-		pMyActiveWeapon->IsC4() ||
-		pMyActiveWeapon->GetClip1() == 0)
-		return false;
-
-	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
-	for (int i = 1; i < iMaxEntities; i++)
-	{
-		pCurEntity = m_pEntityList->GetClientEntity(i);
-
-		// Filter entites
-		if (!pCurEntity)
-			continue;
-
-		// Skip dormant entities
-		if (pCurEntity->IsDormant())
-			continue;
-		
-		// Can't shoot ourself
-		if (i == iLocalPlayerIdx)
-			continue;
-
-		// If the possible target isn't alive
-		if (!pCurEntity->IsAlive())
-			continue;
-
-		// Only from enemy team & we don't want spectators or something
-		int entityTeam = pCurEntity->GetTeamNum();
-		if (entityTeam == iMyTeamNum || entityTeam != 2 && entityTeam != 3)
-			continue;
-
-		// Spawn protection
-		if (pCurEntity->IsInvincible())
-			continue;
-
-		if (!pCurEntity->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, m_pApp->EngineClient()->GetLastTimeStamp()))
-			continue;
-
-		const model_t* pModel = pCurEntity->GetModel();
-		if (!pModel)
-			continue;
-		
-		pStudioModel = m_pApp->ModelInfo()->GetStudiomodel(pModel);
-		if (!pStudioModel)
-			continue;
-
-		pHitboxSet = pStudioModel->pHitboxSet(0);
-		if (!pHitboxSet)
-			continue;
-
-		bool bIsHittable = false;
-		IEngineTrace* pEngineTrace = m_pApp->EngineTrace();
-		for (int i = 0; i < HITBOX_MAX; i++)
-		{
-			if (!m_bCheckHitbox[i])
-				continue;
-
-			pHitbox = pHitboxSet->pHitbox(i);
-			if (!pHitbox)
-				continue;
-
-			GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
-			// TODO: FixHitbox?
-
-			for (int i = 0; i < sizeof(vHitbox) / sizeof(Vector); i++)
-			{
-				vHitbox[i] += (*pCurEntity->GetVelocity() * fInputSampleTime);
-
-				ray.Init(vMyHeadPos, vHitbox[i]);
-				pEngineTrace->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
-				if (trace.IsEntityVisible(pCurEntity))
-				{
-					vEnemyHeadPos = vHitbox[i];
-					bIsHittable = true;
-					break;
-				}
-				else if (CanHit(vHitbox[i], &fDamage))
-				{
-					if (fDamage > m_fDamage)
-					{
-						m_iTargetBone = i;
-						vEnemyHeadPos = vHitbox[i];
-
-						m_fDamage = fDamage;
-						bIsHittable = true;
-					}
-				}
-			}
-
-			if (bIsHittable)
-				break;
-		}
-
-		// TODO: Don't delete this yet pls
-		//int curBone;
-		//int boneIdx[] = { 8, 10, 72, 79 };
-		//int bone = 0;
-		//int boneCount = sizeof(boneIdx) / sizeof(int);
-		//Vector vBonePos;
-		/*for (bone = 0; bone < boneCount; bone++)
-		{
-			curBone = boneIdx[bone];
-
-			// Get matrix for current bone
-			//pBoneMatrix = (matrix3x4_t*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
-
-			// Get position
-			vBonePos.x = boneMatrix[curBone].c[0][3];
-			vBonePos.y = boneMatrix[curBone].c[1][3];
-			vBonePos.z = boneMatrix[curBone].c[2][3];
-
-			// Prediction
-			vBonePos += (*pCurEntity->GetVelocity() * fInputSampleTime);
-
-			//ray.Init(vMyHeadPos, vEnemyHeadPos);
-			//m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
-
-			if (CanHit(vBonePos, &fDamage))
-			{
-				if (fDamage > m_fDamage)
-				{
-					m_iTargetBone = bone;
-					vEnemyHeadPos = vBonePos;
-
-					m_fDamage = fDamage;
-					bIsHittable = true;
-				}
-			}
-			/*else if (trace.IsVisible(pCurEntity))
-			{
-				bIsHittable = true;
-				break;
-			}*/
-		//}
-
-		// Nothing visible :(
-		if (!bIsHittable)
-			continue;
-
-		switch (m_iTargetCriteria)
-		{
-		case TARGETCRITERIA_ORIGIN:
-			fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyHeadPos);
-			if (fOriginDist < fLowestDist)
-			{
-				fLowestDist = fOriginDist;
-
-				m_iSelectedTarget = i;
-				vTargetPos = vEnemyHeadPos;
-
-				continue;
-			}
-
-			break;
-		case TARGETCRITERIA_VIEWANGLES:
-			// Get Origin distance for "real" FOV (independent of distance)
-			//fOriginDist = this->GetOriginDist(myHeadPos, headPos);
-
-			// Calc angle
-			m_qAimAngles = this->CalcAngle(vMyHeadPos, vEnemyHeadPos);
-
-			// Calculate our fov to the enemy
-			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles/*, fOriginDist*/));
-			if (fViewangleDist < fLowestDist)
-			{
-				fLowestDist = fViewangleDist;
-
-				m_iSelectedTarget = i;
-				qTargetAngles = m_qAimAngles;
-
-				continue;
-			}
-			break;
-		case TARGETCRITERIA_UNSPECIFIED:
-		default:
-			m_iSelectedTarget = i;
-			vTargetPos = vEnemyHeadPos;
-
-			// Force the entityloop to exit out (break would only break switch)
-			i = iMaxEntities;
-			break;
-		}
-	}
-
-	if (m_iTargetCriteria != TARGETCRITERIA_VIEWANGLES)
-	{
-		// Calculate our viewangles to aim at the enemy
-		m_qAimAngles = this->CalcAngle(vMyHeadPos, vTargetPos);
-	}
-	else
-	{
-		// We already got our viewangles :)
-		m_qAimAngles = qTargetAngles;
-	}
-
-	return (m_iSelectedTarget != -1);
-}
+//bool CRagebot::ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd)
+//{
+//	// No selected target
+//	m_iSelectedTarget = -1;
+//
+//	int iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
+//	IClientEntity* pLocalEntity = m_pEntityList->GetClientEntity(iLocalPlayerIdx);
+//	IClientEntity* pCurEntity;
+//	CWeapon* pMyActiveWeapon;
+//	QAngle qAimAngles;
+//	QAngle qLocalViewAngles;
+//
+//	// Return if localplayer invalid
+//	if (!pLocalEntity)
+//		return false;
+//	
+//	// Get headpos & add eyeoffset
+//	Vector vMyHeadPos;
+//	int iMyTeamNum;
+//
+//	Vector vTargetPos;
+//	QAngle qTargetAngles;
+//
+//	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
+//	Vector vEnemyHeadPos;
+//
+//	Ray_t ray;
+//	trace_t trace;
+//	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+//	
+//	// Model stuff (hitboxes)
+//	studiohdr_t* pStudioModel;
+//	mstudiohitboxset_t* pHitboxSet;
+//	mstudiobbox_t* pHitbox;
+//
+//	// Hitbox
+//	Vector vHitbox[9];
+//
+//	float fViewangleDist;
+//	float fOriginDist;
+//	float fLowestDist = 999999.0f;
+//	float fDamage;
+//
+//	// Grab my values
+//	iMyTeamNum = pLocalEntity->GetTeamNum();
+//	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);
+//	vMyHeadPos += *pLocalEntity->GetEyeOffset();
+//	pMyActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+//	qLocalViewAngles = m_pApp->GetClientViewAngles();
+//	
+//	//g_pConsole->Write("%f\n", pMyActiveWeapon->GetAccuracyPenalty());
+//
+//	// If we're not autoshooting or not attacking ourselves
+//	// TODO: Aimkey?
+//	if (!this->m_bAutoshoot && !(pUserCmd->buttons & IN_ATTACK) && !(GetAsyncKeyState(VK_MBUTTON) & 0x8000))
+//		return false;
+//
+//	// If invalid weapon for aimbot
+//	if (pMyActiveWeapon->IsKnife() ||
+//		pMyActiveWeapon->IsNade() ||
+//		pMyActiveWeapon->IsC4() ||
+//		pMyActiveWeapon->GetClip1() == 0)
+//		return false;
+//
+//	int iMaxEntities = m_pApp->EngineClient()->GetMaxClients();
+//	for (int i = 1; i < iMaxEntities; i++)
+//	{
+//		pCurEntity = m_pEntityList->GetClientEntity(i);
+//
+//		// Filter entites
+//		if (!pCurEntity)
+//			continue;
+//
+//		// Skip dormant entities
+//		if (pCurEntity->IsDormant())
+//			continue;
+//		
+//		// Can't shoot ourself
+//		if (i == iLocalPlayerIdx)
+//			continue;
+//
+//		// If the possible target isn't alive
+//		if (!pCurEntity->IsAlive())
+//			continue;
+//
+//		// Only from enemy team & we don't want spectators or something
+//		int entityTeam = pCurEntity->GetTeamNum();
+//		if (entityTeam == iMyTeamNum || entityTeam != 2 && entityTeam != 3)
+//			continue;
+//
+//		// Spawn protection
+//		if (pCurEntity->IsInvincible())
+//			continue;
+//
+//		if (!pCurEntity->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, m_pApp->EngineClient()->GetLastTimeStamp()))
+//			continue;
+//
+//		const model_t* pModel = pCurEntity->GetModel();
+//		if (!pModel)
+//			continue;
+//		
+//		pStudioModel = m_pApp->ModelInfo()->GetStudiomodel(pModel);
+//		if (!pStudioModel)
+//			continue;
+//
+//		pHitboxSet = pStudioModel->pHitboxSet(0);
+//		if (!pHitboxSet)
+//			continue;
+//
+//		//
+//		// = TODO =
+//		// -> GetCenterOfHitbox
+//		// =============
+//		// -> FixHitbox
+//		// -> Multipoint scan variable enable/disable
+//		//
+//
+//		bool bIsHittable = false;
+//		IEngineTrace* pEngineTrace = m_pApp->EngineTrace();
+//		Vector vCurVelocity = (*pCurEntity->GetVelocity() * fInputSampleTime);
+//		for (int i = 0; i < HITBOX_MAX; i++)
+//		{
+//			if (!m_bCheckHitbox[i])
+//				continue;
+//
+//			pHitbox = pHitboxSet->pHitbox(i);
+//			if (!pHitbox)
+//				continue;
+//
+//			GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
+//			// TODO: FixHitbox?
+//
+//			for (int i = 0; i < sizeof(vHitbox) / sizeof(Vector); i++)
+//			{
+//				vHitbox[i] += vCurVelocity;
+//
+//				ray.Init(vMyHeadPos, vHitbox[i]);
+//				pEngineTrace->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
+//				if (trace.IsEntityVisible(pCurEntity))
+//				{
+//					vEnemyHeadPos = vHitbox[i];
+//					bIsHittable = true;
+//					break;
+//				}
+//				else if (CanHit(vHitbox[i], &fDamage))
+//				{
+//					if (fDamage > m_fDamage)
+//					{
+//						m_iTargetBone = i;
+//						vEnemyHeadPos = vHitbox[i];
+//
+//						m_fDamage = fDamage;
+//						bIsHittable = true;
+//					}
+//				}
+//			}
+//
+//			if (bIsHittable)
+//				break;
+//		}
+//
+//		// TODO: Don't delete this yet pls
+//		//int curBone;
+//		//int boneIdx[] = { 8, 10, 72, 79 };
+//		//int bone = 0;
+//		//int boneCount = sizeof(boneIdx) / sizeof(int);
+//		//Vector vBonePos;
+//		/*for (bone = 0; bone < boneCount; bone++)
+//		{
+//			curBone = boneIdx[bone];
+//
+//			// Get matrix for current bone
+//			//pBoneMatrix = (matrix3x4_t*)((*(DWORD*)((DWORD)pCurEntity + 0x2698)) + (0x30 * boneIdx[bone]));
+//
+//			// Get position
+//			vBonePos.x = boneMatrix[curBone].c[0][3];
+//			vBonePos.y = boneMatrix[curBone].c[1][3];
+//			vBonePos.z = boneMatrix[curBone].c[2][3];
+//
+//			// Prediction
+//			vBonePos += (*pCurEntity->GetVelocity() * fInputSampleTime);
+//
+//			//ray.Init(vMyHeadPos, vEnemyHeadPos);
+//			//m_pApp->EngineTrace()->TraceRay(ray, MASK_SHOT, &traceFilter, &trace);
+//
+//			if (CanHit(vBonePos, &fDamage))
+//			{
+//				if (fDamage > m_fDamage)
+//				{
+//					m_iTargetBone = bone;
+//					vEnemyHeadPos = vBonePos;
+//
+//					m_fDamage = fDamage;
+//					bIsHittable = true;
+//				}
+//			}
+//			/*else if (trace.IsVisible(pCurEntity))
+//			{
+//				bIsHittable = true;
+//				break;
+//			}*/
+//		//}
+//
+//		// Nothing visible :(
+//		if (!bIsHittable)
+//			continue;
+//
+//		switch (m_iTargetCriteria)
+//		{
+//		case TARGETCRITERIA_ORIGIN:
+//			fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyHeadPos);
+//			if (fOriginDist < fLowestDist)
+//			{
+//				fLowestDist = fOriginDist;
+//
+//				m_iSelectedTarget = i;
+//				vTargetPos = vEnemyHeadPos;
+//
+//				continue;
+//			}
+//
+//			break;
+//		case TARGETCRITERIA_VIEWANGLES:
+//			// Get Origin distance for "real" FOV (independent of distance)
+//			//fOriginDist = this->GetOriginDist(myHeadPos, headPos);
+//
+//			// Calc angle
+//			m_qAimAngles = this->CalcAngle(vMyHeadPos, vEnemyHeadPos);
+//
+//			// Calculate our fov to the enemy
+//			fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, m_qAimAngles/*, fOriginDist*/));
+//			if (fViewangleDist < fLowestDist)
+//			{
+//				fLowestDist = fViewangleDist;
+//
+//				m_iSelectedTarget = i;
+//				qTargetAngles = m_qAimAngles;
+//
+//				continue;
+//			}
+//			break;
+//		case TARGETCRITERIA_UNSPECIFIED:
+//		default:
+//			m_iSelectedTarget = i;
+//			vTargetPos = vEnemyHeadPos;
+//
+//			// Force the entityloop to exit out (break would only break switch)
+//			i = iMaxEntities;
+//			break;
+//		}
+//	}
+//
+//	if (m_iTargetCriteria != TARGETCRITERIA_VIEWANGLES)
+//	{
+//		// Calculate our viewangles to aim at the enemy
+//		m_qAimAngles = this->CalcAngle(vMyHeadPos, vTargetPos);
+//	}
+//	else
+//	{
+//		// We already got our viewangles :)
+//		m_qAimAngles = qTargetAngles;
+//	}
+//
+//	return (m_iSelectedTarget != -1);
+//}
 
 void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 {

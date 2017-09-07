@@ -1,14 +1,20 @@
 #ifndef __AIMBOT_H__
 #define __AIMBOT_H__
 
-#include "IFeature.h"
+// Source SDK
 #include "Vector.h"
 #include "UserCmd.h"
+#include "ClientEntityList.h"
+#include "IVEngineClient.h"
 #include "IVModelInfo.h"
 #include "IEngineTrace.h"
 #include "CGameTrace.h"
 #include "ray.h"
 #include "CWeapon.h"
+
+// Custom
+#include "IFeature.h"
+#include "TargetSelector.h"
 
 #define HITGROUP_GENERIC		0
 #define HITGROUP_HEAD			1
@@ -19,9 +25,6 @@
 #define HITGROUP_LEFTLEG		6
 #define HITGROUP_RIGHTLEG		7
 #define HITGROUP_GEAR			10
-
-#define MAXSTUDIOBONES			128
-#define BONE_USED_BY_HITBOX		0x00000100
 
 enum Hitboxes
 {
@@ -66,12 +69,6 @@ struct FireBulletData
 	int             penetrate_count;
 };
 
-// Defines how to choose the next target for the aimbot
-// -> Origin: Chooses the target that's standing closest to you
-// -> Viewangle: Choose the target that's closest to your crosshair
-#define TARGETCRITERIA_UNSPECIFIED				0
-#define TARGETCRITERIA_ORIGIN					1
-#define TARGETCRITERIA_VIEWANGLES				2
 
 struct CreateMoveParam
 {
@@ -79,8 +76,7 @@ struct CreateMoveParam
 	CUserCmd* pUserCmd;
 };
 
-class IVEngineClient;
-class IClientEntityList;
+class CApplication;
 
 class CRagebot : public IFeature
 {
@@ -88,12 +84,12 @@ public:
 	CRagebot();
 	~CRagebot();
 
-	// Returns wether or not the Aimbot has got a target
+	/*// Returns wether or not the Aimbot has got a target
 	bool HasTarget() { return m_bHasTarget; }
 	// Gets the selected target (if none == -1)
 	int SelectedTarget() { return m_iSelectedTarget; }
 	// Returns the Aim angles for the current tick
-	QAngle* GetAimAngles() { return &m_qAimAngles; }
+	QAngle* GetAimAngles() { return &m_qAimAngles; }*/
 	// Returns wether or not the Aimbot will shoot in this tick
 	bool IsShooting() { return m_bIsShooting; }
 	// Returns wether or not the aimbot compensated for recoil
@@ -111,38 +107,25 @@ public:
 	void SetNoRecoil(bool bDoNoRecoil) { m_bDoNoRecoil = bDoNoRecoil; }
 	bool GetNoRecoil() { return m_bDoNoRecoil; }
 
+	void SetAutoReload(bool bAutoReload) { m_bAutoReload = bAutoReload; }
+	bool GetAutoReload() { return m_bAutoReload; }
+
 	void SetTargetCriteria(int iTargetCriteria) { m_iTargetCriteria = iTargetCriteria; }
 	int GetTargetCriteria() { return m_iTargetCriteria; }
-
-	void SetCheckHitbox(int iHitbox, bool bCheckHitbox) { m_bCheckHitbox[iHitbox] = bCheckHitbox; }
-	bool GetCheckHitbox(int iHitbox) { return m_bCheckHitbox[iHitbox]; }
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
-	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
-	bool CanHit(Vector &point, float *damage_given);
-
-	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors);
-
-	float GetOriginDist(Vector& a, Vector& b);
-	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);
+	//bool CanHit(Vector &point, float *damage_given);
 
 	// Called each 'Update' (resets m_bIsShooting, m_bDidNoRecoil, etc)
 	void inline ResetTickVariables();
 	// fInputSampleTime for predictions
-	bool ChooseTarget(float fInputSampleTime, CUserCmd* pUserCmd);
 	void ApplyNoRecoil(IClientEntity* pLocalEntity);
 	void ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity);
 	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
 	void inline Aim(CUserCmd* pUserCmd);
 
-	IVEngineClient* m_pEngineClient;
-	IClientEntityList* m_pEntityList;
-
-	bool m_bHasTarget;
-	int m_iSelectedTarget;
-	int m_iTargetBone;
 	float m_fDamage;
 	QAngle m_qAimAngles;
 
@@ -154,8 +137,14 @@ private:
 	bool m_bSilentAim;
 	bool m_bDoNoRecoil;
 
+	bool m_bAutoReload;
+
 	int m_iTargetCriteria;
-	bool m_bCheckHitbox[HITBOX_MAX];
+	CTarget* m_pTarget;
+
+	CTargetSelector* m_pTargetSelector;
+	IVEngineClient* m_pEngineClient;
+	IClientEntityList* m_pEntityList;
 };
 
 #endif // __AIMBOT_H__
