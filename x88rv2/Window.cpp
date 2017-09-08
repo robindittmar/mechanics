@@ -33,14 +33,14 @@ void CWindow::OnMouseMove(int mx, int my)
 		// Prevent clipping X
 		if (m_iX < 0)
 			m_iX = 0;
-		else if (m_iX + m_iWidth > pGui->ScreenWidth())
-			m_iX = pGui->ScreenWidth() - m_iWidth;
+		else if (m_iX + m_iWidth > pGui->GetScreenWidth())
+			m_iX = pGui->GetScreenWidth() - m_iWidth;
 
 		// Prevent clipping Y
 		if (m_iY < 0)
 			m_iY = 0;
-		else if (m_iY + m_iHeight > pGui->ScreenHeight())
-			m_iY = pGui->ScreenHeight() - m_iHeight;
+		else if (m_iY + m_iHeight > pGui->GetScreenHeight())
+			m_iY = pGui->GetScreenHeight() - m_iHeight;
 	}
 }
 

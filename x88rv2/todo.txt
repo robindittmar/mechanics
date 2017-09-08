@@ -22,3 +22,4 @@ Priority Low
 => Antiaim Wall detection
 => Multipoint visibility check [(kind of) x]
 => AntiAim target von aimbot wenn möglich, sonst closest to origin
+=> Sound Esp

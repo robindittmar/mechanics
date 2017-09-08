@@ -1,10 +1,17 @@
 #ifndef __ESP_H__
 #define __ESP_H__
 
-#include "IFeature.h"
+// Std lib
+#include <assert.h>
+
+// Source SDK
 #include "Vector.h"
 #include "ISurface.h"
 #include "ClientEntity.h"
+
+// Custom
+#include "IFeature.h"
+#include "Gui.h"
 
 class CApplication;
 
@@ -46,13 +53,10 @@ public:
 private:
 	void DrawArmorBar(int posX, int posY, int height, int width, int armor);
 	void DrawBoundingBox(int posX, int posY, int height, int width, Color color);
-	void DrawHealthBar(int posX, int posY, int height, int width, int health);
+	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health);
 	void DrawHealthNumber(int posX, int posY, int height, int width, int health);
 	void DrawHelmet(int posX, int posY, int height, int width);
 	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
-
-	bool ScreenTransform(const Vector& point, Vector& screen);
-	bool WorldToScreen(const Vector &origin, Vector &screen);
 
 	bool m_bDrawBoundingBox;
 	bool m_bDrawHealthBar;
@@ -63,6 +67,8 @@ private:
 	bool m_bDrawOnlySpotted;
 	bool m_bDrawOutline;
 	bool m_bDrawNames;
+
+	CGui* m_pGui;
 };
 
 #endif // __ESP_H__

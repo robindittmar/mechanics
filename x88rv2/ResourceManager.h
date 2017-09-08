@@ -25,6 +25,9 @@ public:
 	void Init(CApplication* pApp);
 	IMaterial* CreateMaterial(bool bIsLit = false, bool bIsFlat = true, bool bIgnoreZ = false, bool bWireframe = false);
 
+	void CreateMirror();
+	ITexture* GetMirror() { return m_pMirror; }
+
 	void CreateTextures();
 	int GetTexture(int textureId);
 
@@ -35,6 +38,7 @@ private:
 
 	int m_iMaterialCount;
 
+	ITexture* m_pMirror;
 	std::unordered_map<int, int> m_mapTextures;
 	std::unordered_map<int, unsigned int> m_mapFonts;
 

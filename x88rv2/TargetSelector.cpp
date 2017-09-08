@@ -57,9 +57,11 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 	// Max values
 	float fViewangleDist;
 	float fOriginDist;
+	float fDamage;
 	float fLowestViewangleDist = 999999.0f;
 	float fLowestOriginDist = 999999.0f;
-	
+	float fHighestDamage = -1.0f;
+
 	qLocalViewAngles = m_pApp->GetClientViewAngles();
 	
 	iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
@@ -168,17 +170,16 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 					else if (m_iVisibleMode == VISIBLEMODE_CANHIT)
 					{
 						// TODO:
-						/*else if (CanHit(vHitbox[i], &fDamage))
+						if (Autowall::CanHit(vHitbox[i], &fDamage))
 						{
-						if (fDamage > m_fDamage)
-						{
-						m_iTargetBone = i;
-						vEnemyHeadPos = vHitbox[i];
+							if (fDamage > fHighestDamage)
+							{
+								vEnemyPos = vHitbox[i];
 
-						m_fDamage = fDamage;
-						bIsHittable = true;
+								fHighestDamage = fDamage;
+								bIsHittable = true;
+							}
 						}
-						}*/
 					}
 					
 				}
@@ -200,7 +201,16 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				}
 				else if (m_iVisibleMode == VISIBLEMODE_CANHIT)
 				{
-					// TODO: Autowall
+					if (Autowall::CanHit(vHitpoint, &fDamage))
+					{
+						if (fDamage > fHighestDamage)
+						{
+							vEnemyPos = vHitpoint;
+
+							fHighestDamage = fDamage;
+							bIsHittable = true;
+						}
+					}
 				}
 			}
 

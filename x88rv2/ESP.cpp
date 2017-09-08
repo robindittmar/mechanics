@@ -12,79 +12,94 @@ CEsp::~CEsp()
 void CEsp::Setup()
 {
 	m_pApp = CApplication::Instance();
+	m_pGui = CGui::Instance();
 }
 
 void CEsp::Update(void* pParameters)
 {
+	assert(pParameters != NULL);
+
 	if (!m_bIsEnabled)
 		return;
 
-	IClientEntity* localEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	int localTeam = localEntity->GetTeamNum();
+	ISurface* pSurface = (ISurface*)pParameters;
+
+	IClientEntity* pLocalEntity;
+	IClientEntity* pCurEntity;
+	int iLocalTeam;
+
+	// Grab LocalPlayer vars
+	pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	iLocalTeam = pLocalEntity->GetTeamNum();
 
 	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
 	{
-		IClientEntity* pEntity = m_pApp->EntityList()->GetClientEntity(i);
+		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
 
-		if (!pEntity)
+		if (!pCurEntity)
 			continue;
 
-		if (pEntity->IsDormant())
+		if (pCurEntity->IsDormant())
 			continue;
 
-		bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
-		int entityTeam = pEntity->GetTeamNum();
+		//bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
+		bool bIsLocalPlayer = pLocalEntity == pCurEntity;
+		int iCurEntityTeam = pCurEntity->GetTeamNum();
 
-		if (!(isLocalPlayer && m_pApp->Visuals()->GetThirdperson() && m_bDrawOwnModel ||
-			!isLocalPlayer && m_bDrawOwnTeam && entityTeam == localTeam ||
-			entityTeam != localTeam) ||
-			entityTeam == 0)
+		if (!(bIsLocalPlayer && m_pApp->Visuals()->GetThirdperson() && m_bDrawOwnModel ||
+			!bIsLocalPlayer && m_bDrawOwnTeam && iCurEntityTeam == iLocalTeam ||
+			iCurEntityTeam != iLocalTeam) ||
+			iCurEntityTeam == 0)
 			continue;
 
-		bool isSpotted = pEntity->IsSpotted();
-		if (!isSpotted && m_bDrawOnlySpotted)
+		bool bIsSpotted = pCurEntity->IsSpotted();
+		if (!bIsSpotted && m_bDrawOnlySpotted)
 			continue;
 
 		Vector screenOrigin, screenHead;
-		Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
-		Vector origin = headPos;
+		
+		// TODO: Nico guck nochmal drüber bitte <3
+		//Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
+		//Vector origin = headPos;
+		Vector origin = *pCurEntity->GetOrigin();
+		Vector headPos = origin + *pCurEntity->GetEyeOffset();
 
 		Color color;
-		if (entityTeam == TEAMNUM_CT)
+		if (iCurEntityTeam == TEAMNUM_CT)
 		{
 			color = Color(0, 0, 255);
-			headPos.z += 71;
+			//headPos.z += 71;
 		}
-		else if (entityTeam == TEAMNUM_T)
+		else if (iCurEntityTeam == TEAMNUM_T)
 		{
 			color = Color(255, 0, 0);
-			headPos.z += 72;
+			//headPos.z += 72;
 		}
 		else
 		{
 			continue;
 		}
 
-		if (isSpotted)
+		if (bIsSpotted)
 		{
 			color = Color(255, 51, 255);
 		}
 
-		int health = pEntity->GetHealth();
-		if (health == 0)
+		int iHealth = pCurEntity->GetHealth();
+		if (iHealth == 0)
 			continue;
 
-		DWORD flags = pEntity->GetFlags();
-		if (flags & IN_DUCK)
+		DWORD dwFlags = pCurEntity->GetFlags();
+		if (dwFlags & IN_DUCK)
 		{
-			headPos.z -= 17;
+			headPos.z -= 17; // TODO
 		}
 
 		//todo: both interesting for knifebot
-		int armor = pEntity->GetArmor();
-		bool hasHelmet = pEntity->HasHelmet();
+		int armor = pCurEntity->GetArmor();
+		bool hasHelmet = pCurEntity->HasHelmet();
 
-		if (WorldToScreen(origin, screenOrigin) && WorldToScreen(headPos, screenHead))
+		if (m_pGui->WorldToScreen(origin, screenOrigin) && m_pGui->WorldToScreen(headPos, screenHead))
 		{
 			float height = abs(screenHead.y - screenOrigin.y);
 			float width = height * 0.65f;
@@ -95,15 +110,15 @@ void CEsp::Update(void* pParameters)
 			}
 			if (m_bDrawNames)
 			{
-				DrawName(pEntity, screenOrigin.x, screenOrigin.y, height, width);
+				DrawName(pCurEntity, screenOrigin.x, screenOrigin.y, height, width);
 			}
 			if (m_bDrawHealthBar)
 			{
-				DrawHealthBar(screenOrigin.x, screenOrigin.y, height, width, health);
+				DrawHealthBar(pSurface, screenOrigin.x, screenOrigin.y, height, width, iHealth);
 			}
-			if (m_bDrawHealthNumber && health < 100)
+			if (m_bDrawHealthNumber && iHealth < 100)
 			{
-				DrawHealthNumber(screenOrigin.x, screenOrigin.y, height, width, health);
+				DrawHealthNumber(screenOrigin.x, screenOrigin.y, height, width, iHealth);
 			}
 
 			if (m_bDrawArmorBar)
@@ -240,7 +255,7 @@ void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color colo
 		posX + width / 2 + 1,
 		posY - height - 3);
 }
-void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
+void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health)
 {
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2 - 8;
@@ -252,20 +267,22 @@ void CEsp::DrawHealthBar(int posX, int posY, int height, int width, int health)
 	}
 
 	//background
-	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
-	m_pApp->Surface()->DrawFilledRect(
+	pSurface->DrawSetColor(255, 0, 0, 0);
+	pSurface->DrawFilledRect(
 		x1,
 		posY - height - 5,
 		x2,
-		posY + 6);
+		posY + 6
+	);
 
 	// actual health
-	m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
-	m_pApp->Surface()->DrawFilledRect(
+	pSurface->DrawSetColor(255, 0, 255, 0);
+	pSurface->DrawFilledRect(
 		x1,
-		posY - (height - (height * healthpercentage)) - 5,
+		((posY - height) + (height * healthpercentage)) - 5,
 		x2,
-		posY + 6);
+		posY + 6
+	);
 }
 void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int health)
 {
@@ -325,39 +342,4 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
-}
-
-
-
-bool CEsp::ScreenTransform(const Vector& point, Vector& screen) {
-	const VMatrix& w2sMatrix = m_pApp->EngineClient()->WorldToScreenMatrix();
-	screen.x = w2sMatrix.m[0][0] * point.x + w2sMatrix.m[0][1] * point.y + w2sMatrix.m[0][2] * point.z + w2sMatrix.m[0][3];
-	screen.y = w2sMatrix.m[1][0] * point.x + w2sMatrix.m[1][1] * point.y + w2sMatrix.m[1][2] * point.z + w2sMatrix.m[1][3];
-	screen.z = 0.0f;
-
-	float w = w2sMatrix.m[3][0] * point.x + w2sMatrix.m[3][1] * point.y + w2sMatrix.m[3][2] * point.z + w2sMatrix.m[3][3];
-
-	if (w < 0.001f) {
-		screen.x *= 100000;
-		screen.y *= 100000;
-		return true;
-	}
-
-	float invw = 1.0f / w;
-	screen.x *= invw;
-	screen.y *= invw;
-
-	return false;
-}
-bool CEsp::WorldToScreen(const Vector &origin, Vector &screen) {
-	if (!ScreenTransform(origin, screen)) {
-		int iScreenWidth, iScreenHeight;
-		m_pApp->EngineClient()->GetScreenSize(iScreenWidth, iScreenHeight);
-
-		screen.x = (iScreenWidth / 2.0f) + (screen.x * iScreenWidth) / 2;
-		screen.y = (iScreenHeight / 2.0f) - (screen.y * iScreenHeight) / 2;
-
-		return true;
-	}
-	return false;
 }

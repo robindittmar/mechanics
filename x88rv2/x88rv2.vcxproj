@@ -148,6 +148,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Autowall.cpp" />
+    <ClCompile Include="Esp.cpp" />
+    <ClCompile Include="IBaseClientDLL.cpp" />
     <ClCompile Include="Legitbot.cpp" />
     <ClCompile Include="ConVar.cpp" />
     <ClCompile Include="Ragebot.cpp" />
@@ -164,7 +167,6 @@
     <ClCompile Include="CreateInterface.cpp" />
     <ClCompile Include="CWeapon.cpp" />
     <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="ESP.cpp" />
     <ClCompile Include="Groupbox.cpp" />
     <ClCompile Include="IFeature.cpp" />
     <ClCompile Include="GameEventListener.cpp" />
@@ -202,9 +204,22 @@
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Autowall.h" />
+    <ClInclude Include="CreateMove.h" />
+    <ClInclude Include="CUtlVector.h" />
+    <ClInclude Include="DrawModelExecute.h" />
+    <ClInclude Include="Esp.h" />
+    <ClInclude Include="FireEventClientSide.h" />
+    <ClInclude Include="FrameStageNotify.h" />
+    <ClInclude Include="GetViewModelFov.h" />
+    <ClInclude Include="IEngineSound.h" />
+    <ClInclude Include="ITexture.h" />
+    <ClInclude Include="IViewRender.h" />
     <ClInclude Include="Legitbot.h" />
     <ClInclude Include="ConVar.h" />
     <ClInclude Include="ICVar.h" />
+    <ClInclude Include="OverrideView.h" />
+    <ClInclude Include="PaintTraverse.h" />
     <ClInclude Include="Ragebot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />
@@ -237,7 +252,6 @@
     <ClInclude Include="IPanel.h" />
     <ClInclude Include="CreateInterface.h" />
     <ClInclude Include="CWeapon.h" />
-    <ClInclude Include="ESP.h" />
     <ClInclude Include="IFeature.h" />
     <ClInclude Include="Gui.h" />
     <ClInclude Include="IControl.h" />

@@ -15,6 +15,7 @@
 // Custom
 #include "IFeature.h"
 #include "TargetSelector.h"
+#include "CreateMove.h"
 
 #define HITGROUP_GENERIC		0
 #define HITGROUP_HEAD			1
@@ -49,31 +50,6 @@ enum Hitboxes
 	HITBOX_LEFT_UPPER_ARM,
 	HITBOX_LEFT_FOREARM,
 	HITBOX_MAX
-};
-
-struct FireBulletData
-{
-	FireBulletData(const Vector &eye_pos, IClientEntity* pLocal = NULL)
-		: src(eye_pos),
-		filter((IHandleEntity*)pLocal)
-	{
-	}
-
-	Vector           src;
-	trace_t          enter_trace;
-	Vector           direction;
-	CTraceFilterSkipEntity    filter;
-	float           trace_length;
-	float           trace_length_remaining;
-	float           current_damage;
-	int             penetrate_count;
-};
-
-
-struct CreateMoveParam
-{
-	float fInputSampleTime;
-	CUserCmd* pUserCmd;
 };
 
 class CApplication;

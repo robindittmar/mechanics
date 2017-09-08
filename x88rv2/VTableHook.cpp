@@ -1,6 +1,6 @@
 #include "VTableHook.h"
 
-VTableHook::VTableHook(DWORD* pObj, bool bReplace)
+VTableHook::VTableHook(DWORD* pObj)
 {
 	m_pObj = pObj;
 	m_pOldVTable = (DWORD*)*m_pObj;

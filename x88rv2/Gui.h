@@ -4,18 +4,21 @@
 #include <Windows.h>
 #include "ISurface.h"
 #include "Vector.h"
+#include "ConVar.h"
+
+class CApplication;
 
 class CGui
 {
 public:
 	static CGui* Instance();
 
-	void GetScreenSize();
-	int ScreenWidth() { return m_iScreenWidth; }
-	int ScreenHeight() { return m_iScreenHeight; }
+	void Setup();
 
-	void EnableIngameMouse();
-	void DisableIngameMouse();
+	int GetScreenWidth() { return m_iScreenWidth; }
+	int GetScreenHeight() { return m_iScreenHeight; }
+
+	void SetEnableMouse(bool bEnableMouse);
 
 	bool GetMousePos();
 	int MouseX() { return m_iMouseX; }
@@ -27,10 +30,19 @@ public:
 	void DrawMouse(ISurface* pSurface);
 
 	bool IsMouseInRect(int x, int y, int w, int h);
+
+	bool WorldToScreen(const Vector &origin, Vector &screen);
 private:
+	bool ScreenTransform(const Vector& point, Vector& screen);
+
+	const VMatrix* m_pWorldToScreenMatrix;
 	int m_iScreenWidth, m_iScreenHeight;
+
 	int m_iMouseX, m_iMouseY;
 	bool m_bDrawMouse;
+	ConVar* m_pMouseEnable;
+
+	CApplication* m_pApp;
 
 	// Singleton
 	CGui();

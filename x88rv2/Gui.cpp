@@ -4,6 +4,7 @@
 CGui::CGui()
 {
 	m_bDrawMouse = false;
+	m_pWorldToScreenMatrix = NULL;
 }
 
 CGui::~CGui()
@@ -16,21 +17,23 @@ CGui* CGui::Instance()
 	return &inst;
 }
 
-void CGui::GetScreenSize()
+void CGui::Setup()
 {
+	m_pApp = CApplication::Instance();
+
+	// Screen size
 	CApplication::Instance()->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
+
+	// WorldToScreenMatrix
+	m_pWorldToScreenMatrix = &m_pApp->EngineClient()->WorldToScreenMatrix();
+
+	// cl_mouseenable
+	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
 }
 
-void CGui::EnableIngameMouse()
+void CGui::SetEnableMouse(bool bEnableMouse)
 {
-	static CXorString xorEnableMouse("tgÚ¯x~ö§reä {n¥ó");
-	CApplication::Instance()->EngineClient()->ClientCmd(xorEnableMouse.ToCharArray());
-}
-
-void CGui::DisableIngameMouse()
-{
-	static CXorString xorDisableMouse("tgÚ¯x~ö§reä {n¥ò");
-	CApplication::Instance()->EngineClient()->ClientCmd(xorDisableMouse.ToCharArray());
+	m_pMouseEnable->SetValue((int)bEnableMouse);
 }
 
 bool CGui::GetMousePos()
@@ -83,6 +86,42 @@ bool CGui::IsMouseInRect(int x, int y, int w, int h)
 	{
 		return true;
 	}
+
+	return false;
+}
+
+bool CGui::WorldToScreen(const Vector &origin, Vector &screen)
+{
+	if (!ScreenTransform(origin, screen))
+	{
+		screen.x = (m_iScreenWidth / 2.0f) + (screen.x * m_iScreenWidth) / 2;
+		screen.y = (m_iScreenHeight / 2.0f) - (screen.y * m_iScreenHeight) / 2;
+
+		return true;
+	}
+	return false;
+}
+
+bool CGui::ScreenTransform(const Vector& point, Vector& screen)
+{
+	if (!m_pWorldToScreenMatrix)
+		return false;
+
+	screen.x = m_pWorldToScreenMatrix->m[0][0] * point.x + m_pWorldToScreenMatrix->m[0][1] * point.y + m_pWorldToScreenMatrix->m[0][2] * point.z + m_pWorldToScreenMatrix->m[0][3];
+	screen.y = m_pWorldToScreenMatrix->m[1][0] * point.x + m_pWorldToScreenMatrix->m[1][1] * point.y + m_pWorldToScreenMatrix->m[1][2] * point.z + m_pWorldToScreenMatrix->m[1][3];
+	screen.z = 0.0f;
+
+	float w = m_pWorldToScreenMatrix->m[3][0] * point.x + m_pWorldToScreenMatrix->m[3][1] * point.y + m_pWorldToScreenMatrix->m[3][2] * point.z + m_pWorldToScreenMatrix->m[3][3];
+
+	if (w < 0.001f) {
+		screen.x *= 100000;
+		screen.y *= 100000;
+		return true;
+	}
+
+	float invw = 1.0f / w;
+	screen.x *= invw;
+	screen.y *= invw;
 
 	return false;
 }

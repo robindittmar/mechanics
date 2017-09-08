@@ -6,10 +6,14 @@ CResourceManager* g_pResourceManager;
 CResourceManager::CResourceManager()
 {
 	m_iMaterialCount = 0;
+	m_pMirror = NULL;
 }
 
 CResourceManager::~CResourceManager()
 {
+	if (m_pMirror)
+		m_pMirror->DecrementReferenceCount();
+
 	ISurface* pSurface = m_pApp->Surface();
 	for(std::unordered_map<int, int>::iterator it = m_mapTextures.begin(); it != m_mapTextures.end(); it++)
 	{
@@ -46,6 +50,35 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 	pMat->IncrementReferenceCount();
 
 	return pMat;
+}
+
+void CResourceManager::CreateMirror()
+{
+	IMaterialSystem* pMatSys = m_pApp->MaterialSystem();
+
+	pMatSys->BeginRenderTargetAllocation();
+	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx("mirror_ex", 180, 120, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+	pMatSys->EndRenderTargetAllocation();
+
+	if (m_pMirror)
+	{
+		// Prevent it from getting cleaned up
+		m_pMirror->IncrementReferenceCount();
+
+		//m_pMirror->
+
+		// TEMP
+		const char* pName = m_pMirror->GetName();
+		int texId = m_pApp->Surface()->DrawGetTextureId(pName);
+
+		int width, height;
+		pMatSys->GetBackBufferDimensions(width, height);
+
+		g_pConsole->Write("BackBuffer size: (%d|%d)\nBackBuffer format: %d\n", width, height, pMatSys->GetBackBufferFormat());
+		g_pConsole->Write("'%s': (%d|%d)\n", pName, m_pMirror->GetActualWidth(), m_pMirror->GetActualHeight());
+		// TEMP
+	}
+	
 }
 
 void CResourceManager::CreateTextures()
@@ -91,9 +124,9 @@ void CResourceManager::CreateFonts()
 	unsigned int fontHeader = pSurface->SCreateFont();
 	unsigned int fontSubheader = pSurface->SCreateFont();
 
-	pSurface->SetFontGlyphSet(fontNormal, xorArial.ToCharArray(), 16, 255, 0, 0, 0x200);
-	pSurface->SetFontGlyphSet(fontHeader, xorArial.ToCharArray(), 20, 255, 0, 0, 0x200);
-	pSurface->SetFontGlyphSet(fontSubheader, xorArial.ToCharArray(), 18, 255, 0, 0, 0x200);
+	pSurface->SetFontGlyphSet(fontNormal, xorArial.ToCharArray(), 16, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontHeader, xorArial.ToCharArray(), 20, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontSubheader, xorArial.ToCharArray(), 18, 255, 0, 0, FONTFLAG_OUTLINE);
 
 	m_mapFonts[RM_FONT_NORMAL] = fontNormal;
 	m_mapFonts[RM_FONT_HEADER] = fontHeader;

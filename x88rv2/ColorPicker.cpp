@@ -22,5 +22,5 @@ void CColorPicker::Draw(ISurface* pSurface)
 {
 	pSurface->DrawSetColor(255, 255, 255, 255);
 	pSurface->DrawSetTexture(m_iColorFadeTexture);
-	pSurface->DrawTexturedRect(0, 0, 30, CGui::Instance()->ScreenHeight());
+	pSurface->DrawTexturedRect(0, 0, 30, CGui::Instance()->GetScreenHeight());
 }

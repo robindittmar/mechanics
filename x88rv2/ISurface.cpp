@@ -63,6 +63,12 @@ int ISurface::CreateNewTextureID(bool procedural)
 	return ((CreateNewTextureID_t)(*(void***)this)[CREATENEWTEXTUREID_INDEX])(this, procedural);
 }
 
+int ISurface::DrawGetTextureId(char const* filename)
+{
+	typedef int(__thiscall *DrawGetTextureId_t)(void*, char const*);
+	return ((DrawGetTextureId_t)(*(void***)this)[34])(this, filename);
+}
+
 void ISurface::DrawSetTextureRGBA(int id, const unsigned char* rgba, int wide, int tall)
 {
 	typedef void(__thiscall *DrawSetTextureRGBA_t)(void*, int, const unsigned char*, int, int);

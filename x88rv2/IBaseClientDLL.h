@@ -1,13 +1,9 @@
-/// 
-/// Source Engine declarations
-///
-
-
-#ifndef __BASECLIENT_H__
-#define __BASECLIENT_H__
+#ifndef __IBASECLIENT_H__
+#define __IBASECLIENT_H__
 
 #include "ClientClass.h"
 #include "CreateInterface.h"
+#include "CViewSetup.h"
 
 class IBaseClientDLL {
 public:
@@ -21,6 +17,9 @@ public:
 	virtual void             LevelInitPostEntity() = 0;
 	virtual void             LevelShutdown(void) = 0;
 	virtual ClientClass*     GetAllClasses(void) = 0;
+
+	void RenderView(const CViewSetup &view, int nClearFlags, int whatToDraw);
+	bool GetPlayerView(CViewSetup &playerView);
 };
 
-#endif // __BASECLIENT_H__
+#endif // __IBASECLIENT_H__

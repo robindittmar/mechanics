@@ -9,6 +9,7 @@
 
 // Custom
 #include "Target.h"
+#include "Autowall.h"
 
 #define MAXSTUDIOBONES			128
 #define BONE_USED_BY_HITBOX		0x00000100
@@ -51,6 +52,9 @@ public:
 
 	void Setup(CApplication* pApp);
 
+	void SetHasTargets(bool bHasTargets) { m_bHasTargets = bHasTargets; }
+	bool GetHasTargets() { return m_bHasTargets; }
+
 	void SelectTargets(float fInputSampleTime);
 	CTarget* GetTarget(int iTargetCriteria) { return &m_pTargets[iTargetCriteria]; }
 
@@ -72,6 +76,8 @@ private:
 	float GetViewangleDist(QAngle& a, QAngle& b/*, float fOriginDistance*/);
 
 	void ResetTargets();
+
+	bool m_bHasTargets;
 
 	int m_iHitboxes[TARGET_HITBOX_COUNT];
 	bool m_bCheckHitbox[TARGET_HITBOX_COUNT];

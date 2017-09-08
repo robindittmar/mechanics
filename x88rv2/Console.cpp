@@ -17,6 +17,9 @@ CConsole::CConsole()
 
 CConsole::~CConsole()
 {
+	m_hIn = NULL;
+	m_hOut = NULL;
+
 	FreeConsole();
 }
 

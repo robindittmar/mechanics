@@ -1,18 +1,17 @@
 #include "Application.h"
-#include "Vector.h"
-#include <math.h>
-#include "IMatRenderContext.h"
-
-//QAngle const&              GetRenderAngles(void) // VTable idx 12 @LocalEntity
 
 CreateMove_t CApplication::m_pCreateMove;
 FrameStageNotify_t CApplication::m_pFrameStageNotify;
 OverrideView_t CApplication::m_pOverrideView;
 DrawModelExecute_t CApplication::m_pDrawModelExecute;
 PaintTraverse_t CApplication::m_pPaintTraverse;
+PlaySound_t CApplication::m_pPlaySound;
 GetViewModelFov_t CApplication::m_pGetViewModelFov;
-RecvVarProxy_t CApplication::m_pSequenceProxy;
 FireEventClientSide_t CApplication::m_pFireEventClientSide;
+RenderView_t CApplication::m_pRenderViewFn;
+RenderSmokePostViewmodel_t CApplication::m_pRenderSmokePostViewmodel;
+
+RecvVarProxy_t CApplication::m_pSequenceProxy;
 
 CApplication* CApplication::Instance()
 {
@@ -36,12 +35,8 @@ void CApplication::Detach()
 	// Restore proxy functions
 	m_pProxyProp->m_ProxyFn = this->m_pSequenceProxy;
 
-	// Reverse order, in case of any dependencies
-	this->m_pGameEventManagerHook->Restore();
-	this->m_pVguiHook->Restore();
-	this->m_pClientHook->Restore();
-	this->m_pEngineModelHook->Restore();
-	this->m_pClientModeHook->Restore();
+	// Unhook everything
+	this->Unhook();
 
 	// Free ResourceManager
 	delete g_pResourceManager;
@@ -120,11 +115,14 @@ void CApplication::LoadSkinChangerConfig()
 
 void CApplication::Unhook()
 {
-	this->m_pClientModeHook->Restore();
-	this->m_pEngineModelHook->Restore();
-	this->m_pClientHook->Restore();
-	this->m_pVguiHook->Restore();
+	// Reverse order, in case of any dependencies
+	this->m_pViewRenderHook->Restore();
 	this->m_pGameEventManagerHook->Restore();
+	this->m_pSurfaceHook->Restore();
+	this->m_pPanelHook->Restore();
+	this->m_pClientHook->Restore();
+	this->m_pModelRenderHook->Restore();
+	this->m_pClientModeHook->Restore();
 
 	this->m_bIsHooked = false;
 }
@@ -132,10 +130,12 @@ void CApplication::Unhook()
 void CApplication::Rehook()
 {
 	this->m_pClientModeHook->Rehook();
-	this->m_pEngineModelHook->Rehook();
+	this->m_pModelRenderHook->Rehook();
 	this->m_pClientHook->Rehook();
-	this->m_pVguiHook->Rehook();
+	this->m_pPanelHook->Rehook();
+	this->m_pSurfaceHook->Rehook();
 	this->m_pGameEventManagerHook->Rehook();
+	this->m_pViewRenderHook->Rehook();
 
 	this->m_bIsHooked = true;
 }
@@ -175,8 +175,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Create instance of CreateMoveParam
 			CreateMoveParam createMoveParam = { fInputSampleTime, pUserCmd };
 
-			// Grab targets
-			pApp->m_targetSelector.SelectTargets(fInputSampleTime);
+			// New tick, so we didn't get any targets yet
+			pApp->m_targetSelector.SetHasTargets(false);
 
 			// TODO @Nico: Muss AutoRevolver hier oben stehen? :) 
 			//			(ich meine ist im endeffekt echt latte, aber ist halt schöner
@@ -277,19 +277,12 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			if (pApp->m_inputEvent.buttons & EVENT_BTN_TOGGLEMENU &&
 				pApp->m_inputEvent.buttonProperties & EVENT_BTN_TOGGLEMENU)
 			{
-				pApp->m_pWindow->IsVisible(!pApp->m_pWindow->IsVisible());
-				if (pApp->m_pWindow->IsVisible())
-				{
-					// TODO: Xor
-					pApp->m_pGui->DisableIngameMouse();
-					pApp->m_pGui->SetDrawMouse(true);
-				}
-				else
-				{
-					// TODO: Xor
-					pApp->m_pGui->EnableIngameMouse();
-					pApp->m_pGui->SetDrawMouse(false);
-				}
+				bool bVis = !pApp->m_pWindow->IsVisible();
+				pApp->m_pWindow->IsVisible(bVis);
+				
+				// Mouse stuff
+				pApp->m_pGui->SetEnableMouse(!bVis);
+				pApp->m_pGui->SetDrawMouse(bVis);
 			}
 			else if (pApp->m_inputEvent.buttons & EVENT_BTN_DETACH &&
 				pApp->m_inputEvent.buttonProperties & EVENT_BTN_DETACH)
@@ -404,12 +397,14 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
+			ISurface* pSurface = pApp->Surface();
+
 			// Draw NoScope & SpecList
 			pApp->Misc()->DrawNoScope();
 			pApp->Misc()->SpectatorList();
 
 			// Draw Esp
-			pApp->Esp()->Update();
+			pApp->Esp()->Update((void*)pSurface);
 
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
@@ -421,6 +416,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->m_pWindow->Draw(pApp->Surface());
 			pApp->m_pGui->DrawMouse(pApp->Surface());
 
+			// LBY Indicator
 			if (pApp->Visuals()->GetDrawLbyIndicator())
 			{
 				IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
@@ -477,11 +473,103 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
 }
 
+void __fastcall CApplication::hk_PlaySound(void* ecx, void* edx, const char* fileName)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	// TODO: Temporary
+	g_pConsole->Write("PlaySound => '%s'\n", fileName);
+
+	pApp->m_pPlaySound(ecx, fileName);
+}
+
 float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
+	// TODO: Warum eig relativer Wert? Sollte man nicht n absolutes FOV angeben können? :)
+	//			CVar 'viewmodel_fov' steht default auf 60 (Wahrscheinlich default FOV)
 	return m_pGetViewModelFov(ecx) + 20.0f;
+}
+
+bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+	pApp->m_skinchanger.ApplyCustomKillIcon(pEvent);
+
+	return m_pFireEventClientSide(ecx, pEvent);
+}
+
+void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
+
+	/*static ITexture* pRenderTexture = NULL;
+	if (!pRenderTexture)
+	{
+		pApp->MaterialSystem()->BeginRenderTargetAllocation();
+		ITexture* tex1 = pApp->MaterialSystem()->CreateRenderTargetTexture(300, 200, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+		ITexture* tex2 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex2", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+		ITexture* tex3 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex3", 120, 80, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ABGR8888);
+		ITexture* tex4 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex4", 120, 80, RT_SIZE_FULL_FRAME_BUFFER, IMAGE_FORMAT_RGBA8888);
+		ITexture* tex5 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex5", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+
+		pRenderTexture = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+		pApp->MaterialSystem()->EndRenderTargetAllocation();
+	}*/
+	
+	if (pApp->EngineClient()->IsInGame())
+	{
+		if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
+		{
+			CViewSetup myView = view;
+			myView.x = 0;
+			myView.y = 0;
+			myView.width = 180;
+			myView.height = 120;
+
+			myView.angles.y += 180.0f;
+
+			//nClearFlags &= ~(VIEW_CLEAR_STENCIL);
+			//ITexture* pMirror = pApp->MaterialSystem()->FindTexture("mirror_ex", "RenderTargets");
+			ITexture* pMirrorSafe = g_pResourceManager->GetMirror();
+
+			IMatRenderContext* pRenderContext = pApp->MaterialSystem()->GetRenderContext();
+			ITexture* pOldTarget = pRenderContext->GetRenderTarget();
+			pRenderContext->SetRenderTarget(pMirrorSafe);
+
+			m_pRenderViewFn(
+				ecx,
+				myView,
+				hudViewSetup,
+				0,
+				0
+			);
+
+			pRenderContext->SetRenderTarget(pOldTarget);
+
+			Rect_t src; src.x = 0; src.y = 0; src.width = 180; src.height = 120;
+			Rect_t dst; dst.x = 150; dst.y = 150; dst.width = 180; dst.height = 120;
+			pRenderContext->CopyTextureToRenderTargetEx(1, pMirrorSafe, &src, &dst);
+
+			//pApp->BaseClient()->RenderView(myView, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH | VIEW_CLEAR_FULL_TARGET | VIEW_CLEAR_OBEY_STENCIL | VIEW_CLEAR_STENCIL, RENDERVIEW_UNSPECIFIED | RENDERVIEW_DRAWVIEWMODEL | RENDERVIEW_DRAWHUD | RENDERVIEW_SUPPRESSMONITORRENDERING);
+			//pApp->BaseClient()->RenderView(backupView, 0, 0);
+		}
+	}
+}
+
+void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	// Idk what this is used for,
+	// more or less pasta from AimTux :D
+	if (pApp->Visuals()->GetNoSmoke())
+		return;
+
+	pApp->m_pRenderSmokePostViewmodel(ecx);
 }
 
 void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
@@ -576,14 +664,6 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 	pApp->m_pSequenceProxy(pData, pStruct, pOut);
 }
 
-bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
-{
-	CApplication* pApp = CApplication::Instance();
-	pApp->m_skinchanger.ApplyCustomKillIcon(pEvent);
-
-	return m_pFireEventClientSide(ecx, pEvent);
-}
-
 /*void BtnDown(IControl* p)
 {
 CButton* btn = (CButton*)p;
@@ -594,7 +674,7 @@ void DetachBtnClick(IControl* p)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	pApp->Gui()->EnableIngameMouse();
+	pApp->Gui()->SetEnableMouse(true);
 	pApp->Detach();
 }
 
@@ -633,15 +713,15 @@ void CApplication::Setup()
 	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
-	this->m_dwVgui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
-	this->m_dwVguiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
+	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
+	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(vphysicsDll.ToCharArray());
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(CXorString("axñ¦{bçìsgé").ToCharArray());
 	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVgui2Dll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVguiSurfaceDll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGui2Dll, createInterface.ToCharArray());
+	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
 
@@ -662,11 +742,19 @@ void CApplication::Setup()
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
-	SetRecoilCompensation(atof(m_pCVar->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	if (m_pEngineClient->IsInGame())
+	{
+		SetRecoilCompensation(atof(m_pCVar->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	}
 
 	// Create Resources
+	m_pResourceManager->CreateMirror();
 	m_pResourceManager->CreateTextures();
 	m_pResourceManager->CreateFonts();
+
+	// CGui initialization
+	m_pGui = CGui::Instance();
+	m_pGui->Setup();
 
 	// Print classes & their properties
 	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
@@ -741,7 +829,7 @@ void CApplication::Setup()
 	// Target Selector
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(false);
-	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_FULLVISIBLE);
+	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_CANHIT);
 	for (int i = 0; i < TARGET_HITBOX_COUNT; i++)
 	{
 		this->m_targetSelector.SetCheckHitbox(i, true);
@@ -767,7 +855,7 @@ void CApplication::Setup()
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 
 	// Triggerbot
-	this->m_triggerbot.SetEnabled(true);
+	this->m_triggerbot.SetEnabled(false);
 
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
@@ -843,9 +931,6 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ¦rjñª").ToCharArray(), false); // player_death
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
-
-																										  // Create all Gui stuff
-	m_pGui = CGui::Instance();
 
 	// Initialize InputHandler
 	m_inputHandler.RegisterKey(VK_DELETE, EVENT_BTN_DETACH);
@@ -1030,16 +1115,12 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
-	// Grab Screensize
-	m_pGui->GetScreenSize();
-
-	// Create Resources
-	m_pResourceManager->CreateFonts();
-
-	// Get ClientMode and CInput
+	// IClientMode
 	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
+	// CInput
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
 
+	// ClientState
 	this->m_pClientState = **(IClientState***)(CPattern::FindPattern(
 		(BYTE*)this->EngineDll(),
 		ENGINEDLL_SIZE,
@@ -1047,7 +1128,15 @@ void CApplication::Hook()
 		"a----gh----e"
 	) + 1);
 
+	// IViewRender
+	m_pViewRender = **(IViewRender***)(CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\xFF\x75\x10\x8B\x0D\x00\x00\x00\x00\xFF\x75\x0C",
+		"abcdefgh----ijk"
+	) + 0x08);
 
+	// KeyValues::Init
 	DWORD dwInitKeyValuesTemp = (CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,
 		CLIENTDLL_SIZE,
@@ -1056,6 +1145,7 @@ void CApplication::Hook()
 	) + 7);
 	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
 
+	// KeyValues::LoadFromBuffer
 	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
 		(BYTE*)this->m_dwClientDll,
 		CLIENTDLL_SIZE,
@@ -1064,22 +1154,29 @@ void CApplication::Hook()
 	);
 	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
 
-	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode, true);
+	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
 	m_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
 
-	m_pEngineModelHook = new VTableHook((DWORD*)this->m_pModelRender, true);
-	m_pDrawModelExecute = (DrawModelExecute_t)m_pEngineModelHook->Hook(21, (DWORD*)hk_DrawModelExecute);
+	m_pModelRenderHook = new VTableHook((DWORD*)this->m_pModelRender);
+	m_pDrawModelExecute = (DrawModelExecute_t)m_pModelRenderHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
-	m_pClientHook = new VTableHook((DWORD*) this->m_pClient, true);
+	m_pClientHook = new VTableHook((DWORD*)this->m_pClient);
 	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
+	
+	m_pPanelHook = new VTableHook((DWORD*)this->m_pPanel);
+	m_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
-	m_pVguiHook = new VTableHook((DWORD*)this->m_pPanel, true);
-	m_pPaintTraverse = (PaintTraverse_t)m_pVguiHook->Hook(41, (DWORD*)hk_PaintTraverse);
-
-	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager, true);
+	m_pSurfaceHook = new VTableHook((DWORD*)this->m_pSurface);
+	m_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
+	
+	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager);
 	m_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
+
+	m_pViewRenderHook = new VTableHook((DWORD*)m_pViewRender);
+	m_pRenderViewFn = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
+	m_pRenderSmokePostViewmodel = (RenderSmokePostViewmodel_t)m_pViewRenderHook->Hook(41, (DWORD*)hk_RenderSmokePostViewmodel);
 
 	CXorString xorBaseViewModel("TIä±r]ì§`Fê¦rg");
 	CXorString xorSequence("zTë‘rzð§yhà");
@@ -1123,9 +1220,9 @@ CApplication::CApplication()
 	m_pWindow = NULL;
 
 	m_pClientModeHook = NULL;
-	m_pEngineModelHook = NULL;
+	m_pModelRenderHook = NULL;
 	m_pClientHook = NULL;
-	m_pVguiHook = NULL;
+	m_pPanelHook = NULL;
 	m_pGameEventManagerHook = NULL;
 
 	m_bGotSendPackets = false;
@@ -1143,14 +1240,14 @@ CApplication::~CApplication()
 	if (m_pGameEventManagerHook)
 		delete m_pGameEventManagerHook;
 
-	if (m_pVguiHook)
-		delete m_pVguiHook;
+	if (m_pPanelHook)
+		delete m_pPanelHook;
 
 	if (m_pClientHook)
 		delete m_pClientHook;
 
-	if (m_pEngineModelHook)
-		delete m_pEngineModelHook;
+	if (m_pModelRenderHook)
+		delete m_pModelRenderHook;
 
 	if (m_pClientModeHook)
 		delete m_pClientModeHook;

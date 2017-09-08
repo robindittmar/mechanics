@@ -74,6 +74,8 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 		pApp->Rehook();
 	}*/
 
+	CGui::Instance()->Setup();
+
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();

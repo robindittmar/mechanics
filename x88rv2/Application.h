@@ -1,7 +1,10 @@
 #ifndef __APPLICATION_H__
 #define __APPLICATION_H__
 
-// Custom includes
+// Std lib
+#include <cmath>
+
+// Custom
 #include "Console.h"
 #include "Pattern.h"
 #include "XorString.h"
@@ -27,7 +30,7 @@
 #include "Skinchanger.h"
 #include "Visuals.h"
 
-// Source Engine
+// Source SDK
 #include "CreateInterface.h"
 #include "IVEngineClient.h"
 #include "IBaseClientDLL.h"
@@ -51,6 +54,9 @@
 #include "IVModelRender.h"
 #include "IVRenderView.h"
 #include "KeyValues.h"
+#include "Vector.h"
+#include "IMatRenderContext.h"
+#include "IViewRender.h"
 
 #define OFFSET_LOCAL 0x2FAC
 #define OFFSET_AIMPUNCHANGLE 0x70
@@ -67,9 +73,13 @@ typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
 typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
-typedef float(__thiscall* GetViewModelFov_t)(void*);
-typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
+typedef void(__thiscall *PlaySound_t)(void*, const char*);
+typedef float(__thiscall *GetViewModelFov_t)(void*);
 typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
+typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, CViewSetup&, int, int);
+typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
+
+typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
@@ -104,10 +114,11 @@ public:
 
 	// VTable Hooks
 	VTableHook* ClientModeHook() { return m_pClientModeHook; }
-	VTableHook* EngineModelHook() { return m_pEngineModelHook; }
+	VTableHook* ModelRenderHook() { return m_pModelRenderHook; }
 	VTableHook* ClientHook() { return m_pClientHook; }
-	VTableHook* VguiHook() { return m_pVguiHook; }
+	VTableHook* PanelHook() { return m_pPanelHook; }
 	VTableHook* GameEventManagerHook() { return m_pGameEventManagerHook; }
+	VTableHook* ViewRenderHook() { return m_pViewRenderHook; }
 
 	// Exposed callable engine functions
 	CreateMove_t CreateMove() { return m_pCreateMove; }
@@ -115,9 +126,13 @@ public:
 	OverrideView_t OverrideView() { return m_pOverrideView; }
 	DrawModelExecute_t DrawModelExecute() { return m_pDrawModelExecute; }
 	PaintTraverse_t PaintTraverse() { return m_pPaintTraverse; }
+	PlaySound_t PlaySound() { return m_pPlaySound; }
 	GetViewModelFov_t GetViewModelFov() { return m_pGetViewModelFov; }
-	RecvVarProxy_t SequenceProxy() { return m_pSequenceProxy; }
 	FireEventClientSide_t FireEventClientSide() { return m_pFireEventClientSide; }
+	RenderView_t RenderViewFn() { return m_pRenderViewFn; }
+	RenderSmokePostViewmodel_t RenderSmokePostViewmodel() { return m_pRenderSmokePostViewmodel; }
+
+	RecvVarProxy_t SequenceProxy() { return m_pSequenceProxy; }
 
 	InitKeyValues_t InitKeyValues() { return m_pInitKeyValues; }
 	LoadFromBuffer_t LoadFromBuffer() { return m_pLoadFromBuffer; }
@@ -139,15 +154,17 @@ public:
 	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
 	IClientState* ClientState() { return m_pClientState; }
 	ICVar* CVar() { return m_pCVar; }
+	IViewRender* ViewRender() { return m_pViewRender; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
 	DWORD EngineDll() { return m_dwEngineDll; }
 	DWORD MaterialSystemDll() { return m_dwMaterialSystemDll; }
-	DWORD Vgui2Dll() { return m_dwVgui2Dll; }
-	DWORD VguiSurfaceDll() { return m_dwVguiSurfaceDll; }
+	DWORD VGui2Dll() { return m_dwVGui2Dll; }
+	DWORD VGuiSurfaceDll() { return m_dwVGuiSurfaceDll; }
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 
+	// Target selector (Feature?)
 	CTargetSelector* TargetSelector() { return &m_targetSelector; }
 
 	// Features
@@ -190,11 +207,15 @@ public:
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);
 	static void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage);
 	static void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup);
-	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext * ctx, const DrawModelState_t &state, const ModelRenderInfo_t &pInfo, matrix3x4_t *pCustomBoneToWorld);
+	static void __fastcall hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 	static void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce);
+	static void __fastcall hk_PlaySound(void* ecx, void* edx, const char* fileName);
 	static float __fastcall hk_GetViewModelFov(void* ecx, void* edx);
-	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 	static bool __fastcall hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent);
+	static void __fastcall hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw);
+	static void __fastcall hk_RenderSmokePostViewmodel(void* ecx, void* edx);
+
+	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 private:
 	void Setup();
 	void Hook();
@@ -206,19 +227,25 @@ private:
 	bool m_bInitialHookDone;
 	bool m_bIsHooked;
 	VTableHook* m_pClientModeHook;
-	VTableHook* m_pEngineModelHook;
+	VTableHook* m_pModelRenderHook;
 	VTableHook* m_pClientHook;
-	VTableHook* m_pVguiHook;
+	VTableHook* m_pPanelHook;
+	VTableHook* m_pSurfaceHook;
 	VTableHook* m_pGameEventManagerHook;
+	VTableHook* m_pViewRenderHook;
 
 	static CreateMove_t m_pCreateMove;
 	static FrameStageNotify_t m_pFrameStageNotify;
 	static OverrideView_t m_pOverrideView;
 	static DrawModelExecute_t m_pDrawModelExecute;
 	static PaintTraverse_t m_pPaintTraverse;
+	static PlaySound_t m_pPlaySound;
 	static GetViewModelFov_t m_pGetViewModelFov;
-	static RecvVarProxy_t m_pSequenceProxy;
 	static FireEventClientSide_t m_pFireEventClientSide;
+	static RenderView_t m_pRenderViewFn;
+	static RenderSmokePostViewmodel_t m_pRenderSmokePostViewmodel;
+
+	static RecvVarProxy_t m_pSequenceProxy;
 	//---TEMP
 	RecvProp* m_pProxyProp;
 	//---TEMP
@@ -241,12 +268,13 @@ private:
 	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
 	IClientState* m_pClientState;
 	ICVar* m_pCVar;
+	IViewRender* m_pViewRender;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
-	DWORD m_dwVgui2Dll;
-	DWORD m_dwVguiSurfaceDll;
+	DWORD m_dwVGui2Dll;
+	DWORD m_dwVGuiSurfaceDll;
 	DWORD m_dwVPhysicsDll;
 	DWORD m_dwVStdLibDll;
 
