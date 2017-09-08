@@ -76,6 +76,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 
 	CGui::Instance()->Setup();
 
+	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();
@@ -94,7 +95,9 @@ void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 
 void CGameEventListener::switch_team(IGameEvent* pEvent)
 {
+	CApplication* pApp = CApplication::Instance();
 
+	pApp->SkinChanger()->SetForceFullUpdate();
 }
 
 void CGameEventListener::player_hurt(IGameEvent* pEvent)
@@ -152,8 +155,10 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int revenge = pEvent->GetInt(m_xorRevenge.ToCharArray());
 	int penetrated = pEvent->GetInt(m_xorPenetrated.ToCharArray());*/
 
+	int iLocalPlayerIndex = pApp->EngineClient()->GetLocalPlayer();
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
-	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
+	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != iLocalPlayerIndex)
 		return;
 
 	bool sayTaunt = false;
@@ -162,6 +167,10 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	{
 		pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
 	}
+
+	// Set here instead of player_spawned because of IsAlive check
+	if(pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
+		pApp->SkinChanger()->SetForceFullUpdate();
 }
 
 void CGameEventListener::round_start(IGameEvent* pEvent)

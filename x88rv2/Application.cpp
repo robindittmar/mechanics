@@ -178,12 +178,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// New tick, so we didn't get any targets yet
 			pApp->m_targetSelector.SetHasTargets(false);
 
-			// TODO @Nico: Muss AutoRevolver hier oben stehen? :) 
-			//			(ich meine ist im endeffekt echt latte, aber ist halt schöner
-			//			 alles von misc zusammen so. Vllt hier weil wegen muss vor Aimbot executed werden?
-			//			 -> dann bitte entsprechenden kommentar dran, danke <3)
-			pApp->Misc()->AutoRevolver(pUserCmd);
-
 			// Update Aimbot
 			pApp->Ragebot()->Update((void*)&createMoveParam);
 			// Update Triggerbot
@@ -192,15 +186,12 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
 
-			// Update NoRecoil & AutoPistol
+			// Miscs
+			pApp->Misc()->AutoRevolver(pUserCmd);
 			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
-			// Update Fakelag
 			pApp->Misc()->Fakelag(pUserCmd);
-			// Update AutoStrafe
 			pApp->Misc()->AutoStrafe(pUserCmd);
-
-			// Jumpscout fix
 			pApp->Misc()->JumpScout(pUserCmd);
 
 			// Update AntiAim
@@ -213,7 +204,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Set ViewAngles we prepared for display
 			pApp->EngineClient()->SetViewAngles(pApp->GetClientViewAngles());
 
-			//todo: check if fake and if sendpackets false
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate)
@@ -520,7 +510,7 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 		pApp->MaterialSystem()->EndRenderTargetAllocation();
 	}*/
 	
-	if (pApp->EngineClient()->IsInGame())
+	/*if (pApp->EngineClient()->IsInGame())
 	{
 		if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
 		{
@@ -557,7 +547,7 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 			//pApp->BaseClient()->RenderView(myView, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH | VIEW_CLEAR_FULL_TARGET | VIEW_CLEAR_OBEY_STENCIL | VIEW_CLEAR_STENCIL, RENDERVIEW_UNSPECIFIED | RENDERVIEW_DRAWVIEWMODEL | RENDERVIEW_DRAWHUD | RENDERVIEW_SUPPRESSMONITORRENDERING);
 			//pApp->BaseClient()->RenderView(backupView, 0, 0);
 		}
-	}
+	}*/
 }
 
 void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
@@ -896,7 +886,7 @@ void CApplication::Setup()
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 	this->m_misc.SetDisablePostProcessing(true);
 	this->m_misc.SetJumpScout(true);
-	this->m_misc.SetSpamNameFix(false);
+	this->m_misc.SetNoName(false);
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);
@@ -967,21 +957,23 @@ void CApplication::Setup()
 	pSelectbox->AddOption(6, "SIEG");
 
 	CCheckbox* pNoName = new CCheckbox(16, 160, 120, 32, "NoName", m_misc.GetNoName());
-	pNoName->SetEventHandler(std::bind(&CMisc::NoName, &m_misc, std::placeholders::_1));
+	pNoName->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, &m_misc, std::placeholders::_1));
 
 	// TODO: Groupbox -> "Antiaim" :D
-	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch", this->AntiAim()->GetPitchSetting());
+	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
+	pSelectPitchAntiaim->SetSelection(this->m_antiAim.GetPitchSetting());
 	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
 
-	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw", this->AntiAim()->GetYawSetting());
+	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT");
 	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALRIGHTFAKELEFT, "REAL RIGHT FAKE LEFT");
+	pSelectYawAntiaim->SetSelection(this->m_antiAim.GetYawSetting());
 	pSelectYawAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
 
 	CSelectbox* pSelectbox2 = new CSelectbox(304, 16, 128, 32);
