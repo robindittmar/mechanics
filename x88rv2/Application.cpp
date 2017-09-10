@@ -479,6 +479,7 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 
 	// TODO: Warum eig relativer Wert? Sollte man nicht n absolutes FOV angeben können? :)
 	//			CVar 'viewmodel_fov' steht default auf 60 (Wahrscheinlich default FOV)
+	// viewmodel_fov ist nicht das fov was wir hier setzen ^^ hier ist es das weaponmodel_fov komisch benannt von ventil ^^
 	return m_pGetViewModelFov(ecx) + 20.0f;
 }
 
