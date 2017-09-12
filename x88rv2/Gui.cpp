@@ -3,8 +3,8 @@
 
 CGui::CGui()
 {
-	m_bDrawMouse = false;
 	m_pWorldToScreenMatrix = NULL;
+	m_bDrawMouse = false;
 }
 
 CGui::~CGui()
@@ -21,14 +21,19 @@ void CGui::Setup()
 {
 	m_pApp = CApplication::Instance();
 
-	// Screen size
-	CApplication::Instance()->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
-
-	// WorldToScreenMatrix
+	// Pointer to WorldToScreenMatrix
 	m_pWorldToScreenMatrix = &m_pApp->EngineClient()->WorldToScreenMatrix();
+
+	// Screen size
+	m_pApp->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
 
 	// cl_mouseenable
 	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
+}
+
+void CGui::GetWorldToScreenMatrix()
+{
+	
 }
 
 void CGui::SetEnableMouse(bool bEnableMouse)
@@ -104,9 +109,6 @@ bool CGui::WorldToScreen(const Vector &origin, Vector &screen)
 
 bool CGui::ScreenTransform(const Vector& point, Vector& screen)
 {
-	if (!m_pWorldToScreenMatrix)
-		return false;
-
 	screen.x = m_pWorldToScreenMatrix->m[0][0] * point.x + m_pWorldToScreenMatrix->m[0][1] * point.y + m_pWorldToScreenMatrix->m[0][2] * point.z + m_pWorldToScreenMatrix->m[0][3];
 	screen.y = m_pWorldToScreenMatrix->m[1][0] * point.x + m_pWorldToScreenMatrix->m[1][1] * point.y + m_pWorldToScreenMatrix->m[1][2] * point.z + m_pWorldToScreenMatrix->m[1][3];
 	screen.z = 0.0f;

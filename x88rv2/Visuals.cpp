@@ -206,7 +206,7 @@ void CVisuals::ThirdpersonAntiAim()
 	if (m_pApp->Input()->m_fCameraInThirdPerson)
 	{
 		IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
-		*(Vector*)((DWORD)pLocalEntity + Offsets::m_deadflag + 0x4) = m_pApp->LastTickAngles();
+		*(Vector*)((DWORD)pLocalEntity + Offsets::deadflag + 0x4) = m_pApp->LastTickAngles();
 	}
 }
 

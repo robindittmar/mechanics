@@ -16,11 +16,11 @@ public:
 	CNetVar(int iOffset = 0, bool bIsTable = false);
 	~CNetVar();
 
-	void LoadTable(RecvTable* pTable);
+	void LoadTable(RecvTable* pTable, bool bRecursive = false);
 	CNetVar* GetChild(const char* pNetVarName);
 
-	void SetTable(bool bIsTable) { m_bIsTable = bIsTable; }
-	bool GetTable() { return m_bIsTable; }
+	void SetIsTable(bool bIsTable) { m_bIsTable = bIsTable; }
+	bool GetIsTable() { return m_bIsTable; }
 
 	void SetOffset(int iOffset) { m_iOffset = iOffset; }
 	int GetOffset() { return m_iOffset; }

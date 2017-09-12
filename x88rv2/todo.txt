@@ -23,3 +23,6 @@ Priority Low
 => Multipoint visibility check [(kind of) x]
 => AntiAim target von aimbot wenn möglich, sonst closest to origin
 => Sound Esp
+
+
+// Uhrzeit als clantag?

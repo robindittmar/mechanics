@@ -28,16 +28,26 @@ namespace Offsets
 	extern int m_iShotsFired;
 	extern int m_hActiveWeapon;
 	extern int m_hObserverTarget;
-	extern int m_deadflag;
+	extern int deadflag;
 	extern int m_nTickBase;
 
+	// DT_Local
+	extern int m_nJumpTimeMsecs;
+	extern int m_flFallVelocity;
+	extern int m_viewPunchAngle;
+	extern int m_aimPunchAngle;
+	extern int m_aimPunchAngleVel;
+	
 	// DT_BaseCombatWeapon
-	/*extern int m_AttributeManager;
-	extern int m_Item;*/
+	extern int m_AttributeManager;
+	extern int m_Item;
 	extern int m_iItemDefinitionIndex;
 	extern int m_iClip1;
 	extern int m_iClip2;
 	extern int m_flNextPrimaryAttack;
+	//extern int m_iViewModelIndex;		// 0x31E4
+	//extern int m_iWorldModelIndex;	// 0x31E8
+	extern int m_hWeaponWorldModel;
 	
 	// DT_WeaponCSBase
 	extern int m_fAccuracyPenalty;

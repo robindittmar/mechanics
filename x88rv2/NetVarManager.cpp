@@ -2,6 +2,7 @@
 
 CNetVarManager::CNetVarManager()
 {
+	m_bSummarizeOffsets = false;
 }
 
 CNetVarManager::~CNetVarManager()
@@ -22,7 +23,7 @@ void CNetVarManager::AddTable(const char* pTable)
 	m_mapTablesToLoad[iHash] = true;
 }
 
-void CNetVarManager::LoadTables(ClientClass* pClass)
+void CNetVarManager::LoadTables(ClientClass* pClass, bool bRecursive)
 {
 	uint32_t iHash;
 	RecvTable* pTable;
@@ -40,7 +41,7 @@ void CNetVarManager::LoadTables(ClientClass* pClass)
 		{
 			// Init and load netvar
 			pNetVar = new CNetVar();
-			pNetVar->LoadTable(pTable);
+			pNetVar->LoadTable(pTable, bRecursive);
 
 			// Add netvar to map
 			m_mapNetVars[iHash] = pNetVar;
@@ -49,6 +50,46 @@ void CNetVarManager::LoadTables(ClientClass* pClass)
 		// Next element
 		pClass = pClass->m_pNext;
 	}
+}
+
+CNetVar* CNetVarManager::GetNetVar(const char* pTable, const char* pNetVarName)
+{
+	if (!pNetVarName)
+	{
+		return m_mapNetVars[murmurhash(pTable, strlen(pTable), 0xB16B00B5)];
+	}
+
+	return this->GetNetVar(1, pTable, pNetVarName);
+}
+
+CNetVar* CNetVarManager::GetNetVar(int iCountToResolve, const char* pTable, ...)
+{
+	uint32_t iHash = murmurhash(pTable, strlen(pTable), 0xB16B00B5);
+	CNetVar* pNetVar = m_mapNetVars[iHash];
+
+	const char* pCurArg;
+	va_list pArgList;
+	va_start(pArgList, pTable);
+	for (int i = 0; i < iCountToResolve; i++)
+	{
+		if (!pNetVar->GetIsTable())
+		{
+			break;
+		}
+
+		pCurArg = va_arg(pArgList, const char*);
+		pNetVar = pNetVar->GetChild(pCurArg);
+		if (!pNetVar)
+			return NULL;
+	}
+
+	va_end(pArgList);
+	return pNetVar;
+}
+
+int CNetVarManager::GetOffset(const char* pTable, const char* pNetVarName)
+{
+	return this->GetOffset(1, pTable, pNetVarName);
 }
 
 int CNetVarManager::GetOffset(int iCountToResolve, const char* pTable, ...)
@@ -62,17 +103,24 @@ int CNetVarManager::GetOffset(int iCountToResolve, const char* pTable, ...)
 	va_start(pArgList, pTable);
 	for(int i = 0; i < iCountToResolve; i++)
 	{
-		if (!pNetVar->GetTable())
+		if (!pNetVar->GetIsTable())
 		{
-			return -1;
+			iOffset = -1;
+			break;
 		}
 
 		pCurArg = va_arg(pArgList, const char*);
 		pNetVar = pNetVar->GetChild(pCurArg);
 		if (!pNetVar)
-			return -1;
+		{
+			iOffset = -1;
+			break;
+		}
 
-		iOffset += pNetVar->GetOffset();
+		if (m_bSummarizeOffsets)
+			iOffset += pNetVar->GetOffset();
+		else
+			iOffset = pNetVar->GetOffset();
 	}
 
 	va_end(pArgList);

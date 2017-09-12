@@ -15,6 +15,8 @@ public:
 
 	void Setup();
 
+	void GetWorldToScreenMatrix();
+
 	int GetScreenWidth() { return m_iScreenWidth; }
 	int GetScreenHeight() { return m_iScreenHeight; }
 

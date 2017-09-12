@@ -74,9 +74,8 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 		pApp->Rehook();
 	}*/
 
-	CGui::Instance()->Setup();
-
-	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	pApp->Gui()->Setup();
 	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();
 }
@@ -115,17 +114,16 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 		return;
 
-	// Hitmarker (TODO: It probably should go into the Visuals class,
-	//			        but the hitmarker feature is depending on a few more hooks)
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
 	if (pApp->Visuals()->GetHitmarker())
 	{
 		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
 		int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
+		bool sayTaunt = false; // TODO
 
-		if (dmg_health > 100 && hitgroup == 1)
+		if (dmg_health > 100 && hitgroup == 1 && sayTaunt)
 		{
-			// say +1
+			// "say +1"
 			pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
 			pApp->EngineClient()->ExecuteClientCmd("play buttons/blip2.wav"); // TODO: Xor
 		}
@@ -156,10 +154,11 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 		return;
 
-	bool sayTaunt = false;
+	bool sayTaunt = false; // TODO
 	bool headshot = pEvent->GetBool(m_xorHeadshot.ToCharArray());
 	if (headshot && sayTaunt)
 	{
+		// "say SIEG HEIL"
 		pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
 	}
 }
@@ -173,10 +172,11 @@ void CGameEventListener::round_start(IGameEvent* pEvent)
 	uint64 fraglimit = pEvent->GetUint64(m_xorFraglimit.ToCharArray());
 	const char* objective = pEvent->GetString(m_xorObjective.ToCharArray());*/
 
-	bool roundSay = false;
+	bool roundSay = false; // TODO
 	if (roundSay)
 	{
-		pApp->EngineClient()->ClientCmd(CXorString("djüâ)+õ­`n÷§s+ç»7s½úe}·").ToCharArray());
+		// "say > powered by .mechanics"
+		pApp->EngineClient()->ClientCmd(CXorString("djüâ)+õ­`n÷§s+ç»7%è§tcä¬~hö").ToCharArray());
 	}
 }
 

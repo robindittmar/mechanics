@@ -25,15 +25,22 @@ namespace Offsets
 	int m_iShotsFired;
 	int m_hActiveWeapon;
 	int m_hObserverTarget;
-	int m_deadflag;
+	int deadflag;
 	int m_nTickBase;
 
-	/*int m_AttributeManager;
-	int m_Item;*/
+	int m_nJumpTimeMsecs;
+	int m_flFallVelocity;
+	int m_viewPunchAngle;
+	int m_aimPunchAngle;
+	int m_aimPunchAngleVel;
+
+	int m_AttributeManager;
+	int m_Item;
 	int m_iItemDefinitionIndex;
 	int m_iClip1;
 	int m_iClip2;
 	int m_flNextPrimaryAttack;
+	int m_hWeaponWorldModel;
 
 	int m_fAccuracyPenalty;
 	int m_flPostponeFireReadyTime;
