@@ -59,9 +59,6 @@ public:
 	void SetJumpScout(bool bJumpScout) { m_bJumpScout = bJumpScout; };
 	bool GetJumpScout() { return m_bJumpScout; };
 
-	void SetSpamNameFix(bool bSpamNameFix) { m_bSpamNameFix = bSpamNameFix; };
-	bool GetSpamNameFix() { return m_bSpamNameFix; };
-
 	void SetNoName(bool bNoName) { m_bNoName = bNoName; };
 	bool GetNoName() { return m_bNoName; };
 
@@ -75,13 +72,13 @@ public:
 	bool NoScope(unsigned int vguiPanel);
 	void AutoPistol(CUserCmd* pUserCmd);
 	void SpectatorList();
-	void SetClanTag(const char*);
+	void SetClanTag(const char* tag);
+	void SetNoNameClanTag(bool bSetNoName);
 	void AutoRevolver(CUserCmd* pUserCmd);
 	void DisablePostProcessing();
 	void JumpScout(CUserCmd* pUserCmd);
 	void SetName(const char*);
 	void SpamNameFix();
-	void NoName(bool shouldNoName);
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
@@ -93,8 +90,9 @@ private:
 	bool m_bOnlyMyTeamSpectators;
 	bool m_bDisablePostProcessing;
 	bool m_bJumpScout;
-	bool m_bSpamNameFix;
 	bool m_bNoName;
+
+	char m_pClanTag[128];
 
 	CXorString m_xorName;
 

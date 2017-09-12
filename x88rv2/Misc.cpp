@@ -322,7 +322,26 @@ void CMisc::SpectatorList()
 
 void CMisc::SetClanTag(const char* tag)
 {
+	int iLen = strlen(tag) + 1;
+	memcpy(m_pClanTag, tag, iLen < 128 ? iLen : 128);
+
 	m_pSetClanTag(tag, "");
+}
+
+void CMisc::SetNoNameClanTag(bool bSetNoName)
+{
+	m_bNoName = bSetNoName;
+
+	char tempBuffer[128];
+	int iLen = strlen(m_pClanTag) + 1;
+	memcpy(tempBuffer, m_pClanTag, iLen < 128 ? iLen : 128);
+
+	if(bSetNoName)
+	{
+		strcat(tempBuffer, "\n");
+	}
+
+	m_pSetClanTag(tempBuffer, "");
 }
 
 void CMisc::AutoRevolver(CUserCmd* pUserCmd)
@@ -331,6 +350,9 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 		return;
 
 	if (!m_pApp->Ragebot()->GetEnabled())
+		return;
+
+	if (m_pApp->Ragebot()->IsShooting())
 		return;
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -401,27 +423,9 @@ void CMisc::SetName(const char* newName)
 
 void CMisc::SpamNameFix()
 {
-	if (!m_bSpamNameFix)
-		return;
-
 	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
 	int callbackNum = pName->callback;
 	pName->callback = NULL;
 	pName->SetValue("\n\xAD\xAD\xAD");
 	pName->callback = callbackNum;
-}
-
-void CMisc::NoName(bool shouldNoName)
-{
-	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
-	pName->callback = NULL;
-
-	static const char* oldName = pName->value;
-
-	if (shouldNoName)
-	{
-		pName->SetValue("\n");
-	}
-	else
-		pName->SetValue(oldName);
 }

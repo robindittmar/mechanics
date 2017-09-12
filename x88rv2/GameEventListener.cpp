@@ -74,7 +74,8 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 		pApp->Rehook();
 	}*/
 
-	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	pApp->SkinChanger()->SetForceFullUpdate();
+	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Gui()->Setup();
 	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();
@@ -93,7 +94,9 @@ void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 
 void CGameEventListener::switch_team(IGameEvent* pEvent)
 {
+	CApplication* pApp = CApplication::Instance();
 
+	pApp->SkinChanger()->SetForceFullUpdate();
 }
 
 void CGameEventListener::player_hurt(IGameEvent* pEvent)
@@ -121,10 +124,13 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 		int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
 		bool sayTaunt = false; // TODO
 
-		if (dmg_health > 100 && hitgroup == 1 && sayTaunt)
+		if (dmg_health > 100 && hitgroup == 1)
 		{
-			// "say +1"
-			pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
+			if (sayTaunt) // TODO
+			{
+				// "say +1"
+				pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
+			}
 			pApp->EngineClient()->ExecuteClientCmd("play buttons/blip2.wav"); // TODO: Xor
 		}
 		else
@@ -150,8 +156,10 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int revenge = pEvent->GetInt(m_xorRevenge.ToCharArray());
 	int penetrated = pEvent->GetInt(m_xorPenetrated.ToCharArray());*/
 
+	int iLocalPlayerIndex = pApp->EngineClient()->GetLocalPlayer();
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
-	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
+	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != iLocalPlayerIndex)
 		return;
 
 	bool sayTaunt = false; // TODO
@@ -161,6 +169,10 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 		// "say SIEG HEIL"
 		pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
 	}
+
+	// Set here instead of player_spawned because of IsAlive check
+	if(pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
+		pApp->SkinChanger()->SetForceFullUpdate();
 }
 
 void CGameEventListener::round_start(IGameEvent* pEvent)

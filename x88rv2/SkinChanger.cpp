@@ -3,6 +3,7 @@
 
 CSkinChanger::CSkinChanger()
 {
+	m_bForceFullUpdate = true;
 }
 
 CSkinChanger::~CSkinChanger()
@@ -126,8 +127,14 @@ void CSkinChanger::AddKillIconReplacement(const char* pOld, const char* pNew)
 bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem)
 {
 	CBaseViewModel* pViewModel = pLocal->GetViewModel();
+	CBaseAttributableItem* pWorldModel = (CBaseAttributableItem*)m_pApp->EntityList()->GetClientEntityFromHandle(pItem->GetWorldModel());
+
 	// No viewmodel :s
 	if (!pViewModel)
+		return false;
+
+	// No worldmodel :s
+	if (!pWorldModel)
 		return false;
 
 	int iModelIdx = pViewModel->GetModelIndex();
@@ -141,12 +148,13 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 		return false;
 
 	pItem->SetModelIndex(iNewModelIdx);
+	pWorldModel->SetModelIndex(iNewModelIdx + 1);
 	pViewModel->SetModelIndex(iNewModelIdx);
-	static bool test = false;
-	if (!test)
+
+	if (m_bForceFullUpdate)
 	{
+		m_bForceFullUpdate = false;
 		m_pApp->ClientState()->ForceFullUpdate();
-		test = true;
 	}
 	return true;
 }

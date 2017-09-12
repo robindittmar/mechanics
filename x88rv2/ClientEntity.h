@@ -286,6 +286,7 @@ public:
 #define OFFSET_ATTRIBUTEMANAGER		0x2D70
 #define OFFSET_ITEM					0x40
 #define OFFSET_ITEMDEFINITIONINDEX	0x1D8
+#define OFFSET_WORLDMODEL		0x31F4
 //todo: change inline to .cpp and NETVARS!!!!!!!!!
 // get/set
 class CBaseAttributableItem : public IClientEntity
@@ -334,6 +335,9 @@ public:
 	inline int* GetFallbackStatTrak() {
 		// DT_BaseAttributableItem -> m_nFallbackStatTrak
 		return (int*)((unsigned long)this + OFFSET_FALLBACKSTATTRAK);
+	}
+	inline void* GetWorldModel() {
+		return *(void**)((unsigned long)this + OFFSET_WORLDMODEL);
 	}
 };
 
