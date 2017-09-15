@@ -27,6 +27,10 @@ public:
 
 	void CreateMirror();
 	ITexture* GetMirror() { return m_pMirror; }
+	IMaterial* GetMirrorMat() {
+		return m_pMatMirror;
+	}
+	void CreateMirrorMat();
 
 	void CreateTextures();
 	int GetTexture(int textureId);
@@ -39,6 +43,7 @@ private:
 	int m_iMaterialCount;
 
 	ITexture* m_pMirror;
+	IMaterial* m_pMatMirror;
 	std::unordered_map<int, int> m_mapTextures;
 	std::unordered_map<int, unsigned int> m_mapFonts;
 

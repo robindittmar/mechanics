@@ -159,7 +159,7 @@ void CAntiAim::Update(void* pParameters)
 	case YAWANTIAIM_BACKWARDS:
 		m_bIsFakeYaw = false;
 
-		angles.y -= 180.0f;
+		angles.y -= 90.0f; // 180.0f;
 		break;
 	case YAWANTIAIM_STATICJITTERBACKWARDS:
 		m_bIsFakeYaw = false;

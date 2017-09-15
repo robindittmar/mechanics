@@ -42,6 +42,18 @@ public:
 	// read to a unsigned char rgb image.
 	virtual void				ReadPixels(int x, int y, int width, int height, unsigned char *data, ImageFormat dstFormat) = 0;
 
+	void DrawScreenSpaceRectangle(
+		IMaterial *pMaterial,
+		int destx, int desty,
+		int width, int height,
+		float src_texture_x0, float src_texture_y0,			// which texel you want to appear at
+															// destx/y
+		float src_texture_x1, float src_texture_y1,			// which texel you want to appear at
+															// destx+width-1, desty+height-1
+		int src_texture_width, int src_texture_height,		// needed for fixup
+		void *pClientRenderable = NULL,
+		int nXDice = 1,
+		int nYDice = 1);
 	void CopyTextureToRenderTargetEx(int nRenderTargetID, ITexture* pTexture, Rect_t* pSrcRect, Rect_t* pDstRect = NULL);
 
 	// Sets lighting

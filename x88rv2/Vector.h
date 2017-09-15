@@ -253,7 +253,7 @@ public:
 	Vector	Min(const Vector &vOther) const;
 	Vector	Max(const Vector &vOther) const;
 
-	void Normalize();
+	void NormalizeAngles();
 };
 
 class __declspec(align(16)) VectorAligned : public Vector {
@@ -756,7 +756,9 @@ void inline SinCos(float radians, float *sine, float *cosine);
 void VectorAngles(const float *forward, float *angles);
 void AngleVectors(const QAngle &angles, Vector *forward = NULL, Vector *right = NULL, Vector *up = NULL);
 void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out);
+void VectorRotate(Vector& in1, const matrix3x4_t& in2, Vector* out);
 
+void MatrixCopy(const matrix3x4_t& in, matrix3x4_t& out);
 void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out);
 void AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix);
 void AngleMatrix(const QAngle &angles, matrix3x4_t& matrix);

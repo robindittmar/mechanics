@@ -66,8 +66,9 @@
 
 #define RECOIL_TRACKING 0.4499999f
 
-#define CLIENTDLL_SIZE	0x50E5000
-#define ENGINEDLL_SIZE	0x8C7000
+#define CLIENTDLL_SIZE			0x50E5000
+#define ENGINEDLL_SIZE			0x8C7000
+#define MATERIALSYSTEMDLL_SIZE	0x10C000
 
 typedef bool(__thiscall *CreateMove_t)(void*, float, CUserCmd*);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
@@ -79,8 +80,8 @@ typedef float(__thiscall *GetViewModelFov_t)(void*);
 typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
 typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, CViewSetup&, int, int);
 typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
-
-//typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
+typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
+typedef int(__thiscall *EmitSound2_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, float, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 
 typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
 
@@ -88,6 +89,7 @@ typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
+void NormalizeAngles(QAngle* pAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
 
@@ -122,7 +124,7 @@ public:
 	VTableHook* PanelHook() { return m_pPanelHook; }
 	VTableHook* GameEventManagerHook() { return m_pGameEventManagerHook; }
 	VTableHook* ViewRenderHook() { return m_pViewRenderHook; }
-	VTableHook* EngineSound() {}
+	VTableHook* EngineSound() { return m_pEngineSoundHook; }
 
 	// Exposed callable engine functions
 	CreateMove_t CreateMove() { return m_pCreateMove; }
@@ -218,6 +220,12 @@ public:
 	static bool __fastcall hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent);
 	static void __fastcall hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw);
 	static void __fastcall hk_RenderSmokePostViewmodel(void* ecx, void* edx);
+	static int __fastcall hk_EmitSound1(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
+		float flVolume, soundlevel_t iSoundlevel, int nSeed, int iFlags = 0, int iPitch = PITCH_NORM, const Vector *pOrigin = NULL, const Vector *pDirection = NULL, CUtlVector<Vector>* pUtlVecOrigins = NULL,
+		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
+	static int __fastcall hk_EmitSound2(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
+		float flVolume, float flAttenuation, int nSeed, int iFlags = 0, int iPitch = PITCH_NORM, const Vector *pOrigin = NULL, const Vector *pDirection = NULL, CUtlVector<Vector>* pUtlVecOrigins = NULL,
+		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
 
 	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 private:
@@ -249,6 +257,8 @@ private:
 	static FireEventClientSide_t m_pFireEventClientSide;
 	static RenderView_t m_pRenderViewFn;
 	static RenderSmokePostViewmodel_t m_pRenderSmokePostViewmodel;
+	static EmitSound1_t m_pEmitSound1;
+	static EmitSound2_t m_pEmitSound2;
 
 	static RecvVarProxy_t m_pSequenceProxy;
 	//---TEMP

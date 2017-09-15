@@ -11,6 +11,11 @@ CResourceManager::CResourceManager()
 
 CResourceManager::~CResourceManager()
 {
+	// TEMP
+	if (m_pMatMirror)
+		m_pMatMirror->DecrementReferenceCount();
+	// TEMP
+
 	if (m_pMirror)
 		m_pMirror->DecrementReferenceCount();
 
@@ -55,10 +60,23 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 void CResourceManager::CreateMirror()
 {
 	IMaterialSystem* pMatSys = m_pApp->MaterialSystem();
+	
+	// 0x2C68
+	DWORD dwMatSysInit = *(DWORD*)(CPattern::FindPattern(
+		(BYTE*)m_pApp->MaterialSystemDll(),
+		MATERIALSYSTEMDLL_SIZE,
+		(BYTE*)"\x80\xB9\x00\x00\x00\x00\x00\x74\x0F",
+		"gf----hfg"
+	) + 0x02);
+	g_pConsole->Write("m_bInitialized => 0x%08X\n", dwMatSysInit);
 
+	bool* pInitialized = (bool*)((DWORD)pMatSys + dwMatSysInit);
+	bool bOrig = *pInitialized;
+	*pInitialized = false;
 	pMatSys->BeginRenderTargetAllocation();
 	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx("mirror_ex", 180, 120, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
 	pMatSys->EndRenderTargetAllocation();
+	*pInitialized = bOrig;
 
 	if (m_pMirror)
 	{
@@ -68,17 +86,21 @@ void CResourceManager::CreateMirror()
 		//m_pMirror->
 
 		// TEMP
-		const char* pName = m_pMirror->GetName();
-		int texId = m_pApp->Surface()->DrawGetTextureId(pName);
-
-		int width, height;
-		pMatSys->GetBackBufferDimensions(width, height);
-
-		g_pConsole->Write("BackBuffer size: (%d|%d)\nBackBuffer format: %d\n", width, height, pMatSys->GetBackBufferFormat());
-		g_pConsole->Write("'%s': (%d|%d)\n", pName, m_pMirror->GetActualWidth(), m_pMirror->GetActualHeight());
+		
 		// TEMP
 	}
 	
+}
+
+void CResourceManager::CreateMirrorMat()
+{
+	KeyValues* pKeyValues;
+	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
+	m_pApp->InitKeyValues()(pKeyValues, "UnlitGeneric");
+	m_pApp->LoadFromBuffer()(pKeyValues, "mat_mirror_ex", "\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mirror_ex\"\n}", NULL, NULL, NULL);
+
+	m_pMatMirror = m_pApp->MaterialSystem()->CreateMaterial("mat_mirror_ex", pKeyValues);
+	m_pMatMirror->IncrementReferenceCount();
 }
 
 void CResourceManager::CreateTextures()

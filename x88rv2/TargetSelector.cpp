@@ -325,7 +325,7 @@ float CTargetSelector::GetOriginDist(Vector& vSource, Vector& vTarget)
 float CTargetSelector::GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/)
 {
 	QAngle qDist = qTarget - qSource;
-	qDist.Normalize();
+	qDist.NormalizeAngles();
 	float fAng = qDist.Length();
 
 	// Causes weird angles to have giant "fovs"

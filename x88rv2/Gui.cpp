@@ -48,7 +48,7 @@ bool CGui::GetMousePos()
 	{
 		// TODO: Xor or remove ghetto fix for actual implementation :D
 		// Gh3tt0 f!x
-		static HWND hWnd = FindWindow(NULL, CXorString("Tdğ¬cn÷ïD÷«|n¿âPgê vg¥qmà¬dbó§").ToCharArray());
+		static HWND hWnd = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
 		if(hWnd)
 		{
 			ScreenToClient(hWnd, &p);

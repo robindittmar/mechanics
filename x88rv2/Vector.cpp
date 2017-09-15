@@ -1,7 +1,7 @@
 #include "Vector.h"
 #include "Application.h"
 
-void Vector::Normalize()
+void Vector::NormalizeAngles()
 {
 	// Normalize pitch
 	while (this->x > 89.0f)
@@ -102,6 +102,19 @@ void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out)
 	out.x = DotProduct(vIn, mIn[0]) + mIn[0][3];
 	out.y = DotProduct(vIn, mIn[1]) + mIn[1][3];
 	out.z = DotProduct(vIn, mIn[2]) + mIn[2][3];
+}
+
+// assume in2 is a rotation and rotate the input vector
+void VectorRotate(Vector& in1, const matrix3x4_t& in2, Vector* out)
+{
+	out->x = DotProduct(in1, in2[0]);
+	out->y = DotProduct(in1, in2[1]);
+	out->z = DotProduct(in1, in2[2]);
+}
+
+void MatrixCopy(const matrix3x4_t& in, matrix3x4_t& out)
+{
+	memcpy(out.Base(), in.Base(), sizeof(float) * 3 * 4);
 }
 
 void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out)

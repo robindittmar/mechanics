@@ -23,9 +23,6 @@ typedef unsigned long HCursor;
 typedef unsigned long HTexture;
 typedef unsigned long HFont;
 
-
-//SRC only defines
-
 struct Vertex_t
 {
 	Vertex_t() {}

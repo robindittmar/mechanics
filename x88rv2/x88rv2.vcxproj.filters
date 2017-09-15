@@ -198,6 +198,9 @@
     <ClCompile Include="IBaseClientDLL.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
+    <ClCompile Include="SoundInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -469,6 +472,9 @@
     </ClInclude>
     <ClInclude Include="CUtlVector.h">
       <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundInfo.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

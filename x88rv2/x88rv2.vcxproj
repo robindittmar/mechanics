@@ -192,6 +192,7 @@
     <ClCompile Include="SkinChanger.cpp" />
     <ClCompile Include="SkinMetadata.cpp" />
     <ClCompile Include="Slider.cpp" />
+    <ClCompile Include="SoundInfo.cpp" />
     <ClCompile Include="TabContainer.cpp" />
     <ClCompile Include="TabPage.cpp" />
     <ClCompile Include="Target.cpp" />
@@ -282,6 +283,7 @@
     <ClInclude Include="SkinChanger.h" />
     <ClInclude Include="SkinMetadata.h" />
     <ClInclude Include="Slider.h" />
+    <ClInclude Include="SoundInfo.h" />
     <ClInclude Include="TabContainer.h" />
     <ClInclude Include="TabPage.h" />
     <ClInclude Include="Target.h" />

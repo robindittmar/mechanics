@@ -7,6 +7,14 @@ CEsp::CEsp()
 
 CEsp::~CEsp()
 {
+	CSoundInfo* pCurrent;
+	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end(); it++)
+	{
+		pCurrent = *it;
+
+		if (pCurrent)
+			delete pCurrent;
+	}
 }
 
 void CEsp::Setup()
@@ -129,6 +137,34 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawHelmet(screenOrigin.x, screenOrigin.y, height, width);
 			}
+		}
+	}
+
+	// TODO
+	//this->DrawSounds(pSurface);
+}
+
+void CEsp::AddSound(CSoundInfo* pSound)
+{
+	m_vecSounds.push_back(pSound);
+}
+
+void CEsp::UpdateSounds()
+{
+	ULONGLONG timestamp = GetTickCount64();
+	CSoundInfo* pCurrent;
+	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end();)
+	{
+		pCurrent = *it;
+
+		if (pCurrent->IsOutdated(timestamp))
+		{
+			delete pCurrent;
+			it = m_vecSounds.erase(it);
+		}
+		else
+		{
+			it++;
 		}
 	}
 }
@@ -322,6 +358,32 @@ void CEsp::DrawHelmet(int posX, int posY, int height, int width)
 	pDevice->Clear(1, &helmet, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 83, 83, 83), 0, 0);*/
 }
 void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width) {
+	// TODO
+	static unsigned long font = NULL;
+	if (font == NULL)
+	{
+		font = m_pApp->Surface()->SCreateFont();
+		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
+	}
+	m_pApp->Surface()->DrawSetTextFont(font);
+	
+	PlayerInfo pInfo;
+	pEntity->GetPlayerInfo(&pInfo);
+
+	wchar_t name[256];
+	int iLen = pInfo.GetName(name, 256);
+
+	int w, h;
+  	m_pApp->Surface()->GetTextSize(font, name, w, h);
+
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
+	m_pApp->Surface()->DrawPrintText(name, iLen);
+}
+
+void CEsp::DrawSounds(ISurface* pSurface)
+{
+	// TODO
 	static unsigned long font = NULL;
 	if (font == NULL)
 	{
@@ -330,16 +392,26 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	}
 	m_pApp->Surface()->DrawSetTextFont(font);
 
-	PlayerInfo pInfo;
-	pEntity->GetPlayerInfo(&pInfo);
+	wchar_t penis[256];
+	Vector vScreen;
+	CSoundInfo* pCurrent;
+	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end(); it++)
+	{
+		pCurrent = *it;
 
-	wchar_t name[256];
-	int iLen = pInfo.GetName(name, 256);
+		if (m_pGui->WorldToScreen(pCurrent->GetOrigin(), vScreen))
+		{
+			// TODO
+			// Render sound
+			mbstowcs(penis, pCurrent->GetSample(), 256);
+			int iLen = wcslen(penis);
 
-	int w, h;
-	m_pApp->Surface()->GetTextSize(font, name, w, h);
+			int w, h;
+			m_pApp->Surface()->GetTextSize(font, penis, w, h);
 
-	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
-	m_pApp->Surface()->DrawPrintText(name, iLen);
+			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+			m_pApp->Surface()->DrawSetTextPos(vScreen.x - w / 2, vScreen.y - h / 2);
+			m_pApp->Surface()->DrawPrintText(penis, iLen);
+		}
+	}
 }

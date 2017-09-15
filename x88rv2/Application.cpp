@@ -10,6 +10,8 @@ GetViewModelFov_t CApplication::m_pGetViewModelFov;
 FireEventClientSide_t CApplication::m_pFireEventClientSide;
 RenderView_t CApplication::m_pRenderViewFn;
 RenderSmokePostViewmodel_t CApplication::m_pRenderSmokePostViewmodel;
+EmitSound1_t CApplication::m_pEmitSound1;
+EmitSound2_t CApplication::m_pEmitSound2;
 
 RecvVarProxy_t CApplication::m_pSequenceProxy;
 
@@ -116,6 +118,7 @@ void CApplication::LoadSkinChangerConfig()
 void CApplication::Unhook()
 {
 	// Reverse order, in case of any dependencies
+	this->m_pEngineSoundHook->Restore();
 	this->m_pViewRenderHook->Restore();
 	this->m_pGameEventManagerHook->Restore();
 	this->m_pSurfaceHook->Restore();
@@ -136,6 +139,7 @@ void CApplication::Rehook()
 	this->m_pSurfaceHook->Rehook();
 	this->m_pGameEventManagerHook->Rehook();
 	this->m_pViewRenderHook->Rehook();
+	this->m_pEngineSoundHook->Rehook();
 
 	this->m_bIsHooked = true;
 }
@@ -332,30 +336,34 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	/*IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 	IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
 
-	if(pLocalEntity == pRenderEntity && pApp->Visuals()->GetThirdperson())
+	if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*//*)
 	{
-	matrix3x4_t pMyMat[MAXSTUDIOBONES];
-	Vector origin = *pLocalEntity->GetOrigin();
-	QAngle ang = *pLocalEntity->GetAngEyeAngles();
-	ang.y = 90.0f;
+		matrix3x4_t pMyMat[MAXSTUDIOBONES];
+		matrix3x4_t pBoneMat[MAXSTUDIOBONES];
+		Vector origin, newOrigin;
+		QAngle ang;// = *pLocalEntity->GetAngEyeAngles();
+		//ang.y = 90.0f;
+		ang.x = 0.0f;
+		ang.y = 180.0f;
+		ang.z = 0.0f;
+		for(int i = 0; i < MAXSTUDIOBONES; i++)
+		{
+			MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
 
-	for(int i = 0; i < MAXSTUDIOBONES; i++)
-	{
-	//origin = Vector(pCustomBoneToWorld[i].c[3]);
-	//origin.x = pCustomBoneToWorld[i].c[0][3] + 30.0f;
-	//origin.y = pCustomBoneToWorld[i].c[1][3];
-	//origin.z = pCustomBoneToWorld[i].c[2][3];
+			origin.x = pCustomBoneToWorld[i][0][3];
+			origin.y = pCustomBoneToWorld[i][1][3];
+			origin.z = pCustomBoneToWorld[i][2][3];
+			
+			AngleMatrix(ang, pMyMat[i]);
+			//VectorRotate(pInfo.origin, pMyMat[i], &newOrigin);
+			//VectorRotate(origin, pMyMat[i], &newOrigin);
 
-	AngleMatrix(ang, pInfo.origin, pMyMat[i]);
+			VectorTransform(
 
-	//pCustomBoneToWorld->c[3][0] += 50.0f;
-	//pCustomBoneToWorld->c[3][1] += 50.0f;
+			MatrixSetColumn(newOrigin, 3, pBoneMat[i]);
+		}
 
-	//pRenderInfo->pModelToWorld
-	//pCustomBoneToWorld->c[3][2] += 50.0f;
-	}
-
-	m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
+		m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMat);
 	}*/
 
 	// Call original func
@@ -394,6 +402,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Misc()->SpectatorList();
 
 			// Draw Esp
+			//pApp->Esp()->UpdateSounds();
 			pApp->Esp()->Update((void*)pSurface);
 
 			// Draw Hitmarker
@@ -405,6 +414,22 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Menu least ;)
 			pApp->m_pWindow->Draw(pApp->Surface());
 			pApp->m_pGui->DrawMouse(pApp->Surface());
+
+			// Mirror test
+			IMatRenderContext* pRenderContext = pApp->m_pMaterialSystem->GetRenderContext();
+			pRenderContext->DrawScreenSpaceRectangle(
+				g_pResourceManager->GetMirrorMat(),
+				100,
+				100,
+				180,
+				120,
+				0.0f,
+				0.0f,
+				180.0f,
+				120.0f,
+				180,
+				120
+			);
 
 			// LBY Indicator
 			if (pApp->Visuals()->GetDrawLbyIndicator())
@@ -494,35 +519,21 @@ bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGame
 void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw)
 {
 	CApplication* pApp = CApplication::Instance();
-
-	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
-
-	/*static ITexture* pRenderTexture = NULL;
-	if (!pRenderTexture)
-	{
-		pApp->MaterialSystem()->BeginRenderTargetAllocation();
-		ITexture* tex1 = pApp->MaterialSystem()->CreateRenderTargetTexture(300, 200, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
-		ITexture* tex2 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex2", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
-		ITexture* tex3 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex3", 120, 80, RT_SIZE_NO_CHANGE, IMAGE_FORMAT_ABGR8888);
-		ITexture* tex4 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex4", 120, 80, RT_SIZE_FULL_FRAME_BUFFER, IMAGE_FORMAT_RGBA8888);
-		ITexture* tex5 = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex5", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
-
-		pRenderTexture = pApp->MaterialSystem()->CreateNamedRenderTargetTextureEx("mirror_ex", 120, 80, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
-		pApp->MaterialSystem()->EndRenderTargetAllocation();
-	}*/
 	
 	// TODO
-	/*if (pApp->EngineClient()->IsInGame())
+	if (pApp->EngineClient()->IsInGame())
 	{
-		if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
-		{
+		/*if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
+		{*/
 			CViewSetup myView = view;
 			myView.x = 0;
 			myView.y = 0;
 			myView.width = 180;
 			myView.height = 120;
 
+			myView.angles.x = -myView.angles.x;
 			myView.angles.y += 180.0f;
+			myView.angles.NormalizeAngles();
 
 			//nClearFlags &= ~(VIEW_CLEAR_STENCIL);
 			//ITexture* pMirror = pApp->MaterialSystem()->FindTexture("mirror_ex", "RenderTargets");
@@ -536,20 +547,15 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 				ecx,
 				myView,
 				hudViewSetup,
-				0,
-				0
+				nClearFlags,
+				whatToDraw
 			);
 
 			pRenderContext->SetRenderTarget(pOldTarget);
+		//}
+	}
 
-			Rect_t src; src.x = 0; src.y = 0; src.width = 180; src.height = 120;
-			Rect_t dst; dst.x = 150; dst.y = 150; dst.width = 180; dst.height = 120;
-			pRenderContext->CopyTextureToRenderTargetEx(1, pMirrorSafe, &src, &dst);
-
-			//pApp->BaseClient()->RenderView(myView, VIEW_CLEAR_COLOR | VIEW_CLEAR_DEPTH | VIEW_CLEAR_FULL_TARGET | VIEW_CLEAR_OBEY_STENCIL | VIEW_CLEAR_STENCIL, RENDERVIEW_UNSPECIFIED | RENDERVIEW_DRAWVIEWMODEL | RENDERVIEW_DRAWHUD | RENDERVIEW_SUPPRESSMONITORRENDERING);
-			//pApp->BaseClient()->RenderView(backupView, 0, 0);
-		}
-	}*/
+	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
 }
 
 void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
@@ -562,6 +568,30 @@ void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
 		return;
 
 	pApp->m_pRenderSmokePostViewmodel(ecx);
+}
+
+int __fastcall CApplication::hk_EmitSound1(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
+	float flVolume, soundlevel_t iSoundlevel, int nSeed, int iFlags, int iPitch, const Vector *pOrigin, const Vector *pDirection, CUtlVector<Vector>* pUtlVecOrigins,
+	bool bUpdatePositions, float soundtime, int speakerentity)
+{
+	CApplication* pApp = CApplication::Instance();
+	//g_pConsole->Write("[EmitSound1]: %d => %s (%s)\n", iEntIndex, pSample, pSoundEntry);
+	/*if(pOrigin)
+		pApp->Esp()->AddSound(new CSoundInfo(*pOrigin, pSample));*/
+
+	return pApp->m_pEmitSound1(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, iSoundlevel, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
+}
+
+int __fastcall CApplication::hk_EmitSound2(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
+	float flVolume, float flAttenuation, int nSeed, int iFlags, int iPitch, const Vector *pOrigin, const Vector *pDirection, CUtlVector<Vector>* pUtlVecOrigins,
+	bool bUpdatePositions, float soundtime, int speakerentity)
+{
+	CApplication* pApp = CApplication::Instance();
+	//g_pConsole->Write("[EmitSound2]: %d => %s\n", iEntIndex, pSample);
+	/*if(pOrigin)
+		pApp->Esp()->AddSound(new CSoundInfo(*pOrigin, pSample));*/
+
+	return pApp->m_pEmitSound2(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, flAttenuation, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
 }
 
 void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
@@ -731,6 +761,7 @@ void CApplication::Setup()
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)CreateVPhysicsInterface(physicsSurfaceProps.ToCharArray(), NULL);
+	m_pEngineSound = (IEngineSound*)CreateEngineInterface("IEngineSoundClient003", NULL); // TODO
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
@@ -1183,6 +1214,10 @@ void CApplication::Hook()
 	);
 	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
 
+	// TEMP
+	g_pResourceManager->CreateMirrorMat();
+	// TEMP
+
 	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
@@ -1206,6 +1241,10 @@ void CApplication::Hook()
 	m_pViewRenderHook = new VTableHook((DWORD*)m_pViewRender);
 	m_pRenderViewFn = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
 	m_pRenderSmokePostViewmodel = (RenderSmokePostViewmodel_t)m_pViewRenderHook->Hook(41, (DWORD*)hk_RenderSmokePostViewmodel);
+
+	m_pEngineSoundHook = new VTableHook((DWORD*)m_pEngineSound);
+	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
+	m_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
 	CXorString xorBaseViewModel("TIä±r]ì§`Fê¦rg");
 	CXorString xorSequence("zTë‘rzð§yhà");
@@ -1304,9 +1343,9 @@ void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)
 	AngleVectors(qViewAngles, &vecViewForward, &vecViewRight, &vecViewUp);
 	AngleVectors(qAimAngles, &vecAimForward, &vecAimRight, &vecAimUp);
 
-	vecViewForward.Normalize();
-	vecViewRight.Normalize();
-	vecViewUp.Normalize();
+	vecViewForward.NormalizeAngles();
+	vecViewRight.NormalizeAngles();
+	vecViewUp.NormalizeAngles();
 
 	Vector vecForwardNorm = vecViewForward * flForward;
 	Vector vecRightNorm = vecViewRight * flRight;
