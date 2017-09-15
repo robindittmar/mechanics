@@ -78,8 +78,13 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 
 	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
-	pApp->Misc()->SpamNameFix();
 	pApp->Chams()->ReloadMaterials();
+
+	// ClanTag Things
+	pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
+	pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+	// Name Things
+	pApp->Misc()->SpamNameFix();
 }
 
 void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)

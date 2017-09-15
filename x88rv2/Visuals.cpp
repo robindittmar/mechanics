@@ -218,9 +218,24 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 	if (!m_bFovChange)
 		return;
 
+	static bool bChangedZoomSensitivity = false;
+	static ConVar* pZoomSensitivity = m_pApp->CVar()->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
 	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
-	if (!m_bFovChangeScoped && pLocalEntity->IsScoped())
+	if (m_bFovChangeScoped && pLocalEntity->IsScoped())
+	{
+		if (!bChangedZoomSensitivity)
+		{
+			pZoomSensitivity->SetValue(0.0f);
+			bChangedZoomSensitivity = true;
+		}
+	}
+	else if (bChangedZoomSensitivity)
+	{
+		pZoomSensitivity->SetValue(m_flZoomSensitivity);
+		bChangedZoomSensitivity = false;
+
 		return;
+	}
 
 	pViewSetup->fov = m_iFovValue;
 }

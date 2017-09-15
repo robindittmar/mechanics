@@ -320,6 +320,17 @@ void CMisc::SpectatorList()
 
 void CMisc::SetClanTag(const char* tag)
 {
+	if (tag == NULL)
+	{
+		SetClanTag("");
+		return;
+	}
+
+	if (tag[0] == '\0')
+		m_bIsCustomClanTag = false;
+	else
+		m_bIsCustomClanTag = true;
+
 	int iLen = strlen(tag) + 1;
 	memcpy(m_pClanTag, tag, iLen < 128 ? iLen : 128);
 
@@ -334,8 +345,11 @@ void CMisc::SetNoNameClanTag(bool bSetNoName)
 	int iLen = strlen(m_pClanTag) + 1;
 	memcpy(tempBuffer, m_pClanTag, iLen < 128 ? iLen : 128);
 
-	if(bSetNoName)
+	if (bSetNoName)
 	{
+		if (tempBuffer[0] == '\0')
+			memcpy(tempBuffer, ".mechanics", 11);
+
 		strcat(tempBuffer, "\n");
 	}
 
