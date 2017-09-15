@@ -31,8 +31,11 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
-	void IsVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
-	bool IsVisible() { return m_bIsVisible; }
+	void SetClientPosition(int x, int y);
+	void GetClientPosition(int* x, int* y);
+
+	void SetVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
+	bool GetVisible() { return m_bIsVisible; }
 
 	void SetPopup(IControl* pPopup) { m_pPopup = pPopup; }
 	IControl* GetPopup() { return m_pPopup; }

@@ -3,7 +3,10 @@
 
 CResourceManager* g_pResourceManager;
 
-CResourceManager::CResourceManager()
+CResourceManager::CResourceManager() :
+	/*VertexLitGeneric*/m_xorVertexLitGeneric("An÷¶rsÉ«cLà¬ryì¡"),
+	/*UnlitGeneric*/m_xorUnlitGeneric("Beé«cLà¬ryì¡"),
+	/*mechmat_%d.vmt*/m_xorMatName("znæªzjñ2o«´z")
 {
 	m_iMaterialCount = 0;
 	m_pMirror = NULL;
@@ -34,18 +37,14 @@ void CResourceManager::Init(CApplication* pApp)
 IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgnoreZ, bool bWireframe)
 {
 	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
-	
-	static CXorString xorVertexLitGeneric("An÷¶rsÉ«cLà¬ryì¡");
-	static CXorString xorUnlitGeneric("Beé«cLà¬ryì¡");
-	static CXorString xorMatName("ocè£cT ¦9}è¶");
 
-	const char* pBaseType = (bIsLit == true ? xorVertexLitGeneric.ToCharArray() : xorUnlitGeneric.ToCharArray());
+	const char* pBaseType = (bIsLit == true ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
 	char pMaterial[1024];
 	char pName[512];
 	KeyValues* pKeyValues;
 
 	sprintf(pMaterial, xorVmt.ToCharArray(), pBaseType, (bIsFlat ? 1 : 0), (bIgnoreZ ? 1 : 0), (bWireframe ? 1 : 0));
-	sprintf(pName, xorMatName.ToCharArray(), m_iMaterialCount++);
+	sprintf(pName, m_xorMatName.ToCharArray(), m_iMaterialCount++);
 
 	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 	m_pApp->InitKeyValues()(pKeyValues, pBaseType);
@@ -74,7 +73,7 @@ void CResourceManager::CreateMirror()
 	bool bOrig = *pInitialized;
 	*pInitialized = false;
 	pMatSys->BeginRenderTargetAllocation();
-	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx("mirror_ex", 180, 120, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx(/*mechanics_mirr*/CXorString("znæªveì¡dTè«ey").ToCharArray(), MIRROR_WIDTH, MIRROR_HEIGHT, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
 	pMatSys->EndRenderTargetAllocation();
 	*pInitialized = bOrig;
 
@@ -82,25 +81,17 @@ void CResourceManager::CreateMirror()
 	{
 		// Prevent it from getting cleaned up
 		m_pMirror->IncrementReferenceCount();
-
-		//m_pMirror->
-
-		// TEMP
 		
-		// TEMP
+		CXorString xorMatMechanicsMirr("zjñznæªveì¡dTè«ey"); // mat_mechanics_mirr
+		KeyValues* pKeyValues;
+		pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
+		m_pApp->InitKeyValues()(pKeyValues, m_xorUnlitGeneric.ToCharArray());
+		m_pApp->LoadFromBuffer()(pKeyValues, xorMatMechanicsMirr.ToCharArray(), /*\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}*/CXorString("5^ë®~Â§yn÷«t)¹\x1d\x2§æujö§cný¶byàà7)è§tcä¬~hözb÷°5\x1ø").ToCharArray(), NULL, NULL, NULL);
+
+		m_pMatMirror = m_pApp->MaterialSystem()->CreateMaterial(xorMatMechanicsMirr.ToCharArray(), pKeyValues);
+		m_pMatMirror->IncrementReferenceCount();
 	}
 	
-}
-
-void CResourceManager::CreateMirrorMat()
-{
-	KeyValues* pKeyValues;
-	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
-	m_pApp->InitKeyValues()(pKeyValues, "UnlitGeneric");
-	m_pApp->LoadFromBuffer()(pKeyValues, "mat_mirror_ex", "\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mirror_ex\"\n}", NULL, NULL, NULL);
-
-	m_pMatMirror = m_pApp->MaterialSystem()->CreateMaterial("mat_mirror_ex", pKeyValues);
-	m_pMatMirror->IncrementReferenceCount();
 }
 
 void CResourceManager::CreateTextures()

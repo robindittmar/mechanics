@@ -13,7 +13,9 @@ int main(int argc, char** argv)
 {
 	CXorString strings[]{
 		CXorString("zoom_sensitivity_ratio_mouse"),
-		CXorString("VEngineCvar007")
+		CXorString("VEngineCvar007"),
+		CXorString("\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}"),
+		CXorString("5^ë®~Â§yn÷«t)¹\x1d\x2§æujö§cnı¶byàà7)è§tcä¬~hözb÷°5\x1ø")
 	};
 	
 	CXorString byteStrings[]{
