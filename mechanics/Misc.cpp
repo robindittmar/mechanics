@@ -451,10 +451,9 @@ void CMisc::AutoAccept(const char* filename)
 
 	if (m_pApp->EngineClient()->IsInGame())
 		return;
-	static CXorString acceptBeep("BBª¡xfõ§cbñ«anÚ£thà²cTç§r{«µv}");
+	static CXorString acceptBeep("6^Ìítdè²rì¶~}àvhæ§gÚ rnõì`jó");
 	if (strcmp(filename, acceptBeep.ToCharArray()) != 0)
 		return;
 
-	CServerConfirmedReservationCheckCallback empty_callback;
-	m_IsReadyCallback(&empty_callback);
+	m_IsReadyCallback();
 }

@@ -870,7 +870,7 @@ void CApplication::Setup()
 
 	Offsets::m_fThrowTime = netVarManager.GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
 
-	m_misc.SetReadyCallback((IsReadyCallback_t*)(CPattern::FindPattern(
+	m_misc.SetReadyCallback((IsReadyCallback_t)(CPattern::FindPattern(
 		(BYTE*)this->ClientDll(),
 		CLIENTDLL_SIZE,
 		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x08\x56\x8B\x35\x00\x00\x00\x00\x57\x83\xBE",
@@ -1172,9 +1172,9 @@ void CApplication::Setup()
 	//		 die boolsche variable den gewünschten zustand hat :P
 
 	// Wait for the game to be ingame before hooking
-	while (!m_pEngineClient->IsInGame()) {
+	/*while (!m_pEngineClient->IsInGame()) {
 		Sleep(100);
-	}
+	}*/
 }
 
 void CApplication::Hook()
