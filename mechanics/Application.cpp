@@ -516,6 +516,8 @@ void __fastcall CApplication::hk_PlaySound(void* ecx, void* edx, const char* fil
 	// TODO: Temporary
 	g_pConsole->Write("PlaySound => '%s'\n", fileName);
 
+	pApp->Misc()->AutoAccept(fileName);
+
 	pApp->m_pPlaySound(ecx, fileName);
 }
 
@@ -899,6 +901,13 @@ void CApplication::Setup()
 
 	Offsets::m_fThrowTime = netVarManager.GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
 
+	m_misc.SetReadyCallback((IsReadyCallback_t*)(CPattern::FindPattern(
+		(BYTE*)this->ClientDll(),
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x08\x56\x8B\x35\x00\x00\x00\x00\x57\x83\xBE",
+		"ghdrtzuigkog----trg"
+	)));
+
 	// Target Selector
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(false);
@@ -971,6 +980,7 @@ void CApplication::Setup()
 	this->m_misc.SetDisablePostProcessing(true);
 	this->m_misc.SetJumpScout(true);
 	this->m_misc.SetNoName(false);
+	this->m_misc.SetAutoAccept(true);
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(true);

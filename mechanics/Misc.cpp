@@ -443,3 +443,18 @@ void CMisc::SpamNameFix()
 	pName->SetValue("\n\xAD\xAD\xAD");
 	pName->callback = callbackNum;
 }
+
+void CMisc::AutoAccept(const char* filename)
+{
+	if (!m_bAutoAccept)
+		return;
+
+	if (m_pApp->EngineClient()->IsInGame())
+		return;
+	static CXorString acceptBeep("BBª¡xfõ§cbñ«anÚ£thà²cTç§r{«µv}");
+	if (strcmp(filename, acceptBeep.ToCharArray()) != 0)
+		return;
+
+	CServerConfirmedReservationCheckCallback empty_callback;
+	m_IsReadyCallback(&empty_callback);
+}

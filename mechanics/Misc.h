@@ -21,6 +21,12 @@ struct Observers
 	}
 };
 
+struct CServerConfirmedReservationCheckCallback
+{
+	char pad[0x2200];
+};
+
+typedef void(IsReadyCallback_t) (void*);
 typedef void(__fastcall* SetClanTag_t)(const char*, const char*);
 
 class CMisc : public IFeature
@@ -64,6 +70,12 @@ public:
 
 	bool GetIsCustomClanTag() { return m_bIsCustomClanTag; };
 
+	void SetAutoAccept(bool bAutoAccept) { m_bAutoAccept = bAutoAccept; };
+	bool GetAutoAccept() { return m_bAutoAccept; };
+
+	void SetReadyCallback(IsReadyCallback_t* pIsReadyCallback) { m_IsReadyCallback = pIsReadyCallback; };
+	IsReadyCallback_t* GetReadyCallback() { return m_IsReadyCallback; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -81,6 +93,7 @@ public:
 	void JumpScout(CUserCmd* pUserCmd);
 	void SetName(const char*);
 	void SpamNameFix();
+	void AutoAccept(const char* filename);
 private:
 	bool m_bNoRecoil;
 	bool m_bFakelag;
@@ -94,6 +107,9 @@ private:
 	bool m_bJumpScout;
 	bool m_bNoName;
 	bool m_bIsCustomClanTag;
+	bool m_bAutoAccept;
+
+	IsReadyCallback_t* m_IsReadyCallback;
 
 	char m_pClanTag[128];
 
