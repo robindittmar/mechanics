@@ -139,13 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\x88rv2\murmurhash.cpp" />
-    <ClCompile Include="..\x88rv2\XorString.cpp" />
+    <ClCompile Include="..\mechanics\murmurhash.cpp" />
+    <ClCompile Include="..\mechanics\XorString.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\x88rv2\murmurhash.h" />
-    <ClInclude Include="..\x88rv2\XorString.h" />
+    <ClInclude Include="..\mechanics\murmurhash.h" />
+    <ClInclude Include="..\mechanics\XorString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

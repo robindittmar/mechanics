@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 
 	// Build full path for dll
 	char pLibrary[256];
-	sprintf(pLibrary, "%s\\%s", g_pGlobal->WorkingDirectory(), "x88rv2.dll");
+	sprintf(pLibrary, "%s\\%s", g_pGlobal->WorkingDirectory(), "mechanics.dll");
 
 	CLibrary library(pLibrary);
 	//CLibrary library("C:\\Users\\Robin\\Documents\\Visual Studio 2017\\Projects\\x88rv2\\Debug\\x88rv2.dll");

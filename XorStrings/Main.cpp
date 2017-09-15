@@ -1,5 +1,5 @@
-#include "..\x88rv2\XorString.h"
-#include "..\x88rv2\murmurhash.h"
+#include "..\mechanics\XorString.h"
+#include "..\mechanics\murmurhash.h"
 
 void printByteString(FILE* pFile, const char* p, int len)
 {
