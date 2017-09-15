@@ -149,6 +149,12 @@ IControl* IControl::GetParentWindow()
 	return m_pParent->GetParentWindow();
 }
 
+void IControl::SetPosition(int x, int y)
+{
+	m_iX = x;
+	m_iY = y;
+}
+
 void IControl::SetBoundaries(int x, int y, int w, int h)
 {
 	m_iX = x;

@@ -29,6 +29,7 @@
 #include "Misc.h"
 #include "Skinchanger.h"
 #include "Visuals.h"
+#include "Mirror.h"
 
 // Source SDK
 #include "CreateInterface.h"
@@ -78,7 +79,7 @@ typedef void(__thiscall *PaintTraverse_t)(void*, unsigned int, bool, bool);
 typedef void(__thiscall *PlaySound_t)(void*, const char*);
 typedef float(__thiscall *GetViewModelFov_t)(void*);
 typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
-typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, CViewSetup&, int, int);
+typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, const CViewSetup&, int, int);
 typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
 typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 typedef int(__thiscall *EmitSound2_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, float, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
@@ -149,7 +150,7 @@ public:
 	IClientEntityList* EntityList() { return m_pEntityList; }
 	IVModelInfo* ModelInfo() { return m_pModelInfo; }
 	IVModelRender* ModelRender() { return m_pModelRender; }
-	IVRenderView* RenderView() { return m_pRenderView; }
+	IVRenderView* OnRenderView() { return m_pRenderView; }
 	IEngineTrace* EngineTrace() { return m_pEngineTrace; }
 	IMaterialSystem* MaterialSystem() { return m_pMaterialSystem; }
 	CInput* Input() { return m_pInput; }
@@ -309,6 +310,7 @@ private:
 	CMisc m_misc;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
+	CMirror m_mirror;
 
 	// Event listener
 	CGameEventListener m_gameEventListener;
@@ -321,6 +323,7 @@ private:
 	CInputEvent m_inputEvent;
 	CInputHandler m_inputHandler;
 	CWindow* m_pWindow;
+	CWindow* m_pWindowMirror;
 
 	CCheckbox* m_pGuiThirdpersonCheckbox;
 

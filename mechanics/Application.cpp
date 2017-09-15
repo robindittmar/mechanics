@@ -286,14 +286,14 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 		// Input handling
 		pApp->m_inputEvent.Clear();
-		pApp->m_inputHandler.CreateInput(&pApp->m_inputEvent, pApp->m_pWindow->IsVisible());
+		pApp->m_inputHandler.CreateInput(&pApp->m_inputEvent, pApp->m_pWindow->GetVisible());
 		if (pApp->m_inputEvent.eventType == EVENT_TYPE_KEYBOARD)
 		{
 			if (pApp->m_inputEvent.buttons & EVENT_BTN_TOGGLEMENU &&
 				pApp->m_inputEvent.buttonProperties & EVENT_BTN_TOGGLEMENU)
 			{
-				bool bVis = !pApp->m_pWindow->IsVisible();
-				pApp->m_pWindow->IsVisible(bVis);
+				bool bVis = !pApp->m_pWindow->GetVisible();
+				pApp->m_pWindow->SetVisible(bVis);
 				
 				// Mouse stuff
 				pApp->m_pGui->SetEnableMouse(!bVis);
@@ -314,9 +314,10 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			}
 		}
 
-		if (pApp->m_pWindow->IsVisible())
+		if (pApp->m_pWindow->GetVisible())
 		{
 			pApp->m_pWindow->ProcessEvent(&pApp->m_inputEvent);
+			pApp->m_pWindowMirror->ProcessEvent(&pApp->m_inputEvent);
 		}
 	}
 
@@ -426,6 +427,9 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			//pApp->Esp()->UpdateSounds();
 			pApp->Esp()->Update((void*)pSurface);
 
+			// Draw rear mirror
+			pApp->m_mirror.Render(pSurface, pApp->m_pWindowMirror);
+
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
 
@@ -433,24 +437,8 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Visuals()->DrawCrosshair();
 
 			// Draw Menu least ;)
-			pApp->m_pWindow->Draw(pApp->Surface());
-			pApp->m_pGui->DrawMouse(pApp->Surface());
-
-			// Mirror test
-			IMatRenderContext* pRenderContext = pApp->m_pMaterialSystem->GetRenderContext();
-			pRenderContext->DrawScreenSpaceRectangle(
-				g_pResourceManager->GetMirrorMat(),
-				100,
-				100,
-				180,
-				120,
-				0.0f,
-				0.0f,
-				180.0f,
-				120.0f,
-				180,
-				120
-			);
+			pApp->m_pWindow->Draw(pSurface);
+			pApp->m_pGui->DrawMouse(pSurface);
 
 			// LBY Indicator
 			if (pApp->Visuals()->GetDrawLbyIndicator())
@@ -542,41 +530,7 @@ bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGame
 void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw)
 {
 	CApplication* pApp = CApplication::Instance();
-	
-	// TODO
-	if (pApp->EngineClient()->IsInGame())
-	{
-		/*if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
-		{*/
-			CViewSetup myView = view;
-			myView.x = 0;
-			myView.y = 0;
-			myView.width = 180;
-			myView.height = 120;
-
-			myView.angles.x = -myView.angles.x;
-			myView.angles.y += 180.0f;
-			myView.angles.NormalizeAngles();
-
-			//nClearFlags &= ~(VIEW_CLEAR_STENCIL);
-			//ITexture* pMirror = pApp->MaterialSystem()->FindTexture("mirror_ex", "RenderTargets");
-			ITexture* pMirrorSafe = g_pResourceManager->GetMirror();
-
-			IMatRenderContext* pRenderContext = pApp->MaterialSystem()->GetRenderContext();
-			ITexture* pOldTarget = pRenderContext->GetRenderTarget();
-			pRenderContext->SetRenderTarget(pMirrorSafe);
-
-			m_pRenderViewFn(
-				ecx,
-				myView,
-				hudViewSetup,
-				nClearFlags,
-				whatToDraw
-			);
-
-			pRenderContext->SetRenderTarget(pOldTarget);
-		//}
-	}
+	pApp->m_mirror.OnRenderView(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
 
 	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
 }
@@ -728,11 +682,6 @@ void CApplication::Setup()
 	// Setup console
 	g_pConsole = new CConsole();
 
-	// Resource manager
-	g_pResourceManager = new CResourceManager();
-	g_pResourceManager->Init(this);
-	m_pResourceManager = g_pResourceManager;
-
 	// Setup strings
 	CXorString clientDll("tgì§y«¦{g");
 	CXorString engineDll("reâ«yn«¦{g");
@@ -788,14 +737,36 @@ void CApplication::Setup()
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
+	// KeyValues::Init
+	DWORD dwInitKeyValuesTemp = (CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x68\x00\x00\x00\x00\x8B\xC8\xE8\x00\x00\x00\x00\x89\x45\xFC\xEB\x07\xC7\x45\x00\x00\x00\x00\x00\x8B\x03\x56",
+		"a----bbb----ccccccc-----ddd"
+	) + 0x07);
+	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 0x05);
+
+	// KeyValues::LoadFromBuffer
+	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x34\x53\x8B\x5D\x0C\x89\x4C\x24\x04",
+		"abcdefghijjjjjjjq"
+	);
+	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
+
 	if (m_pEngineClient->IsInGame())
 	{
 		SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	}
 	m_visuals.SetZoomSensitivity(atof(m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray())->value));
 
+	// Resource manager
+	g_pResourceManager = new CResourceManager();
+	g_pResourceManager->Init(this);
+	m_pResourceManager = g_pResourceManager;
+
 	// Create Resources
-	m_pResourceManager->CreateMirror();
 	m_pResourceManager->CreateTextures();
 	m_pResourceManager->CreateFonts();
 
@@ -843,8 +814,6 @@ void CApplication::Setup()
 	netVarManager.AddTable(xorBaseCombatCharacter.ToCharArray());
 	netVarManager.LoadTables(m_pClient->GetAllClasses(), true);
 
-	CNetVar* pDtLocal;
-
 	Offsets::m_nModelIndex = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
 	Offsets::m_hMyWeapons = netVarManager.GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
 	Offsets::m_hViewModel = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
@@ -876,7 +845,7 @@ void CApplication::Setup()
 	netVarManager.SetSummarizeOffsets(false);
 	Offsets::m_nTickBase = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
 
-	pDtLocal = netVarManager.GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_ÚŽxhä®").ToCharArray());
+	CNetVar* pDtLocal = netVarManager.GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_ÚŽxhä®").ToCharArray());
 	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("zTëˆbfõ–~fàdnæ±").ToCharArray())->GetOffset();
 	Offsets::m_flFallVelocity = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_flFallVelocity*/CXorString("zTã®Qjé®Ané­tbñ»").ToCharArray())->GetOffset();
 	Offsets::m_viewPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_viewPunchAngle*/CXorString("zTó«r|Õ·yhíƒylé§").ToCharArray())->GetOffset();
@@ -913,10 +882,6 @@ void CApplication::Setup()
 	this->m_targetSelector.SetMultipoint(false);
 	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_CANHIT);
 	this->m_targetSelector.SetCheckHitbox(HITBOX_HEAD, true);
-	/*for (int i = 0; i < TARGET_HITBOX_COUNT; i++)
-	{
-		this->m_targetSelector.SetCheckHitbox(i, true);
-	}*/
 
 	// Setups
 	this->m_ragebot.Setup();
@@ -928,6 +893,7 @@ void CApplication::Setup()
 	this->m_misc.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
+	this->m_mirror.Setup();
 
 	// Aimbot
 	this->m_ragebot.SetEnabled(true);
@@ -1006,6 +972,9 @@ void CApplication::Setup()
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
 	this->m_visuals.SetFovChangeScoped(true);
+
+	// Mirror
+	this->m_mirror.SetEnabled(true);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
@@ -1193,6 +1162,9 @@ void CApplication::Setup()
 	m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
 	m_pWindow->AddChild(pContainer);
 
+	m_pWindowMirror = new CWindow(100, 100, MIRROR_WIDTH, MIRROR_HEIGHT, "Mirror");
+	m_pWindowMirror->SetVisible(true);
+
 	// TODO: Injecten -> ins menü gehen -> game exiten => crash
 	//		 Weil wegen der Schleife.
 	//		 Vielleicht bool setzen (in this->Detach()), dann oben in
@@ -1208,9 +1180,9 @@ void CApplication::Setup()
 void CApplication::Hook()
 {
 	// IClientMode
-	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x5));
+	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x05));
 	// CInput
-	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x1);
+	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x01);
 
 	// ClientState
 	this->m_pClientState = **(IClientState***)(CPattern::FindPattern(
@@ -1218,7 +1190,7 @@ void CApplication::Hook()
 		ENGINEDLL_SIZE,
 		(BYTE*)"\xA1\x00\x00\x00\x00\x8B\x80\x00\x00\x00\x00\xC3",
 		"a----gh----e"
-	) + 1);
+	) + 0x01);
 
 	// IViewRender
 	m_pViewRender = **(IViewRender***)(CPattern::FindPattern(
@@ -1227,28 +1199,6 @@ void CApplication::Hook()
 		(BYTE*)"\x55\x8B\xEC\xFF\x75\x10\x8B\x0D\x00\x00\x00\x00\xFF\x75\x0C",
 		"abcdefgh----ijk"
 	) + 0x08);
-
-	// KeyValues::Init
-	DWORD dwInitKeyValuesTemp = (CPattern::FindPattern(
-		(BYTE*)this->m_dwClientDll,
-		CLIENTDLL_SIZE,
-		(BYTE*)"\x68\x00\x00\x00\x00\x8B\xC8\xE8\x00\x00\x00\x00\x89\x45\xFC\xEB\x07\xC7\x45\x00\x00\x00\x00\x00\x8B\x03\x56",
-		"a----bbb----ccccccc-----ddd"
-	) + 7);
-	m_pInitKeyValues = (InitKeyValues_t)(dwInitKeyValuesTemp + (*(DWORD_PTR*)(dwInitKeyValuesTemp + 1)) + 5);
-
-	// KeyValues::LoadFromBuffer
-	DWORD dwLoadFromBufferTemp = CPattern::FindPattern(
-		(BYTE*)this->m_dwClientDll,
-		CLIENTDLL_SIZE,
-		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x34\x53\x8B\x5D\x0C\x89\x4C\x24\x04",
-		"abcdefghijjjjjjjq"
-	);
-	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
-
-	// TEMP
-	g_pResourceManager->CreateMirrorMat();
-	// TEMP
 
 	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
@@ -1318,12 +1268,16 @@ CApplication::CApplication()
 	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
 	//		 alle ptr != NULL löschen
 	m_pWindow = NULL;
+	m_pWindowMirror = NULL;
 
 	m_pClientModeHook = NULL;
 	m_pModelRenderHook = NULL;
 	m_pClientHook = NULL;
 	m_pPanelHook = NULL;
+	m_pSurfaceHook = NULL;
 	m_pGameEventManagerHook = NULL;
+	m_pViewRenderHook = NULL;
+	m_pEngineSoundHook = NULL;
 
 	m_bGotSendPackets = false;
 
@@ -1337,8 +1291,17 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pEngineSoundHook)
+		delete m_pEngineSoundHook;
+
+	if (m_pViewRenderHook)
+		delete m_pViewRenderHook;
+
 	if (m_pGameEventManagerHook)
 		delete m_pGameEventManagerHook;
+
+	if (m_pSurfaceHook)
+		delete m_pSurfaceHook;
 
 	if (m_pPanelHook)
 		delete m_pPanelHook;
@@ -1351,6 +1314,9 @@ CApplication::~CApplication()
 
 	if (m_pClientModeHook)
 		delete m_pClientModeHook;
+
+	if (m_pWindowMirror)
+		delete m_pWindowMirror;
 
 	if (m_pWindow)
 		delete m_pWindow;

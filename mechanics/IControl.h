@@ -53,6 +53,7 @@ public:
 	void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool GetEnabled() { return m_bIsEnabled; }
 
+	void SetPosition(int x, int y);
 	void SetBoundaries(int x, int y, int w, int h);
 	int X() { return m_iX; }
 	int Y() { return m_iY; }

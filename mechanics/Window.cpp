@@ -91,3 +91,14 @@ void CWindow::Draw(ISurface* pSurface)
 	if (m_pPopup)
 		m_pPopup->Draw(pSurface);
 }
+
+void CWindow::SetClientPosition(int x, int y)
+{
+	this->SetPosition(x, y - TITLEBAR_HEIGHT);
+}
+
+void CWindow::GetClientPosition(int* x, int* y)
+{
+	*x = m_iX;
+	*y = m_iY + TITLEBAR_HEIGHT;
+}

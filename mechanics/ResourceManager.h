@@ -3,6 +3,8 @@
 
 #include <unordered_map>
 
+#include "XorString.h"
+
 #include "IMaterialSystem.h"
 #include "ISurface.h"
 #include "KeyValues.h"
@@ -27,10 +29,7 @@ public:
 
 	void CreateMirror();
 	ITexture* GetMirror() { return m_pMirror; }
-	IMaterial* GetMirrorMat() {
-		return m_pMatMirror;
-	}
-	void CreateMirrorMat();
+	IMaterial* GetMirrorMaterial() { return m_pMatMirror; }
 
 	void CreateTextures();
 	int GetTexture(int textureId);
@@ -46,6 +45,10 @@ private:
 	IMaterial* m_pMatMirror;
 	std::unordered_map<int, int> m_mapTextures;
 	std::unordered_map<int, unsigned int> m_mapFonts;
+
+	CXorString m_xorVertexLitGeneric;
+	CXorString m_xorUnlitGeneric;
+	CXorString m_xorMatName;
 
 	CApplication* m_pApp;
 };
