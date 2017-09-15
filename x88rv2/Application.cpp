@@ -532,6 +532,7 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 		pApp->MaterialSystem()->EndRenderTargetAllocation();
 	}*/
 	
+	// TODO
 	/*if (pApp->EngineClient()->IsInGame())
 	{
 		if (GetAsyncKeyState(VK_MBUTTON) & 0x8000)
@@ -756,7 +757,7 @@ void CApplication::Setup()
 
 	if (m_pEngineClient->IsInGame())
 	{
-		SetRecoilCompensation(atof(m_pCVar->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+		SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	}
 	m_visuals.SetZoomSensitivity(atof(m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray())->value));
 
@@ -769,84 +770,113 @@ void CApplication::Setup()
 	m_pGui = CGui::Instance();
 	m_pGui->Setup();
 
-	// Print classes & their properties
-	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
+	// NetVar Dumps
+	/*FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
 	if (pFile)
 	{
+		g_pConsole->Write("Dumping NetVars ... ");
 		//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
-		//CNetVarManager::DumpTable(stdout, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
 		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseEntity");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
-		fclose(pFile);
-	}
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
-	CXorString csplayer("S_ÚD[é£nn÷");
-	CXorString basecombatweapon("S_Ú€vxàxfç£c\\à£gdë");
-	CXorString weaponcsbase("S_Ú•rjõ­yHÖ€vxà");
-	CXorString basecsgrenade("S_Ú€vxàDL÷§yjá§");
-	CXorString baseentity("S_Ú€vxà‡yì¶n");
-	CXorString baseplayer("S_Ú€vxà’{jü§e");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
+
+		fclose(pFile);
+		g_pConsole->Write("Done!\n");
+	}*/
+	
+	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
+	CXorString xorBasePlayer("S_Ú€vxà’{jü§e"); // DT_BasePlayer
+	CXorString xorCSPlayer("S_ÚD[é£nn÷"); // DT_CSPlayer
+	CXorString xorLocalPlayerExclusive("S_Úxhä®Ggä»ryÀºtgğ±~}à"); // DT_LocalPlayerExclusive
+	CXorString xorBaseCombatWeapon("S_Ú€vxàxfç£c\\à£gdë"); // DT_BaseCombatWeapon
+	CXorString xorWeaponCSBase("S_Ú•rjõ­yHÖ€vxà"); // DT_WeaponCSBase
+	CXorString xorBaseCSGrenade("S_Ú€vxàDL÷§yjá§"); // DT_BaseCSGrenade
+	CXorString xorBaseCombatCharacter("S_Ú€vxàxfç£cHí£ejæ¶ry"); // DT_BaseCombatCharacter
 
 	CNetVarManager netVarManager;
-	netVarManager.AddTable(baseentity.ToCharArray());
-	netVarManager.AddTable(baseplayer.ToCharArray());
-	netVarManager.AddTable(csplayer.ToCharArray());
-	netVarManager.AddTable(basecombatweapon.ToCharArray());
+	netVarManager.AddTable(xorBaseEntity.ToCharArray());
+	netVarManager.AddTable(xorBasePlayer.ToCharArray());
+	netVarManager.AddTable(xorCSPlayer.ToCharArray());
+	netVarManager.AddTable(xorBaseCombatWeapon.ToCharArray());
 	//netVarManager.AddTable("DT_BaseAttributableItem");
-	netVarManager.AddTable(weaponcsbase.ToCharArray());
-	netVarManager.AddTable(basecsgrenade.ToCharArray());
-	netVarManager.LoadTables(m_pClient->GetAllClasses());
+	netVarManager.AddTable(xorWeaponCSBase.ToCharArray());
+	netVarManager.AddTable(xorBaseCSGrenade.ToCharArray());
+	netVarManager.AddTable(xorBaseCombatCharacter.ToCharArray());
+	netVarManager.LoadTables(m_pClient->GetAllClasses(), true);
 
-	CXorString baseclass("ujö§tgä±d");
-	CXorString localdata("{dæ£{oä¶v");
-	Offsets::m_nModelIndex = netVarManager.GetOffset(1, baseentity.ToCharArray(), CXorString("zTëxoà®^eá§o").ToCharArray());
-	Offsets::m_hMyWeapons = netVarManager.GetOffset(2, baseplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTín\\à£gdë±").ToCharArray());
-	Offsets::m_hViewModel = netVarManager.GetOffset(1, baseplayer.ToCharArray(), CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
-	Offsets::m_vecOrigin = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTó§tD÷«pbë").ToCharArray());
-	Offsets::m_vecViewOffset = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
-	Offsets::m_angEyeAngles = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
-	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
-	Offsets::m_vecVelocity = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
-	Offsets::m_iTeamNum = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTì–rjèŒbf").ToCharArray());
-	Offsets::m_lifeState = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTé«qnÖ¶và").ToCharArray());
-	Offsets::m_iHealth = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTìŠrjé¶").ToCharArray());
-	Offsets::m_ArmorValue = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTÄ°zd÷”vgğ§").ToCharArray());
-	Offsets::m_bHasHelmet = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTçŠvxÍ§{fà¶").ToCharArray());
-	Offsets::m_fFlags = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTã„{jâ±").ToCharArray());
-	Offsets::m_bSpotted = netVarManager.GetOffset(7, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTç‘gdñ¶ro").ToCharArray());
-	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
-	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
-	//Offsets::m_bMoveType = netVarManager.GetOffset(1, "DT_BaseEntity", "m_bMoveType");
-	Offsets::m_bIsScoped = netVarManager.GetOffset(1, csplayer.ToCharArray(), CXorString("zTç‹dXæ­gná").ToCharArray());
-	Offsets::m_iShotsFired = netVarManager.GetOffset(2, csplayer.ToCharArray(), CXorString("txé­tjé¦vä").ToCharArray(), CXorString("zTì‘dñ±Qb÷§s").ToCharArray());
-	Offsets::m_hActiveWeapon = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), baseclass.ToCharArray(), CXorString("zTíƒtì´r\\à£gdë").ToCharArray());
-	Offsets::m_hObserverTarget = netVarManager.GetOffset(2, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("zTíuxà°an÷–vyâ§c").ToCharArray());
-	Offsets::m_deadflag = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), CXorString("gg").ToCharArray(), CXorString("snä¦qgä¥").ToCharArray());
-	Offsets::m_nTickBase = netVarManager.GetOffset(3, csplayer.ToCharArray(), baseclass.ToCharArray(), localdata.ToCharArray(), CXorString("zTë–~hî€vxà").ToCharArray());
+	CNetVar* pDtLocal;
 
-	//Offsets::m_AttributeManager = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager");
-	//Offsets::m_Item = netVarManager.GetOffset(3, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), "m_AttributeManager", "m_Item");
-	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, basecombatweapon.ToCharArray(), baseclass.ToCharArray(), CXorString("zTÄ¶cyì bàveä¥ry").ToCharArray(), CXorString("zTÌ¶rf").ToCharArray(), CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
-	//Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(1, "DT_BaseAttributableItem", "m_iItemDefinitionIndex");
-	Offsets::m_iClip1 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõó").ToCharArray());
-	Offsets::m_iClip2 = netVarManager.GetOffset(1, basecombatweapon.ToCharArray(), CXorString("zTì{bõğ").ToCharArray());
-	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, basecombatweapon.ToCharArray(), CXorString("[dæ£{Jæ¶~}à•rjõ­yOä¶v").ToCharArray(), CXorString("zTã®Ynı¶Gyì¯vyüƒcä¡|").ToCharArray());
+	Offsets::m_nModelIndex = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
+	Offsets::m_hMyWeapons = netVarManager.GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
+	Offsets::m_hViewModel = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
+	Offsets::m_vecOrigin = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
+	Offsets::m_vecViewOffset = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
+	Offsets::m_angEyeAngles = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
+	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
+	Offsets::m_vecVelocity = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
+	Offsets::m_iTeamNum = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_iTeamNum*/CXorString("zTì–rjèŒbf").ToCharArray());
+	Offsets::m_lifeState = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_lifeState*/CXorString("zTé«qnÖ¶và").ToCharArray());
+	Offsets::m_iHealth = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_iHealth*/CXorString("zTìŠrjé¶").ToCharArray());
+	Offsets::m_ArmorValue = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_ArmorValue*/CXorString("zTÄ°zd÷”vgğ§").ToCharArray());
+	Offsets::m_bHasHelmet = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bHasHelmet*/CXorString("zTçŠvxÍ§{fà¶").ToCharArray());
+	Offsets::m_fFlags = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_fFlags*/CXorString("zTã„{jâ±").ToCharArray());
+	Offsets::m_bSpotted = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_bSpotted*/CXorString("zTç‘gdñ¶ro").ToCharArray());
+	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bGunGameImmunity*/CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
+	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_flFlashMaxAlpha*/CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
+	//Offsets::m_bMoveType = netVarManager.GetOffset("DT_BaseEntity", "m_bMoveType"); <= Not existant :/
+	Offsets::m_bIsScoped = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bIsScoped*/CXorString("zTç‹dXæ­gná").ToCharArray());
+	Offsets::m_iShotsFired = netVarManager.GetOffset(2, xorCSPlayer.ToCharArray(),
+		/*DT_CSLocalPlayerExclusive*/CXorString("S_ÚDGê¡vgÕ®vrà°Rsæ®bxì´r").ToCharArray(),
+		/*m_iShotsFired*/CXorString("zTì‘dñ±Qb÷§s").ToCharArray());
+	Offsets::m_hActiveWeapon = netVarManager.GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hActiveWeapon*/CXorString("zTíƒtì´r\\à£gdë").ToCharArray());
+	Offsets::m_hObserverTarget = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_hObserverTarget*/CXorString("zTíuxà°an÷–vyâ§c").ToCharArray());
+	netVarManager.SetSummarizeOffsets(true);
+	Offsets::deadflag = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(),
+		/*DT_PlayerState*/CXorString("S_Ú’{jü§eXñ£cn").ToCharArray(),
+		/*deadflag*/CXorString("snä¦qgä¥").ToCharArray());
+	netVarManager.SetSummarizeOffsets(false);
+	Offsets::m_nTickBase = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
 
-	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(1, weaponcsbase.ToCharArray(), CXorString("zTãƒthğ°vhü’reä®cr").ToCharArray());
-	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(1, weaponcsbase.ToCharArray(), CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
+	pDtLocal = netVarManager.GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_Úxhä®").ToCharArray());
+	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("zTëˆbfõ–~fàdnæ±").ToCharArray())->GetOffset();
+	Offsets::m_flFallVelocity = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_flFallVelocity*/CXorString("zTã®Qjé®Ané­tbñ»").ToCharArray())->GetOffset();
+	Offsets::m_viewPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_viewPunchAngle*/CXorString("zTó«r|Õ·yhíƒylé§").ToCharArray())->GetOffset();
+	Offsets::m_aimPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngle*/CXorString("zTä«z[ğ¬tcÄ¬pgà").ToCharArray())->GetOffset();
+	Offsets::m_aimPunchAngleVel = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngleVel*/CXorString("zTä«z[ğ¬tcÄ¬pgà”rg").ToCharArray())->GetOffset();
 
-	Offsets::m_fThrowTime = netVarManager.GetOffset(1, basecsgrenade.ToCharArray(), CXorString("zTã–yêµCbè§").ToCharArray());
+	netVarManager.SetSummarizeOffsets(true);
+	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, xorBaseCombatWeapon.ToCharArray(),
+		/*DT_EconEntity*/CXorString("S_Ú‡tdë‡yì¶n").ToCharArray(),
+		/*DT_AttributeContainer*/CXorString("S_Úƒc÷«u~ñ§Tdë¶vbë§e").ToCharArray(),
+		/*DT_ScriptCreatedItem*/CXorString("S_Ú‘tyì²cH÷§và¦^à¯").ToCharArray(),
+		/*m_iItemDefinitionIndex*/CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
+	netVarManager.SetSummarizeOffsets(false);
+	Offsets::m_iClip1 = netVarManager.GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip1*/CXorString("zTì{bõó").ToCharArray());
+	Offsets::m_iClip2 = netVarManager.GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip2*/CXorString("zTì{bõğ").ToCharArray());
+	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, xorBaseCombatWeapon.ToCharArray(),
+		/*DT_LocalActiveWeaponData*/CXorString("S_Úxhä®Vhñ«anÒ§v{ê¬Sjñ£").ToCharArray(),
+		/*m_flNextPrimaryAttack*/CXorString("zTã®Ynı¶Gyì¯vyüƒcä¡|").ToCharArray());
+
+	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(xorWeaponCSBase.ToCharArray(), /*m_fAccuracyPenalty*/CXorString("zTãƒthğ°vhü’reä®cr").ToCharArray());
+	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(xorWeaponCSBase.ToCharArray(), /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
+
+	Offsets::m_fThrowTime = netVarManager.GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
 
 	// Target Selector
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(false);
 	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_CANHIT);
-	for (int i = 0; i < TARGET_HITBOX_COUNT; i++)
+	this->m_targetSelector.SetCheckHitbox(HITBOX_HEAD, true);
+	/*for (int i = 0; i < TARGET_HITBOX_COUNT; i++)
 	{
 		this->m_targetSelector.SetCheckHitbox(i, true);
-	}
+	}*/
 
 	// Setups
 	this->m_ragebot.Setup();
@@ -1121,6 +1151,12 @@ void CApplication::Setup()
 
 	m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
 	m_pWindow->AddChild(pContainer);
+
+	// TODO: Injecten -> ins menü gehen -> game exiten => crash
+	//		 Weil wegen der Schleife.
+	//		 Vielleicht bool setzen (in this->Detach()), dann oben in
+	//		 this->Run() nur this->Hook() aufrufen wenn 
+	//		 die boolsche variable den gewünschten zustand hat :P
 
 	// Wait for the game to be ingame before hooking
 	while (!m_pEngineClient->IsInGame()) {

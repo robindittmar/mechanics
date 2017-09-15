@@ -57,6 +57,7 @@
 #include "Vector.h"
 #include "IMatRenderContext.h"
 #include "IViewRender.h"
+#include "IEngineSound.h"
 
 #define OFFSET_LOCAL 0x2FAC
 #define OFFSET_AIMPUNCHANGLE 0x70
@@ -78,6 +79,8 @@ typedef float(__thiscall *GetViewModelFov_t)(void*);
 typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
 typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, CViewSetup&, int, int);
 typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
+
+//typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 
 typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
 
@@ -119,6 +122,7 @@ public:
 	VTableHook* PanelHook() { return m_pPanelHook; }
 	VTableHook* GameEventManagerHook() { return m_pGameEventManagerHook; }
 	VTableHook* ViewRenderHook() { return m_pViewRenderHook; }
+	VTableHook* EngineSound() {}
 
 	// Exposed callable engine functions
 	CreateMove_t CreateMove() { return m_pCreateMove; }
@@ -233,6 +237,7 @@ private:
 	VTableHook* m_pSurfaceHook;
 	VTableHook* m_pGameEventManagerHook;
 	VTableHook* m_pViewRenderHook;
+	VTableHook* m_pEngineSoundHook;
 
 	static CreateMove_t m_pCreateMove;
 	static FrameStageNotify_t m_pFrameStageNotify;
@@ -269,6 +274,7 @@ private:
 	IClientState* m_pClientState;
 	ICVar* m_pCVar;
 	IViewRender* m_pViewRender;
+	IEngineSound* m_pEngineSound;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;

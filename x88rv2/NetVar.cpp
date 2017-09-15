@@ -18,7 +18,7 @@ CNetVar::~CNetVar()
 	}
 }
 
-void CNetVar::LoadTable(RecvTable* pTable)
+void CNetVar::LoadTable(RecvTable* pTable, bool bRecursive)
 {
 	if (pTable == NULL)
 		return;
@@ -34,14 +34,17 @@ void CNetVar::LoadTable(RecvTable* pTable)
 	{
 		pProp = pTable->m_pProps + i;
 
-		iHash = murmurhash(pProp->m_pVarName, strlen(pProp->m_pVarName), 0xB16B00B5);
 		CNetVar* pNetVar = new CNetVar(pProp->m_Offset);
 		if(pProp->m_RecvType == SendPropType::DPT_DataTable)
 		{
-			pNetVar->LoadTable(pProp->m_pDataTable);
+			iHash = murmurhash(pProp->m_pDataTable->m_pNetTableName, strlen(pProp->m_pDataTable->m_pNetTableName), 0xB16B00B5);
+
+			if(bRecursive)
+				pNetVar->LoadTable(pProp->m_pDataTable, bRecursive);
 		}
 		else
 		{
+			iHash = murmurhash(pProp->m_pVarName, strlen(pProp->m_pVarName), 0xB16B00B5);
 			pNetVar->pName = pProp->m_pVarName;
 		}
 

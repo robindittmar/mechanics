@@ -168,17 +168,19 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-
-	if (!activeWeapon->IsPistol())
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
 		return;
 
-	if (activeWeapon->GetWeaponId() == WEAPON_REVOLVER)
+	if (!pActiveWeapon->IsPistol())
 		return;
 
-	float nextattack = activeWeapon->GetNextPrimaryAttack();
-	float servertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
-	if (nextattack > servertime)
+	if (pActiveWeapon->GetWeaponId() == WEAPON_REVOLVER)
+		return;
+
+	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
+	float fServertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
+	if (fNextattack > fServertime)
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;
 		return;
