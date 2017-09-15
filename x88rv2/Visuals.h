@@ -56,6 +56,9 @@ public:
 	void SetDrawLbyIndicator(bool bLbyIndicator) { m_bLbyIndicator = bLbyIndicator; }
 	bool GetDrawLbyIndicator() { return m_bLbyIndicator; }
 
+	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
+	float GetZoomSensitivity() { return m_flZoomSensitivity; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -96,6 +99,8 @@ private:
 	int m_iFovValue;
 
 	bool m_bLbyIndicator;
+
+	float m_flZoomSensitivity;
 };
 
 #endif // __VISUALS_H__

@@ -48,6 +48,27 @@ void CApplication::Detach()
 	delete g_pConsole;
 	g_pConsole = NULL;
 
+
+	// ----------- Our stuff -----------
+
+	// FovChanger
+	if (m_visuals.GetFovChangeScoped())
+	{
+		ConVar* pZoomSensitivity = m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
+		pZoomSensitivity->SetValue(m_visuals.GetZoomSensitivity());
+	}
+
+	// SkinChanger Modeldelete
+	if(m_skinchanger.GetEnabled())
+		m_pClientState->ForceFullUpdate();
+
+	// ClanTag
+	if (m_misc.GetIsCustomClanTag())
+		m_misc.SetClanTag(NULL);
+	else if (m_misc.GetNoName())
+		m_misc.SetNoNameClanTag(false);
+
+
 	// Free & Exit
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
 }
@@ -769,6 +790,7 @@ void CApplication::Setup()
 	{
 		SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	}
+	m_visuals.SetZoomSensitivity(atof(m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray())->value));
 
 	// Create Resources
 	m_pResourceManager->CreateMirror();
@@ -973,7 +995,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(false);
+	this->m_visuals.SetFovChangeScoped(true);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
@@ -1274,7 +1296,7 @@ void CApplication::Hook()
 		}
 	}
 
-	m_misc.SetClanTag(".mechanics");
+	this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 
 	this->m_bIsHooked = true;
 	this->m_bInitialHookDone = true;

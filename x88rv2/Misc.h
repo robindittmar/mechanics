@@ -62,6 +62,8 @@ public:
 	void SetNoName(bool bNoName) { m_bNoName = bNoName; };
 	bool GetNoName() { return m_bNoName; };
 
+	bool GetIsCustomClanTag() { return m_bIsCustomClanTag; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters);
 
@@ -91,6 +93,7 @@ private:
 	bool m_bDisablePostProcessing;
 	bool m_bJumpScout;
 	bool m_bNoName;
+	bool m_bIsCustomClanTag;
 
 	char m_pClanTag[128];
 

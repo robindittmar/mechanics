@@ -12,7 +12,7 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("weapon_recoil_scale"),
+		CXorString("zoom_sensitivity_ratio_mouse"),
 		CXorString("VEngineCvar007")
 	};
 	

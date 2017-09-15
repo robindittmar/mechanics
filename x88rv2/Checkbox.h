@@ -10,7 +10,7 @@
 #include "Label.h"
 
 #define CHECKBOX_BOXPADDING		5
-#define CHECKBOX_BOXSIZE		10
+#define CHECKBOX_BOXSIZE		30
 #define CHECKBOX_FILLERPADDING	3
 
 const Color g_clrCheckboxBorder(255, 0, 0, 0);
