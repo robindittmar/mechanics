@@ -84,8 +84,6 @@ typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
 typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 typedef int(__thiscall *EmitSound2_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, float, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 
-typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
-
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
 
@@ -262,11 +260,13 @@ private:
 	static EmitSound2_t m_pEmitSound2;
 
 	static RecvVarProxy_t m_pSequenceProxy;
-	//---TEMP
-	RecvProp* m_pProxyProp;
-	//---TEMP
+
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
+
+	// NetVars
+	CNetVarManager* m_pNetVarMgr;
+	CNetVar* m_pNetVarSequence;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;

@@ -143,9 +143,15 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			if (!pHitbox)
 				continue;
 
-			// If we shouldn't check visibility, just go on
+			// If we shouldn't check visibility, get hitbox pos and go on
 			if (m_iVisibleMode == VISIBLEMODE_IGNORE)
+			{
+				this->GetHitBoxCenter(pHitbox, pBoneMatrix, vEnemyPos);
+				vEnemyPos += vCurVelocity;
+
+				bIsHittable = true;
 				break;
+			}
 
 			if (m_bMultipoint)
 			{

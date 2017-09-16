@@ -67,7 +67,6 @@ void CResourceManager::CreateMirror()
 		(BYTE*)"\x80\xB9\x00\x00\x00\x00\x00\x74\x0F",
 		"gf----hfg"
 	) + 0x02);
-	g_pConsole->Write("m_bInitialized => 0x%08X\n", dwMatSysInit);
 
 	bool* pInitialized = (bool*)((DWORD)pMatSys + dwMatSysInit);
 	bool bOrig = *pInitialized;

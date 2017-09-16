@@ -10,14 +10,20 @@
 // Custom
 #include "murmurhash.h"
 
+typedef void(__cdecl *RecvVarProxy_t)(const CRecvProxyData*, void*, void*);
+
 class CNetVar
 {
 public:
-	CNetVar(int iOffset = 0, bool bIsTable = false);
+	CNetVar(int iOffset = 0, void** pProxyFn = NULL, bool bIsTable = false);
 	~CNetVar();
 
 	void LoadTable(RecvTable* pTable, bool bRecursive = false);
 	CNetVar* GetChild(const char* pNetVarName);
+
+	// Returns ptr to original proxy func
+	RecvVarProxy_t HookProxy(RecvVarProxy_t pHookFunc);
+	void UnhookProxy();
 
 	void SetIsTable(bool bIsTable) { m_bIsTable = bIsTable; }
 	bool GetIsTable() { return m_bIsTable; }
@@ -27,6 +33,10 @@ public:
 private:
 	const char* pName;
 	int m_iOffset;
+
+	bool m_bProxyHooked;
+	void** m_pProxyFn;
+	RecvVarProxy_t m_pOrigProxyFn;
 
 	bool m_bIsTable;
 	std::unordered_map<uint32_t, CNetVar*> m_mapChilds;

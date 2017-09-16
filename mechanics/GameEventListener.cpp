@@ -18,6 +18,7 @@ CGameEventListener::CGameEventListener() :
 	m_xorReason("enä±xe"),
 	m_xorMessage("znö±vlà")
 {
+	m_bNewGame = true;
 }
 
 CGameEventListener::~CGameEventListener()
@@ -40,6 +41,9 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 			break;
 		case 0x9f08124d: // switch_team
 			this->switch_team(pEvent);
+			break;
+		case 0xf4563cc2: // player_spawned
+			this->player_spawned(pEvent);
 			break;
 		case 0x5b325b2c: // player_hurt
 			this->player_hurt(pEvent);
@@ -68,33 +72,17 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	/*if (!pApp->GetHooked() && pApp->GetInitialHookDone())
-	{
-		g_pConsole->Write("Rehooking...\n");
-		pApp->Rehook();
-	}*/
-
 	pApp->Gui()->Setup();
 	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Chams()->ReloadMaterials();
 
-	// ClanTag Things
-	pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
-	pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
-	// Name Things
-	pApp->Misc()->SpamNameFix();
+	m_bNewGame = true;
 }
 
 void CGameEventListener::cs_game_disconnected(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
-	
-	/*if(pApp->GetHooked())
-	{
-		g_pConsole->Write("Unhooking...\n");
-		pApp->Unhook();
-	}*/
 }
 
 void CGameEventListener::switch_team(IGameEvent* pEvent)
@@ -102,6 +90,28 @@ void CGameEventListener::switch_team(IGameEvent* pEvent)
 	CApplication* pApp = CApplication::Instance();
 
 	pApp->SkinChanger()->SetForceFullUpdate();
+}
+
+void CGameEventListener::player_spawned(IGameEvent* pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	int iLocalPlayerIndex = pApp->EngineClient()->GetLocalPlayer();
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
+
+	if (iLocalPlayerIndex != pApp->EngineClient()->GetPlayerForUserID(userid))
+		return;
+
+	if (m_bNewGame)
+	{
+		// ClanTag Things
+		pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
+		pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+		// Name Things
+		pApp->Misc()->SpamNameFix();
+
+		m_bNewGame = false;
+	}
 }
 
 void CGameEventListener::player_hurt(IGameEvent* pEvent)
@@ -164,6 +174,11 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int iLocalPlayerIndex = pApp->EngineClient()->GetLocalPlayer();
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
+	
+	// Set here instead of player_spawned because of IsAlive check
+	if (pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
+		pApp->SkinChanger()->SetForceFullUpdate();
+	
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != iLocalPlayerIndex)
 		return;
 
@@ -174,10 +189,6 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 		// "say SIEG HEIL"
 		pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
 	}
-
-	// Set here instead of player_spawned because of IsAlive check
-	if(pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
-		pApp->SkinChanger()->SetForceFullUpdate();
 }
 
 void CGameEventListener::round_start(IGameEvent* pEvent)

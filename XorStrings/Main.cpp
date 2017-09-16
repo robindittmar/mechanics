@@ -59,6 +59,7 @@ int main(int argc, char** argv)
 	uint32_t game_newmap = murmurhash("game_newmap", strlen("game_newmap"), 0xB16B00B5);
 	uint32_t cs_game_disconnected = murmurhash("cs_game_disconnected", strlen("cs_game_disconnected"), 0xB16B00B5);
 	uint32_t switch_team = murmurhash("switch_team", strlen("switch_team"), 0xB16B00B5);
+	uint32_t player_spawned = murmurhash("player_spawned", strlen("player_spawned"), 0xB16B00B5);
 	uint32_t player_hurt = murmurhash("player_hurt", strlen("player_hurt"), 0xB16B00B5);
 	uint32_t player_death = murmurhash("player_death", strlen("player_death"), 0xB16B00B5);
 	uint32_t round_start = murmurhash("round_start", strlen("round_start"), 0xB16B00B5);

@@ -1,8 +1,9 @@
 #include "NetVar.h"
 
-CNetVar::CNetVar(int iOffset, bool bIsTable)
+CNetVar::CNetVar(int iOffset, void** pProxyFn, bool bIsTable)
 {
 	m_iOffset = iOffset;
+	m_pProxyFn = pProxyFn;
 	m_bIsTable = bIsTable;
 }
 
@@ -34,7 +35,7 @@ void CNetVar::LoadTable(RecvTable* pTable, bool bRecursive)
 	{
 		pProp = pTable->m_pProps + i;
 
-		CNetVar* pNetVar = new CNetVar(pProp->m_Offset);
+		CNetVar* pNetVar = new CNetVar(pProp->m_Offset, &pProp->m_ProxyFn);
 		if(pProp->m_RecvType == SendPropType::DPT_DataTable)
 		{
 			iHash = murmurhash(pProp->m_pDataTable->m_pNetTableName, strlen(pProp->m_pDataTable->m_pNetTableName), 0xB16B00B5);
@@ -56,4 +57,22 @@ CNetVar* CNetVar::GetChild(const char* pNetVarName)
 {
 	uint32_t iHash = murmurhash(pNetVarName, strlen(pNetVarName), 0xB16B00B5);
 	return m_mapChilds[iHash];
+}
+
+RecvVarProxy_t CNetVar::HookProxy(RecvVarProxy_t pHookFunc)
+{
+	m_pOrigProxyFn = (RecvVarProxy_t)*m_pProxyFn;
+	*m_pProxyFn = pHookFunc;
+	m_bProxyHooked = true;
+
+	return m_pOrigProxyFn;
+}
+
+void CNetVar::UnhookProxy()
+{
+	if (m_bProxyHooked)
+	{
+		*m_pProxyFn = m_pOrigProxyFn;
+		m_bProxyHooked = false;
+	}
 }

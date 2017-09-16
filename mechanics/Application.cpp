@@ -34,9 +34,6 @@ void CApplication::Detach()
 	// Unregister listener
 	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
 
-	// Restore proxy functions
-	m_pProxyProp->m_ProxyFn = this->m_pSequenceProxy;
-
 	// Unhook everything
 	this->Unhook();
 
@@ -95,11 +92,11 @@ void CApplication::LoadSkinChangerConfig()
 		CXorString("ujü­ynñ").ToCharArray()
 	);
 
-	// Robins Knifes (T -> Karambit Fade Stattrak)
+	// Robins Knifes (T -> Butterfly Fade Stattrak)
 	this->m_skinchanger.AddSkinReplacement(
 		WEAPON_KNIFE_T,
 		new CSkinMetadata(
-			WEAPON_KNIFE_KARAMBIT,
+			WEAPON_KNIFE_BUTTERFLY,
 			38,
 			0,
 			1337,
@@ -108,11 +105,11 @@ void CApplication::LoadSkinChangerConfig()
 	);
 	this->m_skinchanger.AddModelReplacement(
 		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®").ToCharArray(),
-		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®").ToCharArray()
+		CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray()
 	);
 	this->m_skinchanger.AddKillIconReplacement(
 		CXorString("|eì¤rTñ").ToCharArray(),
-		CXorString("|eì¤rTî£ejè ~").ToCharArray()
+		CXorString("|eì¤rTç·cà°qgü").ToCharArray()
 	);
 
 	// Robins Knifes (CT -> Karambit Fade Stattrak)
@@ -138,6 +135,9 @@ void CApplication::LoadSkinChangerConfig()
 
 void CApplication::Unhook()
 {
+	// Proxy functiions
+	m_pNetVarSequence->UnhookProxy();
+
 	// Reverse order, in case of any dependencies
 	this->m_pEngineSoundHook->Restore();
 	this->m_pViewRenderHook->Restore();
@@ -161,6 +161,8 @@ void CApplication::Rehook()
 	this->m_pGameEventManagerHook->Rehook();
 	this->m_pViewRenderHook->Rehook();
 	this->m_pEngineSoundHook->Rehook();
+
+	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 
 	this->m_bIsHooked = true;
 }
@@ -500,10 +502,6 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 void __fastcall CApplication::hk_PlaySound(void* ecx, void* edx, const char* fileName)
 {
 	CApplication* pApp = CApplication::Instance();
-
-	// TODO: Temporary
-	g_pConsole->Write("PlaySound => '%s'\n", fileName);
-
 	pApp->Misc()->AutoAccept(fileName);
 
 	pApp->m_pPlaySound(ecx, fileName);
@@ -802,73 +800,78 @@ void CApplication::Setup()
 	CXorString xorWeaponCSBase("S_Ú•rjõ­yHÖ€vxà"); // DT_WeaponCSBase
 	CXorString xorBaseCSGrenade("S_Ú€vxàDL÷§yjá§"); // DT_BaseCSGrenade
 	CXorString xorBaseCombatCharacter("S_Ú€vxàxfç£cHí£ejæ¶ry"); // DT_BaseCombatCharacter
+	CXorString xorBaseViewModel("S_Ú€vxà”~nòxoà®"); // DT_BaseViewModel
 
-	CNetVarManager netVarManager;
-	netVarManager.AddTable(xorBaseEntity.ToCharArray());
-	netVarManager.AddTable(xorBasePlayer.ToCharArray());
-	netVarManager.AddTable(xorCSPlayer.ToCharArray());
-	netVarManager.AddTable(xorBaseCombatWeapon.ToCharArray());
-	//netVarManager.AddTable("DT_BaseAttributableItem");
-	netVarManager.AddTable(xorWeaponCSBase.ToCharArray());
-	netVarManager.AddTable(xorBaseCSGrenade.ToCharArray());
-	netVarManager.AddTable(xorBaseCombatCharacter.ToCharArray());
-	netVarManager.LoadTables(m_pClient->GetAllClasses(), true);
+	m_pNetVarMgr = new CNetVarManager();
+	m_pNetVarMgr->AddTable(xorBaseEntity.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBasePlayer.ToCharArray());
+	m_pNetVarMgr->AddTable(xorCSPlayer.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseCombatWeapon.ToCharArray());
+	//m_pNetVarMgr->AddTable("DT_BaseAttributableItem");
+	m_pNetVarMgr->AddTable(xorWeaponCSBase.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseCSGrenade.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseCombatCharacter.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseViewModel.ToCharArray());
+	m_pNetVarMgr->LoadTables(m_pClient->GetAllClasses(), true);
 
-	Offsets::m_nModelIndex = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
-	Offsets::m_hMyWeapons = netVarManager.GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
-	Offsets::m_hViewModel = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
-	Offsets::m_vecOrigin = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
-	Offsets::m_vecViewOffset = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
-	Offsets::m_angEyeAngles = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
-	Offsets::m_flLowerBodyYawTarget = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
-	Offsets::m_vecVelocity = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
-	Offsets::m_iTeamNum = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_iTeamNum*/CXorString("zTì–rjèŒbf").ToCharArray());
-	Offsets::m_lifeState = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_lifeState*/CXorString("zTé«qnÖ¶và").ToCharArray());
-	Offsets::m_iHealth = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_iHealth*/CXorString("zTìŠrjé¶").ToCharArray());
-	Offsets::m_ArmorValue = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_ArmorValue*/CXorString("zTÄ°zd÷”vgğ§").ToCharArray());
-	Offsets::m_bHasHelmet = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bHasHelmet*/CXorString("zTçŠvxÍ§{fà¶").ToCharArray());
-	Offsets::m_fFlags = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_fFlags*/CXorString("zTã„{jâ±").ToCharArray());
-	Offsets::m_bSpotted = netVarManager.GetOffset(xorBaseEntity.ToCharArray(), /*m_bSpotted*/CXorString("zTç‘gdñ¶ro").ToCharArray());
-	Offsets::m_bGunGameImmunity = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bGunGameImmunity*/CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
-	Offsets::m_flFlashMaxAlpha = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_flFlashMaxAlpha*/CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
-	//Offsets::m_bMoveType = netVarManager.GetOffset("DT_BaseEntity", "m_bMoveType"); <= Not existant :/
-	Offsets::m_bIsScoped = netVarManager.GetOffset(xorCSPlayer.ToCharArray(), /*m_bIsScoped*/CXorString("zTç‹dXæ­gná").ToCharArray());
-	Offsets::m_iShotsFired = netVarManager.GetOffset(2, xorCSPlayer.ToCharArray(),
+	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
+	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
+	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
+	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
+	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
+	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
+	Offsets::m_flLowerBodyYawTarget = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
+	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
+	Offsets::m_iTeamNum = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_iTeamNum*/CXorString("zTì–rjèŒbf").ToCharArray());
+	Offsets::m_lifeState = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_lifeState*/CXorString("zTé«qnÖ¶và").ToCharArray());
+	Offsets::m_iHealth = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_iHealth*/CXorString("zTìŠrjé¶").ToCharArray());
+	Offsets::m_ArmorValue = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_ArmorValue*/CXorString("zTÄ°zd÷”vgğ§").ToCharArray());
+	Offsets::m_bHasHelmet = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bHasHelmet*/CXorString("zTçŠvxÍ§{fà¶").ToCharArray());
+	Offsets::m_fFlags = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_fFlags*/CXorString("zTã„{jâ±").ToCharArray());
+	Offsets::m_bSpotted = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_bSpotted*/CXorString("zTç‘gdñ¶ro").ToCharArray());
+	Offsets::m_bGunGameImmunity = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bGunGameImmunity*/CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
+	Offsets::m_flFlashMaxAlpha = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_flFlashMaxAlpha*/CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
+	//Offsets::m_bMoveType = m_pNetVarMgr->GetOffset("DT_BaseEntity", "m_bMoveType"); <= Not existant :/
+	Offsets::m_bIsScoped = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bIsScoped*/CXorString("zTç‹dXæ­gná").ToCharArray());
+	Offsets::m_iShotsFired = m_pNetVarMgr->GetOffset(2, xorCSPlayer.ToCharArray(),
 		/*DT_CSLocalPlayerExclusive*/CXorString("S_ÚDGê¡vgÕ®vrà°Rsæ®bxì´r").ToCharArray(),
 		/*m_iShotsFired*/CXorString("zTì‘dñ±Qb÷§s").ToCharArray());
-	Offsets::m_hActiveWeapon = netVarManager.GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hActiveWeapon*/CXorString("zTíƒtì´r\\à£gdë").ToCharArray());
-	Offsets::m_hObserverTarget = netVarManager.GetOffset(xorBasePlayer.ToCharArray(), /*m_hObserverTarget*/CXorString("zTíuxà°an÷–vyâ§c").ToCharArray());
-	netVarManager.SetSummarizeOffsets(true);
-	Offsets::deadflag = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(),
+	Offsets::m_hActiveWeapon = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hActiveWeapon*/CXorString("zTíƒtì´r\\à£gdë").ToCharArray());
+	Offsets::m_hObserverTarget = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_hObserverTarget*/CXorString("zTíuxà°an÷–vyâ§c").ToCharArray());
+	m_pNetVarMgr->SetSummarizeOffsets(true);
+	Offsets::deadflag = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(),
 		/*DT_PlayerState*/CXorString("S_Ú’{jü§eXñ£cn").ToCharArray(),
 		/*deadflag*/CXorString("snä¦qgä¥").ToCharArray());
-	netVarManager.SetSummarizeOffsets(false);
-	Offsets::m_nTickBase = netVarManager.GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
+	m_pNetVarMgr->SetSummarizeOffsets(false);
+	Offsets::m_nTickBase = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
 
-	CNetVar* pDtLocal = netVarManager.GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_Úxhä®").ToCharArray());
+	CNetVar* pDtLocal = m_pNetVarMgr->GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_Úxhä®").ToCharArray());
 	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("zTëˆbfõ–~fàdnæ±").ToCharArray())->GetOffset();
 	Offsets::m_flFallVelocity = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_flFallVelocity*/CXorString("zTã®Qjé®Ané­tbñ»").ToCharArray())->GetOffset();
 	Offsets::m_viewPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_viewPunchAngle*/CXorString("zTó«r|Õ·yhíƒylé§").ToCharArray())->GetOffset();
 	Offsets::m_aimPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngle*/CXorString("zTä«z[ğ¬tcÄ¬pgà").ToCharArray())->GetOffset();
 	Offsets::m_aimPunchAngleVel = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngleVel*/CXorString("zTä«z[ğ¬tcÄ¬pgà”rg").ToCharArray())->GetOffset();
 
-	netVarManager.SetSummarizeOffsets(true);
-	Offsets::m_iItemDefinitionIndex = netVarManager.GetOffset(4, xorBaseCombatWeapon.ToCharArray(),
+	m_pNetVarMgr->SetSummarizeOffsets(true);
+	Offsets::m_iItemDefinitionIndex = m_pNetVarMgr->GetOffset(4, xorBaseCombatWeapon.ToCharArray(),
 		/*DT_EconEntity*/CXorString("S_Ú‡tdë‡yì¶n").ToCharArray(),
 		/*DT_AttributeContainer*/CXorString("S_Úƒc÷«u~ñ§Tdë¶vbë§e").ToCharArray(),
 		/*DT_ScriptCreatedItem*/CXorString("S_Ú‘tyì²cH÷§và¦^à¯").ToCharArray(),
 		/*m_iItemDefinitionIndex*/CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
-	netVarManager.SetSummarizeOffsets(false);
-	Offsets::m_iClip1 = netVarManager.GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip1*/CXorString("zTì{bõó").ToCharArray());
-	Offsets::m_iClip2 = netVarManager.GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip2*/CXorString("zTì{bõğ").ToCharArray());
-	Offsets::m_flNextPrimaryAttack = netVarManager.GetOffset(2, xorBaseCombatWeapon.ToCharArray(),
+	m_pNetVarMgr->SetSummarizeOffsets(false);
+	Offsets::m_iClip1 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip1*/CXorString("zTì{bõó").ToCharArray());
+	Offsets::m_iClip2 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip2*/CXorString("zTì{bõğ").ToCharArray());
+	Offsets::m_flNextPrimaryAttack = m_pNetVarMgr->GetOffset(2, xorBaseCombatWeapon.ToCharArray(),
 		/*DT_LocalActiveWeaponData*/CXorString("S_Úxhä®Vhñ«anÒ§v{ê¬Sjñ£").ToCharArray(),
 		/*m_flNextPrimaryAttack*/CXorString("zTã®Ynı¶Gyì¯vyüƒcä¡|").ToCharArray());
 
-	Offsets::m_fAccuracyPenalty = netVarManager.GetOffset(xorWeaponCSBase.ToCharArray(), /*m_fAccuracyPenalty*/CXorString("zTãƒthğ°vhü’reä®cr").ToCharArray());
-	Offsets::m_flPostponeFireReadyTime = netVarManager.GetOffset(xorWeaponCSBase.ToCharArray(), /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
+	Offsets::m_fAccuracyPenalty = m_pNetVarMgr->GetOffset(xorWeaponCSBase.ToCharArray(), /*m_fAccuracyPenalty*/CXorString("zTãƒthğ°vhü’reä®cr").ToCharArray());
+	Offsets::m_flPostponeFireReadyTime = m_pNetVarMgr->GetOffset(xorWeaponCSBase.ToCharArray(), /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
 
-	Offsets::m_fThrowTime = netVarManager.GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
+	Offsets::m_fThrowTime = m_pNetVarMgr->GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
+
+	// Grab NetVars later required for hooking
+	m_pNetVarSequence = m_pNetVarMgr->GetNetVar(xorBaseViewModel.ToCharArray(), /*m_nSequence*/CXorString("zTë‘rzğ§yhà").ToCharArray());
 
 	m_misc.SetReadyCallback((IsReadyCallback_t)(CPattern::FindPattern(
 		(BYTE*)this->ClientDll(),
@@ -881,7 +884,7 @@ void CApplication::Setup()
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(false);
 	this->m_targetSelector.SetVisibleMode(VISIBLEMODE_CANHIT);
-	this->m_targetSelector.SetCheckHitbox(HITBOX_HEAD, true);
+	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_HEAD, true);
 
 	// Setups
 	this->m_ragebot.Setup();
@@ -980,6 +983,7 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("txÚ¥vfàsbö¡xeë§tà¦").ToCharArray(), false); // cs_game_disconnected
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("d|ì¶tcÚ¶rjè").ToCharArray(), false); // switch_team
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ±gjò¬ro").ToCharArray(), false); // player_spawned
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚªbyñ").ToCharArray(), false); // player_hurt
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ¦rjñª").ToCharArray(), false); // player_death
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edğ¬sTö¶vyñ").ToCharArray(), false); // round_start
@@ -1006,18 +1010,51 @@ void CApplication::Setup()
 	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_ragebot.GetAutoscope());
 	pAutoScope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, &m_ragebot, std::placeholders::_1));
 
+	CSelectbox* pTargetCriteria = new CSelectbox(16, 208, 120, 32, "Target criteria");
+	pTargetCriteria->AddOption(TARGETCRITERIA_UNSPECIFIED, "First found");
+	pTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
+	pTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
+	pTargetCriteria->SetSelection(this->m_ragebot.GetTargetCriteria());
+	pTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, &m_ragebot, std::placeholders::_1));
+
+	CCheckbox* pMultiPoint = new CCheckbox(152, 16, 120, 32, "Multipoint", m_targetSelector.GetMultipoint());
+	pMultiPoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, &m_targetSelector, std::placeholders::_1));
+
+	CSelectbox* pVisibleMode = new CSelectbox(152, 64, 120, 32, "Visible mode");
+	pVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
+	pVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
+	pVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
+	pVisibleMode->SetSelection(this->m_targetSelector.GetVisibleMode());
+	pVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, &m_targetSelector, std::placeholders::_1));
+
+	CGroupbox* pGroupHitboxes = new CGroupbox(288, 16, 152, 288, "Hitboxes");
+	CCheckbox* pHitboxHead = new CCheckbox(16, 0, 120, 32, "Head", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_HEAD));
+	CCheckbox* pHitboxChest = new CCheckbox(16, 36, 120, 32, "Chest", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_CHEST));
+	CCheckbox* pHitboxPelvis = new CCheckbox(16, 72, 120, 32, "Pelvis", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_PELVIS));
+	CCheckbox* pHitboxRForearm = new CCheckbox(16, 108, 120, 32, "Right forearm", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+	CCheckbox* pHitboxLForearm = new CCheckbox(16, 144, 120, 32, "Left forearm", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+	CCheckbox* pHitboxRCalf = new CCheckbox(16, 180, 120, 32, "Right calf", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+	CCheckbox* pHitboxLCalf = new CCheckbox(16, 216, 120, 32, "Left calf", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
+	
+	pHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_HEAD, std::placeholders::_1));
+	pHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_CHEST, std::placeholders::_1));
+	pHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_PELVIS, std::placeholders::_1));
+	pHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+	pHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+	pHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+	pHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
+
+	pGroupHitboxes->AddChild(pHitboxHead);
+	pGroupHitboxes->AddChild(pHitboxChest);
+	pGroupHitboxes->AddChild(pHitboxPelvis);
+	pGroupHitboxes->AddChild(pHitboxRForearm);
+	pGroupHitboxes->AddChild(pHitboxLForearm);
+	pGroupHitboxes->AddChild(pHitboxRCalf);
+	pGroupHitboxes->AddChild(pHitboxLCalf);
+
 	CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
 	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
 	m_pGuiThirdpersonCheckbox = pCheck2;
-
-	CSelectbox* pSelectbox = new CSelectbox(16, 16, 100, 32);
-	pSelectbox->AddOption(0, "Unspecified");
-	pSelectbox->AddOption(1, "NoHands");
-	pSelectbox->AddOption(2, "lol");
-	pSelectbox->AddOption(3, "Just testing");
-	pSelectbox->AddOption(4, "this is fun");
-	pSelectbox->AddOption(5, "nicht");
-	pSelectbox->AddOption(6, "SIEG");
 
 	CCheckbox* pNoName = new CCheckbox(16, 160, 120, 32, "NoName", m_misc.GetNoName());
 	pNoName->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, &m_misc, std::placeholders::_1));
@@ -1087,6 +1124,9 @@ void CApplication::Setup()
 	pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, &m_chams, std::placeholders::_1));
 	pChamsFlatModels->SetEventHandler(std::bind(&CChams::SetFlatModels, &m_chams, std::placeholders::_1));
 
+	CCheckbox* pMirror = new CCheckbox(304, 304, 128, 32, "Mirror", m_mirror.GetEnabled());
+	pMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, &m_mirror, std::placeholders::_1));
+
 	CSlider* pSlider = new CSlider(16, 125, 200, 20);
 	//pSlider->SetEventHandler(std::bind(&SliderUpdateValue, std::placeholders::_1));
 
@@ -1117,6 +1157,10 @@ void CApplication::Setup()
 	pPage1->AddChild(pSilentAim);
 	pPage1->AddChild(pCheck);
 	pPage1->AddChild(pAutoScope);
+	pPage1->AddChild(pTargetCriteria);
+	pPage1->AddChild(pMultiPoint);
+	pPage1->AddChild(pVisibleMode);
+	pPage1->AddChild(pGroupHitboxes);
 
 	pPage2->AddChild(pLabelWip);
 
@@ -1138,8 +1182,8 @@ void CApplication::Setup()
 	pPage3->AddChild(pChamsDrawOwnModel);
 	pPage3->AddChild(pChamsIgnoreZ);
 	pPage3->AddChild(pChamsFlatModels);
+	pPage3->AddChild(pMirror);
 
-	pPage4->AddChild(pSelectbox);
 	pPage4->AddChild(pSelectPitchAntiaim);
 	pPage4->AddChild(pSelectYawAntiaim);
 	pPage4->AddChild(pNoName);
@@ -1228,33 +1272,8 @@ void CApplication::Hook()
 	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
 	m_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
-	CXorString xorBaseViewModel("TIä±r]ì§`Fê¦rg");
-	CXorString xorSequence("zTë‘rzğ§yhà");
-	// Search for the 'CBaseViewModel' class.
-	for (ClientClass* pClass = this->m_pClient->GetAllClasses(); pClass; pClass = pClass->m_pNext) {
-		if (!strcmp(pClass->m_pNetworkName, xorBaseViewModel.ToCharArray())) {
-			// Search for the 'm_nModelIndex' property.
-			RecvTable* pClassTable = pClass->m_pRecvTable;
-
-			for (int nIndex = 0; nIndex < pClassTable->m_nProps; nIndex++) {
-				RecvProp* pProp = &pClassTable->m_pProps[nIndex];
-
-				if (!pProp || strcmp(pProp->m_pVarName, xorSequence.ToCharArray()))
-					continue;
-
-				// Store the original proxy function.
-				this->m_pSequenceProxy = (RecvVarProxy_t)pProp->m_ProxyFn;
-
-				// Replace the proxy function with our sequence changer.
-				m_pProxyProp = pProp;
-				m_pProxyProp->m_ProxyFn = (RecvVarProxy_t)CApplication::hk_SetViewModelSequence;
-
-				break;
-			}
-
-			break;
-		}
-	}
+	// Proxy functions
+	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 
 	this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 
@@ -1269,6 +1288,8 @@ CApplication::CApplication()
 	//		 alle ptr != NULL löschen
 	m_pWindow = NULL;
 	m_pWindowMirror = NULL;
+
+	m_pNetVarMgr = NULL;
 
 	m_pClientModeHook = NULL;
 	m_pModelRenderHook = NULL;
@@ -1314,6 +1335,9 @@ CApplication::~CApplication()
 
 	if (m_pClientModeHook)
 		delete m_pClientModeHook;
+
+	if (m_pNetVarMgr)
+		delete m_pNetVarMgr;
 
 	if (m_pWindowMirror)
 		delete m_pWindowMirror;

@@ -14,6 +14,7 @@ public:
 	virtual void FireGameEvent(IGameEvent* pEvent);
 	virtual int GetEventDebugID(void);
 private:
+	bool m_bNewGame;
 	// I hate to break conventions for function names,
 	// but naming/labeling these after the events just seems a little nicer
 	// (as they shouldn't be called by anyone else anyway)
@@ -22,6 +23,7 @@ private:
 	void game_newmap(IGameEvent* pEvent);
 	void cs_game_disconnected(IGameEvent* pEvent);
 	void switch_team(IGameEvent* pEvent);
+	void player_spawned(IGameEvent* pEvent);
 	void player_hurt(IGameEvent* pEvent);
 	void player_death(IGameEvent* pEvent);
 	void round_start(IGameEvent* pEvent);
