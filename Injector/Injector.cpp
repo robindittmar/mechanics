@@ -15,9 +15,6 @@ bool CInjector::Inject(const char* pProcess, CLibrary* pLibrary)
 
 	while (!FindWindow("Valve001", NULL)) Sleep(50);
 
-	// TODO:
-	Sleep(1500);
-
 	// Get address of LoadLibrary
 	void* pLoadLibrary = GetProcAddress(GetModuleHandle("kernel32.dll"), "LoadLibraryA");
 	if (!pLoadLibrary)

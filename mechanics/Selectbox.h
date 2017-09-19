@@ -28,6 +28,8 @@ public:
 	void SetSelection(int iSelection);
 	int GetSelection() { return m_iSelection; }
 
+	void SetSelectionByValue(int iValue);
+
 	void SetEventHandler(std::function<void(int)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	bool m_bPopupInitialized;

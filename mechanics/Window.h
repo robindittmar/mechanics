@@ -12,8 +12,8 @@
 
 #define TITLEBAR_HEIGHT	30
 
-const Color g_clrTitlebar(255, 150, 150, 150);
-const Color g_clrClientRegion(150, 230, 230, 230);
+const Color g_clrTitlebar(255, 30, 30, 30);
+const Color g_clrClientRegion(250, 60, 60, 60);
 
 class CWindow : public IControl
 {

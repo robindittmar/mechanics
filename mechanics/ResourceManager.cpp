@@ -98,7 +98,7 @@ void CResourceManager::CreateTextures()
 	int textureCursor = pSurface->CreateNewTextureID(true);
 	int textureColorFade = pSurface->CreateNewTextureID(true);
 
-	unsigned char pTexCursor[] = { 0, 0, 150, 255 };
+	unsigned char pTexCursor[] = { 0, 255, 90, 0 };
 
 	int curR, curG, curB;
 	unsigned char pTexColorFade[360 * 4];
@@ -126,7 +126,7 @@ int CResourceManager::GetTexture(int textureId)
 
 void CResourceManager::CreateFonts()
 {
-	static CXorString xorArial("Vyì£{");
+	static CXorString xorTahoma("Cjí­zj");
 
 	ISurface* pSurface = m_pApp->Surface();
 
@@ -134,9 +134,9 @@ void CResourceManager::CreateFonts()
 	unsigned int fontHeader = pSurface->SCreateFont();
 	unsigned int fontSubheader = pSurface->SCreateFont();
 
-	pSurface->SetFontGlyphSet(fontNormal, xorArial.ToCharArray(), 8, 255, 0, 0, FONTFLAG_OUTLINE);
-	pSurface->SetFontGlyphSet(fontHeader, xorArial.ToCharArray(), 16, 255, 0, 0, FONTFLAG_OUTLINE);
-	pSurface->SetFontGlyphSet(fontSubheader, xorArial.ToCharArray(), 12, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontNormal, xorTahoma.ToCharArray(), 11, 255, 0, 0, FONTFLAG_NONE);
+	pSurface->SetFontGlyphSet(fontHeader, xorTahoma.ToCharArray(), 16, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontSubheader, xorTahoma.ToCharArray(), 14, 255, 0, 0, FONTFLAG_OUTLINE);
 
 	m_mapFonts[RM_FONT_NORMAL] = fontNormal;
 	m_mapFonts[RM_FONT_HEADER] = fontHeader;

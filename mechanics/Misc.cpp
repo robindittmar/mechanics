@@ -423,6 +423,10 @@ void CMisc::JumpScout(CUserCmd* pUserCmd)
 				pUserCmd->buttons &= ~IN_ATTACK;
 			}
 		}
+		/*else
+		{
+			g_pConsole->Write("%f\n", pActiveWeapon->GetAccuracyPenalty());
+		}*/
 	}
 }
 
@@ -451,9 +455,16 @@ void CMisc::AutoAccept(const char* filename)
 
 	if (m_pApp->EngineClient()->IsInGame())
 		return;
+	static int count = 0;
 	static CXorString acceptBeep("6^Ìítdè²rì¶~}àvhæ§gÚ rnõì`jó");
 	if (strcmp(filename, acceptBeep.ToCharArray()) != 0)
 		return;
+	else
+		count++;
 
-	m_IsReadyCallback();
+	if (count == 3)
+	{
+		m_IsReadyCallback();
+		count = 0;
+	}
 }

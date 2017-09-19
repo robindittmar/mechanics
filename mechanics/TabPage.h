@@ -5,7 +5,7 @@
 #include "Gui.h"
 #include "IControl.h"
 
-#define TABCONTAINER_TABHEIGHT	40
+#define TABCONTAINER_TABHEIGHT	30
 
 class CTabPage : public IControl
 {

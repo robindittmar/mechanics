@@ -12,6 +12,11 @@
 #define SLIDER_ORIENTATION_HORIZONTAL	0
 #define SLIDER_ORIENTATION_VERTICAL		1
 
+#define SLIDER_KNOBSIZE					6
+
+const Color g_clrControl(255, 0, 0, 0);
+const Color g_clrKnob(250, 255, 128, 0);
+
 class CSlider : public IControl
 {
 public:

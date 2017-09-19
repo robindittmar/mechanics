@@ -191,6 +191,10 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	if (pApp->EngineClient()->IsInGame())
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+
+		// Update PlayerList
+		pApp->m_playerList.UpdateList();
+
 		if (pLocalEntity->IsAlive())
 		{
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
@@ -428,8 +432,10 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Misc()->SpectatorList();
 
 			// Draw Esp
-			//pApp->Esp()->UpdateSounds();
 			pApp->Esp()->Update((void*)pSurface);
+
+			// Draw Sound Esp
+			pApp->SoundEsp()->Update();
 
 			// Draw rear mirror
 			pApp->m_mirror.Render(pSurface, pApp->m_pWindowMirror);
@@ -552,9 +558,9 @@ int __fastcall CApplication::hk_EmitSound1(void* ecx, void* edx, IRecipientFilte
 	bool bUpdatePositions, float soundtime, int speakerentity)
 {
 	CApplication* pApp = CApplication::Instance();
-	//g_pConsole->Write("[EmitSound1]: %d => %s (%s)\n", iEntIndex, pSample, pSoundEntry);
-	/*if(pOrigin)
-		pApp->Esp()->AddSound(new CSoundInfo(*pOrigin, pSample));*/
+
+	if (pOrigin)
+		pApp->SoundEsp()->AddSound(new CSoundInfo(iEntIndex, *pOrigin, pSample));
 
 	return pApp->m_pEmitSound1(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, iSoundlevel, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
 }
@@ -564,9 +570,9 @@ int __fastcall CApplication::hk_EmitSound2(void* ecx, void* edx, IRecipientFilte
 	bool bUpdatePositions, float soundtime, int speakerentity)
 {
 	CApplication* pApp = CApplication::Instance();
-	//g_pConsole->Write("[EmitSound2]: %d => %s\n", iEntIndex, pSample);
-	/*if(pOrigin)
-		pApp->Esp()->AddSound(new CSoundInfo(*pOrigin, pSample));*/
+
+	if (pOrigin)
+		pApp->SoundEsp()->AddSound(new CSoundInfo(iEntIndex, *pOrigin, pSample));
 
 	return pApp->m_pEmitSound2(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, flAttenuation, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
 }
@@ -770,6 +776,9 @@ void CApplication::Setup()
 	m_pResourceManager->CreateTextures();
 	m_pResourceManager->CreateFonts();
 
+	// PlayerList Initialization
+	m_playerList.Init(this);
+
 	// CGui initialization
 	m_pGui = CGui::Instance();
 	m_pGui->Setup();
@@ -894,6 +903,7 @@ void CApplication::Setup()
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
+	this->m_soundEsp.Setup();
 	this->m_chams.Setup();
 	this->m_misc.Setup();
 	this->m_skinchanger.Setup();
@@ -919,7 +929,7 @@ void CApplication::Setup()
 	// Bhop
 	this->m_bhop.SetEnabled(true);
 
-	// ESP
+	// Esp
 	this->m_esp.SetEnabled(true);
 	this->m_esp.SetDrawBoundingBox(true);
 	this->m_esp.SetDrawNames(true);
@@ -930,6 +940,13 @@ void CApplication::Setup()
 	this->m_esp.SetDrawOwnModel(true);
 	this->m_esp.SetDrawOnlySpotted(false);
 	this->m_esp.SetDrawOutline(true);
+
+	// Sound Esp
+	this->m_soundEsp.SetEnabled(true);
+	this->m_soundEsp.SetShowTime(1.0f);
+	this->m_soundEsp.SetFadeTime(1.0f);
+	this->m_soundEsp.SetDrawOwnTeam(false);
+	this->m_soundEsp.SetDrawVisible(false);
 
 	// Chams
 	this->m_chams.SetEnabled(true);
@@ -1066,7 +1083,7 @@ void CApplication::Setup()
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
 	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
-	pSelectPitchAntiaim->SetSelection(this->m_antiAim.GetPitchSetting());
+	pSelectPitchAntiaim->SetSelectionByValue(this->m_antiAim.GetPitchSetting());
 	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
 
 	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
@@ -1147,6 +1164,12 @@ void CApplication::Setup()
 	CButton* pGroupBtn = new CButton();
 	groupBox->AddChild(pGroupBtn);
 
+	CTabContainer* pVisualsContainer = new CTabContainer();
+	CTabPage* pPageEsp = new CTabPage("Esp");
+	CTabPage* pPageChams = new CTabPage("Chams");
+	CTabPage* pPageDummy = new CTabPage("Dummy");
+	pPageDummy->AddChild(new CLabel(0, 0, 100, 16, "Sieht sonst kacke aus ihr plebs"));
+
 	CTabContainer* pContainer = new CTabContainer();
 	CTabPage* pPage1 = new CTabPage("Rage");
 	CTabPage* pPage2 = new CTabPage("Legit");
@@ -1166,25 +1189,22 @@ void CApplication::Setup()
 
 	pPage2->AddChild(pLabelWip);
 
-	/*pPage3->AddChild(pDrawBoundingBox);
-	pPage3->AddChild(pDrawHealthbar);
-	pPage3->AddChild(pDrawHealthnumber);
-	pPage3->AddChild(pDrawArmorbar);
-	pPage3->AddChild(pDrawOwnTeam);
-	pPage3->AddChild(pDrawOwnModel);
-	pPage3->AddChild(pDrawOnlySpotted);
-	pPage3->AddChild(pDrawOutline);
-	pPage3->AddChild(pDrawNames);*/
-	pPage3->AddChild(pGroupbox);
-	pPage3->AddChild(pCheck2);
-	pPage3->AddChild(pSelectbox2);
-	pPage3->AddChild(pSliderFlashAmnt);
-	pPage3->AddChild(pSliderFov);
-	pPage3->AddChild(pChamsDrawOwnTeam);
-	pPage3->AddChild(pChamsDrawOwnModel);
-	pPage3->AddChild(pChamsIgnoreZ);
-	pPage3->AddChild(pChamsFlatModels);
-	pPage3->AddChild(pMirror);
+	pPageEsp->AddChild(pGroupbox);
+	pPageEsp->AddChild(pCheck2);
+	pPageEsp->AddChild(pSelectbox2);
+	pPageEsp->AddChild(pSliderFlashAmnt);
+	pPageEsp->AddChild(pSliderFov);
+	pPageEsp->AddChild(pChamsDrawOwnTeam);
+	pPageEsp->AddChild(pChamsDrawOwnModel);
+	pPageEsp->AddChild(pChamsIgnoreZ);
+	pPageEsp->AddChild(pChamsFlatModels);
+	pPageEsp->AddChild(pMirror);
+
+	pVisualsContainer->AddChild(pPageEsp);
+	pVisualsContainer->AddChild(pPageChams);
+	pVisualsContainer->AddChild(pPageDummy);
+
+	pPage3->AddChild(pVisualsContainer);
 
 	pPage4->AddChild(pSelectPitchAntiaim);
 	pPage4->AddChild(pSelectYawAntiaim);
@@ -1205,7 +1225,7 @@ void CApplication::Setup()
 	pContainer->AddChild(pPage6);
 	pContainer->SelectTab(0);
 
-	m_pWindow = new CWindow(30, 30, 600, 400, ".mechanics");
+	m_pWindow = new CWindow(30, 30, 1020, 550, ".mechanics");
 	m_pWindow->AddChild(pContainer);
 
 	m_pWindowMirror = new CWindow(100, 100, MIRROR_WIDTH, MIRROR_HEIGHT, "Mirror");

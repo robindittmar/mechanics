@@ -7,17 +7,22 @@
 class CSoundInfo
 {
 public:
-	CSoundInfo(Vector vOrigin, const char* pSample);
+	CSoundInfo(int iEntityIndex, Vector vOrigin, const char* pSample);
 	~CSoundInfo();
 
+	int GetEntityIndex() { return m_iEntityIndex; }
 	Vector GetOrigin() { return m_vOrigin; }
-	const char* GetSample() { return m_pSample; }
 
-	bool IsOutdated(ULONGLONG timestamp);
+	void SetSample(const char* p);
+	const char* GetSample() { return (const char*)m_pSample; }
+
+	ULONGLONG GetTimeSinceCreation(ULONGLONG timestamp);
 private:
 	ULONGLONG m_llTimestamp;
+
+	int m_iEntityIndex;
 	Vector m_vOrigin;
-	const char* m_pSample;
+	char* m_pSample;
 };
 
 #endif // __SOUNDINFO_H__

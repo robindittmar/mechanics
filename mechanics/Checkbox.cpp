@@ -48,7 +48,11 @@ void CCheckbox::Draw(ISurface* pSurface)
 
 	// Draw box that holds the checkmark
 	pSurface->DrawSetColor(borderColor);
-	pSurface->DrawOutlinedRect(x + CHECKBOX_BOXPADDING, y + CHECKBOX_BOXPADDING, x + m_iHeight - CHECKBOX_BOXPADDING, y + m_iHeight - CHECKBOX_BOXPADDING);
+	pSurface->DrawOutlinedRect(
+		x + CHECKBOX_BOXPADDING,
+		y + CHECKBOX_BOXPADDING + ((m_iHeight / 2) - CHECKBOX_BOXSIZE),
+		x + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE,
+		y + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE)));
 
 	// Draw checkmark if checked
 	if (m_bIsChecked)
@@ -56,9 +60,9 @@ void CCheckbox::Draw(ISurface* pSurface)
 		pSurface->DrawSetColor(fillColor);
 		pSurface->DrawFilledRect(
 			x + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING,
-			y + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING,
-			x + m_iHeight - CHECKBOX_BOXPADDING - CHECKBOX_FILLERPADDING,
-			y + m_iHeight - CHECKBOX_BOXPADDING - CHECKBOX_FILLERPADDING
+			y + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE)),
+			x + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE - CHECKBOX_FILLERPADDING,
+			y + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE - CHECKBOX_FILLERPADDING + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE))
 		);
 	}
 

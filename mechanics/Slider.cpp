@@ -41,35 +41,37 @@ void CSlider::Draw(ISurface* pSurface)
 	this->GetAbsolutePosition(&x, &y);
 
 	int knob;
-	pSurface->DrawSetColor(255, 0, 0, 0);
+	pSurface->DrawSetColor(g_clrControl);
 
 	switch(m_iOrientation)
 	{
 	case SLIDER_ORIENTATION_HORIZONTAL:
-		pSurface->DrawLine(x, y, x, y + m_iHeight);
+		//pSurface->DrawLine(x, y, x, y + m_iHeight);
 		pSurface->DrawLine(x, y + (m_iHeight / 2), x + m_iWidth, y + (m_iHeight / 2));
-		pSurface->DrawLine(x + m_iWidth, y, x + m_iWidth, y + m_iHeight);
+		//pSurface->DrawLine(x + m_iWidth, y, x + m_iWidth, y + m_iHeight);
 
 		knob = m_fValue * m_iWidth;
-		if(m_bReverse)
+		if (m_bReverse)
 			knob = m_iWidth - knob;
 
-		pSurface->DrawSetColor(255, 0, 0, 255);
-		pSurface->DrawLine(x + knob, y, x + knob, y + m_iHeight);
+		pSurface->DrawSetColor(g_clrKnob);
+		pSurface->DrawFilledRect((x + knob) - SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) - (SLIDER_KNOBSIZE / 2), (x + knob) + SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) + (SLIDER_KNOBSIZE / 2));
+		//pSurface->DrawLine(x + knob, y, x + knob, y + m_iHeight);
 		// TODO: 18? 16? pls
 		m_pLabel->SetBoundaries(x + knob, y - 18, 1, 16);
 		break;
 	case SLIDER_ORIENTATION_VERTICAL:
-		pSurface->DrawLine(x, y, x + m_iWidth, y);
+		//pSurface->DrawLine(x, y, x + m_iWidth, y);
 		pSurface->DrawLine(x + (m_iWidth / 2), y, x + (m_iWidth / 2), y + m_iHeight);
-		pSurface->DrawLine(x, y + m_iHeight, x + m_iWidth, y + m_iHeight);
+		//pSurface->DrawLine(x, y + m_iHeight, x + m_iWidth, y + m_iHeight);
 
 		knob = m_fValue * m_iHeight;
 		if (m_bReverse)
 			knob = m_iHeight - knob;
 
-		pSurface->DrawSetColor(255, 0, 0, 255);
-		pSurface->DrawLine(x, y + knob, x + m_iWidth, y + knob);
+		pSurface->DrawSetColor(g_clrKnob);
+		pSurface->DrawFilledRect((x + m_iWidth / 2) - SLIDER_KNOBSIZE / 2, (y + knob) - SLIDER_KNOBSIZE / 2, (x + m_iWidth / 2) + SLIDER_KNOBSIZE / 2, (y + knob) + SLIDER_KNOBSIZE / 2);
+		//pSurface->DrawLine(x, y + knob, x + m_iWidth, y + knob);
 		// TODO:
 		m_pLabel->SetBoundaries(x + m_iWidth + 4, y + knob, 1, 1);
 		break;

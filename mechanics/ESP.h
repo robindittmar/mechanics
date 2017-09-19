@@ -13,9 +13,6 @@
 // Custom
 #include "IFeature.h"
 #include "Gui.h"
-#include "SoundInfo.h"
-
-class CApplication;
 
 class CEsp : public IFeature
 {
@@ -52,11 +49,6 @@ public:
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
-
-	// Only add CSoundInfo's created with 'new'
-	// cleanup ('delete') will be done by this class
-	void AddSound(CSoundInfo* pSound);
-	void UpdateSounds();
 private:
 	void DrawArmorBar(int posX, int posY, int height, int width, int armor);
 	void DrawBoundingBox(int posX, int posY, int height, int width, Color color);
@@ -64,8 +56,6 @@ private:
 	void DrawHealthNumber(int posX, int posY, int height, int width, int health);
 	void DrawHelmet(int posX, int posY, int height, int width);
 	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
-	// TODO
-	void DrawSounds(ISurface* pSurface);
 
 	bool m_bDrawBoundingBox;
 	bool m_bDrawHealthBar;
@@ -77,7 +67,7 @@ private:
 	bool m_bDrawOutline;
 	bool m_bDrawNames;
 
-	std::vector<CSoundInfo*> m_vecSounds;
+	int m_iFadeoutTime;
 
 	CGui* m_pGui;
 };

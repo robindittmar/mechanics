@@ -1,20 +1,13 @@
-#include "ESP.h"
+#include "Esp.h"
 #include "Application.h"
 
 CEsp::CEsp()
 {
+	m_iFadeoutTime = 1500;
 }
 
 CEsp::~CEsp()
 {
-	CSoundInfo* pCurrent;
-	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end(); it++)
-	{
-		pCurrent = *it;
-
-		if (pCurrent)
-			delete pCurrent;
-	}
 }
 
 void CEsp::Setup()
@@ -32,23 +25,23 @@ void CEsp::Update(void* pParameters)
 
 	ISurface* pSurface = (ISurface*)pParameters;
 
+	CPlayer* pCurPlayer;
 	IClientEntity* pLocalEntity;
 	IClientEntity* pCurEntity;
 	int iLocalTeam;
 
 	// Grab LocalPlayer vars
-	pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	//pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	pLocalEntity = m_pApp->GetPlayerList()->GetLocalPlayer()->GetHandle();
 	iLocalTeam = pLocalEntity->GetTeamNum();
 
-	for (int i = 1; i < m_pApp->EntityList()->GetMaxEntities(); i++)
+	ULONGLONG llTimestamp = GetTickCount64();
+
+	int iPlayerCount = m_pApp->GetPlayerList()->GetPlayerCount();
+	for (int i = 0; i < iPlayerCount; i++)
 	{
-		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
-
-		if (!pCurEntity)
-			continue;
-
-		if (pCurEntity->IsDormant())
-			continue;
+		pCurPlayer = m_pApp->GetPlayerList()->GetPlayerByIndex(i);
+		pCurEntity = pCurPlayer->GetHandle();
 
 		//bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
 		bool bIsLocalPlayer = pLocalEntity == pCurEntity;
@@ -73,6 +66,10 @@ void CEsp::Update(void* pParameters)
 		Vector headPos = origin + *pCurEntity->GetEyeOffset();
 
 		Color color;
+		/*if (!pCurPlayer->GetValid())
+		{
+			color = Color(((m_iFadeoutTime - (llTimestamp - pCurPlayer->GetTimestamp())) / (float)m_iFadeoutTime) * 255, 100, 100, 100);
+		}*/
 		if (iCurEntityTeam == TEAMNUM_CT)
 		{
 			color = Color(0, 0, 255);
@@ -93,17 +90,14 @@ void CEsp::Update(void* pParameters)
 			color = Color(255, 51, 255);
 		}
 
-		int iHealth = pCurEntity->GetHealth();
-		if (iHealth == 0)
-			continue;
-
 		DWORD dwFlags = pCurEntity->GetFlags();
-		if (dwFlags & IN_DUCK)
-		{
-			headPos.z -= 17; // TODO
-		}
+		//if (dwFlags & IN_DUCK)
+		//{
+		//	headPos.z -= 17; // TODO
+		//}
 
 		//todo: both interesting for knifebot
+		int iHealth = pCurEntity->GetHealth();
 		int armor = pCurEntity->GetArmor();
 		bool hasHelmet = pCurEntity->HasHelmet();
 
@@ -137,34 +131,6 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawHelmet(screenOrigin.x, screenOrigin.y, height, width);
 			}
-		}
-	}
-
-	// TODO
-	//this->DrawSounds(pSurface);
-}
-
-void CEsp::AddSound(CSoundInfo* pSound)
-{
-	m_vecSounds.push_back(pSound);
-}
-
-void CEsp::UpdateSounds()
-{
-	ULONGLONG timestamp = GetTickCount64();
-	CSoundInfo* pCurrent;
-	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end();)
-	{
-		pCurrent = *it;
-
-		if (pCurrent->IsOutdated(timestamp))
-		{
-			delete pCurrent;
-			it = m_vecSounds.erase(it);
-		}
-		else
-		{
-			it++;
 		}
 	}
 }
@@ -379,39 +345,4 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
-}
-
-void CEsp::DrawSounds(ISurface* pSurface)
-{
-	// TODO
-	static unsigned long font = NULL;
-	if (font == NULL)
-	{
-		font = m_pApp->Surface()->SCreateFont();
-		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
-	}
-	m_pApp->Surface()->DrawSetTextFont(font);
-
-	wchar_t penis[256];
-	Vector vScreen;
-	CSoundInfo* pCurrent;
-	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end(); it++)
-	{
-		pCurrent = *it;
-
-		if (m_pGui->WorldToScreen(pCurrent->GetOrigin(), vScreen))
-		{
-			// TODO
-			// Render sound
-			mbstowcs(penis, pCurrent->GetSample(), 256);
-			int iLen = wcslen(penis);
-
-			int w, h;
-			m_pApp->Surface()->GetTextSize(font, penis, w, h);
-
-			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-			m_pApp->Surface()->DrawSetTextPos(vScreen.x - w / 2, vScreen.y - h / 2);
-			m_pApp->Surface()->DrawPrintText(penis, iLen);
-		}
-	}
 }

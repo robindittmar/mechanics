@@ -1,11 +1,12 @@
 --------------------------------------
 Priority High
 --------------------------------------
+=======> PLAYERLIST!!!!
 ==> AUTOWALL!
 => GUI/Menu
 => ConVar->FindVar(...)
 => Netvars [x]
- => Proxy Hooks (Netvars)
+ => Proxy Hooks (Netvars) [x]
 
 --------------------------------------
 Priority Medium
@@ -26,3 +27,9 @@ Priority Low
 
 
 // Uhrzeit als clantag?
+
+// 2017-09-19
+-> Sound ESP [ ]
+-> Fadeouts [ ]
+-> Config [ ]
+-> Menu [ ]

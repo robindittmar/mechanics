@@ -124,12 +124,20 @@ void CSelectbox::AddOption(int id, const char* text)
 // Selection represents the index (0->first, 1->second, 2->third, etc)
 void CSelectbox::SetSelection(int iSelection)
 {
-	if (m_iSelection >= 0 && m_iSelection < m_iCountOptions)
+	if (iSelection >= 0 && iSelection < m_iCountOptions)
 	{
-		m_iSelection = m_vOptions[iSelection]->GetId();
+		m_iSelection = iSelection;
 		m_pSelectionLabel->SetContentText(m_vOptions[m_iSelection]->GetContentText());
 		
 		if (m_pEventHandler)
 			m_pEventHandler(m_vOptions[m_iSelection]->GetId());
+	}
+}
+
+void CSelectbox::SetSelectionByValue(int iValue)
+{
+	if (iValue >= 0 && iValue < m_iCountOptions)
+	{
+		this->SetSelection(m_vOptions[iValue]->GetId());
 	}
 }

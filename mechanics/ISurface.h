@@ -177,7 +177,7 @@ public:
 	bool SetFontGlyphSet(unsigned int font, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int nRangeMin = 0, int nRangeMax = 0);
 	void DrawSetTextFont(unsigned int font);
 	void DrawSetTextColor(Color color);
-	void DrawSetTextColor(int r, int g, int b, int a);
+	void DrawSetTextColor(int a, int r, int g, int b);
 	void DrawSetTextPos(int x, int y);
 	void DrawPrintText(const wchar_t *text, int textLen, FontDrawType_t drawType = FONT_DRAW_DEFAULT);
 	void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall);

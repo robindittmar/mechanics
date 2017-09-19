@@ -10,13 +10,13 @@
 #include "Label.h"
 
 #define CHECKBOX_BOXPADDING		5
-#define CHECKBOX_BOXSIZE		30
-#define CHECKBOX_FILLERPADDING	3
+#define CHECKBOX_BOXSIZE		10
+#define CHECKBOX_FILLERPADDING	2
 
 const Color g_clrCheckboxBorder(255, 0, 0, 0);
 const Color g_clrCheckboxBorderHover(255, 25, 25, 25);
-const Color g_clrCheckboxFiller(255, 25, 25, 25);
-const Color g_clrCheckboxFillerHover(255, 25, 25, 100);
+const Color g_clrCheckboxFiller(255, 255, 128, 0);
+const Color g_clrCheckboxFillerHover(255, 255, 100, 0);
 
 const Color g_clrCheckboxText(255, 255, 255, 255);
 const Color g_clrCheckboxTextHover(255, 200, 200, 200);

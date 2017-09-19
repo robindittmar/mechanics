@@ -9,9 +9,9 @@
 #include "IControl.h"
 #include "Label.h"
 
-const Color g_clrButton(255, 0, 0, 0);
-const Color g_clrButtonOver(255, 50, 50, 50);
-const Color g_clrButtonDown(255, 100, 100, 100);
+const Color g_clrButton(255, 80, 80, 80);
+const Color g_clrButtonOver(255, 70, 70, 70);
+const Color g_clrButtonDown(255, 255, 128, 0);
 
 class CButton : public IControl
 {

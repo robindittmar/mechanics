@@ -129,8 +129,9 @@ void CTabContainer::Draw(ISurface* pSurface)
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	m_iWidth = m_pParent->Width();
-	m_iHeight = m_pParent->Height();
+	IControl* pParentWindow = this->GetParentWindow();
+	m_iWidth = pParentWindow->Width();
+	m_iHeight = pParentWindow->Height();
 
 	pSurface->DrawSetColor(g_clrTab);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + TABCONTAINER_TABHEIGHT);
@@ -166,6 +167,11 @@ void CTabContainer::Draw(ISurface* pSurface)
 		pLabel->SetBoundaries(iCurX, iCurY, iCurWidth, iCurHeight);
 		pLabel->Draw(pSurface);
 	}
+
+	pSurface->DrawSetColor(g_clrSplitline);
+	pSurface->DrawLine(x, y - 1, x, y + TABCONTAINER_TABHEIGHT);
+	pSurface->DrawLine(x, y + TABCONTAINER_TABHEIGHT - 1, x + m_iWidth - 1, y + TABCONTAINER_TABHEIGHT - 1);
+	pSurface->DrawLine(x + m_iWidth - 1, y - 1, x + m_iWidth - 1, y + TABCONTAINER_TABHEIGHT);
 
 	IControl::Draw(pSurface);
 }

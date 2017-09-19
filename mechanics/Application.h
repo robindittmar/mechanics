@@ -9,6 +9,7 @@
 #include "Pattern.h"
 #include "XorString.h"
 #include "VTableHook.h"
+#include "PlayerList.h"
 #include "Gui.h"
 #include "InputHandler.h"
 #include "Controls.h"
@@ -24,7 +25,8 @@
 #include "Triggerbot.h"
 #include "Antiaim.h"
 #include "Bhop.h"
-#include "ESP.h"
+#include "Esp.h"
+#include "SoundEsp.h"
 #include "Chams.h"
 #include "Misc.h"
 #include "Skinchanger.h"
@@ -88,7 +90,6 @@ typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
-void NormalizeAngles(QAngle* pAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
 
@@ -170,18 +171,20 @@ public:
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 
 	// Target selector (Feature?)
+	CPlayerList* GetPlayerList() { return &m_playerList; }
 	CTargetSelector* TargetSelector() { return &m_targetSelector; }
 
 	// Features
-	CRagebot* Ragebot() { return (CRagebot*)&m_ragebot; }
-	CTriggerbot* Triggerbot() { return (CTriggerbot*)&m_triggerbot; }
-	CAntiAim* AntiAim() { return (CAntiAim*)&m_antiAim; }
-	CBhop* Bhop() { return (CBhop*)&m_bhop; }
-	CEsp* Esp() { return (CEsp*)&m_esp; }
-	CChams* Chams() { return (CChams*)&m_chams; }
-	CMisc* Misc() { return (CMisc*)&m_misc; }
-	CSkinChanger* SkinChanger() { return (CSkinChanger*)&m_skinchanger; }
-	CVisuals* Visuals() { return (CVisuals*)&m_visuals; }
+	CRagebot* Ragebot() { return &m_ragebot; }
+	CTriggerbot* Triggerbot() { return &m_triggerbot; }
+	CAntiAim* AntiAim() { return &m_antiAim; }
+	CBhop* Bhop() { return &m_bhop; }
+	CEsp* Esp() { return &m_esp; }
+	CSoundEsp* SoundEsp() { return &m_soundEsp; }
+	CChams* Chams() { return &m_chams; }
+	CMisc* Misc() { return &m_misc; }
+	CSkinChanger* SkinChanger() { return &m_skinchanger; }
+	CVisuals* Visuals() { return &m_visuals; }
 
 	// Resource Manager
 	CResourceManager* ResourceManager() { return m_pResourceManager; }
@@ -298,6 +301,7 @@ private:
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;
 
+	CPlayerList m_playerList;
 	CTargetSelector m_targetSelector;
 
 	// Features
@@ -306,6 +310,7 @@ private:
 	CAntiAim m_antiAim;
 	CBhop m_bhop;
 	CEsp m_esp;
+	CSoundEsp m_soundEsp;
 	CChams m_chams;
 	CMisc m_misc;
 	CSkinChanger m_skinchanger;
