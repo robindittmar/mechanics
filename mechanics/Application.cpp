@@ -99,7 +99,7 @@ void CApplication::LoadSkinChangerConfig()
 			WEAPON_KNIFE_BUTTERFLY,
 			38,
 			0,
-			1337,
+			420,
 			3
 		)
 	);
@@ -119,7 +119,7 @@ void CApplication::LoadSkinChangerConfig()
 			WEAPON_KNIFE_KARAMBIT,
 			38,
 			0,
-			1337,
+			420,
 			3
 		)
 	);
@@ -265,6 +265,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				if (!pEntity)
 					continue;
 
+				// TODO: crash access violation beim schreiben
+				//		 hint: vllt Entity checks?
 				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
 			}
 
