@@ -14,10 +14,8 @@ CResourceManager::CResourceManager() :
 
 CResourceManager::~CResourceManager()
 {
-	// TEMP
 	if (m_pMatMirror)
 		m_pMatMirror->DecrementReferenceCount();
-	// TEMP
 
 	if (m_pMirror)
 		m_pMirror->DecrementReferenceCount();
@@ -136,9 +134,9 @@ void CResourceManager::CreateFonts()
 	unsigned int fontHeader = pSurface->SCreateFont();
 	unsigned int fontSubheader = pSurface->SCreateFont();
 
-	pSurface->SetFontGlyphSet(fontNormal, xorArial.ToCharArray(), 16, 255, 0, 0, FONTFLAG_OUTLINE);
-	pSurface->SetFontGlyphSet(fontHeader, xorArial.ToCharArray(), 20, 255, 0, 0, FONTFLAG_OUTLINE);
-	pSurface->SetFontGlyphSet(fontSubheader, xorArial.ToCharArray(), 18, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontNormal, xorArial.ToCharArray(), 8, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontHeader, xorArial.ToCharArray(), 16, 255, 0, 0, FONTFLAG_OUTLINE);
+	pSurface->SetFontGlyphSet(fontSubheader, xorArial.ToCharArray(), 12, 255, 0, 0, FONTFLAG_OUTLINE);
 
 	m_mapFonts[RM_FONT_NORMAL] = fontNormal;
 	m_mapFonts[RM_FONT_HEADER] = fontHeader;

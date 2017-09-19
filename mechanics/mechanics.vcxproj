@@ -155,6 +155,8 @@
     <ClCompile Include="Legitbot.cpp" />
     <ClCompile Include="ConVar.cpp" />
     <ClCompile Include="Mirror.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerList.cpp" />
     <ClCompile Include="Ragebot.cpp" />
     <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -224,6 +226,8 @@
     <ClInclude Include="Mirror.h" />
     <ClInclude Include="OverrideView.h" />
     <ClInclude Include="PaintTraverse.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerList.h" />
     <ClInclude Include="Ragebot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />
