@@ -32,15 +32,15 @@ void CEsp::Update(void* pParameters)
 
 	// Grab LocalPlayer vars
 	//pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	pLocalEntity = m_pApp->GetPlayerList()->GetLocalPlayer()->GetHandle();
+	pLocalEntity = m_pApp->PlayerList()->GetLocalPlayer()->GetHandle();
 	iLocalTeam = pLocalEntity->GetTeamNum();
 
 	ULONGLONG llTimestamp = GetTickCount64();
 
-	int iPlayerCount = m_pApp->GetPlayerList()->GetPlayerCount();
+	int iPlayerCount = m_pApp->PlayerList()->GetPlayerCount();
 	for (int i = 0; i < iPlayerCount; i++)
 	{
-		pCurPlayer = m_pApp->GetPlayerList()->GetPlayerByIndex(i);
+		pCurPlayer = m_pApp->PlayerList()->GetPlayerByIndex(i);
 		pCurEntity = pCurPlayer->GetHandle();
 
 		//bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;

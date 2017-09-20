@@ -13,6 +13,7 @@
 #include "Gui.h"
 #include "InputHandler.h"
 #include "Controls.h"
+#include "Menu.h"
 #include "GameEventListener.h"
 #include "ResourceManager.h"
 #include "NetVarManager.h"
@@ -171,7 +172,7 @@ public:
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 
 	// Target selector (Feature?)
-	CPlayerList* GetPlayerList() { return &m_playerList; }
+	CPlayerList* PlayerList() { return &m_playerList; }
 	CTargetSelector* TargetSelector() { return &m_targetSelector; }
 
 	// Features
@@ -185,12 +186,14 @@ public:
 	CMisc* Misc() { return &m_misc; }
 	CSkinChanger* SkinChanger() { return &m_skinchanger; }
 	CVisuals* Visuals() { return &m_visuals; }
+	CMirror* Mirror() { return &m_mirror; }
 
 	// Resource Manager
 	CResourceManager* ResourceManager() { return m_pResourceManager; }
 
 	// Gui
 	CGui* Gui() { return m_pGui; }
+	CMenu* Menu() { return m_pMenu; }
 
 	// Client ViewAngles
 	QAngle& GetClientViewAngles() { return m_qClientViewAngles; }
@@ -325,12 +328,7 @@ private:
 
 	// Hack GUI
 	CGui* m_pGui;
-	CInputEvent m_inputEvent;
-	CInputHandler m_inputHandler;
-	CWindow* m_pWindow;
-	CWindow* m_pWindowMirror;
-
-	CCheckbox* m_pGuiThirdpersonCheckbox;
+	CMenu* m_pMenu;
 
 	// Singleton
 	CApplication();

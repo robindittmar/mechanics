@@ -31,11 +31,6 @@ void CGui::Setup()
 	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
 }
 
-void CGui::GetWorldToScreenMatrix()
-{
-	
-}
-
 void CGui::SetEnableMouse(bool bEnableMouse)
 {
 	m_pMouseEnable->SetValue((int)bEnableMouse);

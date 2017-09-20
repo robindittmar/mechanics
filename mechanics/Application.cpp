@@ -31,6 +31,9 @@ void CApplication::Run(HMODULE hModule)
 
 void CApplication::Detach()
 {
+	// Enable mouse again
+	this->m_pGui->SetEnableMouse(true);
+
 	// Unregister listener
 	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
 
@@ -292,41 +295,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			pApp->Visuals()->NoFlash();
 		}
 
-		// Input handling
-		pApp->m_inputEvent.Clear();
-		pApp->m_inputHandler.CreateInput(&pApp->m_inputEvent, pApp->m_pWindow->GetVisible());
-		if (pApp->m_inputEvent.eventType == EVENT_TYPE_KEYBOARD)
-		{
-			if (pApp->m_inputEvent.buttons & EVENT_BTN_TOGGLEMENU &&
-				pApp->m_inputEvent.buttonProperties & EVENT_BTN_TOGGLEMENU)
-			{
-				bool bVis = !pApp->m_pWindow->GetVisible();
-				pApp->m_pWindow->SetVisible(bVis);
-				
-				// Mouse stuff
-				pApp->m_pGui->SetEnableMouse(!bVis);
-				pApp->m_pGui->SetDrawMouse(bVis);
-			}
-			else if (pApp->m_inputEvent.buttons & EVENT_BTN_DETACH &&
-				pApp->m_inputEvent.buttonProperties & EVENT_BTN_DETACH)
-			{
-				pApp->Detach();
-			}
-			else if (pApp->m_inputEvent.buttons & EVENT_BTN_THIRDPERSON &&
-				!(pApp->m_inputEvent.buttonProperties & EVENT_BTN_THIRDPERSON))
-			{
-				bool bNewValue = !pApp->m_visuals.GetThirdperson();
-
-				pApp->m_pGuiThirdpersonCheckbox->SetChecked(bNewValue);
-				pApp->m_visuals.SetThirdperson(bNewValue);
-			}
-		}
-
-		if (pApp->m_pWindow->GetVisible())
-		{
-			pApp->m_pWindow->ProcessEvent(&pApp->m_inputEvent);
-			pApp->m_pWindowMirror->ProcessEvent(&pApp->m_inputEvent);
-		}
+		// Menu input handling
+		pApp->m_pMenu->HandleInput();
 	}
 
 	m_pFrameStageNotify(ecx, curStage);
@@ -363,10 +333,10 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 
-	/*IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 	IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
 
-	if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*//*)
+	if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
 	{
 		matrix3x4_t pMyMat[MAXSTUDIOBONES];
 		matrix3x4_t pBoneMat[MAXSTUDIOBONES];
@@ -386,15 +356,15 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 			
 			AngleMatrix(ang, pMyMat[i]);
 			//VectorRotate(pInfo.origin, pMyMat[i], &newOrigin);
-			//VectorRotate(origin, pMyMat[i], &newOrigin);
+			VectorRotate(origin, pMyMat[i], &newOrigin);
 
-			VectorTransform(
+			//VectorTransform(
 
 			MatrixSetColumn(newOrigin, 3, pBoneMat[i]);
 		}
 
 		m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMat);
-	}*/
+	}
 
 	// Call original func
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
@@ -438,7 +408,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->SoundEsp()->Update();
 
 			// Draw rear mirror
-			pApp->m_mirror.Render(pSurface, pApp->m_pWindowMirror);
+			pApp->Mirror()->Render(pSurface, pApp->Menu()->GetMirrorWindow());
 
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
@@ -447,8 +417,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Visuals()->DrawCrosshair();
 
 			// Draw Menu least ;)
-			pApp->m_pWindow->Draw(pSurface);
-			pApp->m_pGui->DrawMouse(pSurface);
+			pApp->Menu()->Draw(pSurface);
 
 			// LBY Indicator
 			if (pApp->Visuals()->GetDrawLbyIndicator())
@@ -675,14 +644,6 @@ CButton* btn = (CButton*)p;
 g_pConsole->Write("Button down (%s)\n", btn->ContentText());
 }*/
 
-void DetachBtnClick(IControl* p)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	pApp->Gui()->SetEnableMouse(true);
-	pApp->Detach();
-}
-
 void CApplication::Setup()
 {
 	// Setup console
@@ -778,10 +739,6 @@ void CApplication::Setup()
 
 	// PlayerList Initialization
 	m_playerList.Init(this);
-
-	// CGui initialization
-	m_pGui = CGui::Instance();
-	m_pGui->Setup();
 
 	// NetVar Dumps
 	/*FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
@@ -1008,239 +965,15 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
 
-	// Initialize InputHandler
-	m_inputHandler.RegisterKey(VK_DELETE, EVENT_BTN_DETACH);
-	m_inputHandler.RegisterKey(VK_INSERT, EVENT_BTN_TOGGLEMENU);
-	m_inputHandler.RegisterKey(VK_NUMPAD0, EVENT_BTN_THIRDPERSON);
+	// CGui initialization
+	m_pGui = CGui::Instance();
+	m_pGui->Setup();
 
-	// Create GUI (Window + all controls)
-	CButton* pBtn = new CButton(16, 64, 120, 45, "Detach");
-	pBtn->SetButtonClickEventHandler(DetachBtnClick);
-
-	CCheckbox* pAimbot = new CCheckbox(16, 16, 120, 32, "Aimbot", m_ragebot.GetEnabled());
-	pAimbot->SetEventHandler(std::bind(&CRagebot::SetEnabled, &m_ragebot, std::placeholders::_1));
-
-	CCheckbox* pSilentAim = new CCheckbox(16, 64, 120, 32, "Silent Aim", m_ragebot.GetSilentAim());
-	pSilentAim->SetEventHandler(std::bind(&CRagebot::SetSilentAim, &m_ragebot, std::placeholders::_1));
-
-	CCheckbox* pCheck = new CCheckbox(16, 112, 120, 32, "Autoshoot", m_ragebot.GetAutoshoot());
-	pCheck->SetEventHandler(std::bind(&CRagebot::SetAutoshoot, &m_ragebot, std::placeholders::_1));
-
-	CCheckbox* pAutoScope = new CCheckbox(16, 160, 120, 32, "Autoscope", m_ragebot.GetAutoscope());
-	pAutoScope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, &m_ragebot, std::placeholders::_1));
-
-	CSelectbox* pTargetCriteria = new CSelectbox(16, 208, 120, 32, "Target criteria");
-	pTargetCriteria->AddOption(TARGETCRITERIA_UNSPECIFIED, "First found");
-	pTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
-	pTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
-	pTargetCriteria->SetSelection(this->m_ragebot.GetTargetCriteria());
-	pTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, &m_ragebot, std::placeholders::_1));
-
-	CCheckbox* pMultiPoint = new CCheckbox(152, 16, 120, 32, "Multipoint", m_targetSelector.GetMultipoint());
-	pMultiPoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, &m_targetSelector, std::placeholders::_1));
-
-	CSelectbox* pVisibleMode = new CSelectbox(152, 64, 120, 32, "Visible mode");
-	pVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
-	pVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
-	pVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
-	pVisibleMode->SetSelection(this->m_targetSelector.GetVisibleMode());
-	pVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, &m_targetSelector, std::placeholders::_1));
-
-	CGroupbox* pGroupHitboxes = new CGroupbox(288, 16, 152, 288, "Hitboxes");
-	CCheckbox* pHitboxHead = new CCheckbox(16, 0, 120, 32, "Head", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_HEAD));
-	CCheckbox* pHitboxChest = new CCheckbox(16, 36, 120, 32, "Chest", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_CHEST));
-	CCheckbox* pHitboxPelvis = new CCheckbox(16, 72, 120, 32, "Pelvis", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_PELVIS));
-	CCheckbox* pHitboxRForearm = new CCheckbox(16, 108, 120, 32, "Right forearm", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
-	CCheckbox* pHitboxLForearm = new CCheckbox(16, 144, 120, 32, "Left forearm", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
-	CCheckbox* pHitboxRCalf = new CCheckbox(16, 180, 120, 32, "Right calf", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
-	CCheckbox* pHitboxLCalf = new CCheckbox(16, 216, 120, 32, "Left calf", m_targetSelector.GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
-	
-	pHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_HEAD, std::placeholders::_1));
-	pHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_CHEST, std::placeholders::_1));
-	pHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_PELVIS, std::placeholders::_1));
-	pHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
-	pHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
-	pHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
-	pHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, &m_targetSelector, TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
-
-	pGroupHitboxes->AddChild(pHitboxHead);
-	pGroupHitboxes->AddChild(pHitboxChest);
-	pGroupHitboxes->AddChild(pHitboxPelvis);
-	pGroupHitboxes->AddChild(pHitboxRForearm);
-	pGroupHitboxes->AddChild(pHitboxLForearm);
-	pGroupHitboxes->AddChild(pHitboxRCalf);
-	pGroupHitboxes->AddChild(pHitboxLCalf);
-
-	CCheckbox* pCheck2 = new CCheckbox(160, 112, 120, 32, "Thirdperson", m_visuals.GetThirdperson());
-	pCheck2->SetEventHandler(std::bind(&CVisuals::SetThirdperson, &m_visuals, std::placeholders::_1));
-	m_pGuiThirdpersonCheckbox = pCheck2;
-
-	CCheckbox* pNoName = new CCheckbox(16, 160, 120, 32, "NoName", m_misc.GetNoName());
-	pNoName->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, &m_misc, std::placeholders::_1));
-
-	// TODO: Groupbox -> "Antiaim" :D
-	CSelectbox* pSelectPitchAntiaim = new CSelectbox(16, 64, 100, 32, "Pitch");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_NONE, "None");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_DOWN, "Down");
-	pSelectPitchAntiaim->AddOption(PITCHANTIAIM_UP, "Up");
-	pSelectPitchAntiaim->SetSelectionByValue(this->m_antiAim.GetPitchSetting());
-	pSelectPitchAntiaim->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, &m_antiAim, std::placeholders::_1));
-
-	CSelectbox* pSelectYawAntiaim = new CSelectbox(16, 112, 100, 32, "Yaw");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_NONE, "None");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT");
-	pSelectYawAntiaim->AddOption(YAWANTIAIM_REALRIGHTFAKELEFT, "REAL RIGHT FAKE LEFT");
-	pSelectYawAntiaim->SetSelection(this->m_antiAim.GetYawSetting());
-	pSelectYawAntiaim->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, &m_antiAim, std::placeholders::_1));
-
-	CSelectbox* pSelectbox2 = new CSelectbox(304, 16, 128, 32);
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_NONE, "None");
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
-	pSelectbox2->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
-	pSelectbox2->SetSelection(m_visuals.GetHandsDrawStyle());
-	pSelectbox2->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, &m_visuals, std::placeholders::_1));
-
-	CGroupbox* pGroupbox = new CGroupbox(16, 16, 292, 312, "ESP");
-	CCheckbox* pDrawBoundingBox = new CCheckbox(4, 4, 128, 32, "Bounding Box", m_esp.GetDrawBoundingBox());
-	CCheckbox* pDrawHealthbar = new CCheckbox(4, 52, 128, 32, "Health bar", m_esp.GetDrawHealthBar());
-	CCheckbox* pDrawHealthnumber = new CCheckbox(4, 100, 128, 32, "Health number", m_esp.GetDrawHealthNumber());
-	CCheckbox* pDrawArmorbar = new CCheckbox(4, 160, 128, 32, "Armor bar", m_esp.GetDrawArmorBar());
-	CCheckbox* pDrawOwnTeam = new CCheckbox(4, 208, 128, 32, "Own team", m_esp.GetDrawOwnTeam());
-	CCheckbox* pDrawOwnModel = new CCheckbox(4, 256, 128, 32, "Own model (3rd person)", m_esp.GetDrawOwnModel());
-	CCheckbox* pDrawOnlySpotted = new CCheckbox(4, 304, 128, 32, "Only spotted", m_esp.GetDrawOnlySpotted());
-	CCheckbox* pDrawOutline = new CCheckbox(136, 16, 128, 32, "Outlines", m_esp.GetDrawOutline());
-	CCheckbox* pDrawNames = new CCheckbox(136, 64, 128, 32, "Names", m_esp.GetDrawNames());
-
-	pDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, &m_esp, std::placeholders::_1));
-	pDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, &m_esp, std::placeholders::_1));
-	pDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, &m_esp, std::placeholders::_1));
-	pDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, &m_esp, std::placeholders::_1));
-	pDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, &m_esp, std::placeholders::_1));
-	pDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, &m_esp, std::placeholders::_1));
-	pDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, &m_esp, std::placeholders::_1));
-	pDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, &m_esp, std::placeholders::_1));
-	pDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, &m_esp, std::placeholders::_1));
-
-	pGroupbox->AddChild(pDrawBoundingBox);
-	pGroupbox->AddChild(pDrawHealthbar);
-	pGroupbox->AddChild(pDrawHealthnumber);
-	pGroupbox->AddChild(pDrawArmorbar);
-	pGroupbox->AddChild(pDrawOwnTeam);
-	pGroupbox->AddChild(pDrawOwnModel);
-	pGroupbox->AddChild(pDrawOnlySpotted);
-	pGroupbox->AddChild(pDrawOutline);
-	pGroupbox->AddChild(pDrawNames);
-
-	CCheckbox* pChamsDrawOwnTeam = new CCheckbox(304, 112, 128, 32, "Chams Own Team", m_chams.GetRenderTeam());
-	CCheckbox* pChamsDrawOwnModel = new CCheckbox(304, 160, 128, 32, "Chams Own Model", m_chams.GetRenderLocalplayer());
-	CCheckbox* pChamsIgnoreZ = new CCheckbox(304, 208, 128, 32, "Chams Ignore Z", m_chams.GetIgnoreZIndex());
-	CCheckbox* pChamsFlatModels = new CCheckbox(304, 256, 128, 32, "Chams Flat Models", m_chams.GetFlatModels());
-
-	pChamsDrawOwnTeam->SetEventHandler(std::bind(&CChams::SetRenderTeam, &m_chams, std::placeholders::_1));
-	pChamsDrawOwnModel->SetEventHandler(std::bind(&CChams::SetRenderLocalplayer, &m_chams, std::placeholders::_1));
-	pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, &m_chams, std::placeholders::_1));
-	pChamsFlatModels->SetEventHandler(std::bind(&CChams::SetFlatModels, &m_chams, std::placeholders::_1));
-
-	CCheckbox* pMirror = new CCheckbox(304, 304, 128, 32, "Mirror", m_mirror.GetEnabled());
-	pMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, &m_mirror, std::placeholders::_1));
-
-	CSlider* pSlider = new CSlider(16, 125, 200, 20);
-	//pSlider->SetEventHandler(std::bind(&SliderUpdateValue, std::placeholders::_1));
-
-	CSlider* pSlider2 = new CSlider(232, 16, 20, 200, 0.0f, SLIDER_ORIENTATION_VERTICAL, true);
-	//pSlider2->SetEventHandler(std::bind(&SliderUpdateValue, std::placeholders::_1));
-
-	CSlider* pSliderFlashAmnt = new CSlider(304, 64, 128, 32, m_visuals.GetFlashPercentage());
-	pSliderFlashAmnt->SetEventHandler(std::bind(&CVisuals::SetFlashPercentage, &m_visuals, std::placeholders::_1));
-
-	CSlider* pSliderFov = new CSlider(563, 5, 32, 350, m_visuals.GetFovValue(), SLIDER_ORIENTATION_VERTICAL, true, 1.0f, 180.0f);
-	pSliderFov->SetEventHandler(std::bind(&CVisuals::SetFovValue, &m_visuals, std::placeholders::_1));
-
-	CLabel* pLabelWip = new CLabel(0, 0, 600, 400, "[WIP]", RM_FONT_HEADER, LABEL_ORIENTATION_CENTER, Color(255, 255, 0, 0));
-
-	CGroupbox* groupBox = new CGroupbox(16, 16, 400, 300, "This is a CGroupbox");
-	CButton* pGroupBtn = new CButton();
-	groupBox->AddChild(pGroupBtn);
-
-	CTabContainer* pVisualsContainer = new CTabContainer();
-	CTabPage* pPageEsp = new CTabPage("Esp");
-	CTabPage* pPageChams = new CTabPage("Chams");
-	CTabPage* pPageDummy = new CTabPage("Dummy");
-	pPageDummy->AddChild(new CLabel(0, 0, 100, 16, "Sieht sonst kacke aus ihr plebs"));
-
-	CTabContainer* pContainer = new CTabContainer();
-	CTabPage* pPage1 = new CTabPage("Rage");
-	CTabPage* pPage2 = new CTabPage("Legit");
-	CTabPage* pPage3 = new CTabPage("Visuals");
-	CTabPage* pPage4 = new CTabPage("Misc");
-	CTabPage* pPage5 = new CTabPage("Skin Changer");
-	CTabPage* pPage6 = new CTabPage("Config");
-
-	pPage1->AddChild(pAimbot);
-	pPage1->AddChild(pSilentAim);
-	pPage1->AddChild(pCheck);
-	pPage1->AddChild(pAutoScope);
-	pPage1->AddChild(pTargetCriteria);
-	pPage1->AddChild(pMultiPoint);
-	pPage1->AddChild(pVisibleMode);
-	pPage1->AddChild(pGroupHitboxes);
-
-	pPage2->AddChild(pLabelWip);
-
-	pPageEsp->AddChild(pGroupbox);
-	pPageEsp->AddChild(pCheck2);
-	pPageEsp->AddChild(pSelectbox2);
-	pPageEsp->AddChild(pSliderFlashAmnt);
-	pPageEsp->AddChild(pSliderFov);
-	pPageEsp->AddChild(pChamsDrawOwnTeam);
-	pPageEsp->AddChild(pChamsDrawOwnModel);
-	pPageEsp->AddChild(pChamsIgnoreZ);
-	pPageEsp->AddChild(pChamsFlatModels);
-	pPageEsp->AddChild(pMirror);
-
-	pVisualsContainer->AddChild(pPageEsp);
-	pVisualsContainer->AddChild(pPageChams);
-	pVisualsContainer->AddChild(pPageDummy);
-
-	pPage3->AddChild(pVisualsContainer);
-
-	pPage4->AddChild(pSelectPitchAntiaim);
-	pPage4->AddChild(pSelectYawAntiaim);
-	pPage4->AddChild(pNoName);
-
-	pPage5->AddChild(groupBox);
-
-	pPage6->AddChild(pBtn);
-	pPage6->AddChild(new CColorPicker());
-	pPage6->AddChild(pSlider);
-	pPage6->AddChild(pSlider2);
-
-	pContainer->AddChild(pPage1);
-	pContainer->AddChild(pPage2);
-	pContainer->AddChild(pPage3);
-	pContainer->AddChild(pPage4);
-	pContainer->AddChild(pPage5);
-	pContainer->AddChild(pPage6);
-	pContainer->SelectTab(0);
-
-	m_pWindow = new CWindow(30, 30, 1020, 550, ".mechanics");
-	m_pWindow->AddChild(pContainer);
-
-	m_pWindowMirror = new CWindow(100, 100, MIRROR_WIDTH, MIRROR_HEIGHT, "Mirror");
-	m_pWindowMirror->SetVisible(true);
-
-	// TODO: Injecten -> ins menü gehen -> game exiten => crash
-	//		 Weil wegen der Schleife.
-	//		 Vielleicht bool setzen (in this->Detach()), dann oben in
-	//		 this->Run() nur this->Hook() aufrufen wenn 
-	//		 die boolsche variable den gewünschten zustand hat :P
-
-	// Wait for the game to be ingame before hooking
-	/*while (!m_pEngineClient->IsInGame()) {
-		Sleep(100);
-	}*/
+	// Initialize menu
+	m_pMenu = CMenu::Instance();
+	m_pMenu->Init(this);
+	m_pMenu->CreateMenu();
+	m_pMenu->ApplySettings();
 }
 
 void CApplication::Hook()
@@ -1308,9 +1041,6 @@ CApplication::CApplication()
 {
 	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
 	//		 alle ptr != NULL löschen
-	m_pWindow = NULL;
-	m_pWindowMirror = NULL;
-
 	m_pNetVarMgr = NULL;
 
 	m_pClientModeHook = NULL;
@@ -1360,12 +1090,6 @@ CApplication::~CApplication()
 
 	if (m_pNetVarMgr)
 		delete m_pNetVarMgr;
-
-	if (m_pWindowMirror)
-		delete m_pWindowMirror;
-
-	if (m_pWindow)
-		delete m_pWindow;
 }
 
 void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)

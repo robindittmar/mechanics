@@ -98,7 +98,7 @@ void CResourceManager::CreateTextures()
 	int textureCursor = pSurface->CreateNewTextureID(true);
 	int textureColorFade = pSurface->CreateNewTextureID(true);
 
-	unsigned char pTexCursor[] = { 0, 255, 90, 0 };
+	unsigned char pTexCursor[] = { 255, 90, 0, 255 };
 
 	int curR, curG, curB;
 	unsigned char pTexColorFade[360 * 4];
