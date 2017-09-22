@@ -9,7 +9,7 @@ PlaySound_t CApplication::m_pPlaySound;
 GetViewModelFov_t CApplication::m_pGetViewModelFov;
 FireEventClientSide_t CApplication::m_pFireEventClientSide;
 RenderView_t CApplication::m_pRenderViewFn;
-RenderSmokePostViewmodel_t CApplication::m_pRenderSmokePostViewmodel;
+RenderSmokeOverlay_t CApplication::m_pRenderSmokeOverlay;
 EmitSound1_t CApplication::m_pEmitSound1;
 EmitSound2_t CApplication::m_pEmitSound2;
 
@@ -518,7 +518,7 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
 }
 
-void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
+void __fastcall CApplication::hk_RenderSmokeOverlay(void* ecx, void* edx, bool bUnknown)
 {
 	CApplication* pApp = CApplication::Instance();
 
@@ -527,7 +527,7 @@ void __fastcall CApplication::hk_RenderSmokePostViewmodel(void* ecx, void* edx)
 	if (pApp->Visuals()->GetNoSmoke())
 		return;
 
-	pApp->m_pRenderSmokePostViewmodel(ecx);
+	pApp->m_pRenderSmokeOverlay(ecx, bUnknown);
 }
 
 int __fastcall CApplication::hk_EmitSound1(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
@@ -1031,7 +1031,7 @@ void CApplication::Hook()
 
 	m_pViewRenderHook = new VTableHook((DWORD*)m_pViewRender);
 	m_pRenderViewFn = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
-	m_pRenderSmokePostViewmodel = (RenderSmokePostViewmodel_t)m_pViewRenderHook->Hook(41, (DWORD*)hk_RenderSmokePostViewmodel);
+	m_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(40, (DWORD*)hk_RenderSmokeOverlay);
 
 	m_pEngineSoundHook = new VTableHook((DWORD*)m_pEngineSound);
 	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);

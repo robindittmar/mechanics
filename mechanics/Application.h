@@ -83,7 +83,7 @@ typedef void(__thiscall *PlaySound_t)(void*, const char*);
 typedef float(__thiscall *GetViewModelFov_t)(void*);
 typedef bool(__thiscall *FireEventClientSide_t)(void*, IGameEvent*);
 typedef void(__thiscall *RenderView_t)(void*, const CViewSetup&, const CViewSetup&, int, int);
-typedef void(__thiscall *RenderSmokePostViewmodel_t)(void*);
+typedef void(__thiscall *RenderSmokeOverlay_t)(void*, bool);
 typedef int(__thiscall *EmitSound1_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, soundlevel_t, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 typedef int(__thiscall *EmitSound2_t)(void*, IRecipientFilter&, int, int, const char*, unsigned int, const char*, float, float, int, int, int, const Vector*, const Vector*, CUtlVector<Vector>*, bool, float, int);
 
@@ -137,7 +137,7 @@ public:
 	GetViewModelFov_t GetViewModelFov() { return m_pGetViewModelFov; }
 	FireEventClientSide_t FireEventClientSide() { return m_pFireEventClientSide; }
 	RenderView_t RenderViewFn() { return m_pRenderViewFn; }
-	RenderSmokePostViewmodel_t RenderSmokePostViewmodel() { return m_pRenderSmokePostViewmodel; }
+	RenderSmokeOverlay_t RenderSmokeOverlay() { return m_pRenderSmokeOverlay; }
 
 	RecvVarProxy_t SequenceProxy() { return m_pSequenceProxy; }
 
@@ -224,7 +224,7 @@ public:
 	static float __fastcall hk_GetViewModelFov(void* ecx, void* edx);
 	static bool __fastcall hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent);
 	static void __fastcall hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw);
-	static void __fastcall hk_RenderSmokePostViewmodel(void* ecx, void* edx);
+	static void __fastcall hk_RenderSmokeOverlay(void* ecx, void* edx, bool bUnknown);
 	static int __fastcall hk_EmitSound1(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
 		float flVolume, soundlevel_t iSoundlevel, int nSeed, int iFlags = 0, int iPitch = PITCH_NORM, const Vector *pOrigin = NULL, const Vector *pDirection = NULL, CUtlVector<Vector>* pUtlVecOrigins = NULL,
 		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
@@ -261,7 +261,7 @@ private:
 	static GetViewModelFov_t m_pGetViewModelFov;
 	static FireEventClientSide_t m_pFireEventClientSide;
 	static RenderView_t m_pRenderViewFn;
-	static RenderSmokePostViewmodel_t m_pRenderSmokePostViewmodel;
+	static RenderSmokeOverlay_t m_pRenderSmokeOverlay;
 	static EmitSound1_t m_pEmitSound1;
 	static EmitSound2_t m_pEmitSound2;
 
