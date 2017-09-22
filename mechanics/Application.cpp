@@ -873,6 +873,7 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoscope(true);
 	this->m_ragebot.SetSilentAim(true);
 	this->m_ragebot.SetAutoReload(true);
+	this->m_ragebot.SetAutoZeus(true);
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 
 	// Triggerbot
