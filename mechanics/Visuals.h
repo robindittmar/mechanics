@@ -24,6 +24,9 @@ public:
 	void SetCrosshair(bool bCrosshair) { m_bCrosshair = bCrosshair; }
 	bool GetCrosshair() { return m_bCrosshair; }
 
+	void SetCrosshairShowRecoil(bool bCrosshairShowRecoil) { m_bCrosshairShowRecoil = bCrosshairShowRecoil; }
+	bool GetCrosshairShowRecoil() { return m_bCrosshairShowRecoil; }
+
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
@@ -79,6 +82,7 @@ private:
 	int m_iSurfaceHeight;
 
 	bool m_bCrosshair;
+	bool m_bCrosshairShowRecoil;
 
 	bool m_bHitmarker;
 	float m_fDrawHitmarkerTime;

@@ -123,6 +123,16 @@ int IClientEntity::GetModelIndex()
 	return *(int*)((DWORD)this + Offsets::m_nModelIndex);
 }
 
+QAngle* IClientEntity::GetViewPunchAngle()
+{
+	return (QAngle*)((DWORD)this + Offsets::m_viewPunchAngle);
+}
+
+QAngle* IClientEntity::GetAimPunchAngle()
+{
+	return (QAngle*)((DWORD)this + Offsets::m_aimPunchAngle);
+}
+
 CBaseViewModel* IClientEntity::GetViewModel()
 {
 	void* pViewModel = *(void**)((DWORD)this + Offsets::m_hViewModel);

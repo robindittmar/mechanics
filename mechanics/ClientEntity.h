@@ -271,6 +271,8 @@ public:
 	float GetLowerBodyYaw();
 	int GetModelIndex();
 	CBaseViewModel* GetViewModel();
+	QAngle* GetViewPunchAngle();
+	QAngle* GetAimPunchAngle();
 };
 
 #define OFFSET_ITEMIDHIGH		0x1F0

@@ -914,7 +914,7 @@ void CApplication::Setup()
 
 	// Misc
 	this->m_misc.SetEnabled(true);
-	this->m_misc.SetNoRecoil(true);
+	this->m_misc.SetNoRecoil(false);
 	this->m_misc.SetFakelag(false);
 	this->m_misc.SetAutoStrafe(true);
 	this->m_misc.SetNoScope(true);
@@ -936,6 +936,7 @@ void CApplication::Setup()
 	this->m_visuals.SetEnabled(true);
 
 	this->m_visuals.SetCrosshair(true);
+	this->m_visuals.SetCrosshairShowRecoil(true);
 	this->m_visuals.SetHitmarker(true);
 	this->m_visuals.SetNoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
