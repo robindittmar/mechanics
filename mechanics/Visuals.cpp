@@ -46,10 +46,31 @@ void CVisuals::DrawCrosshair()
 	if (!m_bCrosshair)
 		return;
 
-	const int crosshair_size = 20;
+	const int crosshair_size = 12;
+	int iMidX, iMidY;
 
-	int iMidX = m_iSurfaceWidth / 2;
-	int iMidY = m_iSurfaceHeight / 2;
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (!pLocalEntity)
+		return;
+
+	QAngle qAimPunchAngles = *pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation();
+	if (m_bCrosshairShowRecoil && (qAimPunchAngles.x != 0.0f || qAimPunchAngles.y != 0.0f || qAimPunchAngles.z != 0.0f))
+	{
+		Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+		qAimPunchAngles += m_pApp->GetClientViewAngles();
+		
+		Vector vForward, vScreenPos;
+		AngleVectors(qAimPunchAngles, &vForward);
+
+		CGui::Instance()->WorldToScreen(vHeadPos + (vForward * 8192.0f), vScreenPos);
+		iMidX = vScreenPos.x;
+		iMidY = vScreenPos.y;
+	}
+	else
+	{
+		iMidX = m_iSurfaceWidth / 2;
+		iMidY = m_iSurfaceHeight / 2;
+	}
 
 	ISurface* pSurface = m_pApp->Surface();
 
@@ -66,11 +87,14 @@ void CVisuals::DrawCrosshair()
 
 void CVisuals::DrawHitmarker()
 {
+	if (!m_bIsEnabled)
+		return;
+
 	if (!m_bHitmarker)
 		return;
 
-	const int hitmarker_gap = 10;
-	const int hitmarker_size = 10;
+	const int hitmarker_gap = 4;
+	const int hitmarker_size = 6;
 
 	if (m_fDrawHitmarkerTime > 0.0f && m_bHitmarker)
 	{
