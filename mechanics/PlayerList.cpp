@@ -60,6 +60,9 @@ void CPlayerList::UpdateList()
 		if (!pCurEntity->IsAlive())
 			continue;
 
+		// TODO: Once we're dead (check above)
+		//		 our localplayer is not in the list anymore
+		//       and will 100% cause a crash
 		if (iLocalPlayerIdx == i)
 			m_iLocalPlayerIdx = iPlayerCount;
 
