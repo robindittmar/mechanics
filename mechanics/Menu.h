@@ -43,10 +43,13 @@ private:
 
 	// Rage tab
 	CTabPage* m_pRageTab;
+
+	CGroupbox* m_pAimbotGroup;
 	CCheckbox* m_pAimbotEnabled;
 	CCheckbox* m_pAimbotSilentAim;
 	CCheckbox* m_pAimbotAutoshoot;
 	CCheckbox* m_pAimbotAutoscope;
+	CCheckbox* m_pAimbotAutoReload;
 	
 	CCheckbox* m_pAimbotMultipoint;
 	CSelectbox* m_pAimbotTargetCriteria;
@@ -62,8 +65,14 @@ private:
 	CCheckbox* m_pHitboxLCalf;
 
 	CGroupbox* m_pAntiaimGroup;
+	CCheckbox* m_pAntiaimEnabled;
 	CSelectbox* m_pAntiaimPitch;
+	CSlider* m_pAntiaimPitchOffset;
 	CSelectbox* m_pAntiaimYaw;
+	CSlider* m_pAntiaimYawOffset;
+	CSelectbox* m_pAntiaimYawFake;
+	CSlider* m_pAntiaimYawFakeOffset;
+	CCheckbox* m_pAntiaimLbyIndicator;
 	//
 	// Legit tab
 	CTabPage* m_pLegitTab;
@@ -74,24 +83,48 @@ private:
 	CTabContainer* m_pVisualsTabContainer;
 
 	CTabPage* m_pPlayerVisualsTab;
+	
+	// Esp
 	CGroupbox* m_pEspGroup;
-	CCheckbox* m_pEspEnabled; // TODO
-	CCheckbox* m_pEspDrawBoundingBox;
+	CCheckbox* m_pEspEnabled;
+
+	CSelectbox* m_pEspDrawBoundingBox;
+	CCheckbox* m_pEspDrawFilledBox;
+	CCheckbox* m_pEspDrawOutline;
+
 	CCheckbox* m_pEspDrawHealthbar;
 	CCheckbox* m_pEspDrawHealthnumber;
 	CCheckbox* m_pEspDrawArmorbar;
+	CCheckbox* m_pEspDrawArmornumber;
+
 	CCheckbox* m_pEspDrawOwnTeam;
 	CCheckbox* m_pEspDrawOwnModel;
+
+	CCheckbox* m_pEspDrawOnlyVisible;
 	CCheckbox* m_pEspDrawOnlySpotted;
-	CCheckbox* m_pEspDrawOutline;
+
 	CCheckbox* m_pEspDrawNames;
 	
+	// Chams
 	CGroupbox* m_pChamsGroup;
-	CCheckbox* m_pChamsEnabled; // TODO
+	CCheckbox* m_pChamsEnabled;
+	CSelectbox* m_pChamsStyle;
 	CCheckbox* m_pChamsDrawOwnTeam;
 	CCheckbox* m_pChamsDrawOwnModel;
 	CCheckbox* m_pChamsIgnoreZ;
-	CCheckbox* m_pChamsFlatModels;
+
+	// Sound Esp
+	CGroupbox* m_pSoundEspGroup;
+	CCheckbox* m_pSoundEspEnabled;
+
+	CLabel* m_pSoundEspShowTimeLabel;
+	CSlider* m_pSoundEspShowTime;
+
+	CCheckbox* m_pSoundEspFadeoutEnabled;
+	CLabel* m_pSoundEspFadeoutTimeLabel;
+	CSlider* m_pSoundEspFadeoutTime;
+	CCheckbox* m_pSoundEspDrawOwnTeam;
+	CCheckbox* m_pSoundEspOnlyNotVisible;
 
 	CTabPage* m_pOtherVisualsTab;
 	CCheckbox* m_pMirror;

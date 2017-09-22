@@ -392,7 +392,7 @@ void CMisc::DisablePostProcessing()
 {
 	bool* bOverridePostProcessingDisable = (bool*)(m_dwOverridePostProcessingDisable);
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (m_bDisablePostProcessing && pLocalEntity->IsScoped())
+	if (m_bDisablePostProcessing)
 	{
 		*bOverridePostProcessingDisable = true;
 	}

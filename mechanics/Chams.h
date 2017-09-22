@@ -26,8 +26,8 @@ public:
 	void SetRenderLocalplayer(bool bRender) { m_bRenderLocalplayer = bRender; }
 	bool GetRenderLocalplayer() { return m_bRenderLocalplayer; }
 
-	void SetIgnoreZIndex(bool bIgnoreZ) { m_bIgnoreZIndex = bIgnoreZ; }
-	bool GetIgnoreZIndex() { return m_bIgnoreZIndex; }
+	void SetIgnoreZIndex(bool bIgnoreZ) { m_bIgnoreZIndex = !bIgnoreZ; } //todo GHETTOFIX
+	bool GetIgnoreZIndex() { return !m_bIgnoreZIndex; }
 
 	void SetFlatModels(bool bFlatModels);
 	bool GetFlatModels() { return m_bFlatModels; }

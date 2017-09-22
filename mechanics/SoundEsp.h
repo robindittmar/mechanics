@@ -33,8 +33,8 @@ public:
 	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; }
 	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; }
 
-	void SetDrawVisible(bool bDrawVisible) { m_bDrawVisible = bDrawVisible; }
-	bool GetDrawVisible() { return m_bDrawVisible; }
+	void SetDrawVisible(bool bDrawVisible) { m_bDrawVisible = !bDrawVisible; } // TODO: Ghettofix
+	bool GetDrawVisible() { return !m_bDrawVisible; }
 
 	// Only add CSoundInfo's created with 'new'
 	// cleanup ('delete') will be done by this class

@@ -21,8 +21,7 @@ void CGui::Setup()
 {
 	m_pApp = CApplication::Instance();
 
-	// Pointer to WorldToScreenMatrix
-	m_pWorldToScreenMatrix = &m_pApp->EngineClient()->WorldToScreenMatrix();
+	this->GetWorldToScreenMatrix();
 
 	// Screen size
 	m_pApp->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
@@ -30,6 +29,13 @@ void CGui::Setup()
 	// cl_mouseenable
 	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
 }
+
+void CGui::GetWorldToScreenMatrix()
+{
+	// Pointer to WorldToScreenMatrix
+	m_pWorldToScreenMatrix = &m_pApp->EngineClient()->WorldToScreenMatrix();
+}
+
 
 void CGui::SetEnableMouse(bool bEnableMouse)
 {

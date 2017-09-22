@@ -58,7 +58,7 @@ void CSlider::Draw(ISurface* pSurface)
 		pSurface->DrawFilledRect((x + knob) - SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) - (SLIDER_KNOBSIZE / 2), (x + knob) + SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) + (SLIDER_KNOBSIZE / 2));
 		//pSurface->DrawLine(x + knob, y, x + knob, y + m_iHeight);
 		// TODO: 18? 16? pls
-		m_pLabel->SetBoundaries(x + knob, y - 18, 1, 16);
+		m_pLabel->SetBoundaries(x + knob, y - 11, 1, 16);
 		break;
 	case SLIDER_ORIENTATION_VERTICAL:
 		//pSurface->DrawLine(x, y, x + m_iWidth, y);

@@ -72,7 +72,7 @@ public:
 	void DrawHitmarker();
 	void NoFlash();
 	void NoSmoke();
-	void HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
+	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	void NoVisualRecoil(CViewSetup*);
 	void Thirdperson();
 	void ThirdpersonAntiAim();

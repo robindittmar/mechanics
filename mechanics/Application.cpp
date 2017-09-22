@@ -59,7 +59,7 @@ void CApplication::Detach()
 	}
 
 	// SkinChanger Modeldelete
-	if(m_skinchanger.GetEnabled())
+	if (m_skinchanger.GetEnabled())
 		m_pClientState->ForceFullUpdate();
 
 	// ClanTag
@@ -240,7 +240,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
-				pApp->m_bLbyUpdate)
+				pApp->m_bLbyUpdate ||
+				!pApp->AntiAim()->GetEnabled())
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
@@ -284,7 +285,12 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame())
 		{
-			pApp->Misc()->DisablePostProcessing();
+			static bool test = false;
+			if (!test)
+			{
+				pApp->Misc()->DisablePostProcessing();
+				test = true;
+			}
 
 			if (pLocalEntity->IsAlive())
 			{
@@ -325,46 +331,47 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 {
 	CApplication* pApp = CApplication::Instance();
 
+	IMaterial* pHands = NULL;
 	if (pInfo.pModel)
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
 		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pHands = pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-	IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
+	//IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	//IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
 
-	if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
-	{
-		matrix3x4_t pMyMat[MAXSTUDIOBONES];
-		matrix3x4_t pBoneMat[MAXSTUDIOBONES];
-		Vector origin, newOrigin;
-		QAngle ang;// = *pLocalEntity->GetAngEyeAngles();
-		//ang.y = 90.0f;
-		ang.x = 0.0f;
-		ang.y = 180.0f;
-		ang.z = 0.0f;
-		for(int i = 0; i < MAXSTUDIOBONES; i++)
-		{
-			MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
+	//if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
+	//{
+	//	matrix3x4_t pMyMat[MAXSTUDIOBONES];
+	//	matrix3x4_t pBoneMat[MAXSTUDIOBONES];
+	//	Vector origin, newOrigin;
+	//	QAngle ang;// = *pLocalEntity->GetAngEyeAngles();
+	//	//ang.y = 90.0f;
+	//	ang.x = 0.0f;
+	//	ang.y = 180.0f;
+	//	ang.z = 0.0f;
+	//	for(int i = 0; i < MAXSTUDIOBONES; i++)
+	//	{
+	//		MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
 
-			origin.x = pCustomBoneToWorld[i][0][3];
-			origin.y = pCustomBoneToWorld[i][1][3];
-			origin.z = pCustomBoneToWorld[i][2][3];
-			
-			AngleMatrix(ang, pMyMat[i]);
-			//VectorRotate(pInfo.origin, pMyMat[i], &newOrigin);
-			VectorRotate(origin, pMyMat[i], &newOrigin);
+	//		origin.x = pCustomBoneToWorld[i][0][3];
+	//		origin.y = pCustomBoneToWorld[i][1][3];
+	//		origin.z = pCustomBoneToWorld[i][2][3];
+	//		
+	//		AngleMatrix(ang, pMyMat[i]);
+	//		//VectorRotate(pInfo.origin, pMyMat[i], &newOrigin);
+	//		VectorRotate(origin, pMyMat[i], &newOrigin);
 
-			//VectorTransform(
+	//		//VectorTransform(
 
-			MatrixSetColumn(newOrigin, 3, pBoneMat[i]);
-		}
+	//		MatrixSetColumn(newOrigin, 3, pBoneMat[i]);
+	//	}
 
-		m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMat);
-	}
+	//	m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMat);
+	//}
 
 	// Call original func
 	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
@@ -396,6 +403,8 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
 			ISurface* pSurface = pApp->Surface();
+
+			pApp->Gui()->GetWorldToScreenMatrix();
 
 			// Draw NoScope & SpecList
 			pApp->Misc()->DrawNoScope();
@@ -490,7 +499,6 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 
 	// TODO: Warum eig relativer Wert? Sollte man nicht n absolutes FOV angeben können? :)
 	//			CVar 'viewmodel_fov' steht default auf 60 (Wahrscheinlich default FOV)
-	// viewmodel_fov ist nicht das fov was wir hier setzen ^^ hier ist es das weaponmodel_fov komisch benannt von ventil ^^
 	return m_pGetViewModelFov(ecx) + 20.0f;
 }
 
@@ -759,7 +767,7 @@ void CApplication::Setup()
 		fclose(pFile);
 		g_pConsole->Write("Done!\n");
 	}*/
-	
+
 	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
 	CXorString xorBasePlayer("S_Ú€vxà’{jü§e"); // DT_BasePlayer
 	CXorString xorCSPlayer("S_ÚD[é£nn÷"); // DT_CSPlayer
@@ -1011,13 +1019,13 @@ void CApplication::Hook()
 
 	m_pClientHook = new VTableHook((DWORD*)this->m_pClient);
 	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
-	
+
 	m_pPanelHook = new VTableHook((DWORD*)this->m_pPanel);
 	m_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
 	m_pSurfaceHook = new VTableHook((DWORD*)this->m_pSurface);
 	m_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
-	
+
 	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager);
 	m_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
 

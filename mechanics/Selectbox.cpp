@@ -9,7 +9,7 @@ CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int select
 	m_bPopupInitialized = false;
 	m_pPopup = new CSelectboxPopup(0, h - 1);
 
-	m_pLabel = new CLabel(0, -20, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pLabel = new CLabel(0, -18, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 	m_pSelectionLabel = new CLabel(SELECTBOX_PADDING, 0, w, h);
 
 	this->AddChild(m_pLabel);

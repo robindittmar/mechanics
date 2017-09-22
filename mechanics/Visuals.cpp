@@ -54,7 +54,8 @@ void CVisuals::DrawCrosshair()
 		return;
 
 	QAngle qAimPunchAngles = *pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation();
-	if (m_bCrosshairShowRecoil && (qAimPunchAngles.x != 0.0f || qAimPunchAngles.y != 0.0f || qAimPunchAngles.z != 0.0f))
+	if (m_bCrosshairShowRecoil && (qAimPunchAngles.x != 0.0f || qAimPunchAngles.y != 0.0f || qAimPunchAngles.z != 0.0f) &&
+		!m_pApp->Misc()->GetNoRecoil() && !m_pApp->Ragebot()->DidNoRecoil())
 	{
 		Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 		qAimPunchAngles += m_pApp->GetClientViewAngles();
@@ -145,20 +146,22 @@ void CVisuals::NoSmoke()
 	}
 }
 
-void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
 {
 	if (!m_bIsEnabled)
-		return;
+		return NULL;
 
 	if (m_iHandsDrawStyle == HANDSDRAWSTYLE_NONE)
-		return;
+		return NULL;
 
 	static CXorString pArms("vyè±");
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
 
+	IMaterial* pMat = NULL;
+
 	if (strstr(pszModelName, pArms.ToCharArray()) != NULL)
 	{
-		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
+		pMat = this->m_pApp->MaterialSystem()->FindMaterial(pszModelName, pModelTextures.ToCharArray());
 
 		switch (m_iHandsDrawStyle)
 		{
@@ -177,6 +180,8 @@ void CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderCon
 
 		this->m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
 	}
+
+	return pMat;
 }
 
 void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
