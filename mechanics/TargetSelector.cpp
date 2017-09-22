@@ -239,7 +239,9 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			m_pTargets[TARGETCRITERIA_UNSPECIFIED].SetTarget(
 				vEnemyPos,
 				qAimAngles,
-				pCurEntity
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist
 			);
 		}
 
@@ -250,7 +252,9 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			m_pTargets[TARGETCRITERIA_ORIGIN].SetTarget(
 				vEnemyPos,
 				qAimAngles,
-				pCurEntity
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist
 			);
 		}
 
@@ -261,7 +265,9 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			m_pTargets[TARGETCRITERIA_VIEWANGLES].SetTarget(
 				vEnemyPos,
 				qAimAngles,
-				pCurEntity
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist
 			);
 		}
 	}

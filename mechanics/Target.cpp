@@ -9,12 +9,14 @@ CTarget::~CTarget()
 {
 }
 
-void CTarget::SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity)
+void CTarget::SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity, float fViewAngleDist, float fOriginDist)
 {
 	m_vAimPoint = vAimPoint;
 	m_qAimAngles = qAimAngles;
 	m_pEntity = pEntity;
 	m_bIsValid = true;
+	m_fViewAngleDist = fViewAngleDist;
+	m_fOriginDist = fOriginDist;
 }
 
 void CTarget::Invalidate()
@@ -23,4 +25,6 @@ void CTarget::Invalidate()
 	m_vAimPoint = Vector(0, 0, 0);
 	m_qAimAngles = QAngle(0, 0, 0);
 	m_pEntity = NULL;
+	m_fViewAngleDist = INVALID_DISTANCE;
+	m_fOriginDist = INVALID_DISTANCE;
 }

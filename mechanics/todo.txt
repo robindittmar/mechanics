@@ -4,7 +4,7 @@ Priority High
 =======> PLAYERLIST!!!!
 ==> AUTOWALL!
 => GUI/Menu
-=> ConVar->FindVar(...)
+=> ConVar->FindVar(...) [x]
 => Netvars [x]
  => Proxy Hooks (Netvars) [x]
 
@@ -23,7 +23,7 @@ Priority Low
 => Antiaim Wall detection
 => Multipoint visibility check [(kind of) x]
 => AntiAim target von aimbot wenn möglich, sonst closest to origin
-=> Sound Esp
+=> Sound Esp [x]
 
 
 // Uhrzeit als clantag?

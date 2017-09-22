@@ -75,9 +75,9 @@ void CRagebot::Update(void* pParameters)
 	// Clip empty?
 	if (pMyActiveWeapon->GetClip1() == 0)
 	{
-		if(m_bAutoReload)
+		if (m_bAutoReload)
 			pUserCmd->buttons |= IN_RELOAD;
-		
+
 		return;
 	}
 
@@ -102,6 +102,31 @@ void CRagebot::Update(void* pParameters)
 	// Copy target angles
 	m_qAimAngles = *m_pTarget->GetAimAngles();
 
+	// Checks if weapon could hit
+	bool bAbleToHit = !(pMyActiveWeapon->IsTaser() && m_bAutoZeus);
+	if (!bAbleToHit)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			CTarget* pTarget = (i == 0 ? m_pTarget : m_pTargetSelector->GetTarget(TARGETCRITERIA_ORIGIN));
+
+			float fOriginDist = pTarget->GetOriginDist();
+			int iTargetHealth = pTarget->GetEntity()->GetHealth();
+
+			// Check if enough damage is made to kill
+			if (fOriginDist <= 185.0f)
+				bAbleToHit = true;
+			else if (fOriginDist < 225.0f && iTargetHealth < 72)
+				bAbleToHit = true;
+			else if (fOriginDist < 230.0f && iTargetHealth < 60)
+				bAbleToHit = true;
+
+			m_qAimAngles = *pTarget->GetAimAngles();
+			if (bAbleToHit || m_iTargetCriteria == TARGETCRITERIA_ORIGIN)
+				break;
+		}
+	}
+
 	// Set ClientViewAngles if we don't have silentaim activated
 	// (we do so before applying NoRecoil :D)
 	if (!this->m_bSilentAim)
@@ -112,14 +137,14 @@ void CRagebot::Update(void* pParameters)
 	// Do NoRecoil
 	this->ApplyNoRecoil(pLocalEntity);
 	// Apply viewangles & shoot if necessary
-	this->ApplyViewanglesAndShoot(pUserCmd, pLocalEntity);
+	this->ApplyViewanglesAndShoot(pUserCmd, pLocalEntity, bAbleToHit);
 }
 
 void inline CRagebot::ResetTickVariables()
 {
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
-	
+
 	m_fDamage = 0.0f;
 }
 
@@ -140,13 +165,13 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 	}
 }
 
-void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity)
+void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity, bool bAbleToHit)
 {
 	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
 	float fServertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
 
-	if (this->m_bAutoshoot && pActiveWeapon->IsSniper() && !pActiveWeapon->IsTaser())
+	if (this->m_bAutoshoot && pActiveWeapon->IsSniper())
 	{
 		if (this->m_bAutoscope)
 		{
@@ -164,11 +189,11 @@ void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocal
 			this->Shoot(pUserCmd, fNextattack, fServertime);
 		}
 	}
-	else if (this->m_bAutoshoot && !pActiveWeapon->IsTaser())
+	else if (this->m_bAutoshoot && bAbleToHit)
 	{
 		this->Shoot(pUserCmd, fNextattack, fServertime);
 	}
-	else if(!this->m_bAutoshoot)
+	else if (!this->m_bAutoshoot && bAbleToHit)
 	{
 		this->Aim(pUserCmd);
 	}

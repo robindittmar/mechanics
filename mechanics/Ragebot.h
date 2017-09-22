@@ -86,6 +86,9 @@ public:
 	void SetAutoReload(bool bAutoReload) { m_bAutoReload = bAutoReload; }
 	bool GetAutoReload() { return m_bAutoReload; }
 
+	void SetAutoZeus(bool bAutoZeus) { m_bAutoZeus = bAutoZeus; }
+	bool GetAutoZeus() { return m_bAutoZeus; }
+
 	void SetTargetCriteria(int iTargetCriteria) { m_iTargetCriteria = iTargetCriteria; }
 	int GetTargetCriteria() { return m_iTargetCriteria; }
 
@@ -98,7 +101,7 @@ private:
 	void inline ResetTickVariables();
 	// fInputSampleTime for predictions
 	void ApplyNoRecoil(IClientEntity* pLocalEntity);
-	void ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity);
+	void ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity, bool bAbleToHit);
 	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
 	void inline Aim(CUserCmd* pUserCmd);
 
@@ -114,6 +117,8 @@ private:
 	bool m_bDoNoRecoil;
 
 	bool m_bAutoReload;
+
+	bool m_bAutoZeus;
 
 	int m_iTargetCriteria;
 	CTarget* m_pTarget;
