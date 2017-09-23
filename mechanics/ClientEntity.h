@@ -251,6 +251,7 @@ public:
 	int GetLifestate();
 	int GetHealth();
 	int GetTeamNum();
+	float GetSimulationTime();
 	unsigned long GetFlags();
 	Vector* GetOrigin();
 	Vector* GetEyeOffset();

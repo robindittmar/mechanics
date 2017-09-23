@@ -195,9 +195,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	{
 		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 
-		// Update PlayerList
-		pApp->m_playerList.UpdateList();
-
 		if (pLocalEntity->IsAlive())
 		{
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
@@ -303,6 +300,10 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 		// Menu input handling
 		pApp->m_pMenu->HandleInput();
+	}
+	else if (curStage == FRAME_NET_UPDATE_END)
+	{
+		//g_pConsole->Write("%f\n", pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer())->GetSimulationTime());
 	}
 
 	m_pFrameStageNotify(ecx, curStage);
@@ -745,9 +746,6 @@ void CApplication::Setup()
 	m_pResourceManager->CreateTextures();
 	m_pResourceManager->CreateFonts();
 
-	// PlayerList Initialization
-	m_playerList.Init(this);
-
 	// NetVar Dumps
 	/*FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
 	if (pFile)
@@ -793,6 +791,7 @@ void CApplication::Setup()
 	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
 	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
 	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
+	Offsets::m_flSimulationTime = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_flSimulationTime*/CXorString("zTã®Dbè·{jñ«xeÑ«zn").ToCharArray());
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());

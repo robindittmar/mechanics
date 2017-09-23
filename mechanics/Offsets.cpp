@@ -5,6 +5,7 @@ namespace Offsets
 	int m_nModelIndex;
 	int m_hMyWeapons;
 	int m_hViewModel;
+	int m_flSimulationTime;
 
 	int m_vecOrigin;
 	int m_vecViewOffset;

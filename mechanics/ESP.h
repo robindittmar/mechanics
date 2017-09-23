@@ -3,7 +3,7 @@
 
 // Std lib
 #include <assert.h>
-#include <vector>
+#include <unordered_map>
 
 // Source SDK
 #include "Vector.h"
@@ -13,6 +13,9 @@
 // Custom
 #include "IFeature.h"
 #include "Gui.h"
+#include "EspPlayer.h"
+
+#define MAX_PLAYERS	64
 
 class CEsp : public IFeature
 {
@@ -68,6 +71,7 @@ private:
 	bool m_bDrawNames;
 
 	int m_iFadeoutTime;
+	CEspPlayer m_pPastPlayers[MAX_PLAYERS];
 
 	CGui* m_pGui;
 };

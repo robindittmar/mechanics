@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="Autowall.cpp" />
     <ClCompile Include="Esp.cpp" />
+    <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />
     <ClCompile Include="Legitbot.cpp" />
     <ClCompile Include="ConVar.cpp" />
@@ -216,6 +217,7 @@
     <ClInclude Include="CUtlVector.h" />
     <ClInclude Include="DrawModelExecute.h" />
     <ClInclude Include="Esp.h" />
+    <ClInclude Include="EspPlayer.h" />
     <ClInclude Include="FireEventClientSide.h" />
     <ClInclude Include="FrameStageNotify.h" />
     <ClInclude Include="GetViewModelFov.h" />

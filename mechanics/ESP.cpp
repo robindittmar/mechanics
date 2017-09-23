@@ -25,25 +25,50 @@ void CEsp::Update(void* pParameters)
 
 	ISurface* pSurface = (ISurface*)pParameters;
 
-	CPlayer* pCurPlayer;
 	IClientEntity* pLocalEntity;
 	IClientEntity* pCurEntity;
 	int iLocalTeam;
 
-	// Grab LocalPlayer vars
-	//pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	pLocalEntity = m_pApp->PlayerList()->GetLocalPlayer()->GetHandle();
+	// Grab LocalPlayer
+	pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (!pLocalEntity)
+		return;
+
+	// Grab localplayer info
 	iLocalTeam = pLocalEntity->GetTeamNum();
 
 	ULONGLONG llTimestamp = GetTickCount64();
 
-	int iPlayerCount = m_pApp->PlayerList()->GetPlayerCount();
-	for (int i = 0; i < iPlayerCount; i++)
+	int iMaxClients = m_pApp->EngineClient()->GetMaxClients();
+	for (int i = 0; i < iMaxClients; i++)
 	{
-		pCurPlayer = m_pApp->PlayerList()->GetPlayerByIndex(i);
-		pCurEntity = pCurPlayer->GetHandle();
+		pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
+		if (!pCurEntity)
+			continue;
 
-		//bool isLocalPlayer = m_pApp->EngineClient()->GetLocalPlayer() == i;
+		if (pCurEntity->IsDormant())
+		{
+			// If it was NOT dormant before (first tick player is dormant)
+			if (!m_pPastPlayers[i].GetIsDormant())
+			{
+				// Remember timestamp and dormant
+				m_pPastPlayers[i].SetTimestamp(llTimestamp);
+				m_pPastPlayers[i].SetIsDormant(true);
+			}
+			// If our player is dormant for a longer time than we want it to fadeout
+			else if (llTimestamp - m_pPastPlayers[i].GetTimestamp() > m_iFadeoutTime)
+			{
+				continue;
+			}
+		}
+		else
+		{
+			m_pPastPlayers[i].SetIsDormant(false);
+		}
+
+		if (!pCurEntity->IsAlive())
+			continue;
+
 		bool bIsLocalPlayer = pLocalEntity == pCurEntity;
 		int iCurEntityTeam = pCurEntity->GetTeamNum();
 
@@ -57,20 +82,18 @@ void CEsp::Update(void* pParameters)
 		if (!bIsSpotted && m_bDrawOnlySpotted)
 			continue;
 
-		Vector screenOrigin, screenHead;
-		
-		// TODO: Nico guck nochmal drüber bitte <3
-		//Vector headPos = *(Vector*)((DWORD)pEntity + 0x134);
-		//Vector origin = headPos;
-		Vector origin = *pCurEntity->GetOrigin();
-		Vector headPos = origin + *pCurEntity->GetEyeOffset();
+		Vector vScreenOrigin, vScreenHead;
+		Vector vOrigin = *pCurEntity->GetOrigin();
+		Vector vHeadOrigin = vOrigin + *pCurEntity->GetEyeOffset();
 
 		Color color;
-		/*if (!pCurPlayer->GetValid())
+		if (m_pPastPlayers[i].GetIsDormant())
 		{
-			color = Color(((m_iFadeoutTime - (llTimestamp - pCurPlayer->GetTimestamp())) / (float)m_iFadeoutTime) * 255, 100, 100, 100);
-		}*/
-		if (iCurEntityTeam == TEAMNUM_CT)
+			int alpha = ((m_iFadeoutTime - (llTimestamp - m_pPastPlayers[i].GetTimestamp())) / (float)m_iFadeoutTime) * 255;
+			g_pConsole->Write("%d\n", alpha);
+			color = Color(alpha, 100, 100, 100);
+		}
+		else if (iCurEntityTeam == TEAMNUM_CT)
 		{
 			color = Color(0, 0, 255);
 			//headPos.z += 71;
@@ -101,35 +124,35 @@ void CEsp::Update(void* pParameters)
 		int armor = pCurEntity->GetArmor();
 		bool hasHelmet = pCurEntity->HasHelmet();
 
-		if (m_pGui->WorldToScreen(origin, screenOrigin) && m_pGui->WorldToScreen(headPos, screenHead))
+		if (m_pGui->WorldToScreen(vOrigin, vScreenOrigin) && m_pGui->WorldToScreen(vHeadOrigin, vScreenHead))
 		{
-			float height = abs(screenHead.y - screenOrigin.y);
+			float height = abs(vScreenHead.y - vScreenOrigin.y);
 			float width = height * 0.65f;
 
 			if (m_bDrawBoundingBox)
 			{
-				DrawBoundingBox(screenOrigin.x, screenOrigin.y, height, width, color);
+				DrawBoundingBox(vScreenOrigin.x, vScreenOrigin.y, height, width, color);
 			}
 			if (m_bDrawNames)
 			{
-				DrawName(pCurEntity, screenOrigin.x, screenOrigin.y, height, width);
+				DrawName(pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width);
 			}
 			if (m_bDrawHealthBar)
 			{
-				DrawHealthBar(pSurface, screenOrigin.x, screenOrigin.y, height, width, iHealth);
+				DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth);
 			}
 			if (m_bDrawHealthNumber && iHealth < 100)
 			{
-				DrawHealthNumber(screenOrigin.x, screenOrigin.y, height, width, iHealth);
+				DrawHealthNumber(vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth);
 			}
 
 			if (m_bDrawArmorBar)
 			{
-				DrawArmorBar(screenOrigin.x, screenOrigin.y, height, width, armor);
+				DrawArmorBar(vScreenOrigin.x, vScreenOrigin.y, height, width, armor);
 			}
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{
-				DrawHelmet(screenOrigin.x, screenOrigin.y, height, width);
+				DrawHelmet(vScreenOrigin.x, vScreenOrigin.y, height, width);
 			}
 		}
 	}

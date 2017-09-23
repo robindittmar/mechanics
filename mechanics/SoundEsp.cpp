@@ -30,7 +30,7 @@ void CSoundEsp::AddSound(CSoundInfo* pSound)
 	if (!strstr(pSound->GetSample(), "footstep"))
 		return;
 
-	IClientEntity* pLocalEntity = m_pApp->PlayerList()->GetLocalPlayer()->GetHandle();
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(pSound->GetEntityIndex());
 
 	// Local player

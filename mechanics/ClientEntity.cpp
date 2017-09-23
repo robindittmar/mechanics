@@ -27,6 +27,11 @@ int IClientEntity::GetTeamNum()
 	return *(int*)((DWORD)this + Offsets::m_iTeamNum);
 }
 
+float IClientEntity::GetSimulationTime()
+{
+	return *(float*)((DWORD)this + Offsets::m_flSimulationTime);
+}
+
 unsigned long IClientEntity::GetFlags()
 {
 	return *(unsigned long*)((DWORD)this + Offsets::m_fFlags);
