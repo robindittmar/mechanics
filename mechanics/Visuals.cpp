@@ -14,6 +14,8 @@ void CVisuals::Setup()
 {
 	m_pApp = CApplication::Instance();
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
+
+	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
 }
 
 void CVisuals::Update(void* pParameters)
@@ -59,7 +61,7 @@ void CVisuals::DrawCrosshair()
 	{
 		Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 		qAimPunchAngles += m_pApp->GetClientViewAngles();
-		
+
 		Vector vForward, vScreenPos;
 		AngleVectors(qAimPunchAngles, &vForward);
 
@@ -267,4 +269,11 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 	}
 
 	pViewSetup->fov = m_iFovValue;
+}
+
+void CVisuals::DisablePostProcessing(bool bDisablePostProcessing)
+{
+	m_bDisablePostProcessing = bDisablePostProcessing;
+
+	*m_dwOverridePostProcessingDisable = m_bDisablePostProcessing;
 }

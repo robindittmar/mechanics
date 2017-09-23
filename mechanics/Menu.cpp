@@ -113,6 +113,7 @@ void CMenu::ApplySettings()
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
 
+	m_pDisablePostprocessing->SetChecked(m_pApp->Visuals()->GetDisablePostProcessing());
 	m_pMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
 	m_pThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
 	m_pHandsDrawStyle->SetSelectionByValue(m_pApp->Visuals()->GetHandsDrawStyle());
@@ -446,7 +447,11 @@ void CMenu::CreateVisualsTab()
 	m_pViewmodelFov = new CSlider(600, 5, 32, 350, 0.0f, SLIDER_ORIENTATION_VERTICAL, true, 1.0f, 180.0f);
 	m_pViewmodelFov->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
 
+	m_pDisablePostprocessing = new CCheckbox(4, 0, 128, 16, "Disable Postprocessing");
+	m_pDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));
+
 	m_pOtherVisualsTab = new CTabPage("Others");
+	m_pOtherVisualsTab->AddChild(m_pDisablePostprocessing);
 	m_pOtherVisualsTab->AddChild(m_pMirror);
 	m_pOtherVisualsTab->AddChild(m_pThirdperson);
 	m_pOtherVisualsTab->AddChild(m_pHandsDrawStyle);

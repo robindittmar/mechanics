@@ -16,8 +16,6 @@ void CMisc::Setup()
 
 	m_xorName.String("yjè§");
 	m_xorName.Xor();
-
-	m_dwOverridePostProcessingDisable = *(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2);
 }
 
 void CMisc::Update(void* pParameters)
@@ -389,20 +387,6 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 	if (flPostponeFireReady > 0 && flPostponeFireReady <= (pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick))
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;
-	}
-}
-
-void CMisc::DisablePostProcessing()
-{
-	bool* bOverridePostProcessingDisable = (bool*)(m_dwOverridePostProcessingDisable);
-	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (m_bDisablePostProcessing)
-	{
-		*bOverridePostProcessingDisable = true;
-	}
-	else
-	{
-		*bOverridePostProcessingDisable = false;
 	}
 }
 

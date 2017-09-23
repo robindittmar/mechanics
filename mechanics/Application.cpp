@@ -285,13 +285,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame())
 		{
-			static bool test = false;
-			if (!test)
-			{
-				pApp->Misc()->DisablePostProcessing();
-				test = true;
-			}
-
 			if (pLocalEntity->IsAlive())
 			{
 				pApp->Visuals()->NoSmoke();
@@ -889,7 +882,6 @@ void CApplication::Setup()
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
-	this->m_misc.SetDisablePostProcessing(true);
 	this->m_misc.SetJumpScout(true);
 	this->m_misc.SetNoName(false);
 	this->m_misc.SetAutoAccept(true);
@@ -908,6 +900,7 @@ void CApplication::Setup()
 	this->m_visuals.SetNoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
+	this->m_visuals.SetDisablePostProcessing(true);
 
 	this->m_visuals.SetNoFlash(true);
 	this->m_visuals.SetFlashPercentage(0.f);
@@ -918,6 +911,7 @@ void CApplication::Setup()
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
 	this->m_visuals.SetFovChangeScoped(true);
+
 
 	// Mirror
 	this->m_mirror.SetEnabled(false);

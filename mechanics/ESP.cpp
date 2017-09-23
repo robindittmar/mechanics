@@ -172,10 +172,10 @@ void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color colo
 		//todo only drawing top and bottom lane
 		m_pApp->Surface()->DrawSetColor(color);
 		m_pApp->Surface()->DrawOutlinedRect(
-			posX - width / 2 - 1,
-			posY + 6,
-			posX + width / 2 + 1,
-			posY - height - 5);
+			posX - width / 2 - 1, // links
+			posY + 6, // unten
+			posX + width / 2 + 1, // rechts
+			posY - height - 5); // oben
 		break;
 	case ESP_STYLE_EDGE:
 		if (m_bDrawOutline)
