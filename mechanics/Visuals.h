@@ -56,9 +56,6 @@ public:
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int GetFovValue() { return m_iFovValue; }
 
-	void SetDrawLbyIndicator(bool bLbyIndicator) { m_bLbyIndicator = bLbyIndicator; }
-	bool GetDrawLbyIndicator() { return m_bLbyIndicator; }
-
 	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
 
@@ -101,8 +98,6 @@ private:
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
-
-	bool m_bLbyIndicator;
 
 	float m_flZoomSensitivity;
 };

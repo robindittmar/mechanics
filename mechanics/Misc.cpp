@@ -178,6 +178,9 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 	if (pActiveWeapon->GetWeaponId() == WEAPON_REVOLVER)
 		return;
 
+	if (pActiveWeapon->GetClip1() == 0)
+		return;
+
 	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
 	float fServertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
 	if (fNextattack > fServertime)
@@ -187,6 +190,7 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 	}
 }
 
+// TODO ÜBERARBEITEN!!!!
 void CMisc::SpectatorList()
 {
 	if (!m_bIsEnabled)
@@ -382,7 +386,7 @@ void CMisc::AutoRevolver(CUserCmd* pUserCmd)
 
 	pUserCmd->buttons |= IN_ATTACK;
 	float flPostponeFireReady = activeWeapon->GetPostPoneFireReady();
-	if (flPostponeFireReady > 0 && flPostponeFireReady - .1f < m_pApp->GlobalVars()->curtime)
+	if (flPostponeFireReady > 0 && flPostponeFireReady <= (pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick))
 	{
 		pUserCmd->buttons &= ~IN_ATTACK;
 	}

@@ -73,6 +73,7 @@ private:
 	CSelectbox* m_pAntiaimYawFake;
 	CSlider* m_pAntiaimYawFakeOffset;
 	CCheckbox* m_pAntiaimLbyIndicator;
+	CCheckbox* m_pAntiaimLbyBreaker;
 	//
 	// Legit tab
 	CTabPage* m_pLegitTab;

@@ -79,7 +79,13 @@ void CMenu::ApplySettings()
 
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	m_pAntiaimPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSetting());
+	m_pAntiaimPitchOffset->SetDisplayValue(m_pApp->AntiAim()->GetPitchOffset());
 	m_pAntiaimYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSetting());
+	m_pAntiaimYawOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawOffset());
+	m_pAntiaimYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSetting());
+	m_pAntiaimYawFakeOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawFakeOffset());
+	m_pAntiaimLbyIndicator->SetChecked(m_pApp->AntiAim()->GetDrawLbyIndicator());
+	m_pAntiaimLbyBreaker->SetChecked(m_pApp->AntiAim()->GetLbyBreaker());
 
 	m_pEspEnabled->SetChecked(m_pApp->Esp()->GetEnabled());
 	m_pEspDrawBoundingBox->SetSelection(m_pApp->Esp()->GetDrawBoundingBox());
@@ -90,7 +96,7 @@ void CMenu::ApplySettings()
 	m_pEspDrawArmorbar->SetChecked(m_pApp->Esp()->GetDrawArmorBar());
 	m_pEspDrawOwnTeam->SetChecked(m_pApp->Esp()->GetDrawOwnTeam());
 	m_pEspDrawOwnModel->SetChecked(m_pApp->Esp()->GetDrawOwnModel());
-	m_pEspDrawOnlyVisible->SetChecked(false); //todo
+	m_pEspDrawOnlyVisible->SetChecked(m_pApp->Esp()->GetDrawOnlyVisible());
 	m_pEspDrawOnlySpotted->SetChecked(m_pApp->Esp()->GetDrawOnlySpotted());
 	m_pEspDrawNames->SetChecked(m_pApp->Esp()->GetDrawNames());
 
@@ -102,7 +108,7 @@ void CMenu::ApplySettings()
 
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
 	m_pSoundEspShowTime->SetDisplayValue(m_pApp->SoundEsp()->GetShowTime());
-	m_pSoundEspFadeoutEnabled->SetChecked(true); // TODO
+	m_pSoundEspFadeoutEnabled->SetChecked(m_pApp->SoundEsp()->GetFadeoutEnabled());
 	m_pSoundEspFadeoutTime->SetDisplayValue(m_pApp->SoundEsp()->GetFadeTime());
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
@@ -170,10 +176,10 @@ void CMenu::CreateRageTab()
 	m_pAimbotSilentAim = new CCheckbox(4, 20, 128, 16, "Silent Aim");
 	m_pAimbotSilentAim->SetEventHandler(std::bind(&CRagebot::SetSilentAim, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotAutoshoot = new CCheckbox(4, 40, 128, 16, "Autoshoot");
+	m_pAimbotAutoshoot = new CCheckbox(4, 40, 128, 16, "Auto Shoot");
 	m_pAimbotAutoshoot->SetEventHandler(std::bind(&CRagebot::SetAutoshoot, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotAutoscope = new CCheckbox(4, 60, 128, 16, "Autoscope");
+	m_pAimbotAutoscope = new CCheckbox(4, 60, 128, 16, "Auto Scope");
 	m_pAimbotAutoscope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, m_pApp->Ragebot(), std::placeholders::_1));
 
 	m_pAimbotAutoReload = new CCheckbox(4, 80, 128, 16, "Auto Reload");
@@ -194,7 +200,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
 	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, m_pApp->TargetSelector(), std::placeholders::_1));
 
-	m_pAimbotGroup = new CGroupbox(16, 16, 152, 248, "Aimbot");
+	m_pAimbotGroup = new CGroupbox(16, 16, 152, 268, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotSilentAim);
 	m_pAimbotGroup->AddChild(m_pAimbotAutoshoot);
@@ -226,7 +232,7 @@ void CMenu::CreateRageTab()
 	m_pHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
 	m_pHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
 
-	m_pHitboxGroup = new CGroupbox(184, 16, 152, 248, "Hitboxes");
+	m_pHitboxGroup = new CGroupbox(184, 16, 152, 268, "Hitboxes");
 	m_pHitboxGroup->AddChild(m_pHitboxHead);
 	m_pHitboxGroup->AddChild(m_pHitboxChest);
 	m_pHitboxGroup->AddChild(m_pHitboxPelvis);
@@ -245,35 +251,33 @@ void CMenu::CreateRageTab()
 	m_pAntiaimPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSetting, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimPitchOffset = new CSlider(4, 64, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -90.0f, 90.0f);
-	//m_pAntiaimPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pAntiaimPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffset, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYaw = new CSelectbox(4, 94, 128, 20, "Yaw");
 	m_pAntiaimYaw->AddOption(YAWANTIAIM_NONE, "None");
+	m_pAntiaimYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
-	m_pAntiaimYaw->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT");
-	m_pAntiaimYaw->AddOption(YAWANTIAIM_REALRIGHTFAKELEFT, "REAL RIGHT FAKE LEFT");
 	m_pAntiaimYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYawOffset = new CSlider(4, 126, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
-	//m_pAntiaimYawOffset->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pAntiaimYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffset, m_pApp->AntiAim(), std::placeholders::_1));
 
-	// todo: OPTIONS !!!!!
-	m_pAntiaimYawFake = new CSelectbox(4, 156, 128, 20, "Yaw Fake (WIP)");
-	m_pAntiaimYawFake->AddOption(YAWANTIAIM_NONE, "None");
-	m_pAntiaimYawFake->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
-	m_pAntiaimYawFake->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
-	m_pAntiaimYawFake->AddOption(YAWANTIAIM_REALLEFTFAKERIGHT, "REAL LEFT FAKE RIGHT");
-	m_pAntiaimYawFake->AddOption(YAWANTIAIM_REALRIGHTFAKELEFT, "REAL RIGHT FAKE LEFT");
-	//m_pAntiaimYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawSetting, m_pApp->AntiAim(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pAntiaimYawFake = new CSelectbox(4, 156, 128, 20, "Yaw Fake");
+	m_pAntiaimYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
+	m_pAntiaimYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
+	m_pAntiaimYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSetting, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYawFakeOffset = new CSlider(4, 188, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
-	//m_pAntiaimYawFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pAntiaimYawFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffset, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimLbyIndicator = new CCheckbox(4, 207, 128, 16, "LBY Indicator (WIP)");
-	//m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pAntiaimLbyIndicator = new CCheckbox(4, 207, 128, 16, "LBY Indicator");
+	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimGroup = new CGroupbox(352, 16, 152, 248, "AntiAim");
+	m_pAntiaimLbyBreaker = new CCheckbox(4, 227, 128, 16, "LBY Breaker");
+	m_pAntiaimLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimGroup = new CGroupbox(352, 16, 152, 268, "AntiAim");
 	m_pAntiaimGroup->AddChild(m_pAntiaimEnabled);
 	m_pAntiaimGroup->AddChild(m_pAntiaimPitch);
 	m_pAntiaimGroup->AddChild(m_pAntiaimPitchOffset);
@@ -282,7 +286,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimGroup->AddChild(m_pAntiaimYawFake);
 	m_pAntiaimGroup->AddChild(m_pAntiaimYawFakeOffset);
 	m_pAntiaimGroup->AddChild(m_pAntiaimLbyIndicator);
-
+	m_pAntiaimGroup->AddChild(m_pAntiaimLbyBreaker);
 
 	m_pRageTab = new CTabPage("Rage");
 	m_pRageTab->AddChild(m_pAimbotGroup);
@@ -304,9 +308,10 @@ void CMenu::CreateVisualsTab()
 	m_pEspEnabled->SetEventHandler(std::bind(&CEsp::SetEnabled, m_pApp->Esp(), std::placeholders::_1));
 
 	// todo OPTIONS !!!!!
-	m_pEspDrawBoundingBox = new CSelectbox(4, 36, 128, 20, "Bounding Box (WIP)");
-	m_pEspDrawBoundingBox->AddOption(0, "None");
-	m_pEspDrawBoundingBox->AddOption(1, "Edge");
+	m_pEspDrawBoundingBox = new CSelectbox(4, 36, 128, 20, "Bounding Box");
+	m_pEspDrawBoundingBox->AddOption(ESP_STYLE_NONE, "None");
+	m_pEspDrawBoundingBox->AddOption(ESP_STYLE_EDGE, "Edge");
+	m_pEspDrawBoundingBox->AddOption(ESP_STYLE_FULL, "Full");
 	m_pEspDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspDrawFilledBox = new CCheckbox(4, 56, 128, 16, "Filled Box (WIP)");
@@ -315,27 +320,27 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawOutline = new CCheckbox(4, 76, 128, 16, "Outlines");
 	m_pEspDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawHealthbar = new CCheckbox(4, 104, 128, 16, "Health bar");
+	m_pEspDrawHealthbar = new CCheckbox(4, 104, 128, 16, "Health Bar");
 	m_pEspDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawHealthnumber = new CCheckbox(4, 124, 128, 16, "Health number");
+	m_pEspDrawHealthnumber = new CCheckbox(4, 124, 128, 16, "Health Number");
 	m_pEspDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawArmorbar = new CCheckbox(4, 144, 128, 16, "Armor bar");
+	m_pEspDrawArmorbar = new CCheckbox(4, 144, 128, 16, "Armor Bar");
 	m_pEspDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawArmornumber = new CCheckbox(4, 164, 128, 16, "Armor number (WIP)");
+	m_pEspDrawArmornumber = new CCheckbox(4, 164, 128, 16, "Armor Number (WIP)");
 	//m_pEspDrawArmornumber->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
 
 	// Second column
-	m_pEspDrawOwnTeam = new CCheckbox(156, 56, 128, 16, "Own team");
+	m_pEspDrawOwnTeam = new CCheckbox(156, 56, 128, 16, "Own Team");
 	m_pEspDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawOwnModel = new CCheckbox(156, 76, 128, 16, "Own model (3rd person)");
+	m_pEspDrawOwnModel = new CCheckbox(156, 76, 128, 16, "Own Model (3rd person)");
 	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawOnlyVisible = new CCheckbox(156, 104, 128, 16, "Only Visible (WIP)");
-	//m_pEspDrawOnlyVisible->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pEspDrawOnlyVisible = new CCheckbox(156, 104, 128, 16, "Only Visible");
+	m_pEspDrawOnlyVisible->SetEventHandler(std::bind(&CEsp::SetDrawOnlyVisible, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspDrawOnlySpotted = new CCheckbox(156, 124, 128, 16, "Only Spotted");
 	m_pEspDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, m_pApp->Esp(), std::placeholders::_1));
@@ -343,7 +348,7 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawNames = new CCheckbox(156, 164, 128, 16, "Names");
 	m_pEspDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspGroup = new CGroupbox(16, 16, 304, 248, "Esp");
+	m_pEspGroup = new CGroupbox(16, 16, 304, 268, "Esp");
 	m_pEspGroup->AddChild(m_pEspEnabled);
 	m_pEspGroup->AddChild(m_pEspDrawBoundingBox);
 	m_pEspGroup->AddChild(m_pEspDrawFilledBox);
@@ -370,13 +375,13 @@ void CMenu::CreateVisualsTab()
 	m_pChamsDrawOwnTeam = new CCheckbox(4, 56, 128, 16, "Own Team");
 	m_pChamsDrawOwnTeam->SetEventHandler(std::bind(&CChams::SetRenderTeam, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsDrawOwnModel = new CCheckbox(4, 76, 128, 16, "Own Model");
+	m_pChamsDrawOwnModel = new CCheckbox(4, 76, 128, 16, "Own Model (3rd person)");
 	m_pChamsDrawOwnModel->SetEventHandler(std::bind(&CChams::SetRenderLocalplayer, m_pApp->Chams(), std::placeholders::_1));
 
 	m_pChamsIgnoreZ = new CCheckbox(4, 104, 128, 16, "Only Visible");
 	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsGroup = new CGroupbox(336, 16, 152, 248, "Chams");
+	m_pChamsGroup = new CGroupbox(336, 16, 152, 268, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnTeam);
@@ -392,7 +397,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspShowTime->SetEventHandler(std::bind(&CSoundEsp::SetShowTime, m_pApp->SoundEsp(), std::placeholders::_1));
 
 	m_pSoundEspFadeoutEnabled = new CCheckbox(4, 56, 128, 16, "Fadeout");
-	//m_pSoundEspFadeoutEnabled->SetEventHandler(); // TODO
+	m_pSoundEspFadeoutEnabled->SetEventHandler(std::bind(&CSoundEsp::SetFadeoutEnabled, m_pApp->SoundEsp(), std::placeholders::_1)); // TODO
 
 	m_pSoundEspFadeoutTimeLabel = new CLabel(4, 70, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
@@ -405,7 +410,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspOnlyNotVisible = new CCheckbox(4, 144, 128, 16, "Only Not Visible");
 	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawVisible, m_pApp->SoundEsp(), std::placeholders::_1));
 
-	m_pSoundEspGroup = new CGroupbox(504, 16, 152, 248, "Sound Esp");
+	m_pSoundEspGroup = new CGroupbox(504, 16, 152, 268, "Sound Esp");
 	m_pSoundEspGroup->AddChild(m_pSoundEspEnabled);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTimeLabel);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTime);
