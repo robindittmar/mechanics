@@ -33,6 +33,8 @@ public:
 	bool IsMouseInRect(int x, int y, int w, int h);
 
 	bool WorldToScreen(const Vector &origin, Vector &screen);
+
+	bool IsMouseEnabled();
 private:
 	bool ScreenTransform(const Vector& point, Vector& screen);
 
