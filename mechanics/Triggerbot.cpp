@@ -84,18 +84,47 @@ void CTriggerbot::Update(void* pParameters)
 	// Check if we hit a target we want to shoot
 	IClientEntity* pHitEntity = trace.hit_entity;
 	if (!pHitEntity)
+	{
+		m_pCurTarget = NULL;
 		return;
+	}
 
 	if (pHitEntity->IsDormant())
+	{
+		m_pCurTarget = NULL;
 		return;
+	}
+
+	if (pHitEntity->GetClientClass()->m_ClassID != CLASSID_PLAYER)
+	{
+		m_pCurTarget = NULL;
+		return;
+	}
 
 	if (!pHitEntity->IsAlive())
+	{
+		m_pCurTarget = NULL;
 		return;
+	}
 
 	int iHitEntityTeamNum = pHitEntity->GetTeamNum();
 	if (iHitEntityTeamNum != TEAMNUM_T &&
 		iHitEntityTeamNum != TEAMNUM_CT ||
 		iHitEntityTeamNum == iLocalTeamNum)
+	{
+		m_pCurTarget = NULL;
+		return;
+	}
+
+	ULONGLONG llTimestamp = GetTickCount64();
+	if (m_pCurTarget == NULL)
+	{
+		m_llTimestampTargetAquired = llTimestamp;
+		m_pCurTarget = pHitEntity;
+	}
+	
+	int iShootDelay = m_iShootDelay + (RandomIntDef(0, m_iShootDelayJitter) - (m_iShootDelayJitter / 2));
+	if ((llTimestamp - m_llTimestampTargetAquired) < iShootDelay)
 		return;
 
 	// TODO: Check hitbox (intersectswithoobb?)

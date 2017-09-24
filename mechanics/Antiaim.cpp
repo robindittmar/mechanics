@@ -108,7 +108,7 @@ void CAntiAim::Update(void* pParameters)
 	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
 	{
 		m_pApp->m_bLbyUpdate = true;
-		angles.y += RandomInt(-180, 180);
+		angles.y += RandomIntDef(-180, 180);
 	}
 
 	// LBY indicator check

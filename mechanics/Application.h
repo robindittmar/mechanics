@@ -74,6 +74,10 @@
 #define ENGINEDLL_SIZE			0x8C7000
 #define MATERIALSYSTEMDLL_SIZE	0x10C000
 
+typedef void(_cdecl* RandomSeed_t)(int);
+typedef int(_cdecl* RandomInt_t)(int, int);
+typedef float(_cdecl* RandomFloat_t)(float, float);
+
 typedef bool(__thiscall *CreateMove_t)(void*, float, CUserCmd*);
 typedef void(__thiscall *FrameStageNotify_t)(void*, ClientFrameStage_t);
 typedef void(__thiscall *OverrideView_t)(void*, CViewSetup*);
@@ -126,6 +130,10 @@ public:
 	VTableHook* GameEventManagerHook() { return m_pGameEventManagerHook; }
 	VTableHook* ViewRenderHook() { return m_pViewRenderHook; }
 	VTableHook* EngineSound() { return m_pEngineSoundHook; }
+
+	RandomSeed_t RandomSeed() { return m_pRandomSeed; }
+	RandomInt_t RandomInt() { return m_pRandomInt; }
+	RandomFloat_t RandomFloat() { return m_pRandomFloat; }
 
 	// Exposed callable engine functions
 	CreateMove_t CreateMove() { return m_pCreateMove; }
@@ -240,6 +248,10 @@ private:
 	HMODULE m_hModule;
 
 	float m_flRecoilCompensation;
+
+	RandomSeed_t m_pRandomSeed;
+	RandomInt_t m_pRandomInt;
+	RandomFloat_t m_pRandomFloat;
 
 	bool m_bInitialHookDone;
 	bool m_bIsHooked;

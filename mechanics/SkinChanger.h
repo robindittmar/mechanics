@@ -43,7 +43,7 @@
 
 #define SEQUENCE_BOWIE_IDLE1 1
 
-#define RandomInt(nMin, nMax) (rand() % (nMax - nMin + 1) + nMin)
+#define RandomIntDef(nMin, nMax) (rand() % (nMax - nMin + 1) + nMin)
 
 class CApplication;
 
