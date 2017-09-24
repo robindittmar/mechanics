@@ -27,6 +27,9 @@ public:
 	CEsp();
 	~CEsp();
 
+	void SetFillBoundingBox(bool bFillBoundingBox) { m_bFillBoundingBox = bFillBoundingBox; }
+	bool GetFillBoundingBox() { return m_bFillBoundingBox; }
+
 	void SetDrawBoundingBox(int iDrawBoundingBox) { m_iDrawBoundingBox = iDrawBoundingBox; }
 	int GetDrawBoundingBox() { return m_iDrawBoundingBox; }
 
@@ -57,16 +60,39 @@ public:
 	void SetDrawNames(bool bDrawNames) { m_bDrawNames = bDrawNames; }
 	bool GetDrawNames() { return m_bDrawNames; }
 
+	void SetDrawViewangles(bool bDrawViewangles) { m_bDrawViewangles = bDrawViewangles; }
+	bool GetDrawViewangles() { return m_bDrawViewangles; }
+
+	void SetViewanglesLength(int iViewanglesLength) { m_iViewanglesLength = iViewanglesLength; }
+	int GetViewanglesLength() { return m_iViewanglesLength; }
+
+	void SetFadeoutEnabled(bool bFadeoutEnabled) { m_bFadeoutEnabled = bFadeoutEnabled; }
+	bool GetFadeoutEnabled() { return m_bFadeoutEnabled; }
+
+	void SetFadeoutTime(float fFadeoutTime) { m_iFadeoutTime = fFadeoutTime * 1000; }
+	float GetFadeoutTime() { return m_iFadeoutTime / 1000.0f; }
+
+	void SetColorCT(Color clrCT) { m_clrCT = clrCT; }
+	Color GetColorCT() { return m_clrCT; }
+
+	void SetColorT(Color clrT) { m_clrT = clrT; }
+	Color GetColorT() { return m_clrT; }
+
+	void SetColorSpotted(Color clrSpotted) { m_clrSpotted = clrSpotted; }
+	Color GetColorSpotted() { return m_clrSpotted; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
-	void DrawArmorBar(int posX, int posY, int height, int width, int armor);
-	void DrawBoundingBox(int posX, int posY, int height, int width, Color color);
-	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health);
-	void DrawHealthNumber(int posX, int posY, int height, int width, int health);
-	void DrawHelmet(int posX, int posY, int height, int width);
-	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
+	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
+	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);
+	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
+	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
+	void DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha);
+	void DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha);
+	void DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha);
 
+	bool m_bFillBoundingBox;
 	int m_iDrawBoundingBox;
 
 	bool m_bDrawHealthBar;
@@ -78,8 +104,16 @@ private:
 	bool m_bDrawOnlySpotted;
 	bool m_bDrawOutline;
 	bool m_bDrawNames;
+	bool m_bDrawViewangles;
+	int m_iViewanglesLength;
 
+	bool m_bFadeoutEnabled;
 	int m_iFadeoutTime;
+
+	Color m_clrCT;
+	Color m_clrT;
+	Color m_clrSpotted;
+
 	CEspPlayer m_pPastPlayers[MAX_PLAYERS];
 
 	CGui* m_pGui;

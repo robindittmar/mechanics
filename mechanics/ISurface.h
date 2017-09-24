@@ -123,6 +123,11 @@ public:
 	inline int b() const { return _color[2]; }
 	inline int a() const { return _color[3]; }
 
+	void SetRed(unsigned char r) { _color[0] = r; }
+	void SetGreen(unsigned char g) { _color[1] = g; }
+	void SetBlue(unsigned char b) { _color[2] = b; }
+	void SetAlpha(unsigned char a) { _color[3] = a; }
+
 	unsigned char &operator[](int index)
 	{
 		return _color[index];

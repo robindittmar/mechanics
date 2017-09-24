@@ -112,7 +112,7 @@ void CApplication::LoadSkinChangerConfig()
 	);
 	this->m_skinchanger.AddKillIconReplacement(
 		CXorString("|eì¤rTñ").ToCharArray(),
-		CXorString("|eì¤rTç·cà°qgü").ToCharArray()
+		CXorString("|eì¤rTç·cà°qgü").ToCharArray()
 	);
 
 	// Robins Knifes (CT -> Karambit Fade Stattrak)
@@ -845,6 +845,7 @@ void CApplication::Setup()
 
 	// Esp
 	this->m_esp.SetEnabled(true);
+	this->m_esp.SetFillBoundingBox(true);
 	this->m_esp.SetDrawBoundingBox(true);
 	this->m_esp.SetDrawNames(true);
 	this->m_esp.SetDrawHealthBar(true);
@@ -855,6 +856,13 @@ void CApplication::Setup()
 	this->m_esp.SetDrawOnlyVisible(false);
 	this->m_esp.SetDrawOnlySpotted(false);
 	this->m_esp.SetDrawOutline(true);
+	this->m_esp.SetDrawViewangles(true);
+	this->m_esp.SetViewanglesLength(45);
+	this->m_esp.SetFadeoutEnabled(true);
+	this->m_esp.SetFadeoutTime(1.0f);
+	this->m_esp.SetColorCT(Color(0, 0, 255));
+	this->m_esp.SetColorT(Color(255, 0, 0));
+	this->m_esp.GetColorSpotted();
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(true);
