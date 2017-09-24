@@ -30,6 +30,9 @@ public:
 	void SetFadeTime(float fFadeTime) { m_iFadeoutTime = fFadeTime * 1000; }
 	float GetFadeTime() { return m_iFadeoutTime / 1000.0f; }
 
+	void SetFadeoutEnabled(bool bFadeoutEnabled) { m_bFadeoutEnabled = bFadeoutEnabled; }
+	bool GetFadeoutEnabled() { return m_bFadeoutEnabled; }
+
 	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; }
 	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; }
 
@@ -46,7 +49,8 @@ public:
 private:
 	int m_iShowTime;
 	int m_iFadeoutTime;
-	
+
+	bool m_bFadeoutEnabled;	
 	bool m_bDrawOwnTeam;
 	bool m_bDrawVisible;
 

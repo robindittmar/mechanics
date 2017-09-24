@@ -87,85 +87,74 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	QAngle angles;
-	/*if (m_pApp->Ragebot()->HasTarget())
+	angles = m_pApp->GetClientViewAngles();
+
+	// Applying Pitch Anti Aim
+	ApplyPitchAntiAim(&angles);
+
+	// Applying Yaw Anti Aim
+	ApplyYawAntiAim(&angles);
+
+	// Checking if LBY updated
+	bool lbyUpdate = false;
+	if (m_pApp->m_flOldLby != pLocalEntity->GetLowerBodyYaw())
 	{
-		angles = *m_pApp->Ragebot()->GetAimAngles();
+		m_pApp->m_flOldLby = pLocalEntity->GetLowerBodyYaw();
+		m_pApp->m_flRealLbyUpdateTime = m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
+		lbyUpdate = true;
 	}
-	else
-	{*/
-		angles = m_pApp->GetClientViewAngles();
-	/*}*/
 
-	static bool bFakeAngles = true;
+	//todo: ghettofix while moving
+	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
+	{
+		m_pApp->m_bLbyUpdate = true;
+		angles.y += RandomInt(-180, 180);
+	}
 
-	// Pitch
+	// LBY indicator check
+	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.2 < m_pApp->GlobalVars()->curtime;
+
+	// Setting calculated angles to player angles
+	pUserCmd->viewangles[0] = angles.x;
+	pUserCmd->viewangles[1] = angles.y;
+}
+
+void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
+{
+	float fRealPitchAngle = 0.0f + m_fPitchOffset;
+
 	switch (m_iPitchSetting)
 	{
 	case PITCHANTIAIM_UP:
-		angles.x = -89.0f;
+		fRealPitchAngle = -89.0f;
 		break;
 	case PITCHANTIAIM_DOWN:
-		angles.x = 89.0f;
+		fRealPitchAngle = 89.0f;
 		break;
 	case PITCHANTIAIM_NONE:
 	default:
 		break;
 	}
 
+	angles->x = fRealPitchAngle;
+}
+
+void CAntiAim::ApplyYawAntiAim(QAngle* angles)
+{
 	static float trigger = 0.0f;
+	float fRealYawAngle = 0.0f + m_fYawOffset;
 
-	static float flRealAngle = 0.0f;
-	static float flFakeAngle = 0.0f;
-
-	// Yaw
+	// Getting anti aim angles
 	switch (m_iYawSetting)
 	{
-	case YAWANTIAIM_REALRIGHTFAKELEFT:
-		m_bIsFakeYaw = true;
-
-		flRealAngle = 90.0f;
-		flFakeAngle = -90.0f;
-
-		if (bFakeAngles)
-		{
-			angles.y += flRealAngle;
-		}
-		else
-		{
-			angles.y += flFakeAngle;
-		}
-		*m_pApp->m_bSendPackets = bFakeAngles;
-		bFakeAngles = !bFakeAngles;
-		break;
-
-	case YAWANTIAIM_REALLEFTFAKERIGHT:
-		m_bIsFakeYaw = true;
-
-		flRealAngle = 90.0f;
-		flFakeAngle = -90.0f;
-
-		if (bFakeAngles)
-		{
-			angles.y += flFakeAngle;
-		}
-		else
-		{
-			angles.y += flRealAngle;
-		}
-
-		*m_pApp->m_bSendPackets = bFakeAngles;
-		bFakeAngles = !bFakeAngles;
+	case YAWANTIAIM_STATIC:
 		break;
 	case YAWANTIAIM_BACKWARDS:
-		m_bIsFakeYaw = false;
-
-		angles.y -= 90.0f; // 180.0f;
+		fRealYawAngle += 180.0f;
 		break;
 	case YAWANTIAIM_STATICJITTERBACKWARDS:
-		m_bIsFakeYaw = false;
-
 		trigger += 15.0f;
-		angles.y -= trigger > 50.0f ? -145.0f : 145.0f;
+		fRealYawAngle -= trigger > 50.0f ? -145.0f : 145.0f;
 
 		if (trigger > 100.0f)
 		{
@@ -174,31 +163,99 @@ void CAntiAim::Update(void* pParameters)
 		break;
 	case YAWANTIAIM_NONE:
 	default:
-		m_bIsFakeYaw = false;
+		fRealYawAngle = 0.0f;
 		break;
 	}
 
-	if (m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets)
+	// Applying Fake Yaw
+	ApplyYawFakeAntiAim(angles, fRealYawAngle);
+}
+
+void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
+{
+	static bool bFakeAngleSwitch = true;
+	float fFakeYaw = 0.0f + m_fYawFakeOffset;
+
+	switch (m_iYawFakeSetting)
 	{
-		angles.y += -flRealAngle + flFakeAngle;
-	}
-	
-	bool lbyUpdate = false;
-	if (m_pApp->m_flOldLby != pLocalEntity->GetLowerBodyYaw())
-	{
-		m_pApp->m_flOldLby = pLocalEntity->GetLowerBodyYaw();
-		m_pApp->m_flRealLbyUpdateTime = m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
-		lbyUpdate = true;
-	}
-	
-	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
-	{
-		m_pApp->m_bLbyUpdate = true;
-		angles.y += RandomInt(-180, 180);
+	case FAKEYAWANTIAIM_STATIC:
+		m_bIsFakeYaw = true;
+		break;
+	case FAKEYAWANTIAIM_NONE:
+	default:
+		m_bIsFakeYaw = false;
+		fFakeYaw = 0.0f;
+		break;
 	}
 
-	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.2 < m_pApp->GlobalVars()->curtime;
+	if (m_bIsFakeYaw)
+	{
+		if (bFakeAngleSwitch)
+		{
+			angles->y += fFakeYaw;
+		}
+		else
+		{
+			angles->y += fRealYaw;
+		}
+		*m_pApp->m_bSendPackets = bFakeAngleSwitch;
+		bFakeAngleSwitch = !bFakeAngleSwitch;
+	}
+	else
+	{
+		angles->y += fRealYaw;
+	}
 
-	pUserCmd->viewangles[0] = angles.x;
-	pUserCmd->viewangles[1] = angles.y;
+	//todo: check if lby should break
+	if (m_bLbyBreaker && m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
+	{
+		angles->y += -fRealYaw + fFakeYaw;
+	}
+}
+
+void CAntiAim::DrawLBYIndicator()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bDrawLbyIndicator)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+
+	// Draw "LBY"
+	m_pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_HEADER));
+	if (m_pApp->m_bLBY)
+		m_pApp->Surface()->DrawSetTextColor(255, 0, 255, 0);
+	else
+		m_pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+
+	int w, h;
+	m_pApp->EngineClient()->GetScreenSize(w, h);
+	m_pApp->Surface()->DrawSetTextPos(25, h - 55);
+	m_pApp->Surface()->DrawPrintText(L"LBY", 4);
+
+
+	// Draw LBY and Y Angle
+	m_pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+
+	char pBuffer[16];
+	snprintf(pBuffer, 16, "%i", (int)pLocalEntity->GetLowerBodyYaw());
+	wchar_t pBuffW[16];
+	mbstowcs(pBuffW, pBuffer, 16);
+	int len = lstrlenW(pBuffW);
+
+	m_pApp->Surface()->DrawSetTextPos(50, h - 58);
+	m_pApp->Surface()->DrawPrintText(pBuffW, len);
+
+	char pBuffer1[16];
+
+	snprintf(pBuffer1, 16, "%i", (int)m_pApp->LastTickAngles().y);
+	wchar_t pBuffW1[16];
+	mbstowcs(pBuffW1, pBuffer1, 16);
+	int len1 = lstrlenW(pBuffW1);
+
+	m_pApp->Surface()->DrawSetTextPos(50, h - 47);
+	m_pApp->Surface()->DrawPrintText(pBuffW1, len1);
 }

@@ -78,13 +78,32 @@ void CEsp::Update(void* pParameters)
 			iCurEntityTeam == 0)
 			continue;
 
+		Vector screenOrigin, screenHead;
+
+		Vector vCurEntOrigin = *pCurEntity->GetOrigin();
+		Vector vCurEntHeadPos = vCurEntOrigin + *pCurEntity->GetEyeOffset();
+
+		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+
+		Ray_t ray;
+		trace_t trace;
+		CTraceFilterSkipEntity traceFilter(pLocalEntity);
+
+		ray.Init(vMyHeadPos, vCurEntHeadPos);
+		m_pApp->EngineTrace()->TraceRay(ray, MASK_VISIBLE, &traceFilter, &trace);
+
 		bool bIsSpotted = pCurEntity->IsSpotted();
 		if (!bIsSpotted && m_bDrawOnlySpotted)
-			continue;
+		{
+			if (!m_bDrawOnlyVisible || (!trace.IsEntityVisible(pCurEntity) && m_bDrawOnlyVisible))
+				continue;
+		}
 
-		Vector vScreenOrigin, vScreenHead;
-		Vector vOrigin = *pCurEntity->GetOrigin();
-		Vector vHeadOrigin = vOrigin + *pCurEntity->GetEyeOffset();
+		if (!trace.IsEntityVisible(pCurEntity) && m_bDrawOnlyVisible)
+		{
+			if (!m_bDrawOnlySpotted || (!bIsSpotted && m_bDrawOnlySpotted))
+				continue;
+		}
 
 		Color color;
 		if (m_pPastPlayers[i].GetIsDormant())
@@ -96,12 +115,10 @@ void CEsp::Update(void* pParameters)
 		else if (iCurEntityTeam == TEAMNUM_CT)
 		{
 			color = Color(0, 0, 255);
-			//headPos.z += 71;
 		}
 		else if (iCurEntityTeam == TEAMNUM_T)
 		{
 			color = Color(255, 0, 0);
-			//headPos.z += 72;
 		}
 		else
 		{
@@ -113,26 +130,18 @@ void CEsp::Update(void* pParameters)
 			color = Color(255, 51, 255);
 		}
 
-		DWORD dwFlags = pCurEntity->GetFlags();
-		//if (dwFlags & IN_DUCK)
-		//{
-		//	headPos.z -= 17; // TODO
-		//}
-
 		//todo: both interesting for knifebot
 		int iHealth = pCurEntity->GetHealth();
 		int armor = pCurEntity->GetArmor();
 		bool hasHelmet = pCurEntity->HasHelmet();
 
-		if (m_pGui->WorldToScreen(vOrigin, vScreenOrigin) && m_pGui->WorldToScreen(vHeadOrigin, vScreenHead))
+		if (m_pGui->WorldToScreen(vCurEntOrigin, screenOrigin) && m_pGui->WorldToScreen(vCurEntHeadPos, screenHead))
 		{
 			float height = abs(vScreenHead.y - vScreenOrigin.y);
 			float width = height * 0.65f;
 
-			if (m_bDrawBoundingBox)
-			{
-				DrawBoundingBox(vScreenOrigin.x, vScreenOrigin.y, height, width, color);
-			}
+
+			DrawBoundingBox(screenOrigin.x, screenOrigin.y, height, width, color);
 			if (m_bDrawNames)
 			{
 				DrawName(pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width);
@@ -179,106 +188,128 @@ void CEsp::DrawArmorBar(int posX, int posY, int height, int width, int armor)
 }
 void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color color)
 {
-	if (this->m_bDrawOutline)
+	switch (m_iDrawBoundingBox)
 	{
+	case ESP_STYLE_FULL:
+		if (m_bDrawOutline)
+		{
+			//todo implement
+		}
+
+		//todo only drawing top and bottom lane
+		m_pApp->Surface()->DrawSetColor(color);
+		m_pApp->Surface()->DrawOutlinedRect(
+			posX - width / 2 - 1, // links
+			posY + 6, // unten
+			posX + width / 2 + 1, // rechts
+			posY - height - 5); // oben
+		break;
+	case ESP_STYLE_EDGE:
+		if (m_bDrawOutline)
+		{
+			//left line top and bottom
+			m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+			m_pApp->Surface()->DrawFilledRect(
+				posX - width / 2 - 2,
+				posY - height - 6,
+				posX - width / 2 + 2,
+				posY - height - 4 + (width / 2 - width / 5));
+			m_pApp->Surface()->DrawFilledRect(
+				posX - width / 2 - 2,
+				posY + 5 - (width / 2 - width / 5),
+				posX - width / 2 + 2,
+				posY + 7);
+
+			// left line top and bottom
+			m_pApp->Surface()->DrawFilledRect(
+				posX + width / 2 - 2,
+				posY - height - 6,
+				posX + width / 2 + 2,
+				posY - height - 4 + (width / 2 - width / 5));
+			m_pApp->Surface()->DrawFilledRect(
+				posX + width / 2 - 2,
+				posY + 5 - (width / 2 - width / 5),
+				posX + width / 2 + 2,
+				posY + 7);
+
+			// bottom line left and right
+			m_pApp->Surface()->DrawFilledRect(
+				posX - width / 2 - 2,
+				posY + 3,
+				posX - width / 5 + 1,
+				posY + 7);
+			m_pApp->Surface()->DrawFilledRect(
+				posX + width / 5 - 1,
+				posY + 3,
+				posX + width / 2 + 2,
+				posY + 7);
+
+			// top line left and right
+			m_pApp->Surface()->DrawFilledRect(
+				posX - width / 2 - 2,
+				posY - height - 6,
+				posX - width / 5 + 1,
+				posY - height - 2);
+			m_pApp->Surface()->DrawFilledRect(
+				posX + width / 5 - 1,
+				posY - height - 6,
+				posX + width / 2 + 2,
+				posY - height - 2);
+		}
+
+		m_pApp->Surface()->DrawSetColor(color);
 		//left line top and bottom
-		m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
 		m_pApp->Surface()->DrawFilledRect(
-			posX - width / 2 - 2,
-			posY - height - 6,
-			posX - width / 2 + 2,
-			posY - height - 4 + (width / 2 - width / 5));
+			posX - width / 2 - 1,
+			posY - height - 5,
+			posX - width / 2 + 1,
+			posY - height - 5 + (width / 2 - width / 5));
 		m_pApp->Surface()->DrawFilledRect(
-			posX - width / 2 - 2,
-			posY + 5 - (width / 2 - width / 5),
-			posX - width / 2 + 2,
-			posY + 7);
+			posX - width / 2 - 1,
+			posY + 6 - (width / 2 - width / 5),
+			posX - width / 2 + 1,
+			posY + 6);
 
 		// left line top and bottom
 		m_pApp->Surface()->DrawFilledRect(
-			posX + width / 2 - 2,
-			posY - height - 6,
-			posX + width / 2 + 2,
-			posY - height - 4 + (width / 2 - width / 5));
+			posX + width / 2 - 1,
+			posY - height - 5,
+			posX + width / 2 + 1,
+			posY - height - 5 + (width / 2 - width / 5));
 		m_pApp->Surface()->DrawFilledRect(
-			posX + width / 2 - 2,
-			posY + 5 - (width / 2 - width / 5),
-			posX + width / 2 + 2,
-			posY + 7);
+			posX + width / 2 - 1,
+			posY + 6 - (width / 2 - width / 5),
+			posX + width / 2 + 1,
+			posY + 6);
 
 		// bottom line left and right
 		m_pApp->Surface()->DrawFilledRect(
-			posX - width / 2 - 2,
-			posY + 3,
-			posX - width / 5 + 1,
-			posY + 7);
+			posX - width / 2 - 1,
+			posY + 4,
+			posX - width / 5,
+			posY + 6);
 		m_pApp->Surface()->DrawFilledRect(
-			posX + width / 5 - 1,
-			posY + 3,
-			posX + width / 2 + 2,
-			posY + 7);
+			posX + width / 5,
+			posY + 4,
+			posX + width / 2 + 1,
+			posY + 6);
 
-		// top line left and right
+		//top line left and right
 		m_pApp->Surface()->DrawFilledRect(
-			posX - width / 2 - 2,
-			posY - height - 6,
-			posX - width / 5 + 1,
-			posY - height - 2);
+			posX - width / 2 - 1,
+			posY - height - 5,
+			posX - width / 5,
+			posY - height - 3);
 		m_pApp->Surface()->DrawFilledRect(
-			posX + width / 5 - 1,
-			posY - height - 6,
-			posX + width / 2 + 2,
-			posY - height - 2);
+			posX + width / 5,
+			posY - height - 5,
+			posX + width / 2 + 1,
+			posY - height - 3);
+		break;
+	case ESP_STYLE_NONE:
+	default:
+		break;
 	}
-
-	m_pApp->Surface()->DrawSetColor(color);
-	//left line top and bottom
-	m_pApp->Surface()->DrawFilledRect(
-		posX - width / 2 - 1,
-		posY - height - 5,
-		posX - width / 2 + 1,
-		posY - height - 5 + (width / 2 - width / 5));
-	m_pApp->Surface()->DrawFilledRect(
-		posX - width / 2 - 1,
-		posY + 6 - (width / 2 - width / 5),
-		posX - width / 2 + 1,
-		posY + 6);
-
-	// left line top and bottom
-	m_pApp->Surface()->DrawFilledRect(
-		posX + width / 2 - 1,
-		posY - height - 5,
-		posX + width / 2 + 1,
-		posY - height - 5 + (width / 2 - width / 5));
-	m_pApp->Surface()->DrawFilledRect(
-		posX + width / 2 - 1,
-		posY + 6 - (width / 2 - width / 5),
-		posX + width / 2 + 1,
-		posY + 6);
-
-	// bottom line left and right
-	m_pApp->Surface()->DrawFilledRect(
-		posX - width / 2 - 1,
-		posY + 4,
-		posX - width / 5,
-		posY + 6);
-	m_pApp->Surface()->DrawFilledRect(
-		posX + width / 5,
-		posY + 4,
-		posX + width / 2 + 1,
-		posY + 6);
-
-	//top line left and right
-	m_pApp->Surface()->DrawFilledRect(
-		posX - width / 2 - 1,
-		posY - height - 5,
-		posX - width / 5,
-		posY - height - 3);
-	m_pApp->Surface()->DrawFilledRect(
-		posX + width / 5,
-		posY - height - 5,
-		posX + width / 2 + 1,
-		posY - height - 3);
 }
 void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health)
 {
@@ -355,7 +386,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
 	}
 	m_pApp->Surface()->DrawSetTextFont(font);
-	
+
 	PlayerInfo pInfo;
 	pEntity->GetPlayerInfo(&pInfo);
 
@@ -363,7 +394,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	int iLen = pInfo.GetName(name, 256);
 
 	int w, h;
-  	m_pApp->Surface()->GetTextSize(font, name, w, h);
+	m_pApp->Surface()->GetTextSize(font, name, w, h);
 
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);

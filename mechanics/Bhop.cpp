@@ -28,9 +28,8 @@ void CBhop::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 	
-	// TODO: Chat?
 	DWORD flags = pLocalEntity->GetFlags();
-	if (!m_pApp->EngineClient()->Con_IsVisible() &&
+	if (m_pApp->Gui()->IsMouseEnabled() &&
 		pUserCmd->buttons & IN_JUMP)
 	{
 		if (!(flags & FL_ONGROUND) && !(flags & FL_INWATER))

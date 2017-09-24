@@ -26,8 +26,8 @@ void CSoundEsp::AddSound(CSoundInfo* pSound)
 	if (!m_bIsEnabled)
 		return;
 
-	// TODO: xor
-	if (!strstr(pSound->GetSample(), "footstep"))
+	static CXorString footstep("qdê¶dà²");
+	if (!strstr(pSound->GetSample(), footstep.ToCharArray()))
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -54,8 +54,8 @@ void CSoundEsp::AddSound(CSoundInfo* pSound)
 			return;
 	}
 
-	// TODO: xor
-	pSound->SetSample("Footstep");
+	static CXorString step("dà²");
+	pSound->SetSample(step.ToCharArray());
 	m_vecSounds.push_back(pSound);
 }
 
@@ -69,8 +69,9 @@ void CSoundEsp::UpdateSounds()
 	for (std::vector<CSoundInfo*>::iterator it = m_vecSounds.begin(); it != m_vecSounds.end();)
 	{
 		pCurrent = *it;
-
-		if (pCurrent->GetTimeSinceCreation(timestamp) > m_iShowTime + m_iFadeoutTime)
+		
+		float fFullShowTime = m_iShowTime + (m_bFadeoutEnabled ? m_iFadeoutTime : 0.0f);
+		if (pCurrent->GetTimeSinceCreation(timestamp) > fFullShowTime)
 		{
 			delete pCurrent;
 			it = m_vecSounds.erase(it);
@@ -119,7 +120,8 @@ void CSoundEsp::Update(void* pParameters)
 
 			llTimeAlive = pCurrent->GetTimeSinceCreation(llCurTimestamp);
 			if (llTimeAlive > m_iShowTime)
-				m_pApp->Surface()->DrawSetTextColor(((m_iFadeoutTime - (llTimeAlive - m_iShowTime)) / (float)m_iFadeoutTime) * 255, 255, 255, 255);
+				if(m_bFadeoutEnabled)
+					m_pApp->Surface()->DrawSetTextColor(((m_iFadeoutTime - (llTimeAlive - m_iShowTime)) / (float)m_iFadeoutTime) * 255, 255, 255, 255);
 			else
 				m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 

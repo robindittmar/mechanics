@@ -17,14 +17,18 @@
 
 #define MAX_PLAYERS	64
 
+#define ESP_STYLE_NONE			0
+#define ESP_STYLE_EDGE			1
+#define ESP_STYLE_FULL			2
+
 class CEsp : public IFeature
 {
 public:
 	CEsp();
 	~CEsp();
 
-	void SetDrawBoundingBox(bool bDrawBoundingBox) { m_bDrawBoundingBox = bDrawBoundingBox; }
-	bool GetDrawBoundingBox() { return m_bDrawBoundingBox; }
+	void SetDrawBoundingBox(int iDrawBoundingBox) { m_iDrawBoundingBox = iDrawBoundingBox; }
+	int GetDrawBoundingBox() { return m_iDrawBoundingBox; }
 
 	void SetDrawHealthBar(bool bDrawHealthBar) { m_bDrawHealthBar = bDrawHealthBar; }
 	bool GetDrawHealthBar() { return m_bDrawHealthBar; }
@@ -40,6 +44,9 @@ public:
 
 	void SetDrawOwnModel(bool bDrawOwnModel) { m_bDrawOwnModel = bDrawOwnModel; }
 	bool GetDrawOwnModel() { return m_bDrawOwnModel; }
+
+	void SetDrawOnlyVisible(bool bDrawOnlyVisible) { m_bDrawOnlyVisible = bDrawOnlyVisible; }
+	bool GetDrawOnlyVisible() { return m_bDrawOnlyVisible; }
 
 	void SetDrawOnlySpotted(bool bDrawOnlySpotted) { m_bDrawOnlySpotted = bDrawOnlySpotted; }
 	bool GetDrawOnlySpotted() { return m_bDrawOnlySpotted; }
@@ -60,12 +67,14 @@ private:
 	void DrawHelmet(int posX, int posY, int height, int width);
 	void DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width);
 
-	bool m_bDrawBoundingBox;
+	int m_iDrawBoundingBox;
+
 	bool m_bDrawHealthBar;
 	bool m_bDrawHealthNumber;
 	bool m_bDrawArmorBar;
 	bool m_bDrawOwnTeam;
 	bool m_bDrawOwnModel;
+	bool m_bDrawOnlyVisible;
 	bool m_bDrawOnlySpotted;
 	bool m_bDrawOutline;
 	bool m_bDrawNames;

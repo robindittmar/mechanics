@@ -56,11 +56,11 @@ public:
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int GetFovValue() { return m_iFovValue; }
 
-	void SetDrawLbyIndicator(bool bLbyIndicator) { m_bLbyIndicator = bLbyIndicator; }
-	bool GetDrawLbyIndicator() { return m_bLbyIndicator; }
-
 	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
+
+	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
+	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -77,6 +77,7 @@ public:
 	void Thirdperson();
 	void ThirdpersonAntiAim();
 	void FovChange(CViewSetup*);
+	void DisablePostProcessing(bool bDisablePostProcessing);
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
@@ -102,9 +103,10 @@ private:
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
 
-	bool m_bLbyIndicator;
-
 	float m_flZoomSensitivity;
+
+	bool m_bDisablePostProcessing;
+	bool* m_dwOverridePostProcessingDisable;
 };
 
 #endif // __VISUALS_H__

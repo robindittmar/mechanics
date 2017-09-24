@@ -54,9 +54,6 @@ public:
 	void SetShowOnlyMyTeamSpectators(bool bOnlyMyTeamSpectators) { m_bOnlyMyTeamSpectators = bOnlyMyTeamSpectators; };
 	bool GetShowOnlyMyTeamSpectators() { return m_bOnlyMyTeamSpectators; };
 
-	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
-	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
-
 	void SetJumpScout(bool bJumpScout) { m_bJumpScout = bJumpScout; };
 	bool GetJumpScout() { return m_bJumpScout; };
 
@@ -84,7 +81,6 @@ public:
 	void SetClanTag(const char* tag);
 	void SetNoNameClanTag(bool bSetNoName);
 	void AutoRevolver(CUserCmd* pUserCmd);
-	void DisablePostProcessing();
 	void JumpScout(CUserCmd* pUserCmd);
 	void SetName(const char*);
 	void SpamNameFix();
@@ -98,7 +94,6 @@ private:
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
 	bool m_bOnlyMyTeamSpectators;
-	bool m_bDisablePostProcessing;
 	bool m_bJumpScout;
 	bool m_bNoName;
 	bool m_bIsCustomClanTag;
@@ -109,8 +104,6 @@ private:
 	char m_pClanTag[128];
 
 	CXorString m_xorName;
-
-	unsigned long* m_dwOverridePostProcessingDisable;
 
 	SetClanTag_t m_pSetClanTag;
 };

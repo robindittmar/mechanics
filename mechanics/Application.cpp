@@ -282,13 +282,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame())
 		{
-			static bool test = false;
-			if (!test)
-			{
-				pApp->Misc()->DisablePostProcessing();
-				test = true;
-			}
-
 			if (pLocalEntity->IsAlive())
 			{
 				pApp->Visuals()->NoSmoke();
@@ -430,56 +423,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Menu()->Draw(pSurface);
 
 			// LBY Indicator
-			if (pApp->Visuals()->GetDrawLbyIndicator())
-			{
-				IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-				// todo. draw lby auslagern
-				static unsigned long font = NULL;
-				if (font == NULL)
-				{
-					font = pApp->Surface()->SCreateFont();
-					pApp->Surface()->SetFontGlyphSet(font, "Arial-Black", 20, 255, 0, 0, 0x200);
-				}
-				pApp->Surface()->DrawSetTextFont(font);
-
-				if (pApp->m_bLBY)
-					pApp->Surface()->DrawSetTextColor(255, 0, 255, 0);
-				else
-					pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
-
-				int w, h;
-				pApp->EngineClient()->GetScreenSize(w, h);
-				pApp->Surface()->DrawSetTextPos(25, h - 55);
-				pApp->Surface()->DrawPrintText(L"LBY", 4);
-
-				static unsigned long font1 = NULL;
-				if (font1 == NULL)
-				{
-					font1 = pApp->Surface()->SCreateFont();
-					pApp->Surface()->SetFontGlyphSet(font1, "Arial-Black", 14, 255, 0, 0, 0x200);
-				}
-				pApp->Surface()->DrawSetTextFont(font1);
-				pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-
-				char pBuffer[16];
-				snprintf(pBuffer, 16, "%i", (int)pLocalEntity->GetLowerBodyYaw());
-				wchar_t pBuffW[16];
-				mbstowcs(pBuffW, pBuffer, 16);
-				int len = lstrlenW(pBuffW);
-
-				pApp->Surface()->DrawSetTextPos(65, h - 57);
-				pApp->Surface()->DrawPrintText(pBuffW, len);
-
-				char pBuffer1[16];
-
-				snprintf(pBuffer1, 16, "%i", (int)pApp->m_qLastTickAngles.y);
-				wchar_t pBuffW1[16];
-				mbstowcs(pBuffW1, pBuffer1, 16);
-				int len1 = lstrlenW(pBuffW1);
-
-				pApp->Surface()->DrawSetTextPos(65, h - 46);
-				pApp->Surface()->DrawPrintText(pBuffW1, len1);
-			}
+			pApp->AntiAim()->DrawLBYIndicator();
 		}
 	}
 
@@ -889,7 +833,12 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(true);
 	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_REALRIGHTFAKELEFT);
+	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATIC);
+	this->m_antiAim.SetYawOffset(-90);
+	this->m_antiAim.SetYawFakeSetting(FAKEYAWANTIAIM_STATIC);
+	this->m_antiAim.SetYawFakeOffset(90);
+	this->m_antiAim.SetDrawLbyIndicator(true);
+	this->m_antiAim.SetLbyBreaker(true);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -903,6 +852,7 @@ void CApplication::Setup()
 	this->m_esp.SetDrawArmorBar(false);
 	this->m_esp.SetDrawOwnTeam(false);
 	this->m_esp.SetDrawOwnModel(true);
+	this->m_esp.SetDrawOnlyVisible(false);
 	this->m_esp.SetDrawOnlySpotted(false);
 	this->m_esp.SetDrawOutline(true);
 
@@ -910,6 +860,7 @@ void CApplication::Setup()
 	this->m_soundEsp.SetEnabled(true);
 	this->m_soundEsp.SetShowTime(1.0f);
 	this->m_soundEsp.SetFadeTime(1.0f);
+	this->m_soundEsp.SetFadeoutEnabled(true);
 	this->m_soundEsp.SetDrawOwnTeam(false);
 	this->m_soundEsp.SetDrawVisible(false);
 
@@ -917,7 +868,7 @@ void CApplication::Setup()
 	this->m_chams.SetEnabled(true);
 	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(true);
-	this->m_chams.SetIgnoreZIndex(true);
+	this->m_chams.SetIgnoreZIndex(false);
 	this->m_chams.SetFlatModels(false);
 
 	// Misc
@@ -930,7 +881,6 @@ void CApplication::Setup()
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
-	this->m_misc.SetDisablePostProcessing(true);
 	this->m_misc.SetJumpScout(true);
 	this->m_misc.SetNoName(false);
 	this->m_misc.SetAutoAccept(true);
@@ -947,9 +897,9 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshairShowRecoil(true);
 	this->m_visuals.SetHitmarker(true);
 	this->m_visuals.SetNoSmoke(true);
-	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_WIREFRAME);
+	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
-	this->m_visuals.SetDrawLbyIndicator(true);
+	this->m_visuals.SetDisablePostProcessing(true);
 
 	this->m_visuals.SetNoFlash(true);
 	this->m_visuals.SetFlashPercentage(0.f);
@@ -961,8 +911,9 @@ void CApplication::Setup()
 	this->m_visuals.SetFovValue(110);
 	this->m_visuals.SetFovChangeScoped(true);
 
+
 	// Mirror
-	this->m_mirror.SetEnabled(true);
+	this->m_mirror.SetEnabled(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap

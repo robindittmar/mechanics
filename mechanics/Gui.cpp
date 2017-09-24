@@ -128,3 +128,8 @@ bool CGui::ScreenTransform(const Vector& point, Vector& screen)
 
 	return false;
 }
+
+bool CGui::IsMouseEnabled()
+{
+	return (m_pMouseEnable->value[0] != '0');
+}

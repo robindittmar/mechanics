@@ -12,7 +12,7 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("!UI/competitive_accept_beep.wav"),
+		CXorString("step"),
 		CXorString("VEngineCvar007")
 	};
 	
