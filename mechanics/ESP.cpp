@@ -4,6 +4,10 @@
 CEsp::CEsp()
 {
 	m_iFadeoutTime = 1500;
+
+	m_clrCT = Color(0, 0, 255);
+	m_clrT = Color(255, 0, 0);
+	m_clrSpotted = Color(255, 128, 0);
 }
 
 CEsp::~CEsp()
@@ -104,20 +108,20 @@ void CEsp::Update(void* pParameters)
 				continue;
 		}
 
+		int alpha = 255;
 		Color color;
 		if (m_pPastPlayers[i].GetIsDormant())
 		{
-			int alpha = ((m_iFadeoutTime - (llTimestamp - m_pPastPlayers[i].GetTimestamp())) / (float)m_iFadeoutTime) * 255;
-			g_pConsole->Write("%d\n", alpha);
+			alpha = ((m_iFadeoutTime - (llTimestamp - m_pPastPlayers[i].GetTimestamp())) / (float)m_iFadeoutTime) * 255;
 			color = Color(alpha, 100, 100, 100);
 		}
 		else if (iCurEntityTeam == TEAMNUM_CT)
 		{
-			color = Color(0, 0, 255);
+			color = m_clrCT;
 		}
 		else if (iCurEntityTeam == TEAMNUM_T)
 		{
-			color = Color(255, 0, 0);
+			color = m_clrT;
 		}
 		else
 		{
@@ -126,7 +130,7 @@ void CEsp::Update(void* pParameters)
 
 		if (bIsSpotted)
 		{
-			color = Color(255, 51, 255);
+			color = m_clrSpotted;
 		}
 
 		//todo: both interesting for knifebot
@@ -139,75 +143,83 @@ void CEsp::Update(void* pParameters)
 			float height = abs(vScreenHead.y - vScreenOrigin.y);
 			float width = height * 0.65f;
 
-
-			DrawBoundingBox(vScreenOrigin.x, vScreenOrigin.y, height, width, color);
+			DrawBoundingBox(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, color);
 			if (m_bDrawNames)
 			{
-				DrawName(pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width);
+				DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			}
 			if (m_bDrawHealthBar)
 			{
-				DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth);
+				DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			}
 			if (m_bDrawHealthNumber && iHealth < 100)
 			{
-				DrawHealthNumber(vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth);
+				DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			}
 
 			if (m_bDrawArmorBar)
 			{
-				DrawArmorBar(vScreenOrigin.x, vScreenOrigin.y, height, width, armor);
+				DrawArmorBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, armor, alpha);
 			}
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{
-				DrawHelmet(vScreenOrigin.x, vScreenOrigin.y, height, width);
+				DrawHelmet(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			}
 		}
 	}
 }
 
-void CEsp::DrawArmorBar(int posX, int posY, int height, int width, int armor)
+void CEsp::DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha)
 {
 	float armorpercentage = (100 - armor) / 100.0f;
 
 	//background
-	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
-	m_pApp->Surface()->DrawFilledRect(
+	pSurface->DrawSetColor(alpha, 0, 0, 0);
+	pSurface->DrawFilledRect(
 		posX - width / 2 - 7,
 		posY - height - 5,
 		posX - width / 2 - 3,
 		posY + 6);
 	// actual armor
-	m_pApp->Surface()->DrawSetColor(255, 128, 128, 128);
-	m_pApp->Surface()->DrawFilledRect(
+	pSurface->DrawSetColor(alpha, 128, 128, 128);
+	pSurface->DrawFilledRect(
 		posX - width / 2 - 7,
 		posY - (height - (height * armorpercentage)) - 5,
 		posX - width / 2 - 3,
 		posY + 6);
 }
-void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color color)
+void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color)
 {
+	int x1 = posX - width / 2 - 1;	// left
+	int y1 = posY - height - 5;		// up
+	int x2 = posX + width / 2 + 1;	// right
+	int y2 = posY + 6;				// down
+
+	if (m_bFillBoundingBox)
+	{
+		pSurface->DrawSetColor((color.a() / 255.0f) * 128, 50, 50, 50);
+		pSurface->DrawFilledRect(x1, y1, x2, y2);
+	}
+
 	switch (m_iDrawBoundingBox)
 	{
 	case ESP_STYLE_FULL:
 		if (m_bDrawOutline)
 		{
-			//todo implement
+			m_pApp->Surface()->DrawSetColor(color.a(), 0, 0, 0);
+			m_pApp->Surface()->DrawOutlinedRect(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
+			m_pApp->Surface()->DrawOutlinedRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1);
 		}
 
-		//todo only drawing top and bottom lane
 		m_pApp->Surface()->DrawSetColor(color);
-		m_pApp->Surface()->DrawOutlinedRect(
-			posX - width / 2 - 1, // links
-			posY + 6, // unten
-			posX + width / 2 + 1, // rechts
-			posY - height - 5); // oben
+		m_pApp->Surface()->DrawOutlinedRect(x1, y1, x2, y2);
 		break;
 	case ESP_STYLE_EDGE:
 		if (m_bDrawOutline)
 		{
+			// TODO: Alles auf x1, y1, x2, y2 umschreiben
 			//left line top and bottom
-			m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+			m_pApp->Surface()->DrawSetColor(color.a(), 0, 0, 0);
 			m_pApp->Surface()->DrawFilledRect(
 				posX - width / 2 - 2,
 				posY - height - 6,
@@ -310,7 +322,7 @@ void CEsp::DrawBoundingBox(int posX, int posY, int height, int width, Color colo
 		break;
 	}
 }
-void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health)
+void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2 - 8;
@@ -322,7 +334,7 @@ void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int
 	}
 
 	//background
-	pSurface->DrawSetColor(255, 0, 0, 0);
+	pSurface->DrawSetColor(alpha, 0, 0, 0);
 	pSurface->DrawFilledRect(
 		x1,
 		posY - height - 5,
@@ -331,7 +343,7 @@ void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int
 	);
 
 	// actual health
-	pSurface->DrawSetColor(255, 0, 255, 0);
+	pSurface->DrawSetColor(alpha, 0, 255, 0);
 	pSurface->DrawFilledRect(
 		x1,
 		((posY - height) + (height * healthpercentage)) - 5,
@@ -339,7 +351,7 @@ void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int
 		posY + 6
 	);
 }
-void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int health)
+void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2;
@@ -361,11 +373,11 @@ void CEsp::DrawHealthNumber(int posX, int posY, int height, int width, int healt
 	int w, h;
 	m_pApp->Surface()->GetTextSize(font, sHealth, w, h);
 
-	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextColor(alpha, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(x1 - w, posY - (height - (height * healthpercentage)) - h);
 	m_pApp->Surface()->DrawPrintText(sHealth, iLen);
 }
-void CEsp::DrawHelmet(int posX, int posY, int height, int width)
+void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha)
 {
 	//todo: iwie symbol zeichnen oder sonst etwas
 	/*D3DRECT helmet = {
@@ -376,7 +388,7 @@ void CEsp::DrawHelmet(int posX, int posY, int height, int width)
 
 	pDevice->Clear(1, &helmet, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 83, 83, 83), 0, 0);*/
 }
-void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int width) {
+void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha) {
 	// TODO
 	static unsigned long font = NULL;
 	if (font == NULL)
@@ -395,7 +407,7 @@ void CEsp::DrawName(IClientEntity* pEntity, int posX, int posY, int height, int 
 	int w, h;
 	m_pApp->Surface()->GetTextSize(font, name, w, h);
 
-	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextColor(alpha, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	m_pApp->Surface()->DrawPrintText(name, iLen);
 }

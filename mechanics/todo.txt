@@ -7,6 +7,7 @@ Priority High
 => ConVar->FindVar(...) [x]
 => Netvars [x]
  => Proxy Hooks (Netvars) [x]
+=> Colorpicker
 
 --------------------------------------
 Priority Medium
@@ -15,6 +16,7 @@ Priority Medium
 => Skin changer [x]
 => Viewmodel changer (viewmodel position) [x]
 => Accuracy Penalty (Hitchance)
+=> backtracking
 
 --------------------------------------
 Priority Low
@@ -33,3 +35,7 @@ Priority Low
 -> Fadeouts [ ]
 -> Config [ ]
 -> Menu [ ]
+
+// 2017-09-24
+-> Menu (Visuals/Misc)
+-> Trigger/(Legitbot?)
