@@ -439,7 +439,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pSoundEspFadeoutTimeLabel = new CLabel(4, 70, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pSoundEspFadeoutTime = new CSlider(4, 94, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
+	m_pSoundEspFadeoutTime = new CSlider(4, 92, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pSoundEspFadeoutTime->SetEventHandler(std::bind(&CSoundEsp::SetFadeTime, m_pApp->SoundEsp(), std::placeholders::_1));
 
 	m_pSoundEspDrawOwnTeam = new CCheckbox(4, 124, 128, 16, "Own Team");
@@ -477,9 +477,9 @@ void CMenu::CreateVisualsTab()
 	m_pEffectsNoFlash = new CCheckbox(4, 68, 128, 16, "Remove Flash");
 	m_pEffectsNoFlash->SetEventHandler(std::bind(&CVisuals::SetNoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pEffectsNoFlashLabel = new CLabel(4, 80, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pEffectsNoFlashLabel = new CLabel(4, 82, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pEffectsNoFlashValue = new CSlider(4, 112, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pEffectsNoFlashValue = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
 	// OthersGroup
@@ -518,17 +518,17 @@ void CMenu::CreateVisualsTab()
 	m_pFovChangerFovScopeEnabled = new CCheckbox(4, 20, 128, 16, "Scoping FOV");
 	m_pFovChangerFovScopeEnabled->SetEventHandler(std::bind(&CVisuals::SetFovChangeScoped, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pFovChangerFovLabel = new CLabel(4, 40, 128, 16, "FOV Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFovChangerFovLabel = new CLabel(4, 34, 128, 16, "FOV Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFovChangerFovValue = new CSlider(4, 62, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
+	m_pFovChangerFovValue = new CSlider(4, 56, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
 	m_pFovChangerFovValue->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pFovChangerViewmodelFovEnabled = new CCheckbox(4, 88, 128, 16, "Viewmodel-FOV");
+	m_pFovChangerViewmodelFovEnabled = new CCheckbox(4, 68, 128, 16, "Viewmodel-FOV");
 	m_pFovChangerViewmodelFovEnabled->SetEventHandler(std::bind(&CVisuals::SetViewmodelFov, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pFovChangerViewmodelFovLabel = new CLabel(4, 108, 128, 16, "FOV Viewmodel Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFovChangerViewmodelFovLabel = new CLabel(4, 82, 128, 16, "FOV Viewmodel Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFovChangerViewmodelFovValue = new CSlider(4, 130, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 150.0f);
+	m_pFovChangerViewmodelFovValue = new CSlider(4, 106, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 150.0f);
 	m_pFovChangerViewmodelFovValue->SetEventHandler(std::bind(&CVisuals::SetViewmodelFovValue, m_pApp->Visuals(), std::placeholders::_1));
 
 
