@@ -51,12 +51,21 @@ void CApplication::Detach()
 
 	// ----------- Our stuff -----------
 
+	// Thirdperson
+	if (m_pInput->m_fCameraInThirdPerson)
+	{
+		m_pInput->m_fCameraInThirdPerson = false;
+	}
+
 	// FovChanger
 	if (m_visuals.GetFovChangeScoped())
 	{
 		ConVar* pZoomSensitivity = m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
 		pZoomSensitivity->SetValue(m_visuals.GetZoomSensitivity());
 	}
+
+	// NoSmoke
+	m_visuals.NoSmoke(false);
 
 	// SkinChanger Modeldelete
 	if (m_skinchanger.GetEnabled())
@@ -197,6 +206,18 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 		if (pLocalEntity->IsAlive())
 		{
+			//todo: ghetto !
+			static int bNoFlashTriggered = 0;
+			if (bNoFlashTriggered < 2)
+			{
+				if (bNoFlashTriggered == 0 ||
+					*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) != (255.0f - (255.0f * (1.0f - (pApp->Visuals()->GetFlashPercentage() / 100.0f)))))
+				{
+					pApp->Visuals()->NoFlash(pApp->Visuals()->GetFlashPercentage());
+					bNoFlashTriggered++;
+				}
+			}
+
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
 
 			// Save Viewangles before doing stuff
@@ -319,11 +340,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		{
 			if (pLocalEntity->IsAlive())
 			{
-				pApp->Visuals()->NoSmoke();
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
-
-			pApp->Visuals()->NoFlash();
 		}
 
 		// Menu input handling
@@ -477,9 +495,11 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	// TODO: Warum eig relativer Wert? Sollte man nicht n absolutes FOV angeben können? :)
-	//			CVar 'viewmodel_fov' steht default auf 60 (Wahrscheinlich default FOV)
-	return m_pGetViewModelFov(ecx) + 20.0f;
+	if (pApp->Visuals()->GetViewmodelFov())
+	{
+		return pApp->Visuals()->GetViewmodelFovValue();
+	}
+	return m_pGetViewModelFov(ecx);
 }
 
 bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
@@ -945,13 +965,13 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetCrosshairShowRecoil(true);
 	this->m_visuals.SetHitmarker(true);
-	this->m_visuals.SetNoSmoke(true);
+	this->m_visuals.NoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
-	this->m_visuals.SetDisablePostProcessing(true);
+	this->m_visuals.DisablePostProcessing(true);
 
 	this->m_visuals.SetNoFlash(true);
-	this->m_visuals.SetFlashPercentage(0.f);
+	this->m_visuals.SetFlashPercentage(0.0f);
 
 	this->m_visuals.SetThirdperson(false);
 	this->m_visuals.SetThirdpersonDistance(150);
@@ -959,6 +979,9 @@ void CApplication::Setup()
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
 	this->m_visuals.SetFovChangeScoped(true);
+
+	this->m_visuals.SetViewmodelFov(true);
+	this->m_visuals.SetViewmodelFovValue(90);
 
 
 	// Mirror

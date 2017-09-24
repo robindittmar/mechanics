@@ -5,7 +5,7 @@ CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isCheck
 	m_bIsChecked = isChecked;
 	m_pEventHandler = NULL;
 
-	int offsetX = (CHECKBOX_BOXPADDING * 2) + CHECKBOX_BOXSIZE;
+	int offsetX = CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE;
 	m_pLabel = new CLabel(offsetX, 0, m_iWidth - offsetX, m_iHeight, pText, RM_FONT_NORMAL);
 	this->AddChild(m_pLabel);
 }
@@ -49,9 +49,9 @@ void CCheckbox::Draw(ISurface* pSurface)
 	// Draw box that holds the checkmark
 	pSurface->DrawSetColor(borderColor);
 	pSurface->DrawOutlinedRect(
-		x + CHECKBOX_BOXPADDING,
+		x,
 		y + CHECKBOX_BOXPADDING + ((m_iHeight / 2) - CHECKBOX_BOXSIZE),
-		x + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE,
+		x + CHECKBOX_BOXSIZE,
 		y + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE)));
 
 	// Draw checkmark if checked
@@ -59,9 +59,9 @@ void CCheckbox::Draw(ISurface* pSurface)
 	{
 		pSurface->DrawSetColor(fillColor);
 		pSurface->DrawFilledRect(
-			x + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING,
+			x + CHECKBOX_FILLERPADDING,
 			y + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE)),
-			x + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE - CHECKBOX_FILLERPADDING,
+			x + CHECKBOX_BOXSIZE - CHECKBOX_FILLERPADDING,
 			y + CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE - CHECKBOX_FILLERPADDING + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE))
 		);
 	}

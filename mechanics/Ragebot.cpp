@@ -168,6 +168,9 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity, bool bAbleToHit)
 {
 	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
+		return;
+
 	float fNextattack = pActiveWeapon->GetNextPrimaryAttack();
 	float fServertime = pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick;
 

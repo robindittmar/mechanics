@@ -101,10 +101,18 @@ private:
 	CCheckbox* m_pEspDrawOwnTeam;
 	CCheckbox* m_pEspDrawOwnModel;
 
+	CCheckbox* m_pEspFadeoutEnabled;
+	CLabel* m_pEspFadeoutLabel;
+	CSlider* m_pEspFadeoutValue;
+
 	CCheckbox* m_pEspDrawOnlyVisible;
 	CCheckbox* m_pEspDrawOnlySpotted;
 
 	CCheckbox* m_pEspDrawNames;
+
+	CCheckbox* m_pEspBarrelEnabled;
+	CLabel* m_pEspBarrelLabel;
+	CSlider* m_pEspBarrelValue;
 	
 	// Chams
 	CGroupbox* m_pChamsGroup;
@@ -127,15 +135,40 @@ private:
 	CCheckbox* m_pSoundEspDrawOwnTeam;
 	CCheckbox* m_pSoundEspOnlyNotVisible;
 
+
 	CTabPage* m_pOtherVisualsTab;
 
-	CCheckbox* m_pDisablePostprocessing;
-	CCheckbox* m_pMirror;
-	CCheckbox* m_pThirdperson;
-	CSelectbox* m_pHandsDrawStyle;
+	CGroupbox* m_pFovChangerGroup;
+	CCheckbox* m_pFovChangerFovEnabled;
+	CCheckbox* m_pFovChangerFovScopeEnabled;
+	CLabel* m_pFovChangerFovLabel;
+	CSlider* m_pFovChangerFovValue;
+	CCheckbox* m_pFovChangerViewmodelFovEnabled;
+	CLabel* m_pFovChangerViewmodelFovLabel;
+	CSlider* m_pFovChangerViewmodelFovValue;
+
+	CGroupbox* m_pEffectsGroup;
+	CCheckbox* m_pEffectsNoVisualRecoil;
+	CCheckbox* m_pEffectsNoSmoke;
+	CCheckbox* m_pEffectsNoFlash;
+	CLabel* m_pEffectsNoFlashLabel;
+	CSlider* m_pEffectsNoFlashValue;
+	CCheckbox* m_pEffectsDisablePostprocessing;
+
+
+	CGroupbox* m_pOthersGroup;
+	CSelectbox* m_pOthersHandsDrawStyle;
+	CCheckbox* m_pOthersHitmarkerEnabled;
+	CCheckbox* m_pOthersCrosshairEnabled;
+	CCheckbox* m_pOthersRecoilCrosshairEnabled;
+	CCheckbox* m_pOthersThirdperson;
+	CLabel* m_pOthersThirdpersonLabel;
+	CSlider* m_pOthersThirdpersonDistance;
+	CCheckbox* m_pOthersMirror;
+
+
 	CSlider* m_pFlashAmount;
-	CSlider* m_pFov;
-	CSlider* m_pViewmodelFov;
+
 	//
 	// Misc tab
 	CTabPage* m_pMiscTab;

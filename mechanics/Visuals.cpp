@@ -16,6 +16,8 @@ void CVisuals::Setup()
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
 
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
+
+	m_iViewmodelFovValue = 70;
 }
 
 void CVisuals::Update(void* pParameters)
@@ -113,24 +115,33 @@ void CVisuals::DrawHitmarker()
 	}
 }
 
-void CVisuals::NoFlash()
+void CVisuals::NoFlash(float fFlashPercentage)
 {
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_bNoFlash)
-		return;
+	m_fFlashPercentage = fFlashPercentage;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f - (255.0f * (1.0f - m_fFlashPercentage));
+	static bool bDisabledNoFlash = false;
+	if (!m_bNoFlash)
+	{
+		if (!bDisabledNoFlash)
+		{
+			*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f;
+			bDisabledNoFlash = true;
+		}
+	}
+	else
+	{
+		*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f - (255.0f * (1.0f - (m_fFlashPercentage / 100.0f)));
+		bDisabledNoFlash = false;
+	}
 }
 
-void CVisuals::NoSmoke()
+void CVisuals::NoSmoke(bool bNoSmoke)
 {
 	if (!m_bIsEnabled)
-		return;
-
-	if (!m_bNoSmoke)
 		return;
 
 	static CXorString smoke_materials[] = {
@@ -141,11 +152,19 @@ void CVisuals::NoSmoke()
 	};
 	static CXorString pOtherTextures("Xí§e+ñ§oð°rx");
 
+	m_bNoSmoke = bNoSmoke;
+
+	static bool bNoSmokeDisabled = true;
+	if (!m_bNoSmoke && bNoSmokeDisabled)
+		return;
+
 	for (int i = 0; i < sizeof(smoke_materials) / sizeof(*smoke_materials); i++)
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(smoke_materials[i].ToCharArray(), pOtherTextures.ToCharArray());
-		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		
+		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, bNoSmokeDisabled);
 	}
+	bNoSmokeDisabled = !bNoSmokeDisabled;
 }
 
 IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
@@ -219,10 +238,10 @@ void CVisuals::Thirdperson()
 	}
 
 	m_pApp->EngineClient()->GetViewAngles(vecAngles);
-	if (!m_pApp->Input()->m_fCameraInThirdPerson)
+	if (!m_pApp->Input()->m_fCameraInThirdPerson || m_iThirdpersonDistance != m_pApp->Input()->m_vecCameraOffset.z)
 	{
 		m_pApp->Input()->m_fCameraInThirdPerson = true;
-		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonValue);
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonDistance);
 	}
 }
 
@@ -252,7 +271,8 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 	static bool bChangedZoomSensitivity = false;
 	static ConVar* pZoomSensitivity = m_pApp->CVar()->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
 	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
-	if (m_bFovChangeScoped && pLocalEntity->IsScoped())
+	bool bChangeScopedFov = m_bFovChangeScoped && pLocalEntity->IsScoped();
+	if (bChangeScopedFov)
 	{
 		if (!bChangedZoomSensitivity)
 		{
@@ -268,7 +288,10 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 		return;
 	}
 
-	pViewSetup->fov = m_iFovValue;
+	if (bChangeScopedFov || m_bFovChangeScoped && !pLocalEntity->IsScoped() || !m_bFovChangeScoped && !pLocalEntity->IsScoped())
+	{
+		pViewSetup->fov = m_iFovValue;
+	}
 }
 
 void CVisuals::DisablePostProcessing(bool bDisablePostProcessing)

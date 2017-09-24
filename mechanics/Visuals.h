@@ -30,9 +30,9 @@ public:
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
-	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; }
+	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; if (!bNoFlash) NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
-	void SetFlashPercentage(float fNoFlashPercentage) { m_fFlashPercentage = fNoFlashPercentage; }
+	void SetFlashPercentage(float fFlashPercentage) { m_fFlashPercentage = fFlashPercentage; }
 	float GetFlashPercentage() { return m_fFlashPercentage; }
 
 	void SetNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
@@ -46,8 +46,8 @@ public:
 
 	void SetThirdperson(bool bThirdperson) { m_bThirdperson = bThirdperson; }
 	bool GetThirdperson() { return m_bThirdperson; }
-	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; }
-	int GetThirdpersonValue() { return m_iThirdpersonValue; }
+	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonDistance = iThirdpersonValue; }
+	int GetThirdpersonDistance() { return m_iThirdpersonDistance; }
 
 	void SetFovChange(bool bFovChange) { m_bFovChange = bFovChange; }
 	bool GetFovChange() { return m_bFovChange; }
@@ -55,6 +55,11 @@ public:
 	int GetFovChangeScoped() { return m_bFovChangeScoped; }
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int GetFovValue() { return m_iFovValue; }
+
+	void SetViewmodelFov(bool bViewmodelFovChange) { m_bViewmodelFovChange = bViewmodelFovChange; }
+	bool GetViewmodelFov() { return m_bViewmodelFovChange; }
+	void SetViewmodelFovValue(int iViewmodelFovValue) { m_iViewmodelFovValue = iViewmodelFovValue; }
+	int GetViewmodelFovValue() { return m_iViewmodelFovValue; }
 
 	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
@@ -70,8 +75,8 @@ public:
 
 	void DrawCrosshair();
 	void DrawHitmarker();
-	void NoFlash();
-	void NoSmoke();
+	void NoFlash(float fFlashPercentage);
+	void NoSmoke(bool bNoSmoke);
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	void NoVisualRecoil(CViewSetup*);
 	void Thirdperson();
@@ -97,11 +102,14 @@ private:
 	bool m_bNoVisualRecoil;
 
 	bool m_bThirdperson;
-	int m_iThirdpersonValue;
+	int m_iThirdpersonDistance;
 
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
+
+	bool m_bViewmodelFovChange;
+	int m_iViewmodelFovValue;
 
 	float m_flZoomSensitivity;
 

@@ -35,9 +35,13 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-	if (activeWeapon->IsNade() ||
-		activeWeapon->IsPistol() && !m_pApp->Visuals()->GetNoVisualRecoil()) //todo: maybe norecoil while pistol
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+
+	if (!pActiveWeapon)
+		return;
+
+	if (pActiveWeapon->IsNade() ||
+		pActiveWeapon->IsPistol() && !m_pApp->Visuals()->GetNoVisualRecoil()) //todo: maybe norecoil while pistol
 		return;
 
 	if (m_pApp->Ragebot()->DidNoRecoil())
@@ -397,7 +401,6 @@ void CMisc::JumpScout(CUserCmd* pUserCmd)
 
 	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
-
 	if (!pActiveWeapon)
 		return;
 
