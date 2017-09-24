@@ -28,6 +28,7 @@ void CEsp::Update(void* pParameters)
 	IClientEntity* pLocalEntity;
 	IClientEntity* pCurEntity;
 	int iLocalTeam;
+	Vector vMyHeadPos;
 
 	// Grab LocalPlayer
 	pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -36,6 +37,7 @@ void CEsp::Update(void* pParameters)
 
 	// Grab localplayer info
 	iLocalTeam = pLocalEntity->GetTeamNum();
+	vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
 	ULONGLONG llTimestamp = GetTickCount64();
 
@@ -78,12 +80,9 @@ void CEsp::Update(void* pParameters)
 			iCurEntityTeam == 0)
 			continue;
 
-		Vector screenOrigin, screenHead;
-
+		Vector vScreenOrigin, vScreenHead;
 		Vector vCurEntOrigin = *pCurEntity->GetOrigin();
 		Vector vCurEntHeadPos = vCurEntOrigin + *pCurEntity->GetEyeOffset();
-
-		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
 		Ray_t ray;
 		trace_t trace;
@@ -135,13 +134,13 @@ void CEsp::Update(void* pParameters)
 		int armor = pCurEntity->GetArmor();
 		bool hasHelmet = pCurEntity->HasHelmet();
 
-		if (m_pGui->WorldToScreen(vCurEntOrigin, screenOrigin) && m_pGui->WorldToScreen(vCurEntHeadPos, screenHead))
+		if (m_pGui->WorldToScreen(vCurEntOrigin, vScreenOrigin) && m_pGui->WorldToScreen(vCurEntHeadPos, vScreenHead))
 		{
 			float height = abs(vScreenHead.y - vScreenOrigin.y);
 			float width = height * 0.65f;
 
 
-			DrawBoundingBox(screenOrigin.x, screenOrigin.y, height, width, color);
+			DrawBoundingBox(vScreenOrigin.x, vScreenOrigin.y, height, width, color);
 			if (m_bDrawNames)
 			{
 				DrawName(pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width);
