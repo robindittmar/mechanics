@@ -139,12 +139,9 @@ void CVisuals::NoFlash(float fFlashPercentage)
 	}
 }
 
-void CVisuals::NoSmoke()
+void CVisuals::NoSmoke(bool bNoSmoke)
 {
 	if (!m_bIsEnabled)
-		return;
-
-	if (!m_bNoSmoke)
 		return;
 
 	static CXorString smoke_materials[] = {
@@ -155,11 +152,19 @@ void CVisuals::NoSmoke()
 	};
 	static CXorString pOtherTextures("Xí§e+ñ§oð°rx");
 
+	m_bNoSmoke = bNoSmoke;
+
+	static bool bNoSmokeDisabled = true;
+	if (!m_bNoSmoke && bNoSmokeDisabled)
+		return;
+
 	for (int i = 0; i < sizeof(smoke_materials) / sizeof(*smoke_materials); i++)
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(smoke_materials[i].ToCharArray(), pOtherTextures.ToCharArray());
-		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+		
+		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, bNoSmokeDisabled);
 	}
+	bNoSmokeDisabled = !bNoSmokeDisabled;
 }
 
 IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)

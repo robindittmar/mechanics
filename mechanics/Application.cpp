@@ -64,6 +64,9 @@ void CApplication::Detach()
 		pZoomSensitivity->SetValue(m_visuals.GetZoomSensitivity());
 	}
 
+	// NoSmoke
+	m_visuals.NoSmoke(false);
+
 	// SkinChanger Modeldelete
 	if (m_skinchanger.GetEnabled())
 		m_pClientState->ForceFullUpdate();
@@ -203,6 +206,18 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 		if (pLocalEntity->IsAlive())
 		{
+			//todo: ghetto !
+			static int bNoFlashTriggered = 0;
+			if (bNoFlashTriggered < 2)
+			{
+				if (bNoFlashTriggered == 0 ||
+					*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) != (255.0f - (255.0f * (1.0f - (pApp->Visuals()->GetFlashPercentage() / 100.0f)))))
+				{
+					pApp->Visuals()->NoFlash(pApp->Visuals()->GetFlashPercentage());
+					bNoFlashTriggered++;
+				}
+			}
+
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
 
 			// Save Viewangles before doing stuff
@@ -290,7 +305,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 		{
 			if (pLocalEntity->IsAlive())
 			{
-				pApp->Visuals()->NoSmoke();
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
 		}
@@ -910,13 +924,13 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetCrosshairShowRecoil(true);
 	this->m_visuals.SetHitmarker(true);
-	this->m_visuals.SetNoSmoke(true);
+	this->m_visuals.NoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
 	this->m_visuals.DisablePostProcessing(true);
 
 	this->m_visuals.SetNoFlash(true);
-	this->m_visuals.NoFlash(0.0f);
+	this->m_visuals.SetFlashPercentage(0.0f);
 
 	this->m_visuals.SetThirdperson(false);
 	this->m_visuals.SetThirdpersonDistance(150);

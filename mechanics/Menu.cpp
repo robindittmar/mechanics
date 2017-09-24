@@ -469,7 +469,7 @@ void CMenu::CreateVisualsTab()
 	m_pEffectsNoVisualRecoil->SetEventHandler(std::bind(&CVisuals::SetNoVisualRecoil, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pEffectsNoSmoke = new CCheckbox(4, 20, 128, 16, "Remove Smoke");
-	m_pEffectsNoSmoke->SetEventHandler(std::bind(&CVisuals::SetNoSmoke, m_pApp->Visuals(), std::placeholders::_1));
+	m_pEffectsNoSmoke->SetEventHandler(std::bind(&CVisuals::NoSmoke, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pEffectsDisablePostprocessing = new CCheckbox(4, 40, 128, 16, "Disable PostProcessing");
 	m_pEffectsDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));

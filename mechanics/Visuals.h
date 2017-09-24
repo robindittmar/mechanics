@@ -32,6 +32,7 @@ public:
 
 	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; if (!bNoFlash) NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
+	void SetFlashPercentage(float fFlashPercentage) { m_fFlashPercentage = fFlashPercentage; }
 	float GetFlashPercentage() { return m_fFlashPercentage; }
 
 	void SetNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
@@ -75,7 +76,7 @@ public:
 	void DrawCrosshair();
 	void DrawHitmarker();
 	void NoFlash(float fFlashPercentage);
-	void NoSmoke();
+	void NoSmoke(bool bNoSmoke);
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	void NoVisualRecoil(CViewSetup*);
 	void Thirdperson();
