@@ -233,10 +233,10 @@ void CVisuals::Thirdperson()
 	}
 
 	m_pApp->EngineClient()->GetViewAngles(vecAngles);
-	if (!m_pApp->Input()->m_fCameraInThirdPerson)
+	if (!m_pApp->Input()->m_fCameraInThirdPerson || m_iThirdpersonDistance != m_pApp->Input()->m_vecCameraOffset.z)
 	{
 		m_pApp->Input()->m_fCameraInThirdPerson = true;
-		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonValue);
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonDistance);
 	}
 }
 

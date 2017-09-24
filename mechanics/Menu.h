@@ -101,10 +101,18 @@ private:
 	CCheckbox* m_pEspDrawOwnTeam;
 	CCheckbox* m_pEspDrawOwnModel;
 
+	CCheckbox* m_pEspFadeoutEnabled;
+	CLabel* m_pEspFadeoutLabel;
+	CSlider* m_pEspFadeoutValue;
+
 	CCheckbox* m_pEspDrawOnlyVisible;
 	CCheckbox* m_pEspDrawOnlySpotted;
 
 	CCheckbox* m_pEspDrawNames;
+
+	CCheckbox* m_pEspBarrelEnabled;
+	CLabel* m_pEspBarrelLabel;
+	CSlider* m_pEspBarrelValue;
 	
 	// Chams
 	CGroupbox* m_pChamsGroup;
@@ -149,9 +157,14 @@ private:
 
 
 	CGroupbox* m_pOthersGroup;
-	CCheckbox* m_pOthersMirror;
+	CSelectbox* m_pOthersHandsDrawStyle;
+	CCheckbox* m_pOthersHitmarkerEnabled;
+	CCheckbox* m_pOthersCrosshairEnabled;
+	CCheckbox* m_pOthersRecoilCrosshairEnabled;
 	CCheckbox* m_pOthersThirdperson;
-	CSelectbox* m_OtherspHandsDrawStyle;
+	CLabel* m_pOthersThirdpersonLabel;
+	CSlider* m_pOthersThirdpersonDistance;
+	CCheckbox* m_pOthersMirror;
 
 
 	CSlider* m_pFlashAmount;

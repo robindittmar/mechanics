@@ -51,6 +51,12 @@ void CApplication::Detach()
 
 	// ----------- Our stuff -----------
 
+	// Thirdperson
+	if (m_pInput->m_fCameraInThirdPerson)
+	{
+		m_pInput->m_fCameraInThirdPerson = false;
+	}
+
 	// FovChanger
 	if (m_visuals.GetFovChangeScoped())
 	{

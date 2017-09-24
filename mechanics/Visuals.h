@@ -45,8 +45,8 @@ public:
 
 	void SetThirdperson(bool bThirdperson) { m_bThirdperson = bThirdperson; }
 	bool GetThirdperson() { return m_bThirdperson; }
-	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonValue = iThirdpersonValue; }
-	int GetThirdpersonValue() { return m_iThirdpersonValue; }
+	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonDistance = iThirdpersonValue; }
+	int GetThirdpersonDistance() { return m_iThirdpersonDistance; }
 
 	void SetFovChange(bool bFovChange) { m_bFovChange = bFovChange; }
 	bool GetFovChange() { return m_bFovChange; }
@@ -101,7 +101,7 @@ private:
 	bool m_bNoVisualRecoil;
 
 	bool m_bThirdperson;
-	int m_iThirdpersonValue;
+	int m_iThirdpersonDistance;
 
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
