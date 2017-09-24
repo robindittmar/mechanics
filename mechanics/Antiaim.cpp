@@ -72,13 +72,17 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-	if (activeWeapon->IsKnife() && pUserCmd->buttons & IN_ATTACK2)
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+
+	if (!pActiveWeapon)
 		return;
 
-	if (activeWeapon->IsNade())
+	if (pActiveWeapon->IsKnife() && pUserCmd->buttons & IN_ATTACK2)
+		return;
+
+	if (pActiveWeapon->IsNade())
 	{
-		CGrenade* activeGrenade = (CGrenade*)activeWeapon;
+		CGrenade* activeGrenade = (CGrenade*)pActiveWeapon;
 		if (activeGrenade->GetThrowTime() > 0.f)
 			return;
 	}
