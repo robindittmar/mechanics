@@ -287,8 +287,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pApp->Visuals()->NoSmoke();
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
-
-			pApp->Visuals()->NoFlash();
 		}
 
 		// Menu input handling
@@ -442,9 +440,11 @@ float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	// TODO: Warum eig relativer Wert? Sollte man nicht n absolutes FOV angeben können? :)
-	//			CVar 'viewmodel_fov' steht default auf 60 (Wahrscheinlich default FOV)
-	return m_pGetViewModelFov(ecx) + 20.0f;
+	if (pApp->Visuals()->GetViewmodelFov())
+	{
+		return pApp->Visuals()->GetViewmodelFovValue();
+	}
+	return m_pGetViewModelFov(ecx);
 }
 
 bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
@@ -899,10 +899,10 @@ void CApplication::Setup()
 	this->m_visuals.SetNoSmoke(true);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
 	this->m_visuals.SetNoVisualRecoil(true);
-	this->m_visuals.SetDisablePostProcessing(true);
+	this->m_visuals.DisablePostProcessing(true);
 
 	this->m_visuals.SetNoFlash(true);
-	this->m_visuals.SetFlashPercentage(0.f);
+	this->m_visuals.NoFlash(0.0f);
 
 	this->m_visuals.SetThirdperson(false);
 	this->m_visuals.SetThirdpersonDistance(150);
@@ -910,6 +910,9 @@ void CApplication::Setup()
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
 	this->m_visuals.SetFovChangeScoped(true);
+
+	this->m_visuals.SetViewmodelFov(true);
+	this->m_visuals.SetViewmodelFovValue(90);
 
 
 	// Mirror

@@ -107,7 +107,7 @@ void CAntiAim::Update(void* pParameters)
 	//todo: ghettofix while moving
 	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
 	{
-		m_pApp->m_bLbyUpdate = true;
+		m_pApp->m_bLbyUpdate = true && m_bLbyBreaker;
 		angles.y += RandomInt(-180, 180);
 	}
 
@@ -206,7 +206,6 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		angles->y += fRealYaw;
 	}
 
-	//todo: check if lby should break
 	if (m_bLbyBreaker && m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
 	{
 		angles->y += -fRealYaw + fFakeYaw;

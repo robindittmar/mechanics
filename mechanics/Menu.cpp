@@ -113,13 +113,20 @@ void CMenu::ApplySettings()
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
 
-	m_pDisablePostprocessing->SetChecked(m_pApp->Visuals()->GetDisablePostProcessing());
-	m_pMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
-	m_pThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
-	m_pHandsDrawStyle->SetSelectionByValue(m_pApp->Visuals()->GetHandsDrawStyle());
-	m_pFlashAmount->SetDisplayValue(m_pApp->Visuals()->GetFlashPercentage());
-	m_pFov->SetDisplayValue(m_pApp->Visuals()->GetFovValue());
-	// TODO: m_pViewmodelFov
+	m_pEffectsNoVisualRecoil->SetChecked(m_pApp->Visuals()->GetNoVisualRecoil());
+	m_pEffectsNoSmoke->SetChecked(m_pApp->Visuals()->GetNoSmoke());
+	m_pEffectsNoFlash->SetChecked(m_pApp->Visuals()->GetNoFlash());
+	m_pEffectsNoFlashValue->SetDisplayValue(m_pApp->Visuals()->GetFlashPercentage());
+	m_pEffectsDisablePostprocessing->SetChecked(m_pApp->Visuals()->GetDisablePostProcessing());
+	//m_pMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
+	m_pOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
+	//m_pHandsDrawStyle->SetSelectionByValue(m_pApp->Visuals()->GetHandsDrawStyle());
+	//m_pFlashAmount->SetDisplayValue(m_pApp->Visuals()->GetFlashPercentage());
+	m_pFovChangerFovEnabled->SetChecked(m_pApp->Visuals()->GetFovChange());
+	m_pFovChangerFovScopeEnabled->SetChecked(m_pApp->Visuals()->GetFovChangeScoped());
+	m_pFovChangerFovValue->SetDisplayValue(m_pApp->Visuals()->GetFovValue());
+	m_pFovChangerViewmodelFovEnabled->SetChecked(m_pApp->Visuals()->GetViewmodelFov());
+	m_pFovChangerViewmodelFovValue->SetDisplayValue(m_pApp->Visuals()->GetViewmodelFovValue());
 	
 	m_pNoName->SetChecked(m_pApp->Misc()->GetNoName());
 }
@@ -151,7 +158,7 @@ void CMenu::HandleInput()
 		{
 			bool bNewValue = !m_pApp->Visuals()->GetThirdperson();
 
-			m_pThirdperson->SetChecked(bNewValue);
+			m_pOthersThirdperson->SetChecked(bNewValue);
 			m_pApp->Visuals()->SetThirdperson(bNewValue);
 		}
 	}
@@ -367,7 +374,6 @@ void CMenu::CreateVisualsTab()
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pChamsEnabled->SetEventHandler(std::bind(&CChams::SetEnabled, m_pApp->Chams(), std::placeholders::_1));
 
-	// todo OPTIONS !!!!!
 	m_pChamsStyle = new CSelectbox(4, 36, 128, 20, "Chams Style");
 	m_pChamsStyle->AddOption(0, "Lit");
 	m_pChamsStyle->AddOption(1, "Flat");
@@ -426,38 +432,90 @@ void CMenu::CreateVisualsTab()
 	m_pPlayerVisualsTab->AddChild(m_pChamsGroup);
 	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup);
 
-	m_pMirror = new CCheckbox(304, 304, 128, 32, "Mirror");
-	m_pMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
-	m_pThirdperson = new CCheckbox(160, 112, 120, 32, "Thirdperson");
-	m_pThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pHandsDrawStyle = new CSelectbox(304, 16, 128, 32);
+	/*m_pHandsDrawStyle = new CSelectbox(304, 16, 128, 32);
 	m_pHandsDrawStyle->AddOption(HANDSDRAWSTYLE_NONE, "None");
 	m_pHandsDrawStyle->AddOption(HANDSDRAWSTYLE_NOHANDS, "NoHands");
 	m_pHandsDrawStyle->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
-	m_pHandsDrawStyle->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, m_pApp->Visuals(), std::placeholders::_1));
+	m_pHandsDrawStyle->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, m_pApp->Visuals(), std::placeholders::_1));*/
 
-	m_pFlashAmount = new CSlider(304, 64, 128, 32);
-	m_pFlashAmount->SetEventHandler(std::bind(&CVisuals::SetFlashPercentage, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pFov = new CSlider(563, 5, 32, 350, 0.0f, SLIDER_ORIENTATION_VERTICAL, true, 1.0f, 180.0f);
-	m_pFov->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
+	// EffectsGroup
+	m_pEffectsNoVisualRecoil = new CCheckbox(4, 0, 128, 16, "Remove Visual Recoil");
+	m_pEffectsNoVisualRecoil->SetEventHandler(std::bind(&CVisuals::SetNoVisualRecoil, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pViewmodelFov = new CSlider(600, 5, 32, 350, 0.0f, SLIDER_ORIENTATION_VERTICAL, true, 1.0f, 180.0f);
-	m_pViewmodelFov->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
+	m_pEffectsNoSmoke = new CCheckbox(4, 20, 128, 16, "Remove Smoke");
+	m_pEffectsNoSmoke->SetEventHandler(std::bind(&CVisuals::SetNoSmoke, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pDisablePostprocessing = new CCheckbox(4, 0, 128, 16, "Disable Postprocessing");
-	m_pDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));
+	m_pEffectsNoFlash = new CCheckbox(4, 40, 128, 16, "Remove Flash");
+	m_pEffectsNoFlash->SetEventHandler(std::bind(&CVisuals::SetNoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pOtherVisualsTab = new CTabPage("Others");
-	m_pOtherVisualsTab->AddChild(m_pDisablePostprocessing);
-	m_pOtherVisualsTab->AddChild(m_pMirror);
-	m_pOtherVisualsTab->AddChild(m_pThirdperson);
-	m_pOtherVisualsTab->AddChild(m_pHandsDrawStyle);
-	m_pOtherVisualsTab->AddChild(m_pFlashAmount);
-	m_pOtherVisualsTab->AddChild(m_pFov);
-	m_pOtherVisualsTab->AddChild(m_pViewmodelFov);
+	m_pEffectsNoFlashLabel = new CLabel(4, 60, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pEffectsNoFlashValue = new CSlider(4, 82, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pEffectsDisablePostprocessing = new CCheckbox(4, 106, 128, 16, "Disable PostProcessing");
+	m_pEffectsDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));
+
+	// OthersGroup
+	m_pOthersThirdperson = new CCheckbox(4, 0, 128, 16, "Thirdperson");
+	m_pOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pOthersMirror = new CCheckbox(4, 20, 128, 16, "Mirror");
+	m_pOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
+
+
+
+	// FovChangerGroup
+	m_pFovChangerFovEnabled = new CCheckbox(4, 0, 128, 16, "FOV Enabled");
+	m_pFovChangerFovEnabled->SetEventHandler(std::bind(&CVisuals::SetFovChange, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pFovChangerFovScopeEnabled = new CCheckbox(4, 20, 128, 16, "Scoping FOV Enabled");
+	m_pFovChangerFovScopeEnabled->SetEventHandler(std::bind(&CVisuals::SetFovChangeScoped, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pFovChangerFovLabel = new CLabel(4, 40, 128, 16, "FOV Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pFovChangerFovValue = new CSlider(4, 62, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
+	m_pFovChangerFovValue->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pFovChangerViewmodelFovEnabled = new CCheckbox(4, 86, 128, 16, "Viewmodel-FOV Enabled");
+	m_pFovChangerViewmodelFovEnabled->SetEventHandler(std::bind(&CVisuals::SetViewmodelFov, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pFovChangerViewmodelFovLabel = new CLabel(4, 106, 128, 16, "FOV Viewmodel Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pFovChangerViewmodelFovValue = new CSlider(4, 128, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 180.0f);
+	m_pFovChangerViewmodelFovValue->SetEventHandler(std::bind(&CVisuals::SetViewmodelFovValue, m_pApp->Visuals(), std::placeholders::_1));
+
+
+	// Groups
+	m_pEffectsGroup = new CGroupbox(16, 16, 152, 268, "Effects");
+	m_pEffectsGroup->AddChild(m_pEffectsNoVisualRecoil);
+	m_pEffectsGroup->AddChild(m_pEffectsNoSmoke);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlash);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlashLabel);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlashValue);
+	m_pEffectsGroup->AddChild(m_pEffectsDisablePostprocessing);
+
+	m_pOthersGroup = new CGroupbox(184, 16, 152, 268, "Others");
+	m_pOthersGroup->AddChild(m_pOthersThirdperson);
+	m_pOthersGroup->AddChild(m_pOthersMirror);
+
+	m_pFovChangerGroup = new CGroupbox(352, 16, 152, 268, "Fov Changer");
+	m_pFovChangerGroup->AddChild(m_pFovChangerFovEnabled);
+	m_pFovChangerGroup->AddChild(m_pFovChangerFovScopeEnabled);
+	m_pFovChangerGroup->AddChild(m_pFovChangerFovLabel);
+	m_pFovChangerGroup->AddChild(m_pFovChangerFovValue);
+	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovEnabled);
+	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovLabel);
+	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovValue);
+
+
+	m_pOtherVisualsTab = new CTabPage("Other Visuals");
+	m_pOtherVisualsTab->AddChild(m_pEffectsGroup);
+	m_pOtherVisualsTab->AddChild(m_pOthersGroup);
+	m_pOtherVisualsTab->AddChild(m_pFovChangerGroup);
 
 	m_pVisualsTabContainer = new CTabContainer();
 	m_pVisualsTabContainer->AddChild(m_pPlayerVisualsTab);

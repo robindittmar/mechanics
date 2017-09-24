@@ -127,15 +127,35 @@ private:
 	CCheckbox* m_pSoundEspDrawOwnTeam;
 	CCheckbox* m_pSoundEspOnlyNotVisible;
 
+
 	CTabPage* m_pOtherVisualsTab;
 
-	CCheckbox* m_pDisablePostprocessing;
-	CCheckbox* m_pMirror;
-	CCheckbox* m_pThirdperson;
-	CSelectbox* m_pHandsDrawStyle;
+	CGroupbox* m_pFovChangerGroup;
+	CCheckbox* m_pFovChangerFovEnabled;
+	CCheckbox* m_pFovChangerFovScopeEnabled;
+	CLabel* m_pFovChangerFovLabel;
+	CSlider* m_pFovChangerFovValue;
+	CCheckbox* m_pFovChangerViewmodelFovEnabled;
+	CLabel* m_pFovChangerViewmodelFovLabel;
+	CSlider* m_pFovChangerViewmodelFovValue;
+
+	CGroupbox* m_pEffectsGroup;
+	CCheckbox* m_pEffectsNoVisualRecoil;
+	CCheckbox* m_pEffectsNoSmoke;
+	CCheckbox* m_pEffectsNoFlash;
+	CLabel* m_pEffectsNoFlashLabel;
+	CSlider* m_pEffectsNoFlashValue;
+	CCheckbox* m_pEffectsDisablePostprocessing;
+
+
+	CGroupbox* m_pOthersGroup;
+	CCheckbox* m_pOthersMirror;
+	CCheckbox* m_pOthersThirdperson;
+	CSelectbox* m_OtherspHandsDrawStyle;
+
+
 	CSlider* m_pFlashAmount;
-	CSlider* m_pFov;
-	CSlider* m_pViewmodelFov;
+
 	//
 	// Misc tab
 	CTabPage* m_pMiscTab;

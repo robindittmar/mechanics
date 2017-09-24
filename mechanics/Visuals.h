@@ -30,9 +30,8 @@ public:
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
-	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; }
+	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; if (!bNoFlash) NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
-	void SetFlashPercentage(float fNoFlashPercentage) { m_fFlashPercentage = fNoFlashPercentage; }
 	float GetFlashPercentage() { return m_fFlashPercentage; }
 
 	void SetNoSmoke(bool bNoSmoke) { m_bNoSmoke = bNoSmoke; }
@@ -56,6 +55,11 @@ public:
 	void SetFovValue(int iFovValue) { m_iFovValue = iFovValue; }
 	int GetFovValue() { return m_iFovValue; }
 
+	void SetViewmodelFov(bool bViewmodelFovChange) { m_bViewmodelFovChange = bViewmodelFovChange; }
+	bool GetViewmodelFov() { return m_bViewmodelFovChange; }
+	void SetViewmodelFovValue(int iViewmodelFovValue) { m_iViewmodelFovValue = iViewmodelFovValue; }
+	int GetViewmodelFovValue() { return m_iViewmodelFovValue; }
+
 	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
 
@@ -70,7 +74,7 @@ public:
 
 	void DrawCrosshair();
 	void DrawHitmarker();
-	void NoFlash();
+	void NoFlash(float fFlashPercentage);
 	void NoSmoke();
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 	void NoVisualRecoil(CViewSetup*);
@@ -102,6 +106,9 @@ private:
 	bool m_bFovChange;
 	bool m_bFovChangeScoped;
 	int m_iFovValue;
+
+	bool m_bViewmodelFovChange;
+	int m_iViewmodelFovValue;
 
 	float m_flZoomSensitivity;
 

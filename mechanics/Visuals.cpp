@@ -16,6 +16,8 @@ void CVisuals::Setup()
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
 
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
+
+	m_iViewmodelFovValue = 70;
 }
 
 void CVisuals::Update(void* pParameters)
@@ -113,16 +115,28 @@ void CVisuals::DrawHitmarker()
 	}
 }
 
-void CVisuals::NoFlash()
+void CVisuals::NoFlash(float fFlashPercentage)
 {
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_bNoFlash)
-		return;
+	m_fFlashPercentage = fFlashPercentage;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f - (255.0f * (1.0f - m_fFlashPercentage));
+	static bool bDisabledNoFlash = false;
+	if (!m_bNoFlash)
+	{
+		if (!bDisabledNoFlash)
+		{
+			*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f;
+			bDisabledNoFlash = true;
+		}
+	}
+	else
+	{
+		*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) = 255.0f - (255.0f * (1.0f - (m_fFlashPercentage / 100.0f)));
+		bDisabledNoFlash = false;
+	}
 }
 
 void CVisuals::NoSmoke()
@@ -252,7 +266,8 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 	static bool bChangedZoomSensitivity = false;
 	static ConVar* pZoomSensitivity = m_pApp->CVar()->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
 	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
-	if (m_bFovChangeScoped && pLocalEntity->IsScoped())
+	bool bChangeScopedFov = m_bFovChangeScoped && pLocalEntity->IsScoped();
+	if (bChangeScopedFov)
 	{
 		if (!bChangedZoomSensitivity)
 		{
@@ -268,7 +283,10 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 		return;
 	}
 
-	pViewSetup->fov = m_iFovValue;
+	if (bChangeScopedFov || m_bFovChangeScoped && !pLocalEntity->IsScoped() || !m_bFovChangeScoped && !pLocalEntity->IsScoped())
+	{
+		pViewSetup->fov = m_iFovValue;
+	}
 }
 
 void CVisuals::DisablePostProcessing(bool bDisablePostProcessing)
