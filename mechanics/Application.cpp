@@ -856,6 +856,8 @@ void CApplication::Setup()
 	this->m_esp.SetDrawOnlyVisible(false);
 	this->m_esp.SetDrawOnlySpotted(false);
 	this->m_esp.SetDrawOutline(true);
+	this->m_esp.SetDrawViewangles(true);
+	this->m_esp.SetViewanglesLength(45);
 	this->m_esp.SetFadeoutEnabled(true);
 	this->m_esp.SetFadeoutTime(1.0f);
 	this->m_esp.SetColorCT(Color(0, 0, 255));

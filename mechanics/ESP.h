@@ -60,6 +60,12 @@ public:
 	void SetDrawNames(bool bDrawNames) { m_bDrawNames = bDrawNames; }
 	bool GetDrawNames() { return m_bDrawNames; }
 
+	void SetDrawViewangles(bool bDrawViewangles) { m_bDrawViewangles = bDrawViewangles; }
+	bool GetDrawViewangles() { return m_bDrawViewangles; }
+
+	void SetViewanglesLength(int iViewanglesLength) { m_iViewanglesLength = iViewanglesLength; }
+	int GetViewanglesLength() { return m_iViewanglesLength; }
+
 	void SetFadeoutEnabled(bool bFadeoutEnabled) { m_bFadeoutEnabled = bFadeoutEnabled; }
 	bool GetFadeoutEnabled() { return m_bFadeoutEnabled; }
 
@@ -84,6 +90,7 @@ private:
 	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha);
 	void DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha);
+	void DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha);
 
 	bool m_bFillBoundingBox;
 	int m_iDrawBoundingBox;
@@ -97,6 +104,8 @@ private:
 	bool m_bDrawOnlySpotted;
 	bool m_bDrawOutline;
 	bool m_bDrawNames;
+	bool m_bDrawViewangles;
+	int m_iViewanglesLength;
 
 	bool m_bFadeoutEnabled;
 	int m_iFadeoutTime;

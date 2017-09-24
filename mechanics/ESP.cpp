@@ -165,6 +165,11 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawHelmet(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			}
+
+			if (m_bDrawViewangles)
+			{
+				DrawViewangles(pSurface, vScreenHead.x, vScreenHead.y, vCurEntHeadPos, *pCurEntity->GetAngEyeAngles(), alpha);
+			}
 		}
 	}
 }
@@ -206,112 +211,112 @@ void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, i
 	case ESP_STYLE_FULL:
 		if (m_bDrawOutline)
 		{
-			m_pApp->Surface()->DrawSetColor(color.a(), 0, 0, 0);
-			m_pApp->Surface()->DrawOutlinedRect(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
-			m_pApp->Surface()->DrawOutlinedRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1);
+			pSurface->DrawSetColor(color.a(), 0, 0, 0);
+			pSurface->DrawOutlinedRect(x1 - 1, y1 - 1, x2 + 1, y2 + 1);
+			pSurface->DrawOutlinedRect(x1 + 1, y1 + 1, x2 - 1, y2 - 1);
 		}
 
-		m_pApp->Surface()->DrawSetColor(color);
-		m_pApp->Surface()->DrawOutlinedRect(x1, y1, x2, y2);
+		pSurface->DrawSetColor(color);
+		pSurface->DrawOutlinedRect(x1, y1, x2, y2);
 		break;
 	case ESP_STYLE_EDGE:
 		if (m_bDrawOutline)
 		{
 			// TODO: Alles auf x1, y1, x2, y2 umschreiben
 			//left line top and bottom
-			m_pApp->Surface()->DrawSetColor(color.a(), 0, 0, 0);
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawSetColor(color.a(), 0, 0, 0);
+			pSurface->DrawFilledRect(
 				posX - width / 2 - 2,
 				posY - height - 6,
 				posX - width / 2 + 2,
 				posY - height - 4 + (width / 2 - width / 5));
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX - width / 2 - 2,
 				posY + 5 - (width / 2 - width / 5),
 				posX - width / 2 + 2,
 				posY + 7);
 
 			// left line top and bottom
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX + width / 2 - 2,
 				posY - height - 6,
 				posX + width / 2 + 2,
 				posY - height - 4 + (width / 2 - width / 5));
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX + width / 2 - 2,
 				posY + 5 - (width / 2 - width / 5),
 				posX + width / 2 + 2,
 				posY + 7);
 
 			// bottom line left and right
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX - width / 2 - 2,
 				posY + 3,
 				posX - width / 5 + 1,
 				posY + 7);
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX + width / 5 - 1,
 				posY + 3,
 				posX + width / 2 + 2,
 				posY + 7);
 
 			// top line left and right
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX - width / 2 - 2,
 				posY - height - 6,
 				posX - width / 5 + 1,
 				posY - height - 2);
-			m_pApp->Surface()->DrawFilledRect(
+			pSurface->DrawFilledRect(
 				posX + width / 5 - 1,
 				posY - height - 6,
 				posX + width / 2 + 2,
 				posY - height - 2);
 		}
 
-		m_pApp->Surface()->DrawSetColor(color);
+		pSurface->DrawSetColor(color);
 		//left line top and bottom
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX - width / 2 - 1,
 			posY - height - 5,
 			posX - width / 2 + 1,
 			posY - height - 5 + (width / 2 - width / 5));
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX - width / 2 - 1,
 			posY + 6 - (width / 2 - width / 5),
 			posX - width / 2 + 1,
 			posY + 6);
 
 		// left line top and bottom
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX + width / 2 - 1,
 			posY - height - 5,
 			posX + width / 2 + 1,
 			posY - height - 5 + (width / 2 - width / 5));
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX + width / 2 - 1,
 			posY + 6 - (width / 2 - width / 5),
 			posX + width / 2 + 1,
 			posY + 6);
 
 		// bottom line left and right
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX - width / 2 - 1,
 			posY + 4,
 			posX - width / 5,
 			posY + 6);
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX + width / 5,
 			posY + 4,
 			posX + width / 2 + 1,
 			posY + 6);
 
 		//top line left and right
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX - width / 2 - 1,
 			posY - height - 5,
 			posX - width / 5,
 			posY - height - 3);
-		m_pApp->Surface()->DrawFilledRect(
+		pSurface->DrawFilledRect(
 			posX + width / 5,
 			posY - height - 5,
 			posX + width / 2 + 1,
@@ -363,19 +368,19 @@ void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, 
 	if (font == NULL)
 	{
 		font = m_pApp->Surface()->SCreateFont();
-		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
+		pSurface->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
 	}
-	m_pApp->Surface()->DrawSetTextFont(font);
+	pSurface->DrawSetTextFont(font);
 
 	wchar_t sHealth[16];
 	int iLen = swprintf(sHealth, 16, L"%d", health);
 
 	int w, h;
-	m_pApp->Surface()->GetTextSize(font, sHealth, w, h);
+	pSurface->GetTextSize(font, sHealth, w, h);
 
-	m_pApp->Surface()->DrawSetTextColor(alpha, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(x1 - w, posY - (height - (height * healthpercentage)) - h);
-	m_pApp->Surface()->DrawPrintText(sHealth, iLen);
+	pSurface->DrawSetTextColor(alpha, 255, 255, 255);
+	pSurface->DrawSetTextPos(x1 - w, posY - (height - (height * healthpercentage)) - h);
+	pSurface->DrawPrintText(sHealth, iLen);
 }
 void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha)
 {
@@ -394,9 +399,9 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	if (font == NULL)
 	{
 		font = m_pApp->Surface()->SCreateFont();
-		m_pApp->Surface()->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
+		pSurface->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
 	}
-	m_pApp->Surface()->DrawSetTextFont(font);
+	pSurface->DrawSetTextFont(font);
 
 	PlayerInfo pInfo;
 	pEntity->GetPlayerInfo(&pInfo);
@@ -405,9 +410,23 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	int iLen = pInfo.GetName(name, 256);
 
 	int w, h;
-	m_pApp->Surface()->GetTextSize(font, name, w, h);
+	pSurface->GetTextSize(font, name, w, h);
 
-	m_pApp->Surface()->DrawSetTextColor(alpha, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY - height - 17);
-	m_pApp->Surface()->DrawPrintText(name, iLen);
+	pSurface->DrawSetTextColor(alpha, 255, 255, 255);
+	pSurface->DrawSetTextPos(posX - w / 2, posY - height - 17);
+	pSurface->DrawPrintText(name, iLen);
+}
+void CEsp::DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha)
+{
+	Vector vForward, vAimPos, vAimPosScreen;
+
+	// Create forward vector & get aim point
+	AngleVectors(angles, &vForward);
+	vAimPos = headPos + (vForward * m_iViewanglesLength);
+
+	if (m_pGui->WorldToScreen(vAimPos, vAimPosScreen))
+	{
+		pSurface->DrawSetColor(alpha, 255, 255, 255);
+		pSurface->DrawLine(headX, headY, vAimPosScreen.x, vAimPosScreen.y);
+	}
 }
