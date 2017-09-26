@@ -105,7 +105,9 @@ void CRagebot::Update(void* pParameters)
 	m_qAimAngles = *m_pTarget->GetAimAngles();
 
 	// Hitchance
-	if (this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity()) < m_fHitchance)
+	float fHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
+	g_pConsole->Write("%.2f\n", fHitchance);
+	if (fHitchance < m_fHitchance)
 		return;
 
 	// Checks if weapon could hit
@@ -279,7 +281,7 @@ float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActive
 
 	Ray_t ray;
 	trace_t trace;
-	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+	CTraceFilterOnlyPlayers traceFilter(pLocalEntity);
 
 	pActiveWeapon->UpdateAccuracyPenalty();
 
@@ -305,7 +307,7 @@ float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActive
 
 		ray.Init(vHeadPos, vHeadPos + (vForward * 8192.0f));
 		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
-		if (trace.IsEntityVisible(pTarget))
+		if (trace.DidHitEntity(pTarget))
 		{
 			iHits++;
 		}

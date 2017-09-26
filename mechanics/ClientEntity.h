@@ -9,6 +9,7 @@
 #include "Offsets.h"
 #include "CWeapon.h"
 #include "PlayerInfo.h"
+#include "ClientClass.h"
 
 // TODO: Couldn't find the netvar :L
 //		 (Seems to be gone? idk, people say its in "BaseEntity" -> "m_bMoveType",
@@ -124,7 +125,6 @@ class C_BaseEntity;
 class IClientAlphaProperty;
 
 class bf_read;
-class ClientClass;
 
 class CClientThinkHandlePtr;
 typedef CClientThinkHandlePtr* ClientThinkHandle_t;
