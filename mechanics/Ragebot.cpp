@@ -7,6 +7,8 @@ CRagebot::CRagebot()
 	m_bAutoshoot = true;
 	m_bAutoscope = false;
 	m_bDoNoRecoil = true;
+	m_bDoNoSpread = false;
+	m_fHitchance = 0.0f;
 	m_bAutoReload = true;
 
 	m_iTargetCriteria = TARGETCRITERIA_UNSPECIFIED;
@@ -102,6 +104,10 @@ void CRagebot::Update(void* pParameters)
 	// Copy target angles
 	m_qAimAngles = *m_pTarget->GetAimAngles();
 
+	// Hitchance
+	if (this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity()) < m_fHitchance)
+		return;
+
 	// Checks if weapon could hit
 	bool bAbleToHit = !(pMyActiveWeapon->IsTaser() && m_bAutoZeus);
 	if (!bAbleToHit)
@@ -136,6 +142,8 @@ void CRagebot::Update(void* pParameters)
 
 	// Do NoRecoil
 	this->ApplyNoRecoil(pLocalEntity);
+	// Do Nospread
+	this->ApplyNoSpread(pLocalEntity, pMyActiveWeapon, pUserCmd->random_seed);
 	// Apply viewangles & shoot if necessary
 	this->ApplyViewanglesAndShoot(pUserCmd, pLocalEntity, bAbleToHit);
 }
@@ -144,6 +152,7 @@ void inline CRagebot::ResetTickVariables()
 {
 	m_bIsShooting = false;
 	m_bDidNoRecoil = false;
+	m_bDidNoSpread = false;
 
 	m_fDamage = 0.0f;
 }
@@ -154,7 +163,7 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 	// (and remember that we did!)
 	if (m_bDoNoRecoil)
 	{
-		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
+		QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
 		m_qAimAngles.x -= aimPunchAngle.x * m_pApp->GetRecoilCompensation();
 		m_qAimAngles.y -= aimPunchAngle.y * m_pApp->GetRecoilCompensation();
 
@@ -162,6 +171,44 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * m_pApp->GetRecoilCompensation();
 
 		m_bDidNoRecoil = true;
+	}
+}
+
+void CRagebot::ApplyNoSpread(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, int iSeed)
+{
+	if (m_bDoNoSpread)
+	{
+		pActiveWeapon->UpdateAccuracyPenalty();
+
+		m_pApp->RandomSeed()((iSeed & 255) + 1);
+
+		float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
+		float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+		float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
+		float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+
+		float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
+		float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
+
+		float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
+		float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
+
+		m_qAimAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
+		m_qAimAngles.y += RAD2DEG(atanf(fSpreadX));
+
+		m_bDidNoSpread = true;
+
+		// TODO
+		/*if (HackGui::Instance()->Misc_AntiUnstrusted.GetValue())
+		{
+		pCmd->viewangles.pitch += RadToDeg(atan2(fSpreadY, sqrt(1.f + fSpreadX*fSpreadX))); //pitch/yaw
+		pCmd->viewangles.yaw += RadToDeg(atan(fSpreadX));
+		}
+		else
+		{
+		pCmd->viewangles.pitch += RadToDeg(atan(sqrt(fSpreadX * fSpreadX + fSpreadY * fSpreadY))); //pitch/roll nospread
+		pCmd->viewangles.roll += RadToDeg(atan2(-fSpreadX, fSpreadY));
+		}*/
 	}
 }
 
@@ -219,4 +266,50 @@ void inline CRagebot::Aim(CUserCmd* pUserCmd)
 	// Write viewangles
 	pUserCmd->viewangles[0] = m_qAimAngles.x;
 	pUserCmd->viewangles[1] = m_qAimAngles.y;
+}
+
+float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget)
+{
+	int iHits = 0;
+	const float fMaxHits = 255.0f;
+
+	Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+	Vector vForward;
+	QAngle qCurAngles;
+
+	Ray_t ray;
+	trace_t trace;
+	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+
+	pActiveWeapon->UpdateAccuracyPenalty();
+
+	for (int i = 1; i <= 256; i++)
+	{
+		m_pApp->RandomSeed()(i);
+
+		float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
+		float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+		float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
+		float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+
+		float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
+		float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
+
+		float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
+		float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
+
+		qCurAngles = m_qAimAngles;
+		qCurAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
+		qCurAngles.y += RAD2DEG(atanf(fSpreadX));
+		AngleVectors(qCurAngles, &vForward);
+
+		ray.Init(vHeadPos, vHeadPos + (vForward * 8192.0f));
+		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
+		if (trace.IsEntityVisible(pTarget))
+		{
+			iHits++;
+		}
+	}
+
+	return (float)(iHits / fMaxHits);
 }

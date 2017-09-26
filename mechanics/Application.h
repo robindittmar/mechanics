@@ -62,10 +62,8 @@
 #include "IMatRenderContext.h"
 #include "IViewRender.h"
 #include "IEngineSound.h"
+#include "checksum_md5.h"
 
-#define OFFSET_LOCAL 0x2FAC
-#define OFFSET_AIMPUNCHANGLE 0x70
-#define OFFSET_VIEWPUNCHANGLE 0x64
 #define OFFSET_GLOBALS 0x1B
 
 #define RECOIL_TRACKING 0.4499999f

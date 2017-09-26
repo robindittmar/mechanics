@@ -215,8 +215,8 @@ void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 
 	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
 
-	QAngle punchAngles = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
-	QAngle viewPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_VIEWPUNCHANGLE));
+	QAngle punchAngles = *pLocalEntity->GetAimPunchAngle();
+	QAngle viewPunch = *pLocalEntity->GetViewPunchAngle();
 
 	pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * m_pApp->GetRecoilCompensation() * RECOIL_TRACKING);
 	pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * m_pApp->GetRecoilCompensation() * RECOIL_TRACKING);
