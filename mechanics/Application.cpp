@@ -916,10 +916,10 @@ void CApplication::Setup()
 	this->m_antiAim.SetYawFakeOffsetStanding(90);
 	// Moving
 	this->m_antiAim.SetPitchSettingMoving(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSettingMoving(YAWANTIAIM_STATICJITTERBACKWARDS);
+	this->m_antiAim.SetYawSettingMoving(YAWANTIAIM_BACKWARDS);
 	this->m_antiAim.SetYawOffsetMoving(0);
-	this->m_antiAim.SetYawFakeSettingMoving(FAKEYAWANTIAIM_NONE);
-	this->m_antiAim.SetYawFakeOffsetMoving(0);
+	this->m_antiAim.SetYawFakeSettingMoving(FAKEYAWANTIAIM_STATIC);
+	this->m_antiAim.SetYawFakeOffsetMoving(90);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -965,7 +965,7 @@ void CApplication::Setup()
 	this->m_misc.SetNoRecoil(false);
 	this->m_misc.SetFakelag(false);
 	this->m_misc.SetFakelagChokeAmount(10);
-	this->m_misc.SetAutoStrafe(false);
+	this->m_misc.SetAutoStrafeMode(AUTOSTRAFEMODE_LEGIT);
 	this->m_misc.SetAutoPistol(false);
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
@@ -1083,7 +1083,7 @@ void CApplication::Hook()
 	// Proxy functions
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 
-	this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
+	//this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 
 	this->m_bIsHooked = true;
 	this->m_bInitialHookDone = true;

@@ -4,7 +4,11 @@
 #include "IFeature.h"
 #include "XorString.h"
 
-#define MAXPACKETSCHOKED 16
+#define MAXPACKETSCHOKED		16
+
+#define AUTOSTRAFEMODE_NONE		0
+#define AUTOSTRAFEMODE_LEGIT	1
+#define AUTOSTRAFEMODE_RAGE		2
 
 class CApplication;
 class CUserCmd;
@@ -42,8 +46,8 @@ public:
 	void SetFakelagChokeAmount(int iFakelagChokeAmount) { m_iFakelagChokeAmount = iFakelagChokeAmount; };
 	int GetFakelagChokeAmount() { return m_iFakelagChokeAmount; };
 
-	void SetAutoStrafe(bool bAutoStrafe) { m_bAutoStrafe = bAutoStrafe; };
-	bool GetAutoStrafe() { return m_bAutoStrafe; };
+	void SetAutoStrafeMode(int iAutoStrafeMode) { m_iAutoStrafeMode = iAutoStrafeMode; };
+	int GetAutoStrafeMode() { return m_iAutoStrafeMode; };
 
 	void SetAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
 	bool GetAutoPistol() { return m_bAutoPistol; };
@@ -93,7 +97,7 @@ private:
 	int m_iFakelagChokeAmount;
 	int m_iFakelagChokedAmount;
 
-	bool m_bAutoStrafe;
+	int m_iAutoStrafeMode;
 	bool m_bAutoPistol;
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;

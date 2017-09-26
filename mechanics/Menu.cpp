@@ -150,8 +150,16 @@ void CMenu::ApplySettings()
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
 	m_pFakelagChokeAmount->SetDisplayValue(m_pApp->Misc()->GetFakelagChokeAmount());
+	
+	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
+	m_pMiscOthersAutoPistolEnabled->SetChecked(m_pApp->Misc()->GetAutoPistol());
+	m_pMiscOthersJumpScoutEnabled->SetChecked(m_pApp->Misc()->GetJumpScout());
+	m_pMiscOthersAutoAcceptEnabled->SetChecked(m_pApp->Misc()->GetAutoAccept());
+	m_pMiscOthersNoNameEnabled->SetChecked(m_pApp->Misc()->GetNoName());
 
-	m_pNoName->SetChecked(m_pApp->Misc()->GetNoName());
+
+	m_pMiscBhopEnabled->SetChecked(m_pApp->Bhop()->GetEnabled());
+	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Misc()->GetAutoStrafeMode());
 }
 
 void CMenu::HandleInput()
@@ -275,7 +283,6 @@ void CMenu::CreateRageTab()
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
 	m_pAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1));
 
-	//Moving todo: EVENTHANDLER and ApplySettings!!!!!
 	m_pAntiaimMovingPitch = new CSelectbox(4, 10, 128, 20, "Pitch");
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_NONE, "None");
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_DOWN, "Down");
@@ -636,8 +643,20 @@ void CMenu::CreateVisualsTab()
 
 void CMenu::CreateMiscTab()
 {
-	m_pNoName = new CCheckbox(16, 160, 120, 32, "NoName");
-	m_pNoName->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscOthersNoRecoilEnabled = new CCheckbox(4, 0, 128, 16, "Remove Recoil");
+	m_pMiscOthersNoRecoilEnabled->SetEventHandler(std::bind(&CMisc::SetNoRecoil, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscOthersAutoPistolEnabled = new CCheckbox(4, 20, 128, 16, "Auto Pistol");
+	m_pMiscOthersAutoPistolEnabled->SetEventHandler(std::bind(&CMisc::SetAutoPistol, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscOthersJumpScoutEnabled = new CCheckbox(4, 40, 128, 16, "Scout Jump Shots");
+	m_pMiscOthersJumpScoutEnabled->SetEventHandler(std::bind(&CMisc::SetJumpScout, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscOthersAutoAcceptEnabled = new CCheckbox(4, 60, 128, 16, "Auto Accept Matchmaking");
+	m_pMiscOthersAutoAcceptEnabled->SetEventHandler(std::bind(&CMisc::SetAutoAccept, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscOthersNoNameEnabled = new CCheckbox(4, 80, 128, 16, "Remove Name");
+	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1));
@@ -647,15 +666,38 @@ void CMenu::CreateMiscTab()
 	m_pFakelagChokeAmount = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
 	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CMisc::SetFakelagChokeAmount, m_pApp->Misc(), std::placeholders::_1));
 
-	m_pFakelagGroup = new CGroupbox(16, 16, 152, 268, "Fakelag");
+	m_pMiscOthersGroup = new CGroupbox(16, 16, 152, 268, "Others");
+	m_pMiscOthersGroup->AddChild(m_pMiscOthersNoRecoilEnabled);
+	m_pMiscOthersGroup->AddChild(m_pMiscOthersAutoPistolEnabled);
+	m_pMiscOthersGroup->AddChild(m_pMiscOthersJumpScoutEnabled);
+	m_pMiscOthersGroup->AddChild(m_pMiscOthersAutoAcceptEnabled);
+	m_pMiscOthersGroup->AddChild(m_pMiscOthersNoNameEnabled);
+
+	m_pMiscBhopEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pMiscBhopEnabled->SetEventHandler(std::bind(&CBhop::SetEnabled, m_pApp->Bhop(), std::placeholders::_1));
+
+	m_pMiscBhopAutoStrafeMode = new CSelectbox(4, 16, 124, 16, "Auto Strafe Mode");
+	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_NONE, "None");
+	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_LEGIT, "Legit");
+	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_RAGE, "Rage (WIP)");
+	m_pMiscBhopAutoStrafeMode->SetEventHandler(std::bind(&CMisc::SetAutoStrafeMode, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pFakelagGroup = new CGroupbox(184, 16, 152, 268, "Fakelag");
 	m_pFakelagGroup->AddChild(m_pFakelagEnabled);
 	m_pFakelagGroup->AddChild(m_pFakelagLabel);
 	m_pFakelagGroup->AddChild(m_pFakelagChokeAmount);
 
-	m_pMiscTab = new CTabPage("Misc");
-	m_pMiscTab->AddChild(m_pFakelagGroup);
+	m_pMiscBhopAutoStrafeGroup = new CGroupbox(4, 20, 136, 50, "Auto Strafe");
+	m_pMiscBhopAutoStrafeGroup->AddChild(m_pMiscBhopAutoStrafeMode);
+	
+	m_pMiscBhopGroup = new CGroupbox(352, 16, 152, 268, "Bhop");
+	m_pMiscBhopGroup->AddChild(m_pMiscBhopEnabled);
+	m_pMiscBhopGroup->AddChild(m_pMiscBhopAutoStrafeGroup);
 
-	m_pMiscTab->AddChild(m_pNoName);
+	m_pMiscTab = new CTabPage("Misc");
+	m_pMiscTab->AddChild(m_pMiscOthersGroup);
+	m_pMiscTab->AddChild(m_pFakelagGroup);
+	m_pMiscTab->AddChild(m_pMiscBhopGroup);
 }
 
 void CMenu::CreateSkinChangerTab()

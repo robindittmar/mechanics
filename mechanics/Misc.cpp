@@ -108,7 +108,7 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 	if (!m_bIsEnabled)
 		return;
 
-	if (!m_bAutoStrafe)
+	if (m_iAutoStrafeMode == 0)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -117,13 +117,23 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 		!(moveType & MOVETYPE_NOCLIP) &&
 		!(moveType & MOVETYPE_LADDER))
 	{
-		if (pUserCmd->mousedx > 0)
+		switch (m_iAutoStrafeMode)
 		{
-			pUserCmd->sidemove = 450;
-		}
-		else if (pUserCmd->mousedx < 0)
-		{
-			pUserCmd->sidemove = -450;
+		case AUTOSTRAFEMODE_RAGE:
+			break;
+		case AUTOSTRAFEMODE_LEGIT:
+			if (pUserCmd->mousedx > 0)
+			{
+				pUserCmd->sidemove = 450;
+			}
+			else if (pUserCmd->mousedx < 0)
+			{
+				pUserCmd->sidemove = -450;
+			}
+			break;
+		case AUTOSTRAFEMODE_NONE:
+		default:
+			break;
 		}
 	}
 }

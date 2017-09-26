@@ -189,7 +189,18 @@ private:
 	CLabel* m_pFakelagLabel;
 	CSlider* m_pFakelagChokeAmount;
 
-	CCheckbox* m_pNoName;
+	CGroupbox* m_pMiscOthersGroup;
+	CCheckbox* m_pMiscOthersNoRecoilEnabled;
+	CCheckbox* m_pMiscOthersAutoPistolEnabled;
+	CCheckbox* m_pMiscOthersJumpScoutEnabled;
+	CCheckbox* m_pMiscOthersAutoAcceptEnabled;
+	CCheckbox* m_pMiscOthersNoNameEnabled;
+
+	CGroupbox* m_pMiscBhopGroup;
+	CCheckbox* m_pMiscBhopEnabled;
+	CGroupbox* m_pMiscBhopAutoStrafeGroup;
+	CSelectbox* m_pMiscBhopAutoStrafeMode;
+
 	//
 	// SkinChanger tab
 	CTabPage* m_pSkinChangerTab;

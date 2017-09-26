@@ -105,7 +105,7 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 	if (m_bNewGame)
 	{
 		// ClanTag Things
-		pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
+		//pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
 		pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
 		// Name Things
 		pApp->Misc()->SpamNameFix();
