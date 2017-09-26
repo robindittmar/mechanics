@@ -118,6 +118,8 @@ public:
 	void SetRecoilCompensation(float recoilCompensation) { m_flRecoilCompensation = recoilCompensation; }
 	float GetRecoilCompensation() { return m_flRecoilCompensation; }
 
+	IClientEntity* GetLocalPlayer(bool bGetTargetIfLocalDead = false);
+
 	// VTable Hooks
 	VTableHook* ClientModeHook() { return m_pClientModeHook; }
 	VTableHook* ModelRenderHook() { return m_pModelRenderHook; }
@@ -231,7 +233,6 @@ public:
 	static int __fastcall hk_EmitSound2(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
 		float flVolume, float flAttenuation, int nSeed, int iFlags = 0, int iPitch = PITCH_NORM, const Vector *pOrigin = NULL, const Vector *pDirection = NULL, CUtlVector<Vector>* pUtlVecOrigins = NULL,
 		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
-
 	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 private:
 	void Setup();

@@ -67,6 +67,9 @@ public:
 	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
 	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
 
+	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
+	bool GetNoScope() { return m_bNoScope; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -83,6 +86,8 @@ public:
 	void ThirdpersonAntiAim();
 	void FovChange(CViewSetup*);
 	void DisablePostProcessing(bool bDisablePostProcessing);
+	void DrawNoScope();
+	bool NoScope(unsigned int vguiPanel);
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
@@ -115,6 +120,8 @@ private:
 
 	bool m_bDisablePostProcessing;
 	bool* m_dwOverridePostProcessingDisable;
+
+	bool m_bNoScope;
 };
 
 #endif // __VISUALS_H__

@@ -66,14 +66,25 @@ private:
 
 	CGroupbox* m_pAntiaimGroup;
 	CCheckbox* m_pAntiaimEnabled;
-	CSelectbox* m_pAntiaimPitch;
-	CSlider* m_pAntiaimPitchOffset;
-	CSelectbox* m_pAntiaimYaw;
-	CSlider* m_pAntiaimYawOffset;
-	CSelectbox* m_pAntiaimYawFake;
-	CSlider* m_pAntiaimYawFakeOffset;
 	CCheckbox* m_pAntiaimLbyIndicator;
-	CCheckbox* m_pAntiaimLbyBreaker;
+
+	CGroupbox* m_pAntiaimStandingGroup;
+	CSelectbox* m_pAntiaimStandingPitch;
+	CSlider* m_pAntiaimStandingPitchOffset;
+	CSelectbox* m_pAntiaimStandingYaw;
+	CSlider* m_pAntiaimStandingYawOffset;
+	CSelectbox* m_pAntiaimStandingYawFake;
+	CSlider* m_pAntiaimYawStandingFakeOffset;
+	CCheckbox* m_pAntiaimStandingLbyBreaker;
+
+	CGroupbox* m_pAntiaimMovingGroup;
+	CSelectbox* m_pAntiaimMovingPitch;
+	CSlider* m_pAntiaimMovingPitchOffset;
+	CSelectbox* m_pAntiaimMovingYaw;
+	CSlider* m_pAntiaimMovingYawOffset;
+	CSelectbox* m_pAntiaimMovingYawFake;
+	CSlider* m_pAntiaimYawMovingFakeOffset;
+
 	//
 	// Legit tab
 	CTabPage* m_pLegitTab;
@@ -150,21 +161,22 @@ private:
 	CGroupbox* m_pEffectsGroup;
 	CCheckbox* m_pEffectsNoVisualRecoil;
 	CCheckbox* m_pEffectsNoSmoke;
+	CCheckbox* m_pEffectsNoScope;
+	CCheckbox* m_pEffectsDisablePostprocessing;
 	CCheckbox* m_pEffectsNoFlash;
 	CLabel* m_pEffectsNoFlashLabel;
 	CSlider* m_pEffectsNoFlashValue;
-	CCheckbox* m_pEffectsDisablePostprocessing;
 
 
-	CGroupbox* m_pOthersGroup;
-	CSelectbox* m_pOthersHandsDrawStyle;
-	CCheckbox* m_pOthersHitmarkerEnabled;
-	CCheckbox* m_pOthersCrosshairEnabled;
-	CCheckbox* m_pOthersRecoilCrosshairEnabled;
-	CCheckbox* m_pOthersThirdperson;
-	CLabel* m_pOthersThirdpersonLabel;
-	CSlider* m_pOthersThirdpersonDistance;
-	CCheckbox* m_pOthersMirror;
+	CGroupbox* m_pVisualsOthersGroup;
+	CSelectbox* m_pVisualsOthersHandsDrawStyle;
+	CCheckbox* m_pVisualsOthersHitmarkerEnabled;
+	CCheckbox* m_pVisualsOthersCrosshairEnabled;
+	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
+	CCheckbox* m_pVisualsOthersThirdperson;
+	CLabel* m_pVisualsOthersThirdpersonLabel;
+	CSlider* m_pVisualsOthersThirdpersonDistance;
+	CCheckbox* m_pVisualsOthersMirror;
 
 
 	CSlider* m_pFlashAmount;
@@ -172,6 +184,11 @@ private:
 	//
 	// Misc tab
 	CTabPage* m_pMiscTab;
+	CGroupbox* m_pFakelagGroup;
+	CCheckbox* m_pFakelagEnabled;
+	CLabel* m_pFakelagLabel;
+	CSlider* m_pFakelagChokeAmount;
+
 	CCheckbox* m_pNoName;
 	//
 	// SkinChanger tab

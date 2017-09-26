@@ -16,6 +16,8 @@ void CMisc::Setup()
 
 	m_xorName.String("yjè§");
 	m_xorName.Xor();
+
+	m_iFakelagChokeAmount = MAXPACKETSCHOKED;
 }
 
 void CMisc::Update(void* pParameters)
@@ -77,7 +79,8 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 	if (!m_bFakelag)
 		return;
 
-	if (!m_pApp->m_bGotSendPackets)
+	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	if (pLocalEntity->GetVelocity()->Length() <= 0.1f)
 		return;
 
 	if (pUserCmd->buttons == IN_ATTACK ||
@@ -88,17 +91,14 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 		return;
 	}
 
-	static int chokedPackets = 0;
-
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (chokedPackets >= MAXPACKETSCHOKED) //todo: MAXPACKETCHOKED -/+ FakelagValue!
+	if (m_iFakelagChokedAmount >= m_iFakelagChokeAmount)
 	{
 		*m_pApp->m_bSendPackets = true;
-		chokedPackets = 0;
+		m_iFakelagChokedAmount = 0;
 	}
 	else
 	{
-		chokedPackets++;
+		m_iFakelagChokedAmount++;
 		*m_pApp->m_bSendPackets = false;
 	}
 }
@@ -126,39 +126,6 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 			pUserCmd->sidemove = -450;
 		}
 	}
-}
-
-void CMisc::DrawNoScope()
-{
-	if (!m_bIsEnabled)
-		return;
-
-	if (!m_bNoScope)
-		return;
-
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (!pLocalEntity->IsScoped())
-		return;
-
-	int width, height;
-	m_pApp->EngineClient()->GetScreenSize(width, height);
-	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
-	m_pApp->Surface()->DrawLine(width / 2, 0, width / 2, height);
-	m_pApp->Surface()->DrawLine(0, height / 2, width, height / 2);
-}
-
-bool CMisc::NoScope(unsigned int vguiPanel)
-{
-	if (!m_bIsEnabled)
-		return false;
-
-	if (!m_bNoScope)
-		return false;
-
-	static CXorString hudZoom("_~á˜xdè");
-	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
-		return true;
-	return false;
 }
 
 void CMisc::AutoPistol(CUserCmd* pUserCmd)

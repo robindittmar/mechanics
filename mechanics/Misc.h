@@ -36,11 +36,14 @@ public:
 	void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; };
 	bool GetFakelag() { return m_bFakelag; };
 
+	void SetFakelagChokedAmount(int iFakelagChokedAmount) { m_iFakelagChokedAmount = iFakelagChokedAmount; };
+	int GetFakelagChokedAmount() { return m_iFakelagChokedAmount; };
+
+	void SetFakelagChokeAmount(int iFakelagChokeAmount) { m_iFakelagChokeAmount = iFakelagChokeAmount; };
+	int GetFakelagChokeAmount() { return m_iFakelagChokeAmount; };
+
 	void SetAutoStrafe(bool bAutoStrafe) { m_bAutoStrafe = bAutoStrafe; };
 	bool GetAutoStrafe() { return m_bAutoStrafe; };
-
-	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
-	bool GetNoScope() { return m_bNoScope; };
 
 	void SetAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; };
 	bool GetAutoPistol() { return m_bAutoPistol; };
@@ -74,8 +77,6 @@ public:
 	void NoRecoil(CUserCmd* pUserCmd);
 	void Fakelag(CUserCmd* pUserCmd);
 	void AutoStrafe(CUserCmd* pUserCmd);
-	void DrawNoScope();
-	bool NoScope(unsigned int vguiPanel);
 	void AutoPistol(CUserCmd* pUserCmd);
 	void SpectatorList();
 	void SetClanTag(const char* tag);
@@ -87,17 +88,20 @@ public:
 	void AutoAccept(const char* filename);
 private:
 	bool m_bNoRecoil;
+
 	bool m_bFakelag;
+	int m_iFakelagChokeAmount;
+	int m_iFakelagChokedAmount;
+
 	bool m_bAutoStrafe;
-	bool m_bNoScope;
 	bool m_bAutoPistol;
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
 	bool m_bOnlyMyTeamSpectators;
 	bool m_bJumpScout;
-	bool m_bNoName;
 	bool m_bIsCustomClanTag;
 	bool m_bAutoAccept;
+	bool m_bNoName;
 
 	IsReadyCallback_t m_IsReadyCallback;
 
