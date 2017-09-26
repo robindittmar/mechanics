@@ -179,6 +179,15 @@ void CApplication::Rehook()
 	this->m_bIsHooked = true;
 }
 
+IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
+{
+	IClientEntity* pEntity = m_pEntityList->GetClientEntity(m_pEngineClient->GetLocalPlayer());
+	if (bGetTargetIfLocalDead && !pEntity->IsAlive())
+		pEntity = pEntity->GetObserverTarget();
+
+	return pEntity;
+}
+
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
@@ -241,6 +250,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update Bunnyhop
 			pApp->Bhop()->Update(pUserCmd);
 
+			// Update AntiAim
+			pApp->AntiAim()->Update(pUserCmd);
+
 			// Miscs
 			pApp->Misc()->AutoRevolver(pUserCmd);
 			pApp->Misc()->AutoPistol(pUserCmd);
@@ -248,9 +260,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->Fakelag(pUserCmd);
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
-
-			// Update AntiAim
-			pApp->AntiAim()->Update(pUserCmd);
 
 			// Correct movement & angles
 			CorrectMovement(pUserCmd, qOldAngles);
@@ -262,7 +271,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate ||
-				!pApp->AntiAim()->GetEnabled())
+				!pApp->AntiAim()->GetEnabled() ||
+				pUserCmd->buttons & IN_ATTACK ||
+				pUserCmd->buttons & IN_ATTACK2)
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
@@ -403,7 +414,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 	if (pApp->EngineClient()->IsInGame())
 	{
-		if (pApp->Misc()->NoScope(vguiPanel))
+		if (pApp->Visuals()->NoScope(vguiPanel))
 			return;
 
 		static unsigned int vguiMatSystemTopPanel;
@@ -423,8 +434,10 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			pApp->Gui()->GetWorldToScreenMatrix();
 
-			// Draw NoScope & SpecList
-			pApp->Misc()->DrawNoScope();
+			// Draw NoScope
+			pApp->Visuals()->DrawNoScope();
+
+			// Draw SpecList
 			pApp->Misc()->SpectatorList();
 
 			// Draw Esp
@@ -442,11 +455,11 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Crosshair last (but not least)
 			pApp->Visuals()->DrawCrosshair();
 
-			// Draw Menu least ;)
-			pApp->Menu()->Draw(pSurface);
-
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
+
+			// Draw Menu least ;)
+			pApp->Menu()->Draw(pSurface);
 		}
 	}
 
@@ -849,7 +862,7 @@ void CApplication::Setup()
 	this->m_mirror.Setup();
 
 	// Aimbot
-	this->m_ragebot.SetEnabled(true);
+	this->m_ragebot.SetEnabled(false);
 	this->m_ragebot.SetAutoshoot(true);
 	this->m_ragebot.SetAutoscope(true);
 	this->m_ragebot.SetSilentAim(true);
@@ -864,14 +877,21 @@ void CApplication::Setup()
 	this->m_triggerbot.SetShootDelayJitter(15);
 
 	// Antiaim
-	this->m_antiAim.SetEnabled(true);
-	this->m_antiAim.SetPitchSetting(PITCHANTIAIM_DOWN);
-	this->m_antiAim.SetYawSetting(YAWANTIAIM_STATIC);
-	this->m_antiAim.SetYawOffset(-90);
-	this->m_antiAim.SetYawFakeSetting(FAKEYAWANTIAIM_STATIC);
-	this->m_antiAim.SetYawFakeOffset(90);
+	this->m_antiAim.SetEnabled(false);
 	this->m_antiAim.SetDrawLbyIndicator(true);
 	this->m_antiAim.SetLbyBreaker(true);
+	// Standing
+	this->m_antiAim.SetPitchSettingStanding(PITCHANTIAIM_DOWN);
+	this->m_antiAim.SetYawSettingStanding(YAWANTIAIM_STATIC);
+	this->m_antiAim.SetYawOffsetStanding(-90);
+	this->m_antiAim.SetYawFakeSettingStanding(FAKEYAWANTIAIM_STATIC);
+	this->m_antiAim.SetYawFakeOffsetStanding(90);
+	// Moving
+	this->m_antiAim.SetPitchSettingMoving(PITCHANTIAIM_DOWN);
+	this->m_antiAim.SetYawSettingMoving(YAWANTIAIM_STATICJITTERBACKWARDS);
+	this->m_antiAim.SetYawOffsetMoving(0);
+	this->m_antiAim.SetYawFakeSettingMoving(FAKEYAWANTIAIM_NONE);
+	this->m_antiAim.SetYawFakeOffsetMoving(0);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -898,7 +918,7 @@ void CApplication::Setup()
 	//this->m_esp.SetColorSpotted();
 
 	// Sound Esp
-	this->m_soundEsp.SetEnabled(true);
+	this->m_soundEsp.SetEnabled(false);
 	this->m_soundEsp.SetShowTime(1.0f);
 	this->m_soundEsp.SetFadeTime(1.0f);
 	this->m_soundEsp.SetFadeoutEnabled(true);
@@ -916,18 +936,18 @@ void CApplication::Setup()
 	this->m_misc.SetEnabled(true);
 	this->m_misc.SetNoRecoil(false);
 	this->m_misc.SetFakelag(false);
-	this->m_misc.SetAutoStrafe(true);
-	this->m_misc.SetNoScope(true);
-	this->m_misc.SetAutoPistol(true);
+	this->m_misc.SetFakelagChokeAmount(10);
+	this->m_misc.SetAutoStrafe(false);
+	this->m_misc.SetAutoPistol(false);
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);
 	this->m_misc.SetShowOnlyMyTeamSpectators(false);
 	this->m_misc.SetJumpScout(true);
 	this->m_misc.SetNoName(false);
-	this->m_misc.SetAutoAccept(true);
+	this->m_misc.SetAutoAccept(false);
 
 	// SkinChanger
-	this->m_skinchanger.SetEnabled(true);
+	this->m_skinchanger.SetEnabled(false);
 	// TODO: Config und sowas
 	this->LoadSkinChangerConfig();
 
@@ -937,12 +957,13 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetCrosshairShowRecoil(true);
 	this->m_visuals.SetHitmarker(true);
-	this->m_visuals.NoSmoke(true);
-	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NOHANDS);
-	this->m_visuals.SetNoVisualRecoil(true);
+	this->m_visuals.NoSmoke(false);
+	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NONE);
+	this->m_visuals.SetNoVisualRecoil(false);
 	this->m_visuals.DisablePostProcessing(true);
+	this->m_visuals.SetNoScope(true);
 
-	this->m_visuals.SetNoFlash(true);
+	this->m_visuals.SetNoFlash(false);
 	this->m_visuals.SetFlashPercentage(0.0f);
 
 	this->m_visuals.SetThirdperson(false);

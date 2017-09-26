@@ -4,8 +4,8 @@
 
 CAntiAim::CAntiAim()
 {
-	m_iPitchSetting = PITCHANTIAIM_NONE;
-	m_iYawSetting = YAWANTIAIM_NONE;
+	m_iPitchSettingStanding = PITCHANTIAIM_NONE;
+	m_iYawSettingStanding = YAWANTIAIM_NONE;
 }
 
 CAntiAim::~CAntiAim()
@@ -90,6 +90,8 @@ void CAntiAim::Update(void* pParameters)
 	if (pLocalEntity->GetMoveType() & MOVETYPE_LADDER)
 		return;
 
+	m_bIsMoving = pLocalEntity->GetVelocity()->Length() > 0.1;
+
 	QAngle angles;
 	angles = m_pApp->GetClientViewAngles();
 
@@ -99,20 +101,13 @@ void CAntiAim::Update(void* pParameters)
 	// Applying Yaw Anti Aim
 	ApplyYawAntiAim(&angles);
 
-	// Checking if LBY updated
+	// Checking if LBY updated             todo: in proxy !
 	bool lbyUpdate = false;
 	if (m_pApp->m_flOldLby != pLocalEntity->GetLowerBodyYaw())
 	{
 		m_pApp->m_flOldLby = pLocalEntity->GetLowerBodyYaw();
 		m_pApp->m_flRealLbyUpdateTime = m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
 		lbyUpdate = true;
-	}
-
-	//todo: ghettofix while moving
-	if (m_bIsFakeYaw && pLocalEntity->GetVelocity()->Length2D() > 0.1f)
-	{
-		m_pApp->m_bLbyUpdate = true;
-		angles.y += RandomIntDef(-180, 180);
 	}
 
 	// LBY indicator check
@@ -125,9 +120,9 @@ void CAntiAim::Update(void* pParameters)
 
 void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
 {
-	float fRealPitchAngle = 0.0f + m_fPitchOffset;
+	float fRealPitchAngle = 0.0f + (m_bIsMoving ? m_fPitchOffsetMoving : m_fPitchOffsetStanding);
 
-	switch (m_iPitchSetting)
+	switch ((m_bIsMoving ? m_iPitchSettingMoving : m_iPitchSettingStanding))
 	{
 	case PITCHANTIAIM_UP:
 		fRealPitchAngle = -89.0f;
@@ -146,10 +141,10 @@ void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
 void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 {
 	static float trigger = 0.0f;
-	float fRealYawAngle = 0.0f + m_fYawOffset;
+	float fRealYawAngle = 0.0f + (m_bIsMoving ? m_fYawOffsetMoving : m_fYawOffsetStanding);
 
 	// Getting anti aim angles
-	switch (m_iYawSetting)
+	switch ((m_bIsMoving ? m_iYawSettingMoving : m_iYawSettingStanding))
 	{
 	case YAWANTIAIM_STATIC:
 		break;
@@ -178,9 +173,9 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 {
 	static bool bFakeAngleSwitch = true;
-	float fFakeYaw = 0.0f + m_fYawFakeOffset;
+	float fFakeYaw = 0.0f + (m_bIsMoving ? m_fYawFakeOffsetMoving : m_fYawFakeOffsetStanding);
 
-	switch (m_iYawFakeSetting)
+	switch ((m_bIsMoving ? m_iYawFakeSettingMoving : m_iYawFakeSettingStanding))
 	{
 	case FAKEYAWANTIAIM_STATIC:
 		m_bIsFakeYaw = true;
@@ -194,13 +189,15 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 
 	if (m_bIsFakeYaw)
 	{
-		if (bFakeAngleSwitch)
+		if(m_pApp->Misc()->GetFakelag() && m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
+			!bFakeAngleSwitch)
 		{
-			angles->y += fFakeYaw;
+			angles->y += fRealYaw;
+			bFakeAngleSwitch = false;
 		}
 		else
 		{
-			angles->y += fRealYaw;
+			angles->y += fFakeYaw;
 		}
 		*m_pApp->m_bSendPackets = bFakeAngleSwitch;
 		bFakeAngleSwitch = !bFakeAngleSwitch;
@@ -210,7 +207,7 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		angles->y += fRealYaw;
 	}
 
-	if (m_bLbyBreaker && m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
+	if (!m_bIsMoving && m_bLbyBreaker && m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
 	{
 		angles->y += -fRealYaw + fFakeYaw;
 	}

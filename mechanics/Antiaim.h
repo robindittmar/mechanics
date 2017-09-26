@@ -27,24 +27,43 @@ public:
 	CAntiAim();
 	~CAntiAim();
 
-	void SetPitchSetting(int iPitchSetting) { m_iPitchSetting = iPitchSetting; }
-	int GetPitchSetting() { return m_iPitchSetting; }
+	// Standing
+	void SetPitchSettingStanding(int iPitchSetting) { m_iPitchSettingStanding = iPitchSetting; }
+	int GetPitchSettingStanding() { return m_iPitchSettingStanding; }
 
-	void SetYawSetting(int iYawSetting) { m_iYawSetting = iYawSetting; }
-	int GetYawSetting() { return m_iYawSetting; }
+	void SetYawSettingStanding(int iYawSetting) { m_iYawSettingStanding = iYawSetting; }
+	int GetYawSettingStanding() { return m_iYawSettingStanding; }
 
-	void SetYawFakeSetting(int iYawFakeSetting) { m_iYawFakeSetting = iYawFakeSetting; }
-	int GetYawFakeSetting() { return m_iYawFakeSetting; }
+	void SetYawFakeSettingStanding(int iYawFakeSetting) { m_iYawFakeSettingStanding = iYawFakeSetting; }
+	int GetYawFakeSettingStanding() { return m_iYawFakeSettingStanding; }
 
+	void SetPitchOffsetStanding(float fPitchOffset) { m_fPitchOffsetStanding = fPitchOffset; }
+	float GetPitchOffsetStanding() { return m_fPitchOffsetStanding; }
 
-	void SetPitchOffset(float fPitchOffset) { m_fPitchOffset = fPitchOffset; }
-	float GetPitchOffset() { return m_fPitchOffset; }
+	void SetYawOffsetStanding(float fYawOffset) { m_fYawOffsetStanding = fYawOffset; }
+	float GetYawOffsetStanding() { return m_fYawOffsetStanding; }
 
-	void SetYawOffset(float fYawOffset) { m_fYawOffset = fYawOffset; }
-	float GetYawOffset() { return m_fYawOffset; }
+	void SetYawFakeOffsetStanding(float fYawFakeOffset) { m_fYawFakeOffsetStanding = fYawFakeOffset; }
+	float GetYawFakeOffsetStanding() { return m_fYawFakeOffsetStanding; }
 
-	void SetYawFakeOffset(float fYawFakeOffset) { m_fYawFakeOffset = fYawFakeOffset; }
-	float GetYawFakeOffset() { return m_fYawFakeOffset; }
+	// Moving
+	void SetPitchSettingMoving(int iPitchSetting) { m_iPitchSettingMoving = iPitchSetting; }
+	int GetPitchSettingMoving() { return m_iPitchSettingMoving; }
+
+	void SetYawSettingMoving(int iYawSetting) { m_iYawSettingMoving = iYawSetting; }
+	int GetYawSettingMoving() { return m_iYawSettingMoving; }
+
+	void SetYawFakeSettingMoving(int iYawFakeSetting) { m_iYawFakeSettingMoving = iYawFakeSetting; }
+	int GetYawFakeSettingMoving() { return m_iYawFakeSettingMoving; }
+
+	void SetPitchOffsetMoving(float fPitchOffset) { m_fPitchOffsetMoving = fPitchOffset; }
+	float GetPitchOffsetMoving() { return m_fPitchOffsetMoving; }
+
+	void SetYawOffsetMoving(float fYawOffset) { m_fYawOffsetMoving = fYawOffset; }
+	float GetYawOffsetMoving() { return m_fYawOffsetMoving; }
+
+	void SetYawFakeOffsetMoving(float fYawFakeOffset) { m_fYawFakeOffsetMoving = fYawFakeOffset; }
+	float GetYawFakeOffsetMoving() { return m_fYawFakeOffsetMoving; }
 
 	void SetDrawLbyIndicator(bool bDrawLbyIndicator) { m_bDrawLbyIndicator = bDrawLbyIndicator; }
 	bool GetDrawLbyIndicator() { return m_bDrawLbyIndicator; }
@@ -59,18 +78,30 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
-	int m_iPitchSetting;
-	int m_iYawSetting;
-	int m_iYawFakeSetting;
+	// Standing
+	int m_iPitchSettingStanding;
+	int m_iYawSettingStanding;
+	int m_iYawFakeSettingStanding;
 
-	float m_fPitchOffset;
-	float m_fYawOffset;
-	float m_fYawFakeOffset;
+	float m_fPitchOffsetStanding;
+	float m_fYawOffsetStanding;
+	float m_fYawFakeOffsetStanding;
+
+	// Moving
+	int m_iPitchSettingMoving;
+	int m_iYawSettingMoving;
+	int m_iYawFakeSettingMoving;
+
+	float m_fPitchOffsetMoving;
+	float m_fYawOffsetMoving;
+	float m_fYawFakeOffsetMoving;
 
 	bool m_bIsFakeYaw;
 
 	bool m_bDrawLbyIndicator;
 	bool m_bLbyBreaker;
+
+	bool m_bIsMoving;
 
 	void ApplyPitchAntiAim(QAngle* angles);
 	void ApplyYawAntiAim(QAngle* angles);

@@ -300,3 +300,37 @@ void CVisuals::DisablePostProcessing(bool bDisablePostProcessing)
 
 	*m_dwOverridePostProcessingDisable = m_bDisablePostProcessing;
 }
+
+
+void CVisuals::DrawNoScope()
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bNoScope)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer(true);
+	if (!pLocalEntity->IsScoped())
+		return;
+
+	int width, height;
+	m_pApp->EngineClient()->GetScreenSize(width, height);
+	m_pApp->Surface()->DrawSetColor(255, 0, 0, 0);
+	m_pApp->Surface()->DrawLine(width / 2, 0, width / 2, height);
+	m_pApp->Surface()->DrawLine(0, height / 2, width, height / 2);
+}
+
+bool CVisuals::NoScope(unsigned int vguiPanel)
+{
+	if (!m_bIsEnabled)
+		return false;
+
+	if (!m_bNoScope)
+		return false;
+
+	static CXorString hudZoom("_~á˜xdè");
+	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
+		return true;
+	return false;
+}
