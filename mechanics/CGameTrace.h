@@ -70,6 +70,7 @@ public:
 	bool DidHit() const;
 	bool IsVisible() const;
 	bool IsEntityVisible(IClientEntity* pTarget = NULL) const;
+	bool DidHitEntity(IClientEntity* pTarget) const;
 
 public:
 
@@ -141,6 +142,11 @@ inline bool CGameTrace::IsVisible() const
 inline bool CGameTrace::IsEntityVisible(IClientEntity* pTarget) const
 {
 	return ((fraction > 0.97f) || (hit_entity == pTarget));
+}
+
+inline bool CGameTrace::DidHitEntity(IClientEntity* pTarget) const
+{
+	return (hit_entity == pTarget);
 }
 
 #endif // __CGAMETRACE_H__

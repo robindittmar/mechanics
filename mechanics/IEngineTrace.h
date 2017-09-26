@@ -14,6 +14,7 @@
 #include "mathlib/vector4d.h"
 #include "bspflags.h"*/
 #include "Vector.h"
+#include "ClientEntity.h"
 
 
 #define CONTENTS_EMPTY			0		// No contents
@@ -250,6 +251,29 @@ public:
 	virtual TraceType_t GetTraceType() const
 	{
 		return TRACE_EVERYTHING;
+	}
+	void* pSkip;
+};
+
+class CTraceFilterOnlyPlayers : public ITraceFilter
+{
+public:
+	CTraceFilterOnlyPlayers(IHandleEntity* pEntityHandle)
+	{
+		pSkip = pEntityHandle;
+	}
+
+	bool ShouldHitEntity(IHandleEntity* pEntityHandle, int /*contentsMask*/)
+	{
+		if (pEntityHandle == pSkip)
+			return false;
+
+		IClientEntity* pEntity = (IClientEntity*)pEntityHandle;
+		return (pEntity->GetClientClass()->m_ClassID == CLASSID_PLAYER);
+	}
+	virtual TraceType_t GetTraceType() const
+	{
+		return TRACE_ENTITIES_ONLY;
 	}
 	void* pSkip;
 };
