@@ -110,3 +110,21 @@ float CWeapon::GetPostPoneFireReady()
 {
 	return *(float*)((unsigned long)this + Offsets::m_flPostponeFireReadyTime);
 }
+
+void CWeapon::UpdateAccuracyPenalty()
+{
+	typedef void(__thiscall *UpdateAccuracyPenalty_t)(void*);
+	((UpdateAccuracyPenalty_t)(*(void***)this)[470])(this);
+}
+
+float CWeapon::GetInaccuracy()
+{
+	typedef float(__thiscall *GetInaccuracy_t)(void*);
+	return ((GetInaccuracy_t)(*(void***)this)[469])(this);
+}
+
+float CWeapon::GetSpread()
+{
+	typedef float(__thiscall* GetSpread_t)(void*);
+	return ((GetSpread_t)(*(void***)this)[439])(this);
+}

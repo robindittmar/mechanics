@@ -215,6 +215,10 @@ public:
 	CWeaponInfo* GetWeaponInfo();
 	float GetAccuracyPenalty();
 	float GetPostPoneFireReady();
+
+	void UpdateAccuracyPenalty();
+	float GetInaccuracy();
+	float GetSpread();
 private:
 };
 

@@ -276,6 +276,41 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
 				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
 			}
+
+			// TODO: TESTING ONLY
+			/*QAngle qLocalAngles = pApp->GetClientViewAngles();
+			CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
+			if (pActiveWeapon)
+			{
+				pActiveWeapon->UpdateAccuracyPenalty();
+
+				pApp->RandomSeed()((pUserCmd->random_seed & 255) + 1);
+
+				float flSpread = pActiveWeapon->GetSpread();
+				float flInaccuray = pActiveWeapon->GetInaccuracy();
+
+				float flRandPi_1 = pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+				float flRandInaccurary = pApp->RandomFloat()(0.0f, flInaccuray);
+				float flRandPi_2 = pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+				float flRandSpread = pApp->RandomFloat()(0.0f, flInaccuray);
+
+				float flSpreadX = cos(flRandPi_1) * flRandInaccurary + cos(flRandPi_2) * flRandSpread;
+				float flSpreadY = sin(flRandPi_1) * flRandInaccurary + sin(flRandPi_2) * flRandSpread;
+
+				Vector vSpread, vForward, vRight, vUp;
+				AngleVectors(qLocalAngles, &vForward, &vRight, &vUp);
+				vSpread.x = vForward.x + flSpreadX * vRight.y + flSpreadY * vUp.x;
+				vSpread.y = vForward.y + flSpreadX * vRight.y + flSpreadY * vUp.y;
+				vSpread.z = vForward.z + flSpreadX * vRight.z + flSpreadY * vUp.y;
+				vSpread.NormalizeInPlace();
+
+				QAngle qAntiSpread;
+				VectorAngles(vSpread, qAntiSpread);
+				qAntiSpread.NormalizeAngles();
+
+				pApp->EngineClient()->SetViewAngles(qAntiSpread);
+			}*/
+			// ----
 		}
 		else
 		{
@@ -558,9 +593,9 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 				// Fix animations for the Butterfly Knife.
 				switch (m_nSequence) {
 				case SEQUENCE_DEFAULT_DRAW:
-					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2); break;
+					m_nSequence = RandomIntDef(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2); break;
 				case SEQUENCE_DEFAULT_LOOKAT01:
-					m_nSequence = RandomInt(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03); break;
+					m_nSequence = RandomIntDef(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03); break;
 				default:
 					m_nSequence++;
 				}
@@ -571,9 +606,9 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 				case SEQUENCE_DEFAULT_IDLE2:
 					m_nSequence = SEQUENCE_FALCHION_IDLE1; break;
 				case SEQUENCE_DEFAULT_HEAVY_MISS1:
-					m_nSequence = RandomInt(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP); break;
+					m_nSequence = RandomIntDef(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP); break;
 				case SEQUENCE_DEFAULT_LOOKAT01:
-					m_nSequence = RandomInt(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02); break;
+					m_nSequence = RandomIntDef(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02); break;
 				case SEQUENCE_DEFAULT_DRAW:
 				case SEQUENCE_DEFAULT_IDLE1:
 					break;
@@ -588,9 +623,9 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 					m_nSequence = SEQUENCE_DAGGERS_IDLE1; break;
 				case SEQUENCE_DEFAULT_LIGHT_MISS1:
 				case SEQUENCE_DEFAULT_LIGHT_MISS2:
-					m_nSequence = RandomInt(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5); break;
+					m_nSequence = RandomIntDef(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5); break;
 				case SEQUENCE_DEFAULT_HEAVY_MISS1:
-					m_nSequence = RandomInt(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1); break;
+					m_nSequence = RandomIntDef(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1); break;
 				case SEQUENCE_DEFAULT_HEAVY_HIT1:
 				case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
 				case SEQUENCE_DEFAULT_LOOKAT01:
@@ -671,6 +706,10 @@ void CApplication::Setup()
 	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
+
+	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomSeed");
+	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomInt");
+	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomFloat");
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -861,7 +900,9 @@ void CApplication::Setup()
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
 
 	// Triggerbot
-	this->m_triggerbot.SetEnabled(false);
+	this->m_triggerbot.SetEnabled(true);
+	this->m_triggerbot.SetShootDelay(50);
+	this->m_triggerbot.SetShootDelayJitter(15);
 
 	// Antiaim
 	this->m_antiAim.SetEnabled(false);
@@ -902,7 +943,7 @@ void CApplication::Setup()
 	this->m_esp.SetFadeoutTime(1.0f);
 	this->m_esp.SetColorCT(Color(0, 0, 255));
 	this->m_esp.SetColorT(Color(255, 0, 0));
-	this->m_esp.GetColorSpotted();
+	//this->m_esp.SetColorSpotted();
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(false);

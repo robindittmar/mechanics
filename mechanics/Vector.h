@@ -141,7 +141,17 @@ public:
 			z > -tolerance && z < tolerance);
 	}
 
-	vec_t	NormalizeInPlace();
+	vec_t	NormalizeInPlace() { // TODO: C+p from aimtux
+		Vector& v = *this;
+
+		float iradius = 1.f / (this->Length() + 1.192092896e-07F); //FLT_EPSILON
+
+		v.x *= iradius;
+		v.y *= iradius;
+		v.z *= iradius;
+
+		return iradius;
+	}
 	Vector	Normalized() const;
 	bool	IsLengthGreaterThan(float val) const;
 	bool	IsLengthLessThan(float val) const;
@@ -754,6 +764,7 @@ public:
 
 void inline SinCos(float radians, float *sine, float *cosine);
 void VectorAngles(const float *forward, float *angles);
+void VectorAngles(const Vector& forward, QAngle &angles);
 void AngleVectors(const QAngle &angles, Vector *forward = NULL, Vector *right = NULL, Vector *up = NULL);
 void VectorTransform(Vector& vIn, const matrix3x4_t& mIn, Vector& out);
 void VectorRotate(Vector& in1, const matrix3x4_t& in2, Vector* out);
