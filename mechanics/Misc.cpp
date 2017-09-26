@@ -37,8 +37,10 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (!pLocalEntity)
+		return;
 
+	CWeapon* pActiveWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
 	if (!pActiveWeapon)
 		return;
 
@@ -52,13 +54,14 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	int shotsFired = pLocalEntity->GetShotsFired();
 	if (m_pApp->Visuals()->GetNoVisualRecoil())
 	{
-		QAngle aimPunch = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
+		QAngle aimPunch = *pLocalEntity->GetAimPunchAngle();
 		pUserCmd->viewangles[0] -= aimPunch.x * m_pApp->GetRecoilCompensation();
 		pUserCmd->viewangles[1] -= aimPunch.y * m_pApp->GetRecoilCompensation();
 	}
-	else {
+	else
+	{
 		m_pApp->EngineClient()->GetViewAngles(m_pApp->m_viewAngle);
-		QAngle aimPunchAngle = *(QAngle*)((DWORD)pLocalEntity + (OFFSET_LOCAL + OFFSET_AIMPUNCHANGLE));
+		QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
 
 		m_pApp->m_viewAngle.x += (m_pApp->m_oldAimPunchAngle.x - aimPunchAngle.x * m_pApp->GetRecoilCompensation());
 		m_pApp->m_viewAngle.y += (m_pApp->m_oldAimPunchAngle.y - aimPunchAngle.y * m_pApp->GetRecoilCompensation());

@@ -201,6 +201,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 	if (!pUserCmd || !pUserCmd->command_number)
 		return false;
 
+	int iOldSeed = pUserCmd->random_seed;
+	pUserCmd->random_seed = MD5_PseudoRandom(pUserCmd->command_number) & 0x7FFFFFFF;
+
 	if (!pApp->m_bGotSendPackets)
 	{
 		uintptr_t* fp;
@@ -276,41 +279,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
 				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
 			}
-
-			// TODO: TESTING ONLY
-			/*QAngle qLocalAngles = pApp->GetClientViewAngles();
-			CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
-			if (pActiveWeapon)
-			{
-				pActiveWeapon->UpdateAccuracyPenalty();
-
-				pApp->RandomSeed()((pUserCmd->random_seed & 255) + 1);
-
-				float flSpread = pActiveWeapon->GetSpread();
-				float flInaccuray = pActiveWeapon->GetInaccuracy();
-
-				float flRandPi_1 = pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-				float flRandInaccurary = pApp->RandomFloat()(0.0f, flInaccuray);
-				float flRandPi_2 = pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-				float flRandSpread = pApp->RandomFloat()(0.0f, flInaccuray);
-
-				float flSpreadX = cos(flRandPi_1) * flRandInaccurary + cos(flRandPi_2) * flRandSpread;
-				float flSpreadY = sin(flRandPi_1) * flRandInaccurary + sin(flRandPi_2) * flRandSpread;
-
-				Vector vSpread, vForward, vRight, vUp;
-				AngleVectors(qLocalAngles, &vForward, &vRight, &vUp);
-				vSpread.x = vForward.x + flSpreadX * vRight.y + flSpreadY * vUp.x;
-				vSpread.y = vForward.y + flSpreadX * vRight.y + flSpreadY * vUp.y;
-				vSpread.z = vForward.z + flSpreadX * vRight.z + flSpreadY * vUp.y;
-				vSpread.NormalizeInPlace();
-
-				QAngle qAntiSpread;
-				VectorAngles(vSpread, qAntiSpread);
-				qAntiSpread.NormalizeAngles();
-
-				pApp->EngineClient()->SetViewAngles(qAntiSpread);
-			}*/
-			// ----
 		}
 		else
 		{
@@ -318,6 +286,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 		}
 	}
 
+	// Restore old value, just incase Valve decides to check it one day
+	pUserCmd->random_seed = iOldSeed;
 	return false;
 }
 
@@ -707,6 +677,7 @@ void CApplication::Setup()
 	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
 	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
 
+	// TODO: xor
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomSeed");
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomInt");
 	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomFloat");
@@ -898,6 +869,7 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoReload(true);
 	this->m_ragebot.SetAutoZeus(true);
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
+	this->m_ragebot.SetHitchance(60.0f);
 
 	// Triggerbot
 	this->m_triggerbot.SetEnabled(true);

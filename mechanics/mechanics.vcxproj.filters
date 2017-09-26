@@ -219,6 +219,9 @@
     <ClCompile Include="EspPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="checksum_md5.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -511,6 +514,9 @@
     </ClInclude>
     <ClInclude Include="EspPlayer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="checksum_md5.h">
+      <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
