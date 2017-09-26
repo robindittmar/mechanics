@@ -71,7 +71,7 @@ public:
 	void SetLbyBreaker(bool bLbyBreaker) { m_bLbyBreaker = bLbyBreaker; }
 	bool GetLbyBreaker() { return m_bLbyBreaker; }
 
-	bool IsFakeYaw() { return m_bIsFakeYaw; }
+	bool IsFakeYaw();
 
 	void DrawLBYIndicator();
 
@@ -96,12 +96,12 @@ private:
 	float m_fYawOffsetMoving;
 	float m_fYawFakeOffsetMoving;
 
-	bool m_bIsFakeYaw;
-
 	bool m_bDrawLbyIndicator;
 	bool m_bLbyBreaker;
+	bool m_bNextLbyUpdate;
 
 	bool m_bIsMoving;
+	bool m_bWasMoving;
 
 	void ApplyPitchAntiAim(QAngle* angles);
 	void ApplyYawAntiAim(QAngle* angles);

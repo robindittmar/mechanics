@@ -120,6 +120,9 @@ void CVisuals::NoFlash(float fFlashPercentage)
 	if (!m_bIsEnabled)
 		return;
 
+	if (!m_pApp->EngineClient()->IsInGame())
+		return;
+
 	m_fFlashPercentage = fFlashPercentage;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -311,6 +314,9 @@ void CVisuals::DrawNoScope()
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer(true);
+	if (!pLocalEntity)
+		return;
+
 	if (!pLocalEntity->IsScoped())
 		return;
 

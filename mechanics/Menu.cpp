@@ -289,7 +289,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimMovingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -90.0f, 90.0f);
+	m_pAntiaimMovingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
 	m_pAntiaimMovingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimMovingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
@@ -299,7 +299,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimMovingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
+	m_pAntiaimMovingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
@@ -307,7 +307,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
+	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawMovingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	//Standing
@@ -317,7 +317,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimStandingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -90.0f, 90.0f);
+	m_pAntiaimStandingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
 	m_pAntiaimStandingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
@@ -327,7 +327,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimStandingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
+	m_pAntiaimStandingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimStandingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
@@ -335,7 +335,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, -180.0f, 180.0f);
+	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1)); 
 
 	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 185, 128, 16, "LBY Breaker");

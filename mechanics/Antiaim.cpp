@@ -91,14 +91,18 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	m_bIsMoving = pLocalEntity->GetVelocity()->Length() > 0.1;
+	if (m_bIsMoving)
+		m_bWasMoving = true;
 
 	QAngle angles;
 	angles = m_pApp->GetClientViewAngles();
 
+	m_bNextLbyUpdate = NextLBYUpdate();
+
 	// Applying Pitch Anti Aim
 	ApplyPitchAntiAim(&angles);
 
-	// Applying Yaw Anti Aim
+	// Applying Yaw Anti Aims
 	ApplyYawAntiAim(&angles);
 
 	// Checking if LBY updated             todo: in proxy !
@@ -141,10 +145,17 @@ void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
 void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 {
 	static float trigger = 0.0f;
-	float fRealYawAngle = 0.0f + (m_bIsMoving ? m_fYawOffsetMoving : m_fYawOffsetStanding);
+
+	bool bSetMovingSettings = false;
+	if (IsFakeYaw() && m_bWasMoving && !m_bNextLbyUpdate)
+	{
+		bSetMovingSettings = true;
+	}
+
+	float fRealYawAngle = 0.0f + (bSetMovingSettings ? m_fYawOffsetMoving : m_fYawOffsetStanding);
 
 	// Getting anti aim angles
-	switch ((m_bIsMoving ? m_iYawSettingMoving : m_iYawSettingStanding))
+	switch ((bSetMovingSettings ? m_iYawSettingMoving : m_iYawSettingStanding))
 	{
 	case YAWANTIAIM_STATIC:
 		break;
@@ -178,18 +189,16 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 	switch ((m_bIsMoving ? m_iYawFakeSettingMoving : m_iYawFakeSettingStanding))
 	{
 	case FAKEYAWANTIAIM_STATIC:
-		m_bIsFakeYaw = true;
 		break;
 	case FAKEYAWANTIAIM_NONE:
 	default:
-		m_bIsFakeYaw = false;
 		fFakeYaw = 0.0f;
 		break;
 	}
 
-	if (m_bIsFakeYaw)
+	if (IsFakeYaw())
 	{
-		if(m_pApp->Misc()->GetFakelag() && m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
+		if (m_pApp->Misc()->GetFakelag() && m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
 			!bFakeAngleSwitch)
 		{
 			angles->y += fRealYaw;
@@ -207,10 +216,13 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		angles->y += fRealYaw;
 	}
 
-	if (!m_bIsMoving && m_bLbyBreaker && m_bIsFakeYaw && NextLBYUpdate() && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
+	if (!m_bIsMoving && m_bLbyBreaker && IsFakeYaw() && m_bNextLbyUpdate && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
 	{
 		angles->y += -fRealYaw + fFakeYaw;
 	}
+
+	if (m_bWasMoving && m_bNextLbyUpdate && !m_bIsMoving)
+		m_bWasMoving = false;
 }
 
 void CAntiAim::DrawLBYIndicator()
@@ -258,4 +270,9 @@ void CAntiAim::DrawLBYIndicator()
 
 	m_pApp->Surface()->DrawSetTextPos(50, h - 47);
 	m_pApp->Surface()->DrawPrintText(pBuffW1, len1);
+}
+
+bool CAntiAim::IsFakeYaw()
+{
+	return m_bIsMoving ? m_iYawFakeSettingMoving == FAKEYAWANTIAIM_STATIC : m_iYawFakeSettingStanding == FAKEYAWANTIAIM_STATIC;
 }
