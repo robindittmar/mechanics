@@ -84,11 +84,14 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	if (pLocalEntity->GetVelocity()->Length() <= 0.1f)
+	{
+		m_iFakelagChokedAmount = 0;
 		return;
+	}
 
 	if (pUserCmd->buttons == IN_ATTACK ||
 		pUserCmd->buttons == IN_ATTACK2 ||
-		pUserCmd->buttons == IN_JUMP)
+		pUserCmd->buttons == IN_USE)
 	{
 		*m_pApp->m_bSendPackets = true;
 		return;
@@ -342,36 +345,6 @@ void CMisc::SetNoNameClanTag(bool bSetNoName)
 	}
 
 	m_pSetClanTag(tempBuffer, "");
-}
-
-void CMisc::AutoRevolver(CUserCmd* pUserCmd)
-{
-	if (!m_bIsEnabled)
-		return;
-
-	if (!m_pApp->Ragebot()->GetEnabled())
-		return;
-
-	if (m_pApp->Ragebot()->IsShooting())
-		return;
-
-	IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
-	if (!activeWeapon)
-		return;
-
-	if (activeWeapon->GetWeaponId() != WEAPON_REVOLVER)
-		return;
-
-	if (activeWeapon->GetClip1() == 0)
-		return;
-
-	pUserCmd->buttons |= IN_ATTACK;
-	float flPostponeFireReady = activeWeapon->GetPostPoneFireReady();
-	if (flPostponeFireReady > 0 && flPostponeFireReady <= (pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick))
-	{
-		pUserCmd->buttons &= ~IN_ATTACK;
-	}
 }
 
 void CMisc::JumpScout(CUserCmd* pUserCmd)

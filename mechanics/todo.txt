@@ -39,3 +39,5 @@ Priority Low
 // 2017-09-24
 -> Menu (Visuals/Misc)
 -> Trigger/(Legitbot?)
+
+-> NoRecoil/NoSpread after aimbot if aimbotshoot or variable true

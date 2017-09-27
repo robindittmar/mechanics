@@ -50,8 +50,13 @@ private:
 	CCheckbox* m_pAimbotAutoshoot;
 	CCheckbox* m_pAimbotAutoscope;
 	CCheckbox* m_pAimbotAutoReload;
-	
 	CCheckbox* m_pAimbotMultipoint;
+
+	CCheckbox* m_pAimbotNoSpreadEnabled;
+
+	CCheckbox* m_pAimbotHitchanceEnabled;
+	CSlider* m_pAimbotHitchanceSlider;
+
 	CSelectbox* m_pAimbotTargetCriteria;
 	CSelectbox* m_pAimbotVisibleMode;
 
@@ -63,6 +68,10 @@ private:
 	CCheckbox* m_pHitboxLForearm;
 	CCheckbox* m_pHitboxRCalf;
 	CCheckbox* m_pHitboxLCalf;
+
+	CGroupbox* m_pRageOthersGroup;
+	CCheckbox* m_pRageOthersAutoZeusEnabled;
+	CCheckbox* m_pRageOthersAutoRevolverEnabled;
 
 	CGroupbox* m_pAntiaimGroup;
 	CCheckbox* m_pAntiaimEnabled;
@@ -88,7 +97,12 @@ private:
 	//
 	// Legit tab
 	CTabPage* m_pLegitTab;
-	CLabel* m_pLabelWip;
+	CGroupbox* m_pTriggerbotGroup;
+	CCheckbox* m_pTriggerbotEnabled;
+	CLabel* m_pTriggerbotDelayLabel;
+	CSlider* m_pTriggerbotDelayValue;
+	CLabel* m_pTriggerbotDelayJitterLabel;
+	CSlider* m_pTriggerbotDelayJitterValue;
 	//
 	// Visuals tab
 	CTabPage* m_pVisualsTab;
@@ -146,7 +160,6 @@ private:
 	CCheckbox* m_pSoundEspDrawOwnTeam;
 	CCheckbox* m_pSoundEspOnlyNotVisible;
 
-
 	CTabPage* m_pOtherVisualsTab;
 
 	CGroupbox* m_pFovChangerGroup;
@@ -167,7 +180,6 @@ private:
 	CLabel* m_pEffectsNoFlashLabel;
 	CSlider* m_pEffectsNoFlashValue;
 
-
 	CGroupbox* m_pVisualsOthersGroup;
 	CSelectbox* m_pVisualsOthersHandsDrawStyle;
 	CCheckbox* m_pVisualsOthersHitmarkerEnabled;
@@ -177,9 +189,6 @@ private:
 	CLabel* m_pVisualsOthersThirdpersonLabel;
 	CSlider* m_pVisualsOthersThirdpersonDistance;
 	CCheckbox* m_pVisualsOthersMirror;
-
-
-	CSlider* m_pFlashAmount;
 
 	//
 	// Misc tab

@@ -85,7 +85,6 @@ public:
 	void SpectatorList();
 	void SetClanTag(const char* tag);
 	void SetNoNameClanTag(bool bSetNoName);
-	void AutoRevolver(CUserCmd* pUserCmd);
 	void JumpScout(CUserCmd* pUserCmd);
 	void SetName(const char*);
 	void SpamNameFix();

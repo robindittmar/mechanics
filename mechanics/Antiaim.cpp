@@ -68,7 +68,7 @@ void CAntiAim::Update(void* pParameters)
 		return;
 
 	// Allow us to use (open doors, defuse bomb) and shoot normally
-	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK)
+	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK && !m_pApp->Ragebot()->DoingAutoRevolver())
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -105,17 +105,25 @@ void CAntiAim::Update(void* pParameters)
 	// Applying Yaw Anti Aims
 	ApplyYawAntiAim(&angles);
 
+
+	static float fRealOldLby = 0.0f;
 	// Checking if LBY updated             todo: in proxy !
-	bool lbyUpdate = false;
-	if (m_pApp->m_flOldLby != pLocalEntity->GetLowerBodyYaw())
+	float fActualLby = pLocalEntity->GetLowerBodyYaw();
+	if (m_pApp->m_flOldLby != fActualLby)
 	{
-		m_pApp->m_flOldLby = pLocalEntity->GetLowerBodyYaw();
-		m_pApp->m_flRealLbyUpdateTime = m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
-		lbyUpdate = true;
+		if (m_bIsMoving ||
+			fabs(fRealOldLby - fActualLby) >= 30.0f)
+		{
+			fRealOldLby = fActualLby;
+			m_pApp->m_flRealLbyUpdateTime = m_pApp->GlobalVars()->curtime;
+		}
+
+		m_pApp->m_flOldLby = fActualLby;
+		m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
 	}
 
 	// LBY indicator check
-	m_pApp->m_bLBY = m_pApp->m_flRealLbyUpdateTime + 1.2 < m_pApp->GlobalVars()->curtime;
+	m_pApp->m_bLBY = !m_bIsMoving && m_pApp->m_flRealLbyUpdateTime + 1.1 < m_pApp->GlobalVars()->curtime;
 
 	// Setting calculated angles to player angles
 	pUserCmd->viewangles[0] = angles.x;

@@ -87,6 +87,9 @@ public:
 
 	void SetNoSpread(bool bDoNoSpread) { m_bDoNoSpread = bDoNoSpread; }
 	bool GetNoSpread() { return m_bDoNoSpread; }
+	
+	void SetCalculateHitchance(bool bCalculateHitchance) { m_bCalculateHitchance = bCalculateHitchance; }
+	bool GetCalculateHitchance() { return m_bCalculateHitchance; }
 
 	void SetHitchance(float fHitchance) { m_fHitchance = fHitchance / 100.0f; }
 	float GetHitchance() { return m_fHitchance * 100.0f; }
@@ -99,6 +102,15 @@ public:
 
 	void SetTargetCriteria(int iTargetCriteria) { m_iTargetCriteria = iTargetCriteria; }
 	int GetTargetCriteria() { return m_iTargetCriteria; }
+
+	void SetAutoRevolver(bool bAutoRevolver) { m_bAutoRevolver = bAutoRevolver; };
+	bool GetAutoRevolver() { return m_bAutoRevolver; };
+	bool DoingAutoRevolver() { return m_bDoingAutoRevolver; };
+
+	bool IsAbleToApplyNoSpread();
+	bool IsNoSpread();
+
+	void AutoRevolver(CUserCmd* pUserCmd);
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -128,11 +140,12 @@ private:
 	bool m_bSilentAim;
 	bool m_bDoNoRecoil;
 	bool m_bDoNoSpread;
+	bool m_bCalculateHitchance;
 	float m_fHitchance;
-
 	bool m_bAutoReload;
-
 	bool m_bAutoZeus;
+	bool m_bAutoRevolver;
+	bool m_bDoingAutoRevolver;
 
 	int m_iTargetCriteria;
 	CTarget* m_pTarget;

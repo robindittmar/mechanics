@@ -106,7 +106,6 @@ void CRagebot::Update(void* pParameters)
 
 	// Hitchance
 	float fHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
-	g_pConsole->Write("%.2f\n", fHitchance);
 	if (fHitchance < m_fHitchance)
 		return;
 
@@ -178,40 +177,46 @@ void CRagebot::ApplyNoRecoil(IClientEntity* pLocalEntity)
 
 void CRagebot::ApplyNoSpread(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, int iSeed)
 {
-	if (m_bDoNoSpread)
+	if (!m_bDoNoSpread)
+		return;
+
+	if (IsNoSpread())
+		return;
+
+	if (!IsAbleToApplyNoSpread())
+		return;
+
+	pActiveWeapon->UpdateAccuracyPenalty();
+
+	m_pApp->RandomSeed()((iSeed & 255) + 1);
+
+	float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
+	float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+	float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
+	float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+
+	float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
+	float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
+
+	float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
+	float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
+
+	m_qAimAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
+	m_qAimAngles.y += RAD2DEG(atanf(fSpreadX));
+
+	m_bDidNoSpread = true;
+
+	// TODO
+	/*if (HackGui::Instance()->Misc_AntiUnstrusted.GetValue())
 	{
-		pActiveWeapon->UpdateAccuracyPenalty();
-
-		m_pApp->RandomSeed()((iSeed & 255) + 1);
-
-		float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
-		float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-		float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
-		float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-
-		float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
-		float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
-
-		float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
-		float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
-
-		m_qAimAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
-		m_qAimAngles.y += RAD2DEG(atanf(fSpreadX));
-
-		m_bDidNoSpread = true;
-
-		// TODO
-		/*if (HackGui::Instance()->Misc_AntiUnstrusted.GetValue())
-		{
-		pCmd->viewangles.pitch += RadToDeg(atan2(fSpreadY, sqrt(1.f + fSpreadX*fSpreadX))); //pitch/yaw
-		pCmd->viewangles.yaw += RadToDeg(atan(fSpreadX));
-		}
-		else
-		{
-		pCmd->viewangles.pitch += RadToDeg(atan(sqrt(fSpreadX * fSpreadX + fSpreadY * fSpreadY))); //pitch/roll nospread
-		pCmd->viewangles.roll += RadToDeg(atan2(-fSpreadX, fSpreadY));
-		}*/
+	pCmd->viewangles.pitch += RadToDeg(atan2(fSpreadY, sqrt(1.f + fSpreadX*fSpreadX))); //pitch/yaw
+	pCmd->viewangles.yaw += RadToDeg(atan(fSpreadX));
 	}
+	else
+	{
+	pCmd->viewangles.pitch += RadToDeg(atan(sqrt(fSpreadX * fSpreadX + fSpreadY * fSpreadY))); //pitch/roll nospread
+	pCmd->viewangles.roll += RadToDeg(atan2(-fSpreadX, fSpreadY));
+	}*/
 }
 
 void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocalEntity, bool bAbleToHit)
@@ -257,7 +262,6 @@ void inline CRagebot::Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float 
 	{
 		this->Aim(pUserCmd);
 
-		// Shoot
 		pUserCmd->buttons |= IN_ATTACK;
 		m_bIsShooting = true;
 	}
@@ -270,8 +274,59 @@ void inline CRagebot::Aim(CUserCmd* pUserCmd)
 	pUserCmd->viewangles[1] = m_qAimAngles.y;
 }
 
+bool CRagebot::IsAbleToApplyNoSpread()
+{
+	static ConVar* pCustomRandomSeed = m_pApp->CVar()->FindVar(CXorString("d}Ú·dn÷¡zoÚ¡bxñ­zT÷£yoê¯Hxà§s").ToCharArray());
+	return atoi(pCustomRandomSeed->value) == 0;
+}
+bool CRagebot::IsNoSpread()
+{
+	static ConVar* pWeaponAccuracity = m_pApp->CVar()->FindVar(CXorString("`nä²xeÚ£thð°vhüydö²enä¦").ToCharArray());
+	return atoi(pWeaponAccuracity->value) == 1;
+}
+
+
+void CRagebot::AutoRevolver(CUserCmd* pUserCmd)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	m_bDoingAutoRevolver = false;
+
+	if (!m_bAutoRevolver)
+		return;
+
+	if (m_bIsShooting)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	CWeapon* activeWeapon = (CWeapon*)pLocalEntity->GetActiveWeapon();
+	if (!activeWeapon)
+		return;
+
+	if (activeWeapon->GetWeaponId() != WEAPON_REVOLVER)
+		return;
+
+	if (activeWeapon->GetClip1() == 0)
+		return;
+
+	m_bDoingAutoRevolver = true;
+	pUserCmd->buttons |= IN_ATTACK;
+	float flPostponeFireReady = activeWeapon->GetPostPoneFireReady();
+	if (flPostponeFireReady > 0 && flPostponeFireReady <= (pLocalEntity->GetTickBase() * m_pApp->GlobalVars()->interval_per_tick))
+	{
+		pUserCmd->buttons &= ~IN_ATTACK;
+	}
+}
+
+
 float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget)
 {
+	if (m_bDoNoSpread && IsAbleToApplyNoSpread() ||
+		IsNoSpread() ||
+		!m_bCalculateHitchance)
+		return 100.0f;
+
 	int iHits = 0;
 	const float fMaxHits = 255.0f;
 

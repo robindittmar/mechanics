@@ -64,8 +64,10 @@ void CMenu::ApplySettings()
 	m_pAimbotAutoshoot->SetChecked(m_pApp->Ragebot()->GetAutoshoot());
 	m_pAimbotAutoscope->SetChecked(m_pApp->Ragebot()->GetAutoscope());
 	m_pAimbotAutoReload->SetChecked(m_pApp->Ragebot()->GetAutoReload());
-
 	m_pAimbotMultipoint->SetChecked(m_pApp->TargetSelector()->GetMultipoint());
+	m_pAimbotNoSpreadEnabled->SetChecked(m_pApp->Ragebot()->GetNoSpread());
+	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
+	m_pAimbotHitchanceSlider->SetDisplayValue(m_pApp->Ragebot()->GetHitchance());
 	m_pAimbotTargetCriteria->SetSelectionByValue(m_pApp->Ragebot()->GetTargetCriteria());
 	m_pAimbotVisibleMode->SetSelectionByValue(m_pApp->TargetSelector()->GetVisibleMode());
 
@@ -76,6 +78,9 @@ void CMenu::ApplySettings()
 	m_pHitboxLForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
 	m_pHitboxRCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
 	m_pHitboxLCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
+
+	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
+	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
 
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	// Standing
@@ -96,6 +101,12 @@ void CMenu::ApplySettings()
 	m_pAntiaimLbyIndicator->SetChecked(m_pApp->AntiAim()->GetDrawLbyIndicator());
 	m_pAntiaimStandingLbyBreaker->SetChecked(m_pApp->AntiAim()->GetLbyBreaker());
 
+	// Legit
+	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
+	m_pTriggerbotDelayValue->SetDisplayValue(m_pApp->Triggerbot()->GetShootDelay());
+	m_pTriggerbotDelayJitterValue->SetDisplayValue(m_pApp->Triggerbot()->GetShootDelayJitter());
+
+	// Esp
 	m_pEspEnabled->SetChecked(m_pApp->Esp()->GetEnabled());
 	m_pEspDrawBoundingBox->SetSelection(m_pApp->Esp()->GetDrawBoundingBox());
 	m_pEspDrawFilledBox->SetChecked(m_pApp->Esp()->GetFillBoundingBox());
@@ -156,7 +167,6 @@ void CMenu::ApplySettings()
 	m_pMiscOthersJumpScoutEnabled->SetChecked(m_pApp->Misc()->GetJumpScout());
 	m_pMiscOthersAutoAcceptEnabled->SetChecked(m_pApp->Misc()->GetAutoAccept());
 	m_pMiscOthersNoNameEnabled->SetChecked(m_pApp->Misc()->GetNoName());
-
 
 	m_pMiscBhopEnabled->SetChecked(m_pApp->Bhop()->GetEnabled());
 	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Misc()->GetAutoStrafeMode());
@@ -224,16 +234,25 @@ void CMenu::CreateRageTab()
 	m_pAimbotAutoReload = new CCheckbox(4, 80, 128, 16, "Auto Reload");
 	m_pAimbotAutoReload->SetEventHandler(std::bind(&CRagebot::SetAutoReload, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotMultipoint = new CCheckbox(4, 100, 120, 16, "Multipoint");
+	m_pAimbotMultipoint = new CCheckbox(4, 100, 128, 16, "Multipoint");
 	m_pAimbotMultipoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, m_pApp->TargetSelector(), std::placeholders::_1));
 
-	m_pAimbotTargetCriteria = new CSelectbox(4, 132, 128, 20, "Target criteria");
+	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 120, 128, 16, "Remove Spread (if possible)");
+	m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
+
+	m_pAimbotHitchanceEnabled = new CCheckbox(4, 140, 128, 16, "Hitchance");
+	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+
+	m_pAimbotHitchanceSlider = new CSlider(4, 162, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pAimbotHitchanceSlider->SetEventHandler(std::bind(&CRagebot::SetHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+
+	m_pAimbotTargetCriteria = new CSelectbox(4, 192, 128, 20, "Target criteria");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_UNSPECIFIED, "First found");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
 	m_pAimbotTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotVisibleMode = new CSelectbox(4, 168, 128, 20, "Visible mode");
+	m_pAimbotVisibleMode = new CSelectbox(4, 228, 128, 20, "Visible mode");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
@@ -246,6 +265,9 @@ void CMenu::CreateRageTab()
 	m_pAimbotGroup->AddChild(m_pAimbotAutoscope);
 	m_pAimbotGroup->AddChild(m_pAimbotAutoReload);
 	m_pAimbotGroup->AddChild(m_pAimbotMultipoint);
+	m_pAimbotGroup->AddChild(m_pAimbotNoSpreadEnabled);
+	m_pAimbotGroup->AddChild(m_pAimbotHitchanceEnabled);
+	m_pAimbotGroup->AddChild(m_pAimbotHitchanceSlider);
 	m_pAimbotGroup->AddChild(m_pAimbotTargetCriteria);
 	m_pAimbotGroup->AddChild(m_pAimbotVisibleMode);
 
@@ -279,6 +301,13 @@ void CMenu::CreateRageTab()
 	m_pHitboxGroup->AddChild(m_pHitboxLForearm);
 	m_pHitboxGroup->AddChild(m_pHitboxRCalf);
 	m_pHitboxGroup->AddChild(m_pHitboxLCalf);
+
+	m_pRageOthersAutoZeusEnabled = new CCheckbox(4, 0, 128, 16, "Auto Zeus");
+	m_pRageOthersAutoZeusEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoZeus, m_pApp->Ragebot(), std::placeholders::_1));
+	
+	m_pRageOthersAutoRevolverEnabled = new CCheckbox(4, 20, 128, 16, "Auto Revolver");
+	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1));
+
 
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
 	m_pAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1));
@@ -361,7 +390,11 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawFake);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimYawMovingFakeOffset);
 
-	m_pAntiaimGroup = new CGroupbox(352, 16, 324, 268, "AntiAim");
+	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 268, "AntiAim");
+	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersAutoRevolverEnabled);
+
+	m_pAntiaimGroup = new CGroupbox(520, 16, 324, 268, "AntiAim");
 	m_pAntiaimGroup->AddChild(m_pAntiaimEnabled);
 	m_pAntiaimGroup->AddChild(m_pAntiaimLbyIndicator);
 	m_pAntiaimGroup->AddChild(m_pAntiaimStandingGroup);
@@ -370,15 +403,34 @@ void CMenu::CreateRageTab()
 	m_pRageTab = new CTabPage("Rage");
 	m_pRageTab->AddChild(m_pAimbotGroup);
 	m_pRageTab->AddChild(m_pHitboxGroup);
+	m_pRageTab->AddChild(m_pRageOthersGroup);
 	m_pRageTab->AddChild(m_pAntiaimGroup);
 }
 
 void CMenu::CreateLegitTab()
 {
-	m_pLabelWip = new CLabel(0, 0, 1020, 550, "[WIP]", RM_FONT_HEADER, LABEL_ORIENTATION_CENTER, Color(255, 255, 128, 0));
+	m_pTriggerbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pTriggerbotEnabled->SetEventHandler(std::bind(&CTriggerbot::SetEnabled, m_pApp->Triggerbot(), std::placeholders::_1));
+
+	m_pTriggerbotDelayLabel = new CLabel(4, 24, 128, 16, "Delay (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 750.0f);
+	m_pTriggerbotDelayValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelay, m_pApp->Triggerbot(), std::placeholders::_1));
+
+	m_pTriggerbotDelayJitterLabel = new CLabel(4, 60, 128, 16, "Delay Jitter (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 20.0f);
+	m_pTriggerbotDelayJitterValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelayJitter, m_pApp->Triggerbot(), std::placeholders::_1));
+
+	m_pTriggerbotGroup = new CGroupbox(16, 16, 152, 268, "Triggerbot");
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotEnabled);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayLabel);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayValue);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterLabel);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterValue);
 
 	m_pLegitTab = new CTabPage("Legit");
-	m_pLegitTab->AddChild(m_pLabelWip);
+	m_pLegitTab->AddChild(m_pTriggerbotGroup);
 }
 
 void CMenu::CreateVisualsTab()

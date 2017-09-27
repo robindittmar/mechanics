@@ -242,8 +242,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// New tick, so we didn't get any targets yet
 			pApp->m_targetSelector.SetHasTargets(false);
 
-			// Update Aimbot
+			// Update Aimbot & AutoRevolver
 			pApp->Ragebot()->Update((void*)&createMoveParam);
+			pApp->Ragebot()->AutoRevolver(pUserCmd);
 			// Update Triggerbot
 			pApp->Triggerbot()->Update((void*)&createMoveParam);
 
@@ -254,7 +255,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->AntiAim()->Update(pUserCmd);
 
 			// Miscs
-			pApp->Misc()->AutoRevolver(pUserCmd);
 			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
 			pApp->Misc()->Fakelag(pUserCmd);
@@ -272,7 +272,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate ||
 				!pApp->AntiAim()->GetEnabled() ||
-				pUserCmd->buttons & IN_ATTACK ||
+				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
 				pUserCmd->buttons & IN_ATTACK2)
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
@@ -869,10 +869,13 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoReload(true);
 	this->m_ragebot.SetAutoZeus(true);
 	this->m_ragebot.SetTargetCriteria(TARGETCRITERIA_VIEWANGLES);
-	this->m_ragebot.SetHitchance(0.0f);
+	this->m_ragebot.SetCalculateHitchance(true);
+	this->m_ragebot.SetHitchance(25.0f);
+	this->m_ragebot.SetNoSpread(false);
+	this->m_ragebot.SetAutoRevolver(true);
 
 	// Triggerbot
-	this->m_triggerbot.SetEnabled(true);
+	this->m_triggerbot.SetEnabled(false);
 	this->m_triggerbot.SetShootDelay(50);
 	this->m_triggerbot.SetShootDelayJitter(15);
 
@@ -898,7 +901,7 @@ void CApplication::Setup()
 
 	// Esp
 	this->m_esp.SetEnabled(true);
-	this->m_esp.SetFillBoundingBox(true);
+	this->m_esp.SetFillBoundingBox(false);
 	this->m_esp.SetDrawBoundingBox(true);
 	this->m_esp.SetDrawNames(true);
 	this->m_esp.SetDrawHealthBar(true);
@@ -926,7 +929,7 @@ void CApplication::Setup()
 	this->m_soundEsp.SetDrawVisible(false);
 
 	// Chams
-	this->m_chams.SetEnabled(true);
+	this->m_chams.SetEnabled(false);
 	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(true);
 	this->m_chams.SetIgnoreZIndex(false);
