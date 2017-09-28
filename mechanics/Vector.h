@@ -225,7 +225,10 @@ public:
 		n.z = this->z - v.z;
 		return n;
 	}
-	Vector	operator*(const Vector& v) const;
+	Vector operator*(const Vector &v) const
+	{
+		return Vector(x * v.x, y * v.y, z * v.z);
+	}
 	Vector	operator/(const Vector& v) const;
 	Vector operator+(float fl) const {
 		Vector n;
@@ -773,5 +776,54 @@ void MatrixCopy(const matrix3x4_t& in, matrix3x4_t& out);
 void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out);
 void AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix);
 void AngleMatrix(const QAngle &angles, matrix3x4_t& matrix);
+
+
+typedef Vector QAngle;
+inline void VectorRotate(const Vector &i, const matrix3x4_t &matrix, Vector &o)
+{
+	o.x = i.Dot(Vector(matrix[0][0], matrix[0][1], matrix[0][2]));
+	o.y = i.Dot(Vector(matrix[1][0], matrix[1][1], matrix[1][2]));
+	o.z = i.Dot(Vector(matrix[2][0], matrix[2][1], matrix[2][2]));
+}
+
+inline void VectorRotate(Vector &i, const QAngle &angles, Vector &o)
+{
+	matrix3x4_t matrix;
+
+	AngleMatrix(angles, matrix);
+	VectorRotate(i, matrix, o);
+}
+
+inline Vector VectorRotate(Vector &i, const QAngle &angles)
+{
+	Vector o;
+	VectorRotate(i, angles, o);
+
+	return o;
+}
+
+template<typename T>
+inline T Min(T x, T y)
+{
+	return x < y ? x : y;
+}
+
+template<typename T>
+inline T Max(T x, T y)
+{
+	return x > y ? x : y;
+}
+
+template<typename T>
+constexpr T minof()
+{
+	return (T)1 << (sizeof(T) * 8 - 1);
+}
+
+template<typename T>
+constexpr T maxof()
+{
+	return ~((T)1 << (sizeof(T) * 8 - 1));
+}
 
 #endif // __VECTOR_H__

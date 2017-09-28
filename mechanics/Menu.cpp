@@ -126,6 +126,7 @@ void CMenu::ApplySettings()
 
 	// WeaponEsp
 	m_pWeaponEspEnabled->SetChecked(m_pApp->WeaponEsp()->GetEnabled());
+	m_pWeaponEspWeaponBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponBoundingBox());
 	m_pWeaponEspWeaponNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponName());
 
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
@@ -165,7 +166,7 @@ void CMenu::ApplySettings()
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
 	m_pFakelagChokeAmount->SetDisplayValue(m_pApp->Misc()->GetFakelagChokeAmount());
-	
+
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
 	m_pMiscOthersAutoPistolEnabled->SetChecked(m_pApp->Misc()->GetAutoPistol());
 	m_pMiscOthersJumpScoutEnabled->SetChecked(m_pApp->Misc()->GetJumpScout());
@@ -308,7 +309,7 @@ void CMenu::CreateRageTab()
 
 	m_pRageOthersAutoZeusEnabled = new CCheckbox(4, 0, 128, 16, "Auto Zeus");
 	m_pRageOthersAutoZeusEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoZeus, m_pApp->Ragebot(), std::placeholders::_1));
-	
+
 	m_pRageOthersAutoRevolverEnabled = new CCheckbox(4, 20, 128, 16, "Auto Revolver");
 	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1));
 
@@ -369,7 +370,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
-	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1)); 
+	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 185, 128, 16, "LBY Breaker");
 	m_pAntiaimStandingLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
@@ -524,11 +525,15 @@ void CMenu::CreateVisualsTab()
 	m_pWeaponEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
 
-	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 22, 128, 16, "Draw Weapon Names");
+	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 22, 128, 16, "Bounding Box");
+	m_pWeaponEspWeaponBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 42, 128, 16, "Names");
 	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
 
 	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 268, "Weapon Esp");
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponBoundingBoxEnabled);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponNameEnabled);
 
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
@@ -591,7 +596,7 @@ void CMenu::CreateVisualsTab()
 	m_pPlayerVisualsTab->AddChild(m_pEspGroup);
 	m_pPlayerVisualsTab->AddChild(m_pWeaponEspGroup);
 	m_pPlayerVisualsTab->AddChild(m_pChamsGroup);
-	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup); 
+	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup);
 
 
 	// EffectsGroup
@@ -757,7 +762,7 @@ void CMenu::CreateMiscTab()
 
 	m_pMiscBhopAutoStrafeGroup = new CGroupbox(4, 20, 136, 50, "Auto Strafe");
 	m_pMiscBhopAutoStrafeGroup->AddChild(m_pMiscBhopAutoStrafeMode);
-	
+
 	m_pMiscBhopGroup = new CGroupbox(352, 16, 152, 268, "Bhop");
 	m_pMiscBhopGroup->AddChild(m_pMiscBhopEnabled);
 	m_pMiscBhopGroup->AddChild(m_pMiscBhopAutoStrafeGroup);

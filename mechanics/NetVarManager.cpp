@@ -152,6 +152,22 @@ void CNetVarManager::DumpTable(FILE* pFile, ClientClass* pClass, const char* pTa
 	}
 }
 
+void CNetVarManager::DumpClientClasses(FILE* pFile, ClientClass* pClass)
+{
+	std::map<int, const char*> mapTest;
+	while (pClass)
+	{
+		mapTest[pClass->m_ClassID] = pClass->m_pNetworkName;
+		pClass = pClass->m_pNext;
+	}
+
+	for (std::map<int, const char*>::iterator it = mapTest.begin(); it != mapTest.end(); it++)
+	{
+		fprintf(pFile, "%s = %d,\n", it->second, it->first);
+	}
+}
+
+
 void printTabs(FILE* pFile, int iCount)
 {
 	for(int i = 0; i < iCount; i++)

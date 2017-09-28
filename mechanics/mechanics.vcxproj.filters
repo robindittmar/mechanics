@@ -225,6 +225,9 @@
     <ClCompile Include="WeaponEsp.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="ClientClass.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">

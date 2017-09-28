@@ -269,7 +269,7 @@ public:
 			return false;
 
 		IClientEntity* pEntity = (IClientEntity*)pEntityHandle;
-		return (pEntity->GetClientClass()->m_ClassID == CLASSID_PLAYER);
+		return (pEntity->GetClientClass()->m_ClassID == CCSPlayer);
 	}
 	virtual TraceType_t GetTraceType() const
 	{

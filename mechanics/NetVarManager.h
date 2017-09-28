@@ -3,6 +3,7 @@
 
 // Std lib
 #include <cstdarg>
+#include <map>
 
 // Source SDK
 #include "ClientClass.h"
@@ -30,6 +31,7 @@ public:
 
 	static void DumpAll(FILE* pFile, ClientClass* pClass);
 	static void DumpTable(FILE* pFile, ClientClass* pClass, const char* pTableName);
+	static void DumpClientClasses(FILE* pFile, ClientClass* pClass);
 private:
 	static void DumpTable(FILE* pFile, RecvTable* pTable, int iLevel = 0);
 

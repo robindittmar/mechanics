@@ -118,6 +118,11 @@ QAngle* IClientEntity::GetAngEyeAngles()
 	return (QAngle*)((DWORD)this + Offsets::m_angEyeAngles);
 }
 
+QAngle* IClientEntity::GetAngRotation()
+{
+	return (QAngle*)((DWORD)this + Offsets::m_angRotation);
+}
+
 float IClientEntity::GetLowerBodyYaw()
 {
 	return *(float*)((DWORD)this + Offsets::m_flLowerBodyYawTarget);

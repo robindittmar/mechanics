@@ -121,6 +121,16 @@ float CWeapon::GetPostPoneFireReady()
 	return *(float*)((unsigned long)this + Offsets::m_flPostponeFireReadyTime);
 }
 
+Vector CWeapon::GetVecMin()
+{
+	return *(Vector*)((unsigned long)this + Offsets::m_vecMins);
+}
+
+Vector CWeapon::GetVecMax()
+{
+	return *(Vector*)((unsigned long)this + Offsets::m_vecMaxs);
+}
+
 void CWeapon::UpdateAccuracyPenalty()
 {
 	typedef void(__thiscall *UpdateAccuracyPenalty_t)(void*);

@@ -736,27 +736,29 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// NetVar Dumps
-	/*FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
-	if (pFile)
-	{
-		g_pConsole->Write("Dumping NetVars ... ");
-		//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseEntity");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
+	//FILE* pFile = fopen("C:\\Users\\Nico\\Desktop\\dump.txt", "w");
+	//if (pFile)
+	//{
+	//	g_pConsole->Write("Dumping NetVars ... ");
+	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
+	//	/*CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");*/
 
-		fclose(pFile);
-		g_pConsole->Write("Done!\n");
-	}*/
+	//	fclose(pFile);
+	//	g_pConsole->Write("Done!\n");
+	//}
 
 	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
 	CXorString xorBasePlayer("S_Ú€vxà’{jü§e"); // DT_BasePlayer
+	CXorString xorCollisionProperty("S_Úxgé«dbê¬Gyê²ryñ»");
 	CXorString xorCSPlayer("S_ÚD[é£nn÷"); // DT_CSPlayer
 	CXorString xorLocalPlayerExclusive("S_ÚŽxhä®Ggä»ryÀºtgð±~}à"); // DT_LocalPlayerExclusive
 	CXorString xorBaseCombatWeapon("S_Ú€vxàxfç£c\\à£gdë"); // DT_BaseCombatWeapon
@@ -777,10 +779,15 @@ void CApplication::Setup()
 	m_pNetVarMgr->AddTable(xorBaseViewModel.ToCharArray());
 	m_pNetVarMgr->LoadTables(m_pClient->GetAllClasses(), true);
 
+	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/"m_angRotation");
 	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
 	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
 	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
 	Offsets::m_flSimulationTime = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_flSimulationTime*/CXorString("zTã®Dbè·{jñ«xeÑ«zn").ToCharArray());
+	m_pNetVarMgr->SetSummarizeOffsets(true);
+	Offsets::m_vecMins = m_pNetVarMgr->GetOffset(2, xorBaseEntity.ToCharArray(), xorCollisionProperty.ToCharArray(), /*m_vecMins*/CXorString("zTó§tFì¬d").ToCharArray());
+	Offsets::m_vecMaxs = m_pNetVarMgr->GetOffset(2, xorBaseEntity.ToCharArray(), xorCollisionProperty.ToCharArray(), /*m_vecMaxs*/CXorString("zTó§tFäºd").ToCharArray());
+	m_pNetVarMgr->SetSummarizeOffsets(false);
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
@@ -925,8 +932,9 @@ void CApplication::Setup()
 	//this->m_esp.SetColorSpotted();
 
 	// WeaponEsp
-	this->m_weaponesp.SetEnabled(true);
+	this->m_weaponesp.SetEnabled(false);
 	this->m_weaponesp.SetDrawWeaponName(true);
+	this->m_weaponesp.SetDrawWeaponBoundingBox(false);
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(false);

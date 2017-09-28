@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="Autowall.cpp" />
     <ClCompile Include="checksum_md5.cpp" />
+    <ClCompile Include="ClientClass.cpp" />
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />

@@ -6,6 +6,9 @@ namespace Offsets
 	int m_hMyWeapons;
 	int m_hViewModel;
 	int m_flSimulationTime;
+	int m_vecMins;
+	int m_vecMaxs;
+	int m_angRotation;
 
 	int m_vecOrigin;
 	int m_vecViewOffset;

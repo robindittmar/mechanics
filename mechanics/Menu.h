@@ -142,6 +142,7 @@ private:
 	// WeaponEsp
 	CGroupbox* m_pWeaponEspGroup;
 	CCheckbox* m_pWeaponEspEnabled;
+	CCheckbox* m_pWeaponEspWeaponBoundingBoxEnabled;
 	CCheckbox* m_pWeaponEspWeaponNameEnabled;
 
 	// Chams

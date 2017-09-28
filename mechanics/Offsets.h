@@ -8,6 +8,9 @@ namespace Offsets
 	extern int m_hMyWeapons;
 	extern int m_hViewModel;
 	extern int m_flSimulationTime;
+	extern int m_vecMins;
+	extern int m_vecMaxs;
+	extern int m_angRotation;
 
 	// DT_CSPlayer
 	extern int m_vecOrigin;

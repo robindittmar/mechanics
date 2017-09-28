@@ -2,6 +2,7 @@
 #define __CWEAPON_H__
 
 #include "Offsets.h"
+#include "Vector.h"
 
 #define OFFSET_ARMORRATIO			0x850
 #define OFFSET_PENETRATION			0x864
@@ -217,6 +218,9 @@ public:
 	CWeaponInfo* GetWeaponInfo();
 	float GetAccuracyPenalty();
 	float GetPostPoneFireReady();
+
+	Vector GetVecMin();
+	Vector GetVecMax();
 
 	void UpdateAccuracyPenalty();
 	float GetInaccuracy();

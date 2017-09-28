@@ -98,9 +98,6 @@
 #define TEAMNUM_T		2
 #define TEAMNUM_CT		3
 
-// ClassId for players
-#define CLASSID_PLAYER	35
-
 enum MoveType_t
 {
 	MOVETYPE_NONE = 0,
@@ -272,6 +269,7 @@ public:
 	bool IsInvincible();
 	IClientEntity* GetObserverTarget();
 	QAngle* GetAngEyeAngles();
+	QAngle* GetAngRotation();
 	float GetLowerBodyYaw();
 	int GetModelIndex();
 	CBaseViewModel* GetViewModel();

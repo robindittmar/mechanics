@@ -95,7 +95,7 @@ void CTriggerbot::Update(void* pParameters)
 		return;
 	}
 
-	if (pHitEntity->GetClientClass()->m_ClassID != CLASSID_PLAYER)
+	if (pHitEntity->GetClientClass()->m_ClassID != CCSPlayer)
 	{
 		m_pCurTarget = NULL;
 		return;
