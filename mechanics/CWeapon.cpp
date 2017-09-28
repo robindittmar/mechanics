@@ -5,6 +5,11 @@ int CWeapon::GetWeaponId()
 	return *(int*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
 }
 
+bool CWeapon::IsWeaponX(int weaponId)
+{
+	return this->GetWeaponId() == weaponId;
+}
+
 bool CWeapon::IsKnife()
 {
 	int weaponId = this->GetWeaponId();
@@ -73,6 +78,11 @@ bool CWeapon::IsPistol()
 bool CWeapon::IsTaser()
 {
 	return (this->GetWeaponId() == WEAPON_TASER);
+}
+
+int CWeapon::GetOwnerId()
+{
+	return *(int*)((unsigned long)this + Offsets::m_hOwner);
 }
 
 int CWeapon::GetClip1()

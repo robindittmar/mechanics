@@ -38,6 +38,7 @@ namespace Offsets
 	int m_AttributeManager;
 	int m_Item;
 	int m_iItemDefinitionIndex;
+	int m_hOwner;
 	int m_iClip1;
 	int m_iClip2;
 	int m_flNextPrimaryAttack;

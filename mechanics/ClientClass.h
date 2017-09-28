@@ -2,9 +2,10 @@
 /// Source Engine declarations
 ///
 
-
 #ifndef __CLIENTCLASS_H__
 #define __CLIENTCLASS_H__
+
+#include <Windows.h>
 
 enum class SendPropType {
 	DPT_Int = 0,
@@ -76,6 +77,15 @@ public:
 	RecvTable *m_pRecvTable;
 	ClientClass *m_pNext;
 	int m_ClassID;
+	const char* GetName()
+	{
+		return m_pNetworkName;
+	}
+
+	int GetName(wchar_t* p, int len) {
+		mbstowcs(p, m_pNetworkName, len);
+		return lstrlenW(p);
+	}
 };
 
 #endif // __CLIENTCLASS_H__

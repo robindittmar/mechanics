@@ -203,12 +203,14 @@ class CWeapon
 {
 public:
 	int GetWeaponId();
+	bool IsWeaponX(int weaponId);
 	bool IsKnife();
 	bool IsSniper();
 	bool IsNade();
 	bool IsC4();
 	bool IsPistol();
 	bool IsTaser();
+	int GetOwnerId();
 	int GetClip1();
 	int GetClip2();
 	float GetNextPrimaryAttack();

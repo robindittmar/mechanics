@@ -138,7 +138,12 @@ private:
 	CCheckbox* m_pEspBarrelEnabled;
 	CLabel* m_pEspBarrelLabel;
 	CSlider* m_pEspBarrelValue;
-	
+
+	// WeaponEsp
+	CGroupbox* m_pWeaponEspGroup;
+	CCheckbox* m_pWeaponEspEnabled;
+	CCheckbox* m_pWeaponEspWeaponNameEnabled;
+
 	// Chams
 	CGroupbox* m_pChamsGroup;
 	CCheckbox* m_pChamsEnabled;

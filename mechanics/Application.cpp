@@ -443,6 +443,8 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Esp
 			pApp->Esp()->Update((void*)pSurface);
 
+			pApp->WeaponEsp()->Update();
+
 			// Draw Sound Esp
 			pApp->SoundEsp()->Update();
 
@@ -821,6 +823,7 @@ void CApplication::Setup()
 		/*DT_ScriptCreatedItem*/CXorString("S_Ú‘tyì²cH÷§và¦^à¯").ToCharArray(),
 		/*m_iItemDefinitionIndex*/CXorString("zTì‹cnè†rmì¬~ì­yBë¦rs").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
+	Offsets::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_hOwner*/CXorString("zTí`eà°").ToCharArray());
 	Offsets::m_iClip1 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip1*/CXorString("zTì{bõó").ToCharArray());
 	Offsets::m_iClip2 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon.ToCharArray(), /*m_iClip2*/CXorString("zTì{bõð").ToCharArray());
 	Offsets::m_flNextPrimaryAttack = m_pNetVarMgr->GetOffset(2, xorBaseCombatWeapon.ToCharArray(),
@@ -854,6 +857,7 @@ void CApplication::Setup()
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
+	this->m_weaponesp.Setup();
 	this->m_soundEsp.Setup();
 	this->m_chams.Setup();
 	this->m_misc.Setup();
@@ -919,6 +923,10 @@ void CApplication::Setup()
 	this->m_esp.SetColorCT(Color(0, 0, 255));
 	this->m_esp.SetColorT(Color(255, 0, 0));
 	//this->m_esp.SetColorSpotted();
+
+	// WeaponEsp
+	this->m_weaponesp.SetEnabled(true);
+	this->m_weaponesp.SetDrawWeaponName(true);
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(false);

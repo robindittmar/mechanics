@@ -222,6 +222,9 @@
     <ClCompile Include="checksum_md5.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
+    <ClCompile Include="WeaponEsp.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -517,6 +520,9 @@
     </ClInclude>
     <ClInclude Include="checksum_md5.h">
       <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponEsp.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

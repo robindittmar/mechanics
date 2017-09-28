@@ -124,6 +124,10 @@ void CMenu::ApplySettings()
 	m_pEspBarrelEnabled->SetChecked(m_pApp->Esp()->GetDrawViewangles());
 	m_pEspBarrelValue->SetDisplayValue(m_pApp->Esp()->GetViewanglesLength());
 
+	// WeaponEsp
+	m_pWeaponEspEnabled->SetChecked(m_pApp->WeaponEsp()->GetEnabled());
+	m_pWeaponEspWeaponNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponName());
+
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
 	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetFlatModels());
 	m_pChamsDrawOwnTeam->SetChecked(m_pApp->Chams()->GetRenderTeam());
@@ -516,6 +520,17 @@ void CMenu::CreateVisualsTab()
 	m_pEspGroup->AddChild(m_pEspBarrelLabel);
 	m_pEspGroup->AddChild(m_pEspBarrelValue);
 
+
+	m_pWeaponEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 22, 128, 16, "Draw Weapon Names");
+	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 268, "Weapon Esp");
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponNameEnabled);
+
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pChamsEnabled->SetEventHandler(std::bind(&CChams::SetEnabled, m_pApp->Chams(), std::placeholders::_1));
 
@@ -533,7 +548,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsIgnoreZ = new CCheckbox(4, 104, 128, 16, "Only Visible");
 	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsGroup = new CGroupbox(336, 16, 152, 268, "Chams");
+	m_pChamsGroup = new CGroupbox(504, 16, 152, 268, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnTeam);
@@ -562,7 +577,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspOnlyNotVisible = new CCheckbox(4, 144, 128, 16, "Only Not Visible");
 	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawVisible, m_pApp->SoundEsp(), std::placeholders::_1));
 
-	m_pSoundEspGroup = new CGroupbox(504, 16, 152, 268, "Sound Esp");
+	m_pSoundEspGroup = new CGroupbox(672, 16, 152, 268, "Sound Esp");
 	m_pSoundEspGroup->AddChild(m_pSoundEspEnabled);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTimeLabel);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTime);
@@ -574,6 +589,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pPlayerVisualsTab = new CTabPage("Player Visuals");
 	m_pPlayerVisualsTab->AddChild(m_pEspGroup);
+	m_pPlayerVisualsTab->AddChild(m_pWeaponEspGroup);
 	m_pPlayerVisualsTab->AddChild(m_pChamsGroup);
 	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup); 
 

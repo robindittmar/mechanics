@@ -43,6 +43,7 @@ namespace Offsets
 	extern int m_AttributeManager;
 	extern int m_Item;
 	extern int m_iItemDefinitionIndex;
+	extern int m_hOwner;
 	extern int m_iClip1;
 	extern int m_iClip2;
 	extern int m_flNextPrimaryAttack;

@@ -209,6 +209,7 @@
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VTableHook.cpp" />
     <ClCompile Include="Visuals.cpp" />
+    <ClCompile Include="WeaponEsp.cpp" />
     <ClCompile Include="Window.cpp" />
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
@@ -309,6 +310,7 @@
     <ClInclude Include="IVEngineClient.h" />
     <ClInclude Include="VTableHook.h" />
     <ClInclude Include="Visuals.h" />
+    <ClInclude Include="WeaponEsp.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="XorString.h" />
   </ItemGroup>

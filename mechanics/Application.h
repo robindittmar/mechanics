@@ -27,6 +27,7 @@
 #include "Antiaim.h"
 #include "Bhop.h"
 #include "Esp.h"
+#include "WeaponEsp.h"
 #include "SoundEsp.h"
 #include "Chams.h"
 #include "Misc.h"
@@ -189,6 +190,7 @@ public:
 	CAntiAim* AntiAim() { return &m_antiAim; }
 	CBhop* Bhop() { return &m_bhop; }
 	CEsp* Esp() { return &m_esp; }
+	CWeaponEsp* WeaponEsp() { return &m_weaponesp; }
 	CSoundEsp* SoundEsp() { return &m_soundEsp; }
 	CChams* Chams() { return &m_chams; }
 	CMisc* Misc() { return &m_misc; }
@@ -324,6 +326,7 @@ private:
 	CAntiAim m_antiAim;
 	CBhop m_bhop;
 	CEsp m_esp;
+	CWeaponEsp m_weaponesp;
 	CSoundEsp m_soundEsp;
 	CChams m_chams;
 	CMisc m_misc;
