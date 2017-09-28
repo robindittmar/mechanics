@@ -335,6 +335,7 @@ public:
 	ClientClass *m_pNext;
 	int m_ClassID;
 	bool IsWeapon();
+	bool IsGrenade();
 };
 
 #endif // __CLIENTCLASS_H__

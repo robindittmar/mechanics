@@ -128,6 +128,8 @@ void CMenu::ApplySettings()
 	m_pWeaponEspEnabled->SetChecked(m_pApp->WeaponEsp()->GetEnabled());
 	m_pWeaponEspWeaponBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponBoundingBox());
 	m_pWeaponEspWeaponNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponName());
+	m_pWeaponEspGrenadeNameBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeBoundingBox());
+	m_pWeaponEspGrenadeNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeName());
 
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
 	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetFlatModels());
@@ -525,16 +527,31 @@ void CMenu::CreateVisualsTab()
 	m_pWeaponEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
 
-	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 22, 128, 16, "Bounding Box");
+	m_pWeaponEspWeaponLabel = new CLabel(4, 20, 128, 16, "Weapon");
+
+	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 32, 128, 16, "Bounding Box");
 	m_pWeaponEspWeaponBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
 
-	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 42, 128, 16, "Names");
+	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 52, 128, 16, "Names");
 	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspGrenadeLabel = new CLabel(4, 72, 128, 16, "Grenade");
+
+	m_pWeaponEspGrenadeNameBoundingBoxEnabled = new CCheckbox(4, 84, 128, 16, "Bounding Box");
+	m_pWeaponEspGrenadeNameBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspGrenadeNameEnabled = new CCheckbox(4, 104, 120, 16, "Names");
+	m_pWeaponEspGrenadeNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeName, m_pApp->WeaponEsp(), std::placeholders::_1));
 
 	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 268, "Weapon Esp");
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponLabel);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponBoundingBoxEnabled);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponNameEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeLabel);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeNameBoundingBoxEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeNameEnabled);
+
 
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pChamsEnabled->SetEventHandler(std::bind(&CChams::SetEnabled, m_pApp->Chams(), std::placeholders::_1));

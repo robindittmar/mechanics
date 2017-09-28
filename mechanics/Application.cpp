@@ -935,6 +935,8 @@ void CApplication::Setup()
 	this->m_weaponesp.SetEnabled(false);
 	this->m_weaponesp.SetDrawWeaponName(true);
 	this->m_weaponesp.SetDrawWeaponBoundingBox(false);
+	this->m_weaponesp.SetDrawGrenadeName(true);
+	this->m_weaponesp.SetDrawGrenadeBoundingBox(false);
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(false);

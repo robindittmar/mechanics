@@ -9,3 +9,13 @@ bool ClientClass::IsWeapon()
 		return true;
 	return false;
 }
+
+bool ClientClass::IsGrenade()
+{
+	if (this->m_ClassID == CBaseCSGrenadeProjectile ||
+		this->m_ClassID == CDecoyProjectile ||
+		this->m_ClassID == CSmokeGrenadeProjectile ||
+		this->m_ClassID == CMolotovProjectile)
+		return true;
+	return false;
+}
