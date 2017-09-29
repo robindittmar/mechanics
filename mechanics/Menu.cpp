@@ -81,6 +81,7 @@ void CMenu::ApplySettings()
 
 	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
 	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
+	m_pRageOthersResolverType->SetSelectionByValue(m_pApp->Resolver()->GetResolverType());
 
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	// Standing
@@ -313,8 +314,15 @@ void CMenu::CreateRageTab()
 	m_pRageOthersAutoZeusEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoZeus, m_pApp->Ragebot(), std::placeholders::_1));
 
 	m_pRageOthersAutoRevolverEnabled = new CCheckbox(4, 20, 128, 16, "Auto Revolver");
-	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1)); 
 
+	m_pRageOthersResolverType = new CSelectbox(4, 48, 128, 20, "Resolver Type");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NONE, "None");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_LBY, "LBY");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_BRUTEFORCE, "Bruteforce (WIP)");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NOSPREAD, "No Spread");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_AUTOMATIC, "Automatic (WIP");
+	m_pRageOthersResolverType->SetEventHandler(std::bind(&CResolver::SetResolverType, m_pApp->Resolver(), std::placeholders::_1));
 
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
 	m_pAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1));
@@ -397,9 +405,10 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawFake);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimYawMovingFakeOffset);
 
-	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 268, "AntiAim");
+	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 268, "Others");
 	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
 	m_pRageOthersGroup->AddChild(m_pRageOthersAutoRevolverEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersResolverType);
 
 	m_pAntiaimGroup = new CGroupbox(520, 16, 324, 268, "AntiAim");
 	m_pAntiaimGroup->AddChild(m_pAntiaimEnabled);

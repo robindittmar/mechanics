@@ -228,6 +228,9 @@
     <ClCompile Include="ClientClass.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
+    <ClCompile Include="Resolver.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -525,6 +528,9 @@
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
     <ClInclude Include="WeaponEsp.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="Resolver.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>

@@ -31,6 +31,7 @@
 #include "SoundEsp.h"
 #include "Chams.h"
 #include "Misc.h"
+#include "Resolver.h"
 #include "Skinchanger.h"
 #include "Visuals.h"
 #include "Mirror.h"
@@ -194,6 +195,7 @@ public:
 	CSoundEsp* SoundEsp() { return &m_soundEsp; }
 	CChams* Chams() { return &m_chams; }
 	CMisc* Misc() { return &m_misc; }
+	CResolver* Resolver() { return &m_resolver; }
 	CSkinChanger* SkinChanger() { return &m_skinchanger; }
 	CVisuals* Visuals() { return &m_visuals; }
 	CMirror* Mirror() { return &m_mirror; }
@@ -330,6 +332,7 @@ private:
 	CSoundEsp m_soundEsp;
 	CChams m_chams;
 	CMisc m_misc;
+	CResolver m_resolver;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
 	CMirror m_mirror;

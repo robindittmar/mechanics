@@ -72,6 +72,7 @@ private:
 	CGroupbox* m_pRageOthersGroup;
 	CCheckbox* m_pRageOthersAutoZeusEnabled;
 	CCheckbox* m_pRageOthersAutoRevolverEnabled;
+	CSelectbox* m_pRageOthersResolverType;
 
 	CGroupbox* m_pAntiaimGroup;
 	CCheckbox* m_pAntiaimEnabled;

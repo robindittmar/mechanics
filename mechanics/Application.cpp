@@ -300,17 +300,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
-			for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
-			{
-				IClientEntity* pEntity = pApp->EntityList()->GetClientEntity(i);
-
-				if (!pEntity)
-					continue;
-
-				// TODO: crash access violation beim schreiben
-				//		 hint: vllt Entity checks?
-				pEntity->GetAngEyeAngles()->y = pEntity->GetLowerBodyYaw();
-			}
+			pApp->Resolver()->Update();
 
 			pApp->SkinChanger()->Update(pLocalEntity);
 		}
@@ -868,6 +858,7 @@ void CApplication::Setup()
 	this->m_soundEsp.Setup();
 	this->m_chams.Setup();
 	this->m_misc.Setup();
+	this->m_resolver.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
 	this->m_mirror.Setup();
@@ -906,6 +897,10 @@ void CApplication::Setup()
 	this->m_antiAim.SetYawOffsetMoving(0);
 	this->m_antiAim.SetYawFakeSettingMoving(FAKEYAWANTIAIM_STATIC);
 	this->m_antiAim.SetYawFakeOffsetMoving(90);
+
+	// Resolver
+	this->m_resolver.SetEnabled(true);
+	this->m_resolver.SetResolverType(RESOLVERTYPE_NOSPREAD);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);

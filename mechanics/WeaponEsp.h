@@ -33,12 +33,15 @@ private:
 	bool ShouldDrawBox(IClientEntity* pCurEntity, int &x0, int &y0, int &x1, int &y1);
 
 	void GrenadeEsp(IClientEntity* pCurEntity);
+	void WeaponEsp(IClientEntity* pCurEntity);
 
 	bool m_bDrawWeaponName;
 	bool m_bDrawWeaponBoundingBox;
 
 	bool m_bDrawGrenadeName;
 	bool m_bDrawGrenadeBoundingBox;
+
+	int m_iFont;
 };
 
 #endif //__WEAPONESP_H__
