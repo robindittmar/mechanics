@@ -41,3 +41,7 @@ Priority Low
 -> Trigger/(Legitbot?)
 
 -> NoRecoil/NoSpread after aimbot if aimbotshoot or variable true
+
+-> Hitchance Revolver/Negev + Hitchance generell (nospread?)
+
+// NoSmoke nach mapchange

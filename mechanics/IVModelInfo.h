@@ -81,10 +81,83 @@ struct mstudiohitboxset_t
 	}
 };
 
+struct mstudiobone_t
+{
+	int sznameindex;
+
+	inline char *const pszName(void) const
+	{
+		return ((char *) this) + sznameindex;
+	}
+
+	int parent;        // parent bone
+	int bonecontroller[6];    // bone controller index, -1 == none
+
+							  // default values
+	Vector pos;
+	Quaternion quat;
+	RadianEuler rot;
+	// compression scale
+	Vector posscale;
+	Vector rotscale;
+
+	matrix3x4_t poseToBone;
+	Quaternion qAlignment;
+	int flags;
+	int proctype;
+	int procindex;        // procedural rule
+	mutable int physicsbone;    // index into physically simulated bone
+
+	inline void *pProcedure() const
+	{
+		if (procindex == 0)
+			return NULL;
+		else
+			return (void *)(((unsigned char *) this) + procindex);
+	};
+
+	int surfacepropidx;    // index into string tablefor property name
+
+	inline char *const pszSurfaceProp(void) const
+	{
+		return ((char *) this) + surfacepropidx;
+	}
+
+	inline int GetSurfaceProp(void) const
+	{
+		return surfacepropLookup;
+	}
+
+	int contents;        // See BSPFlags.h for the contents flags
+	int surfacepropLookup;    // this index must be cached by the loader, not saved in the file
+	int unused[7];        // remove as appropriate
+};
+
 struct studiohdr_t
 {
-	unsigned char __pad0[0xAC];
+	int id;
+	int version;
+	int checksum;        // this has to be the same in the phy and vtx files to load!
+	char name[64];
+	int length;
 
+	Vector eyeposition;    // ideal eye position
+	Vector illumposition;    // illumination center
+	Vector hull_min;        // ideal movement hull size
+	Vector hull_max;
+	Vector view_bbmin;        // clipping bounding box
+	Vector view_bbmax;
+
+	int flags;
+	int numbones;            // bones
+	int boneindex;
+	inline mstudiobone_t *pBone(int i) const
+	{
+		return (mstudiobone_t *)(((unsigned char *) this) + boneindex) + i;
+	};
+
+	int numbonecontrollers;        // bone controllers
+	int bonecontrollerindex;
 	int numhitboxsets;
 	int hitboxsetindex;
 

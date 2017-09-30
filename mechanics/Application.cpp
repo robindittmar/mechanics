@@ -239,7 +239,10 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			}
 
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
-
+			// TODO
+			int i = pLocalEntity->GetBoneByName("head_0");
+			g_pConsole->Write(LOGLEVEL_WARNING, "%d: %s\n", i, "head_0");
+			
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
 			QAngle qOldAngles = pApp->GetClientViewAngles();
@@ -781,26 +784,26 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// NetVar Dumps
-	//FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
-	//if (pFile)
-	//{
-	//	g_pConsole->Write(LOGLEVEL_INFO, "Dumping NetVars ... ");
-	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
-	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
+	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
+	if (pFile)
+	{
+		g_pConsole->Write(LOGLEVEL_INFO, "Dumping NetVars ... ");
+		//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+		//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
+		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
+		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
 
-	//	fclose(pFile);
-	//	g_pConsole->WritePlain("Done!\n");
-	//}
+		fclose(pFile);
+		g_pConsole->WritePlain("Done!\n");
+	}
 
 	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
 	CXorString xorBasePlayer("S_Ú€vxà’{jü§e"); // DT_BasePlayer

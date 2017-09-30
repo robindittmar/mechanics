@@ -183,3 +183,19 @@ float IClientEntity::GetCycle()
 {
 	return *(float*)((DWORD)this + Offsets::m_flCycle);
 }
+
+int IClientEntity::GetBoneByName(const char* pBoneName)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	studiohdr_t* pStudioHdr = pApp->ModelInfo()->GetStudiomodel(this->GetModel());
+	for (int i = 0; i < pStudioHdr->numbones; i++)
+	{
+		mstudiobone_t* pBone = pStudioHdr->pBone(i);
+		if (!pBone)
+			continue;
+		
+		if (pBone->pszName() && !strcmp(pBone->pszName(), pBoneName))
+			return i;
+	}
+}

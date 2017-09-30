@@ -142,7 +142,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			pHitbox = pHitboxSet->pHitbox(m_iHitboxes[i]);
 			if (!pHitbox)
 				continue;
-
+			
 			// If we shouldn't check visibility, get hitbox pos and go on
 			if (m_iVisibleMode == VISIBLEMODE_IGNORE)
 			{

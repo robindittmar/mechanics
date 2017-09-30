@@ -282,6 +282,8 @@ public:
 	int GetSequence();
 	float* GetPoseParameter();
 	float GetCycle();
+
+	int GetBoneByName(const char* pBoneName);
 };
 
 #define OFFSET_WORLDMODEL		0x31F4

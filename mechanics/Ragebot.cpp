@@ -325,10 +325,10 @@ float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActive
 	if (m_bDoNoSpread && IsAbleToApplyNoSpread() ||
 		IsNoSpread() ||
 		!m_bCalculateHitchance)
-		return 100.0f;
+		return 1.0f;
 
 	int iHits = 0;
-	const float fMaxHits = 255.0f;
+	const float fMaxHits = 256.0f;
 
 	Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 	Vector vForward;
@@ -356,8 +356,8 @@ float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActive
 		float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
 
 		qCurAngles = m_qAimAngles;
-		qCurAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
-		qCurAngles.y += RAD2DEG(atanf(fSpreadX));
+		qCurAngles.x -= RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
+		qCurAngles.y -= RAD2DEG(atanf(fSpreadX));
 		AngleVectors(qCurAngles, &vForward);
 
 		ray.Init(vHeadPos, vHeadPos + (vForward * 8192.0f));
