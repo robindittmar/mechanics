@@ -255,7 +255,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotHitchanceEnabled = new CCheckbox(4, 140, 128, 16, "Hitchance");
 	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotHitchanceSlider = new CSlider(4, 162, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pAimbotHitchanceSlider = new CSlider(4, 162, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pAimbotHitchanceSlider->SetEventHandler(std::bind(&CRagebot::SetHitchance, m_pApp->Ragebot(), std::placeholders::_1));
 
 	m_pAimbotTargetCriteria = new CSelectbox(4, 192, 128, 20, "Target criteria");
@@ -337,7 +337,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimMovingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
+	m_pAntiaimMovingPitchOffset = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
 	m_pAntiaimMovingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimMovingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
@@ -347,7 +347,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimMovingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimMovingYawOffset = new CSlider(4, 104, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
@@ -355,7 +355,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 166, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawMovingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	//Standing
@@ -365,7 +365,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimStandingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingPitchOffset = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
+	m_pAntiaimStandingPitchOffset = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
 	m_pAntiaimStandingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
@@ -375,7 +375,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimStandingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingYawOffset = new CSlider(4, 104, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimStandingYawOffset = new CSlider(4, 104, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimStandingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
@@ -383,7 +383,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 185, 128, 16, "LBY Breaker");
@@ -434,12 +434,12 @@ void CMenu::CreateLegitTab()
 
 	m_pTriggerbotDelayLabel = new CLabel(4, 24, 128, 16, "Delay (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 750.0f);
+	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 750.0f);
 	m_pTriggerbotDelayValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelay, m_pApp->Triggerbot(), std::placeholders::_1));
 
 	m_pTriggerbotDelayJitterLabel = new CLabel(4, 60, 128, 16, "Delay Jitter (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 20.0f);
+	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 20.0f);
 	m_pTriggerbotDelayJitterValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelayJitter, m_pApp->Triggerbot(), std::placeholders::_1));
 
 	m_pTriggerbotGroup = new CGroupbox(16, 16, 152, 268, "Triggerbot");
@@ -487,7 +487,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pEspFadeoutLabel = new CLabel(4, 206, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pEspFadeoutValue = new CSlider(4, 230, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
+	m_pEspFadeoutValue = new CSlider(4, 230, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pEspFadeoutValue->SetEventHandler(std::bind(&CEsp::SetFadeoutTime, m_pApp->Esp(), std::placeholders::_1));
 
 	// Second column
@@ -496,7 +496,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pEspBarrelLabel = new CLabel(156, 206, 128, 16, "Viewangle Length", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pEspBarrelValue = new CSlider(156, 230, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 500.0f);
+	m_pEspBarrelValue = new CSlider(156, 230, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 500.0f);
 	m_pEspBarrelValue->SetEventHandler(std::bind(&CEsp::SetViewanglesLength, m_pApp->Esp(), std::placeholders::_1));
 
 
@@ -614,7 +614,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pSoundEspShowTimeLabel = new CLabel(4, 20, 128, 16, "Show time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pSoundEspShowTime = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
+	m_pSoundEspShowTime = new CSlider(4, 42, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pSoundEspShowTime->SetEventHandler(std::bind(&CSoundEsp::SetShowTime, m_pApp->SoundEsp(), std::placeholders::_1));
 
 	m_pSoundEspFadeoutEnabled = new CCheckbox(4, 56, 128, 16, "Fadeout");
@@ -622,7 +622,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pSoundEspFadeoutTimeLabel = new CLabel(4, 70, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pSoundEspFadeoutTime = new CSlider(4, 92, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
+	m_pSoundEspFadeoutTime = new CSlider(4, 92, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pSoundEspFadeoutTime->SetEventHandler(std::bind(&CSoundEsp::SetFadeTime, m_pApp->SoundEsp(), std::placeholders::_1));
 
 	m_pSoundEspDrawOwnTeam = new CCheckbox(4, 124, 128, 16, "Own Team");
@@ -666,7 +666,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pEffectsNoFlashLabel = new CLabel(4, 102, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 10.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
 	// OthersGroup
@@ -690,7 +690,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 130, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 152, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
+	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 152, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pVisualsOthersMirror = new CCheckbox(4, 176, 128, 16, "Mirror");
@@ -785,7 +785,7 @@ void CMenu::CreateMiscTab()
 
 	m_pFakelagLabel = new CLabel(4, 20, 128, 16, "Packets choking", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFakelagChokeAmount = new CSlider(4, 42, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
+	m_pFakelagChokeAmount = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
 	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CMisc::SetFakelagChokeAmount, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pMiscOthersGroup = new CGroupbox(16, 16, 152, 268, "Others");
