@@ -1,6 +1,6 @@
 #include "Slider.h"
 
-CSlider::CSlider(int x, int y, int w, int h, float fDisplayValue, int iOrientation, bool bReverse, float fMin, float fMax) : IControl(x, y, w, h)
+CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax) : IControl(x, y, w, h)
 {
 	m_bHitcheckForMouseMove = false;
 
@@ -10,13 +10,38 @@ CSlider::CSlider(int x, int y, int w, int h, float fDisplayValue, int iOrientati
 	m_fMinValue = fMin;
 	m_fMaxValue = fMax;
 	m_fValueSpan = m_fMaxValue - m_fMinValue;
+	m_fStepSize = fStepSize;
+
+	m_fPossibleValues = NULL;
+
+	if (m_fStepSize != 0.0f)
+	{
+		float m_fCountPossibleValues = m_fValueSpan / m_fStepSize;
+		m_iCountPossibleValues = m_fValueSpan / m_fStepSize;
+		if (m_fCountPossibleValues - m_iCountPossibleValues > 0.0f)
+			m_iCountPossibleValues += 2;
+		else
+			m_iCountPossibleValues++;
+
+		m_fPossibleValues = new float[m_iCountPossibleValues];
+		float fCurValue = fMin;
+
+		for (int i = 0; i < m_iCountPossibleValues; i++)
+		{
+			m_fPossibleValues[i] = fCurValue;
+			fCurValue += m_fStepSize;
+		}
+		
+		m_fPossibleValues[m_iCountPossibleValues - 1] = fMax;
+	}
 
 	m_pLabel = new CLabel(0, 0, 0, 0, "", RM_FONT_NORMAL, iOrientation == SLIDER_ORIENTATION_HORIZONTAL ? LABEL_ORIENTATION_CENTER : LABEL_ORIENTATION_LEFT);
-	this->SetDisplayValue(fDisplayValue);
 }
 
 CSlider::~CSlider()
 {
+	if (m_fPossibleValues)
+		delete[] m_fPossibleValues;
 }
 
 void CSlider::OnMouseMove(int mx, int my)
@@ -43,6 +68,8 @@ void CSlider::Draw(ISurface* pSurface)
 	int knob;
 	pSurface->DrawSetColor(g_clrControl);
 
+	float fValue = (m_fValue - m_fMinValue) / m_fValueSpan;
+
 	switch(m_iOrientation)
 	{
 	case SLIDER_ORIENTATION_HORIZONTAL:
@@ -50,7 +77,7 @@ void CSlider::Draw(ISurface* pSurface)
 		pSurface->DrawLine(x, y + (m_iHeight / 2), x + m_iWidth, y + (m_iHeight / 2));
 		//pSurface->DrawLine(x + m_iWidth, y, x + m_iWidth, y + m_iHeight);
 
-		knob = m_fValue * m_iWidth;
+		knob = fValue * m_iWidth;
 		if (m_bReverse)
 			knob = m_iWidth - knob;
 
@@ -65,7 +92,7 @@ void CSlider::Draw(ISurface* pSurface)
 		pSurface->DrawLine(x + (m_iWidth / 2), y, x + (m_iWidth / 2), y + m_iHeight);
 		//pSurface->DrawLine(x, y + m_iHeight, x + m_iWidth, y + m_iHeight);
 
-		knob = m_fValue * m_iHeight;
+		knob = fValue * m_iHeight;
 		if (m_bReverse)
 			knob = m_iHeight - knob;
 
@@ -85,13 +112,6 @@ void CSlider::Draw(ISurface* pSurface)
 void CSlider::SetValue(float fValue)
 {
 	m_fValue = fValue;
-	m_fDisplayValue = (m_fValueSpan * m_fValue) + m_fMinValue;
-}
-
-void CSlider::SetDisplayValue(float fDisplayValue)
-{
-	m_fDisplayValue = fDisplayValue;
-	m_fValue = (m_fDisplayValue - m_fMinValue) / m_fValueSpan;
 	this->SetLabelText();
 }
 
@@ -125,16 +145,41 @@ void CSlider::SetValueToCursorPos(int mx, int my)
 	else if (fDelta > fRefMax)
 		fDelta = fRefMax;
 
-	this->SetValue(fDelta / fRefMax);
+	fDelta /= fRefMax;
+	fDelta = (fDelta * m_fValueSpan) + m_fMinValue;
+
+	if (m_fStepSize != 0.0f)
+	{
+		for (int i = 0; i < m_iCountPossibleValues; i++)
+		{
+			if (fDelta > m_fPossibleValues[i] && fDelta < m_fPossibleValues[i + 1])
+			{
+				float fDist1 = fDelta - m_fPossibleValues[i];
+				float fDist2 = m_fPossibleValues[i + 1] - fDelta;
+
+				if (fDist1 < fDist2)
+				{
+					fDelta = m_fPossibleValues[i];
+				}
+				else
+				{
+					fDelta = m_fPossibleValues[i + 1];
+				}
+				break;
+			}
+		}
+	}
+
+	this->SetValue(fDelta);
 	this->SetLabelText();
 
 	if (m_pEventHandler)
-		m_pEventHandler(m_fDisplayValue);
+		m_pEventHandler(m_fValue);
 }
 
 void CSlider::SetLabelText()
 {
 	char pBuffer[16];
-	snprintf(pBuffer, 16, "%.2f", m_fDisplayValue);
+	snprintf(pBuffer, 16, "%.2f", m_fValue);
 	m_pLabel->SetContentText(pBuffer);
 }

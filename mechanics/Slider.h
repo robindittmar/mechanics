@@ -25,7 +25,7 @@ public:
 		int y = 0,
 		int w = 100,
 		int h = 20,
-		float fDisplayValue = 0.0f,
+		float fStepSize = 0.0f,
 		int iOrientation = SLIDER_ORIENTATION_HORIZONTAL,
 		bool bReverse = false,
 		float fMin = 0.0,
@@ -42,10 +42,6 @@ public:
 	void SetValue(float fValue);
 	float GetValue() { return m_fValue; }
 
-	// SetDisplayValue is mostly for displaying purposes, Label will be updated
-	void SetDisplayValue(float fDisplayValue);
-	float GetDisplayValue() { return m_fDisplayValue; }
-
 	void SetEventHandler(std::function<void(float)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	void SetValueToCursorPos(int mx, int my);
@@ -56,8 +52,10 @@ private:
 	int m_iOrientation;
 	bool m_bReverse;
 
-	float m_fValue, m_fDisplayValue;
-	float m_fMinValue, m_fMaxValue, m_fValueSpan;
+	float m_fValue;
+	int m_iCountPossibleValues;
+	float* m_fPossibleValues;
+	float m_fMinValue, m_fMaxValue, m_fValueSpan, m_fStepSize;
 
 	std::function<void(float)> m_pEventHandler;
 };

@@ -67,7 +67,7 @@ void CMenu::ApplySettings()
 	m_pAimbotMultipoint->SetChecked(m_pApp->TargetSelector()->GetMultipoint());
 	m_pAimbotNoSpreadEnabled->SetChecked(m_pApp->Ragebot()->GetNoSpread());
 	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
-	m_pAimbotHitchanceSlider->SetDisplayValue(m_pApp->Ragebot()->GetHitchance());
+	m_pAimbotHitchanceSlider->SetValue(m_pApp->Ragebot()->GetHitchance());
 	m_pAimbotTargetCriteria->SetSelectionByValue(m_pApp->Ragebot()->GetTargetCriteria());
 	m_pAimbotVisibleMode->SetSelectionByValue(m_pApp->TargetSelector()->GetVisibleMode());
 
@@ -86,26 +86,26 @@ void CMenu::ApplySettings()
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	// Standing
 	m_pAntiaimStandingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingStanding());
-	m_pAntiaimStandingPitchOffset->SetDisplayValue(m_pApp->AntiAim()->GetPitchOffsetStanding());
+	m_pAntiaimStandingPitchOffset->SetValue(m_pApp->AntiAim()->GetPitchOffsetStanding());
 	m_pAntiaimStandingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingStanding());
-	m_pAntiaimStandingYawOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawOffsetStanding());
+	m_pAntiaimStandingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetStanding());
 	m_pAntiaimStandingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingStanding());
-	m_pAntiaimYawStandingFakeOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
+	m_pAntiaimYawStandingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
 	// Moving
 	m_pAntiaimMovingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingMoving());
-	m_pAntiaimMovingPitchOffset->SetDisplayValue(m_pApp->AntiAim()->GetPitchOffsetMoving());
+	m_pAntiaimMovingPitchOffset->SetValue(m_pApp->AntiAim()->GetPitchOffsetMoving());
 	m_pAntiaimMovingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingMoving());
-	m_pAntiaimMovingYawOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawOffsetMoving());
+	m_pAntiaimMovingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetMoving());
 	m_pAntiaimMovingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingMoving());
-	m_pAntiaimYawMovingFakeOffset->SetDisplayValue(m_pApp->AntiAim()->GetYawFakeOffsetMoving());
+	m_pAntiaimYawMovingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetMoving());
 
 	m_pAntiaimLbyIndicator->SetChecked(m_pApp->AntiAim()->GetDrawLbyIndicator());
 	m_pAntiaimStandingLbyBreaker->SetChecked(m_pApp->AntiAim()->GetLbyBreaker());
 
 	// Legit
 	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
-	m_pTriggerbotDelayValue->SetDisplayValue(m_pApp->Triggerbot()->GetShootDelay());
-	m_pTriggerbotDelayJitterValue->SetDisplayValue(m_pApp->Triggerbot()->GetShootDelayJitter());
+	m_pTriggerbotDelayValue->SetValue(m_pApp->Triggerbot()->GetShootDelay());
+	m_pTriggerbotDelayJitterValue->SetValue(m_pApp->Triggerbot()->GetShootDelayJitter());
 
 	// Esp
 	m_pEspEnabled->SetChecked(m_pApp->Esp()->GetEnabled());
@@ -118,12 +118,12 @@ void CMenu::ApplySettings()
 	m_pEspDrawOwnTeam->SetChecked(m_pApp->Esp()->GetDrawOwnTeam());
 	m_pEspDrawOwnModel->SetChecked(m_pApp->Esp()->GetDrawOwnModel());
 	m_pEspFadeoutEnabled->SetChecked(m_pApp->Esp()->GetFadeoutEnabled());
-	m_pEspFadeoutValue->SetDisplayValue(m_pApp->Esp()->GetFadeoutTime());
+	m_pEspFadeoutValue->SetValue(m_pApp->Esp()->GetFadeoutTime());
 	m_pEspDrawOnlyVisible->SetChecked(m_pApp->Esp()->GetDrawOnlyVisible());
 	m_pEspDrawOnlySpotted->SetChecked(m_pApp->Esp()->GetDrawOnlySpotted());
 	m_pEspDrawNames->SetChecked(m_pApp->Esp()->GetDrawNames());
 	m_pEspBarrelEnabled->SetChecked(m_pApp->Esp()->GetDrawViewangles());
-	m_pEspBarrelValue->SetDisplayValue(m_pApp->Esp()->GetViewanglesLength());
+	m_pEspBarrelValue->SetValue(m_pApp->Esp()->GetViewanglesLength());
 
 	// WeaponEsp
 	m_pWeaponEspEnabled->SetChecked(m_pApp->WeaponEsp()->GetEnabled());
@@ -143,9 +143,9 @@ void CMenu::ApplySettings()
 	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
 
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
-	m_pSoundEspShowTime->SetDisplayValue(m_pApp->SoundEsp()->GetShowTime());
+	m_pSoundEspShowTime->SetValue(m_pApp->SoundEsp()->GetShowTime());
 	m_pSoundEspFadeoutEnabled->SetChecked(m_pApp->SoundEsp()->GetFadeoutEnabled());
-	m_pSoundEspFadeoutTime->SetDisplayValue(m_pApp->SoundEsp()->GetFadeTime());
+	m_pSoundEspFadeoutTime->SetValue(m_pApp->SoundEsp()->GetFadeTime());
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
 
@@ -154,25 +154,25 @@ void CMenu::ApplySettings()
 	m_pEffectsNoScope->SetChecked(m_pApp->Visuals()->GetNoScope());
 	m_pEffectsDisablePostprocessing->SetChecked(m_pApp->Visuals()->GetDisablePostProcessing());
 	m_pEffectsNoFlash->SetChecked(m_pApp->Visuals()->GetNoFlash());
-	m_pEffectsNoFlashValue->SetDisplayValue(m_pApp->Visuals()->GetFlashPercentage());
+	m_pEffectsNoFlashValue->SetValue(m_pApp->Visuals()->GetFlashPercentage());
 
 	m_pVisualsOthersHandsDrawStyle->SetSelectionByValue(m_pApp->Visuals()->GetHandsDrawStyle());
 	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->Visuals()->GetHitmarker());
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
 	m_pVisualsOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
-	m_pVisualsOthersThirdpersonDistance->SetDisplayValue(m_pApp->Visuals()->GetThirdpersonDistance());
+	m_pVisualsOthersThirdpersonDistance->SetValue(m_pApp->Visuals()->GetThirdpersonDistance());
 	m_pVisualsOthersMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
 
 	m_pFovChangerFovEnabled->SetChecked(m_pApp->Visuals()->GetFovChange());
 	m_pFovChangerFovScopeEnabled->SetChecked(m_pApp->Visuals()->GetFovChangeScoped());
-	m_pFovChangerFovValue->SetDisplayValue(m_pApp->Visuals()->GetFovValue());
+	m_pFovChangerFovValue->SetValue(m_pApp->Visuals()->GetFovValue());
 	m_pFovChangerViewmodelFovEnabled->SetChecked(m_pApp->Visuals()->GetViewmodelFov());
-	m_pFovChangerViewmodelFovValue->SetDisplayValue(m_pApp->Visuals()->GetViewmodelFovValue());
+	m_pFovChangerViewmodelFovValue->SetValue(m_pApp->Visuals()->GetViewmodelFovValue());
 
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
-	m_pFakelagChokeAmount->SetDisplayValue(m_pApp->Misc()->GetFakelagChokeAmount());
+	m_pFakelagChokeAmount->SetValue(m_pApp->Misc()->GetFakelagChokeAmount());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
 	m_pMiscOthersAutoPistolEnabled->SetChecked(m_pApp->Misc()->GetAutoPistol());
@@ -666,7 +666,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pEffectsNoFlashLabel = new CLabel(4, 102, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 10.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
 	// OthersGroup
@@ -707,7 +707,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pFovChangerFovLabel = new CLabel(4, 34, 128, 16, "FOV Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFovChangerFovValue = new CSlider(4, 56, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
+	m_pFovChangerFovValue = new CSlider(4, 56, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
 	m_pFovChangerFovValue->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pFovChangerViewmodelFovEnabled = new CCheckbox(4, 68, 128, 16, "Viewmodel-FOV");
@@ -715,7 +715,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pFovChangerViewmodelFovLabel = new CLabel(4, 82, 128, 16, "FOV Viewmodel Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFovChangerViewmodelFovValue = new CSlider(4, 106, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 150.0f);
+	m_pFovChangerViewmodelFovValue = new CSlider(4, 106, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 150.0f);
 	m_pFovChangerViewmodelFovValue->SetEventHandler(std::bind(&CVisuals::SetViewmodelFovValue, m_pApp->Visuals(), std::placeholders::_1));
 
 
