@@ -24,15 +24,19 @@ void CResolver::Update(void* pParameters)
 		return;
 
 	int iShotsCount = pLocalEntity->GetShotsFired();
-	for (int i = 0; i < m_pApp->EngineClient()->GetMaxClients(); i++)
+	static int oldShotsCount = 0;
+	for (int i = 1; i < m_pApp->EngineClient()->GetMaxClients(); i++)
 	{
 		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
 
 		if (!pCurEntity)
 			continue;
 
+		if (pCurEntity->IsDormant())
+			continue;
+
 		if (pCurEntity == pLocalEntity)
-			return;
+			continue;
 
 		float fCurLby = pCurEntity->GetLowerBodyYaw();
 		QAngle* qCurEyeAngles = pCurEntity->GetAngEyeAngles();
@@ -45,34 +49,39 @@ void CResolver::Update(void* pParameters)
 			break;
 		case RESOLVERTYPE_NOSPREAD:
 			// change every shot | playerlist and save how many shots u shot on that target!
-			switch (iShotsCount % 9)
+			if (iShotsCount > oldShotsCount)
 			{
-			case 8:
-				qCurEyeAngles->y -= 90.0f;
-				break;
-			case 7:
-				qCurEyeAngles->y -= 67.5f;
-				break;
-			case 6:
-				qCurEyeAngles->y -= 45.0f;
-				break;
-			case 5:
-				qCurEyeAngles->y -= 22.5f;
-				break;
-			case 4:
-				qCurEyeAngles->y += 22.5f;
-				break;
-			case 3:
-				qCurEyeAngles->y += 45.0f;
-				break;
-			case 2:
-				qCurEyeAngles->y += 67.5f;
-				break;
-			case 1:
-				qCurEyeAngles->y += 90.0f;
-				break;
-			case 0:
-				break;
+				switch (iShotsCount % 9)
+				{
+				case 8:
+					qCurEyeAngles->y -= 90.0f;
+					oldShotsCount = 0;
+					break;
+				case 7:
+					qCurEyeAngles->y -= 67.5f;
+					break;
+				case 6:
+					qCurEyeAngles->y -= 45.0f;
+					break;
+				case 5:
+					qCurEyeAngles->y -= 22.5f;
+					break;
+				case 4:
+					qCurEyeAngles->y += 22.5f;
+					break;
+				case 3:
+					qCurEyeAngles->y += 45.0f;
+					break;
+				case 2:
+					qCurEyeAngles->y += 67.5f;
+					break;
+				case 1:
+					qCurEyeAngles->y += 90.0f;
+					break;
+				case 0:
+					break;
+				}
+				oldShotsCount = iShotsCount;
 			}
 			break;
 		case RESOLVERTYPE_BRUTEFORCE:

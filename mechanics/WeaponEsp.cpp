@@ -14,6 +14,12 @@ void CWeaponEsp::Setup()
 	m_pApp = CApplication::Instance();
 
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
+
+	mbstowcs(m_pSmokeGrenade, CXorString("Dfê©r&Â°reä¦r").ToCharArray(), 64);
+	mbstowcs(m_pDecoy, CXorString("Snæ­n").ToCharArray(), 64);
+	mbstowcs(m_pFlashbang, CXorString("Qgä±iä¬p").ToCharArray(), 64);
+	mbstowcs(m_pHeGrenade, CXorString("_N¨…enë£sn").ToCharArray(), 64);
+	mbstowcs(m_pMolotov, CXorString("Zdé­cdó").ToCharArray(), 64);
 }
 
 void CWeaponEsp::Update(void* pParameters)
@@ -71,22 +77,30 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 
 			wchar_t* pGrenadeName;
+			const char* pModelName;
+
+			static CXorString xorFlashbang("qgä±iä¬p");
 			switch (pCurEntity->GetClientClass()->m_ClassID)
 			{
 			case CSmokeGrenadeProjectile:
-				pGrenadeName = L"Smoke-Grenade";
+				pGrenadeName = m_pSmokeGrenade;
 				break;
 			case CDecoyProjectile:
-				pGrenadeName = L"Decoy";
+				pGrenadeName = m_pDecoy;
 				break;
 			case CBaseCSGrenadeProjectile:
-				// get model
-				// check modelname for flashbang
-				//todo: check if flash or he
-				pGrenadeName = L"HE/Flashbang";
+				pModelName = m_pApp->ModelInfo()->GetModelName(pCurEntity->GetModel());
+				if (strstr(pModelName, xorFlashbang.ToCharArray()) != NULL)
+				{
+					pGrenadeName = m_pFlashbang;
+				}
+				else
+				{
+					pGrenadeName = m_pHeGrenade;
+				}
 				break;
 			case CMolotovProjectile:
-				pGrenadeName = L"Molotov";
+				pGrenadeName = m_pMolotov;
 				break;
 			}
 			int w, h;

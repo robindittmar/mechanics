@@ -41,6 +41,12 @@ private:
 	bool m_bDrawGrenadeName;
 	bool m_bDrawGrenadeBoundingBox;
 
+	wchar_t m_pSmokeGrenade[64];
+	wchar_t m_pDecoy[64];
+	wchar_t m_pFlashbang[64];
+	wchar_t m_pHeGrenade[64];
+	wchar_t m_pMolotov[64];
+
 	int m_iFont;
 };
 
