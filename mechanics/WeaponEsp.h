@@ -35,6 +35,9 @@ public:
 	void SetDrawBombTimer(bool bDrawBombTimer) { m_bDrawBombTimer = bDrawBombTimer; }
 	bool GetDrawBombTimer() { return m_bDrawBombTimer; }
 
+	void SetDrawBombDefuseTimer(bool bDrawBombDefuseTimer) { m_bDrawBombDefuseTimer = bDrawBombDefuseTimer; }
+	bool GetDrawBombDefuseTimer() { return m_bDrawBombDefuseTimer; }
+
 	void SetDrawBombDamageIndicator(bool bDrawBombDamageIndicator) { m_bDrawBombDamageIndicator = bDrawBombDamageIndicator; }
 	bool GetDrawBombDamageIndicator() { return m_bDrawBombDamageIndicator; }
 
@@ -59,6 +62,7 @@ private:
 	bool m_bDrawBombName;
 	bool m_bDrawBombBoundingBox;
 	bool m_bDrawBombTimer;
+	bool m_bDrawBombDefuseTimer;
 	bool m_bDrawBombDamageIndicator;
 
 	wchar_t m_pSmokeGrenade[64];
@@ -69,6 +73,7 @@ private:
 
 	wchar_t m_pC4Planted[64];
 	wchar_t m_pC4Time[64];
+	wchar_t m_pC4DefuseCountDown[64];
 	wchar_t m_pC4DamageIndicator[64];
 
 	int m_iFont;

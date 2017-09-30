@@ -93,9 +93,24 @@ int IClientEntity::GetTickBase()
 	return *(int*)((DWORD)this + Offsets::m_nTickBase);
 }
 
+bool IClientEntity::IsDefusing()
+{
+	return *(bool*)((DWORD)this + Offsets::m_bIsDefusing);
+}
+
 float IClientEntity::GetC4Blow()
 {
 	return *(float*)((DWORD)this + Offsets::m_flC4Blow);
+}
+
+float IClientEntity::GetDefuseCountDown()
+{
+	return *(float*)((DWORD)this + Offsets::m_flDefuseCountDown);
+}
+
+HANDLE IClientEntity::GetDefuser()
+{
+	return *(HANDLE*)((DWORD)this + Offsets::m_hBombDefuser);
 }
 
 int IClientEntity::GetShotsFired()

@@ -153,6 +153,7 @@ private:
 	CCheckbox* m_pWeaponEspBombNameEnabled;
 	CCheckbox* m_pWeaponEspBombBoundingBoxEnabled;
 	CCheckbox* m_pWeaponEspBombTimerEnabled;
+	CCheckbox* m_pWeaponEspBombDefuseTimerEnabled;
 	CCheckbox* m_pWeaponEspBombDamageIndicatorEnabled;
 
 	// Chams

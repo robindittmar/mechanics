@@ -31,7 +31,10 @@ namespace Offsets
 	int m_hObserverTarget;
 	int deadflag;
 	int m_nTickBase;
+	int m_bIsDefusing;
 	int m_flC4Blow;
+	int m_flDefuseCountDown;
+	int m_hBombDefuser;
 
 	int m_nJumpTimeMsecs;
 	int m_flFallVelocity;

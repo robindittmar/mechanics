@@ -131,9 +131,10 @@ void CMenu::ApplySettings()
 	m_pWeaponEspWeaponBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponBoundingBox());
 	m_pWeaponEspGrenadeNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeName());
 	m_pWeaponEspGrenadeBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeBoundingBox());
-	m_pWeaponEspBombNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombName());
+	m_pWeaponEspBombNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombName()); 
 	m_pWeaponEspBombBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombBoundingBox());
 	m_pWeaponEspBombTimerEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombTimer());
+	m_pWeaponEspBombDefuseTimerEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombDefuseTimer());
 	m_pWeaponEspBombDamageIndicatorEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombDamageIndicator());
 
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
@@ -567,7 +568,10 @@ void CMenu::CreateVisualsTab()
 	m_pWeaponEspBombTimerEnabled = new CCheckbox(4, 176, 128, 16, "Timer");
 	m_pWeaponEspBombTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
 
-	m_pWeaponEspBombDamageIndicatorEnabled = new CCheckbox(4, 196, 128, 16, "Damage Indicator");
+	m_pWeaponEspBombDefuseTimerEnabled = new CCheckbox(4, 196, 128, 16, "Defuse Timer");
+	m_pWeaponEspBombDefuseTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDefuseTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspBombDamageIndicatorEnabled = new CCheckbox(4, 216, 128, 16, "Damage Indicator");
 	m_pWeaponEspBombDamageIndicatorEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDamageIndicator, m_pApp->WeaponEsp(), std::placeholders::_1));
 
 	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 268, "Weapon Esp");
@@ -582,6 +586,7 @@ void CMenu::CreateVisualsTab()
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombNameEnabled);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombBoundingBoxEnabled);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombTimerEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDefuseTimerEnabled);
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDamageIndicatorEnabled);
 
 

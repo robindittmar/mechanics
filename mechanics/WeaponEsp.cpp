@@ -23,6 +23,7 @@ void CWeaponEsp::Setup()
 
 	mbstowcs(m_pC4Planted, CXorString("Ggä¬cnáâT?").ToCharArray(), 64);
 	mbstowcs(m_pC4Time, CXorString("Cbè§-+ ì%mö").ToCharArray(), 64);
+	mbstowcs(m_pC4DefuseCountDown, CXorString("Snã·dnáâ~e¿â2%·¤").ToCharArray(), 64);
 	mbstowcs(m_pC4DamageIndicator, CXorString("Sjè£pn¿âi.ì").ToCharArray(), 64);
 }
 
@@ -189,6 +190,30 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 		}
 	}
 
+	if (m_bDrawBombDefuseTimer)
+	{
+		if (!bGotWorldToScreen)
+		{
+			bGotWorldToScreen = m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin);
+		}
+
+		if (bGotWorldToScreen)
+		{
+			IClientEntity* pDefuser = m_pApp->EntityList()->GetClientEntityFromHandle(pCurEntity->GetDefuser());
+			if (pDefuser && pDefuser->IsDefusing())
+			{
+				float fTimeToDefused = fmax(pCurEntity->GetDefuseCountDown() - m_pApp->GlobalVars()->curtime, 0.0f);
+				if (fTimeToDefused != m_pApp->GlobalVars()->curtime)
+				{
+					wchar_t pBombTimeText[256];
+					swprintf(pBombTimeText, m_pC4DefuseCountDown, fTimeToDefused);
+					iPlantedTextHeight += DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+				}
+			}
+		}
+	}
+
+
 	if (m_bDrawBombDamageIndicator)
 	{
 		IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
@@ -206,6 +231,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 		swprintf(pBombTimeText, m_pC4DamageIndicator, damage);
 		DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
 	}
+
 }
 
 float CWeaponEsp::DamageIndicatorArmor(float flDamage, int ArmorValue)
