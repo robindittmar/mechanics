@@ -1016,6 +1016,7 @@ void CApplication::Setup()
 	this->m_misc.SetJumpScout(true);
 	this->m_misc.SetNoName(false);
 	this->m_misc.SetAutoAccept(false);
+	this->m_misc.SetSpamName(false);
 
 	// SkinChanger
 	this->m_skinchanger.SetEnabled(false);

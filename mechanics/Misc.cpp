@@ -385,6 +385,9 @@ void CMisc::SetName(const char* newName)
 
 void CMisc::SpamNameFix()
 {
+	if (!m_bSpamName)
+		return;
+
 	ConVar* pName = m_pApp->CVar()->FindVar(m_xorName.ToCharArray());
 	int callbackNum = pName->callback;
 	pName->callback = NULL;
