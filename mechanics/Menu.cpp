@@ -136,7 +136,7 @@ void CMenu::ApplySettings()
 	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetFlatModels());
 	m_pChamsDrawOwnTeam->SetChecked(m_pApp->Chams()->GetRenderTeam());
 	m_pChamsDrawOwnModel->SetChecked(m_pApp->Chams()->GetRenderLocalplayer());
-	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetIgnoreZIndex());
+	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
 
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
 	m_pSoundEspShowTime->SetDisplayValue(m_pApp->SoundEsp()->GetShowTime());
@@ -577,7 +577,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsDrawOwnModel->SetEventHandler(std::bind(&CChams::SetRenderLocalplayer, m_pApp->Chams(), std::placeholders::_1));
 
 	m_pChamsIgnoreZ = new CCheckbox(4, 104, 128, 16, "Only Visible");
-	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetIgnoreZIndex, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetOnlyVisible, m_pApp->Chams(), std::placeholders::_1));
 
 	m_pChamsGroup = new CGroupbox(504, 16, 152, 268, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);

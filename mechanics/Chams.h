@@ -4,6 +4,7 @@
 // SDK
 #include "IMaterial.h"
 #include "IVModelRender.h"
+#include "ISurface.h" // class Color
 
 // Custom
 #include "IFeature.h"
@@ -26,11 +27,23 @@ public:
 	void SetRenderLocalplayer(bool bRender) { m_bRenderLocalplayer = bRender; }
 	bool GetRenderLocalplayer() { return m_bRenderLocalplayer; }
 
-	void SetIgnoreZIndex(bool bIgnoreZ) { m_bIgnoreZIndex = !bIgnoreZ; } //todo GHETTOFIX
-	bool GetIgnoreZIndex() { return !m_bIgnoreZIndex; }
+	void SetOnlyVisible(bool bOnlyVisible) { m_bOnlyVisible = bOnlyVisible; }
+	bool GetOnlyVisible() { return m_bOnlyVisible; }
 
 	void SetFlatModels(bool bFlatModels);
 	bool GetFlatModels() { return m_bFlatModels; }
+
+	void SetColorHiddenCT(Color clrHiddenCT) { m_clrHiddenCT = clrHiddenCT; }
+	Color GetColorHiddenCT() { return m_clrHiddenCT; }
+
+	void SetColorVisibleCT(Color clrVisibleCT) { m_clrVisibleCT = clrVisibleCT; }
+	Color GetColorVisibleCT() { return m_clrVisibleCT; }
+
+	void SetColorHiddenT(Color clrHiddenT) { m_clrHiddenT = clrHiddenT; }
+	Color GetColorHiddenT() { return m_clrHiddenT; }
+
+	void SetColorVisibleT(Color clrVisibleT) { m_clrVisibleT = clrVisibleT; }
+	Color GetColorVisibleT() { return m_clrVisibleT; }
 
 	void ReloadMaterials();
 	void Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
@@ -40,8 +53,13 @@ private:
 
 	bool m_bRenderTeam;
 	bool m_bRenderLocalplayer;
-	bool m_bIgnoreZIndex;
+	bool m_bOnlyVisible;
 	bool m_bFlatModels;
+
+	Color m_clrHiddenCT;
+	Color m_clrVisibleCT;
+	Color m_clrHiddenT;
+	Color m_clrVisibleT;
 
 	bool m_bMaterialsInitialized;
 	IMaterial* m_pFlatHiddenCT;

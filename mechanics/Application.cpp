@@ -14,6 +14,7 @@ EmitSound1_t CApplication::m_pEmitSound1;
 EmitSound2_t CApplication::m_pEmitSound2;
 
 RecvVarProxy_t CApplication::m_pSequenceProxy;
+RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
 
 CApplication* CApplication::Instance()
 {
@@ -148,6 +149,7 @@ void CApplication::LoadSkinChangerConfig()
 void CApplication::Unhook()
 {
 	// Proxy functiions
+	m_pNetVarLowerBodyYaw->UnhookProxy();
 	m_pNetVarSequence->UnhookProxy();
 
 	// Reverse order, in case of any dependencies
@@ -175,6 +177,7 @@ void CApplication::Rehook()
 	this->m_pEngineSoundHook->Rehook();
 
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
+	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
 
 	this->m_bIsHooked = true;
 }
@@ -534,7 +537,7 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 	CApplication* pApp = CApplication::Instance();
 
 	// Make the incoming data editable.
-	CRecvProxyData* pData = const_cast<CRecvProxyData*>(pDataConst);
+	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
 
 	// Confirm that we are replacing our view model and not someone elses.
 	CBaseViewModel* pViewModel = (CBaseViewModel*)pStruct;
@@ -621,6 +624,18 @@ void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataCo
 	pApp->m_pSequenceProxy(pData, pStruct, pOut);
 }
 
+void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
+	IClientEntity* pEntity = (IClientEntity*)pStruct;
+
+	g_pConsole->Write("%f - %d\n", pData->m_Value.m_Float, pEntity->EntIndex());
+
+	pApp->m_pLowerBodyYawProxy(pDataConst, pStruct, pOut);
+}
+
 /*void BtnDown(IControl* p)
 {
 CButton* btn = (CButton*)p;
@@ -670,9 +685,9 @@ void CApplication::Setup()
 	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
 
 	// TODO: xor
-	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomSeed");
-	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomInt");
-	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, "RandomFloat");
+	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("Ejë¦xfÖ§ro").ToCharArray());
+	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("Ejë¦xfÌ¬c").ToCharArray());
+	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomFloat*/CXorString("Ejë¦xfÃ®xjñ").ToCharArray());
 
 	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
 	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
@@ -688,7 +703,7 @@ void CApplication::Setup()
 	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
 	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)CreateVPhysicsInterface(physicsSurfaceProps.ToCharArray(), NULL);
-	m_pEngineSound = (IEngineSound*)CreateEngineInterface("IEngineSoundClient003", NULL); // TODO
+	m_pEngineSound = (IEngineSound*)CreateEngineInterface(/*IEngineSoundClient003*/CXorString("^Në¥~eà‘x~ë¦Tgì§yµò$").ToCharArray(), NULL); // TODO
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
@@ -726,13 +741,13 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// NetVar Dumps
-	//FILE* pFile = fopen("C:\\Users\\Nico\\Desktop\\dump.txt", "w");
+	//FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
 	//if (pFile)
 	//{
 	//	g_pConsole->Write("Dumping NetVars ... ");
-	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+	//	CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
 	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
 	//	/*CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
 	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
@@ -781,7 +796,8 @@ void CApplication::Setup()
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
-	Offsets::m_flLowerBodyYawTarget = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
+	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
+	Offsets::m_flLowerBodyYawTarget = m_pNetVarLowerBodyYaw->GetOffset();
 	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
 	Offsets::m_iTeamNum = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_iTeamNum*/CXorString("zTì–rjèŒbf").ToCharArray());
 	Offsets::m_lifeState = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_lifeState*/CXorString("zTé«qnÖ¶và").ToCharArray());
@@ -945,8 +961,12 @@ void CApplication::Setup()
 	this->m_chams.SetEnabled(false);
 	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(true);
-	this->m_chams.SetIgnoreZIndex(false);
+	this->m_chams.SetOnlyVisible(false);
 	this->m_chams.SetFlatModels(false);
+	this->m_chams.SetColorHiddenCT(Color(0, 0, 255));
+	this->m_chams.SetColorVisibleCT(Color(0, 255, 0));
+	this->m_chams.SetColorHiddenT(Color(255, 0, 0));
+	this->m_chams.SetColorVisibleT(Color(255, 255, 0));
 
 	// Misc
 	this->m_misc.SetEnabled(true);
@@ -1070,6 +1090,7 @@ void CApplication::Hook()
 
 	// Proxy functions
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
+	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
 
 	//this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 

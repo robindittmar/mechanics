@@ -10,7 +10,7 @@ CChams::CChams()
 
 	m_bRenderTeam = false;
 	m_bRenderLocalplayer = false;
-	m_bIgnoreZIndex = false;
+	m_bOnlyVisible = false;
 	m_bFlatModels = false;
 
 	m_pFlatHiddenCT = NULL;
@@ -121,15 +121,15 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		m_pLitVisibleT = m_pApp->ResourceManager()->CreateMaterial(true, false);
 
 		// Colors
-		m_pFlatHiddenCT->ColorModulate(0.0f, 0.0f, 1.0f);
-		m_pFlatVisibleCT->ColorModulate(0.0f, 1.0f, 0.0f);
-		m_pFlatHiddenT->ColorModulate(1.0f, 0.0f, 0.0f);
-		m_pFlatVisibleT->ColorModulate(1.0f, 1.0f, 0.0f);
+		m_pFlatHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+		m_pFlatVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+		m_pFlatHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+		m_pFlatVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
 
-		m_pLitHiddenCT->ColorModulate(0.0, 0.0, 1.0f);
-		m_pLitVisibleCT->ColorModulate(0.0f, 1.0f, 0.0f);
-		m_pLitHiddenT->ColorModulate(1.0f, 0.0f, 0.0f);
-		m_pLitVisibleT->ColorModulate(1.0f, 1.0f, 0.0f);
+		m_pLitHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+		m_pLitVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+		m_pLitHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+		m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
 
 		// Force Chams to actually "load" into the pointers
 		this->SetFlatModels(m_bFlatModels);
@@ -160,18 +160,18 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 			iModelTeamNum == 0)
 			return;
 
-		if(iModelTeamNum == TEAMNUM_T)
+		if (iModelTeamNum == TEAMNUM_T)
 		{
-			if(m_bIgnoreZIndex)
+			if (!m_bOnlyVisible)
 			{
 				m_pModelRender->ForcedMaterialOverride(m_pHiddenT);
 				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 			}
 			m_pModelRender->ForcedMaterialOverride(m_pVisibleT);
 		}
-		else if(iModelTeamNum == TEAMNUM_CT)
+		else if (iModelTeamNum == TEAMNUM_CT)
 		{
-			if(m_bIgnoreZIndex)
+			if (!m_bOnlyVisible)
 			{
 				m_pModelRender->ForcedMaterialOverride(m_pHiddenCT);
 				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);

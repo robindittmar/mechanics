@@ -244,6 +244,7 @@ public:
 		float flVolume, float flAttenuation, int nSeed, int iFlags = 0, int iPitch = PITCH_NORM, const Vector *pOrigin = NULL, const Vector *pDirection = NULL, CUtlVector<Vector>* pUtlVecOrigins = NULL,
 		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
 	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
+	static void __cdecl hk_SetLowerBodyYawTarget(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 private:
 	void Setup();
 	void Hook();
@@ -281,6 +282,7 @@ private:
 	static EmitSound2_t m_pEmitSound2;
 
 	static RecvVarProxy_t m_pSequenceProxy;
+	static RecvVarProxy_t m_pLowerBodyYawProxy;
 
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
@@ -288,6 +290,7 @@ private:
 	// NetVars
 	CNetVarManager* m_pNetVarMgr;
 	CNetVar* m_pNetVarSequence;
+	CNetVar* m_pNetVarLowerBodyYaw;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;
