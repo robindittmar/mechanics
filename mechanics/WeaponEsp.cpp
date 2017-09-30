@@ -20,6 +20,11 @@ void CWeaponEsp::Setup()
 	mbstowcs(m_pFlashbang, CXorString("Qgä±iä¬p").ToCharArray(), 64);
 	mbstowcs(m_pHeGrenade, CXorString("_N¨…enë£sn").ToCharArray(), 64);
 	mbstowcs(m_pMolotov, CXorString("Zdé­cdó").ToCharArray(), 64);
+
+	mbstowcs(m_pC4Planted, CXorString("Ggä¬cnáâT?").ToCharArray(), 64);
+	mbstowcs(m_pC4Time, CXorString("Cbè§-+ ì%mö").ToCharArray(), 64);
+	mbstowcs(m_pC4DefuseCountDown, CXorString("Snã·dnáâ~e¿â2%·¤").ToCharArray(), 64);
+	mbstowcs(m_pC4DamageIndicator, CXorString("Sjè£pn¿âi.ì").ToCharArray(), 64);
 }
 
 void CWeaponEsp::Update(void* pParameters)
@@ -44,6 +49,7 @@ void CWeaponEsp::Update(void* pParameters)
 
 		GrenadeEsp(pCurEntity);
 		WeaponEsp(pCurEntity);
+		BombEsp(pCurEntity);
 	}
 }
 
@@ -72,10 +78,6 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 		Vector vCurEntOrigin = *pCurEntity->GetOrigin();
 		if (m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin))
 		{
-			m_pApp->Surface()->DrawSetTextFont(m_iFont);
-
-			m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-
 			wchar_t* pGrenadeName;
 			const char* pModelName;
 
@@ -103,10 +105,7 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 				pGrenadeName = m_pMolotov;
 				break;
 			}
-			int w, h;
-			m_pApp->Surface()->GetTextSize(m_iFont, pGrenadeName, w, h);
-			m_pApp->Surface()->DrawSetTextPos(vScreenOrigin.x - w / 2, vScreenOrigin.y);
-			m_pApp->Surface()->DrawPrintText(pGrenadeName, lstrlenW(pGrenadeName));
+			DrawWeaponName(pCurWeapon, pGrenadeName, vScreenOrigin.x, vScreenOrigin.y);
 		}
 	}
 }
@@ -141,6 +140,118 @@ void CWeaponEsp::WeaponEsp(IClientEntity* pCurEntity)
 	}
 }
 
+void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
+{
+	if (pCurEntity->GetClientClass()->m_ClassID != CPlantedC4)
+		return;
+
+	CWeapon* pCurWeapon = (CWeapon*)pCurEntity;
+	if (!pCurWeapon)
+		return;
+
+	if (m_bDrawBombBoundingBox)
+	{
+		int x0, y0, x1, y1;
+		if (ShouldDrawBox(pCurEntity, x0, y0, x1, y1))
+		{
+			m_pApp->Surface()->DrawSetColor(m_pApp->Esp()->GetColorSpotted());
+			m_pApp->Surface()->DrawOutlinedRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1);
+		}
+	}
+
+	bool bGotWorldToScreen = false;
+	Vector vScreenOrigin;
+	Vector vCurEntOrigin = *pCurEntity->GetOrigin();
+	int iPlantedTextHeight = 0;
+	if (m_bDrawBombName)
+	{
+		if (bGotWorldToScreen = m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin))
+		{
+			iPlantedTextHeight = DrawWeaponName(pCurWeapon, m_pC4Planted, vScreenOrigin.x, vScreenOrigin.y);
+		}
+	}
+
+	if (m_bDrawBombTimer)
+	{
+		if (!bGotWorldToScreen)
+		{
+			bGotWorldToScreen = m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin);
+		}
+
+		if (bGotWorldToScreen)
+		{
+			float fTimeToExplode = fmax(pCurEntity->GetC4Blow() - m_pApp->GlobalVars()->curtime, 0.0f);
+			if (fTimeToExplode != m_pApp->GlobalVars()->curtime)
+			{
+				wchar_t pBombTimeText[256];
+				swprintf(pBombTimeText, m_pC4Time, fTimeToExplode);
+				iPlantedTextHeight += DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+			}
+		}
+	}
+
+	if (m_bDrawBombDefuseTimer)
+	{
+		if (!bGotWorldToScreen)
+		{
+			bGotWorldToScreen = m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin);
+		}
+
+		if (bGotWorldToScreen)
+		{
+			IClientEntity* pDefuser = m_pApp->EntityList()->GetClientEntityFromHandle(pCurEntity->GetDefuser());
+			if (pDefuser && pDefuser->IsDefusing())
+			{
+				float fTimeToDefused = fmax(pCurEntity->GetDefuseCountDown() - m_pApp->GlobalVars()->curtime, 0.0f);
+				if (fTimeToDefused != m_pApp->GlobalVars()->curtime)
+				{
+					wchar_t pBombTimeText[256];
+					swprintf(pBombTimeText, m_pC4DefuseCountDown, fTimeToDefused);
+					iPlantedTextHeight += DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+				}
+			}
+		}
+	}
+
+
+	if (m_bDrawBombDamageIndicator)
+	{
+		IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+		float flDistance = (*pLocalEntity->GetOrigin() - *pCurEntity->GetOrigin()).Length();
+
+		static float a = 450.7f;
+		static float b = 75.68f;
+		static float c = 789.2f;
+
+		float d = ((flDistance - b) / c);
+		float flDamage = a*exp(-d * d);
+		int damage = fmax(((int)DamageIndicatorArmor(flDamage, pLocalEntity->GetArmor()) + 0.5f), 0.0f);
+
+		wchar_t pBombTimeText[256];
+		swprintf(pBombTimeText, m_pC4DamageIndicator, damage);
+		DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+	}
+
+}
+
+float CWeaponEsp::DamageIndicatorArmor(float flDamage, int ArmorValue)
+{
+	float flArmorRatio = 0.5f;
+	float flArmorBonus = 0.5f;
+	if (ArmorValue > 0) {
+		float flNew = flDamage * flArmorRatio;
+		float flArmor = (flDamage - flNew) * flArmorBonus;
+
+		if (flArmor > static_cast<float>(ArmorValue)) {
+			flArmor = static_cast<float>(ArmorValue) * (1.f / flArmorBonus);
+			flNew = flDamage - flArmor;
+		}
+
+		flDamage = flNew;
+	}
+	return flDamage;
+}
+
 void CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, int posX, int posY)
 {
 	if (!m_bDrawWeaponName)
@@ -163,6 +274,23 @@ void CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, int posX, int posY)
 	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
 	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY);
 	m_pApp->Surface()->DrawPrintText(wcWeaponName, iWeaponNameLen);
+}
+
+int CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, wchar_t* pWeaponName, int posX, int posY)
+{
+	static unsigned int iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
+	m_pApp->Surface()->DrawSetTextFont(iFont);
+
+	int iWeaponNameLen = lstrlenW(pWeaponName);
+
+	int w, h;
+	m_pApp->Surface()->GetTextSize(iFont, pWeaponName, w, h);
+
+	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
+	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY);
+	m_pApp->Surface()->DrawPrintText(pWeaponName, iWeaponNameLen);
+
+	return h;
 }
 
 bool CWeaponEsp::ShouldDrawBox(IClientEntity* pCurEntity, int &x0, int &y0, int &x1, int &y1)

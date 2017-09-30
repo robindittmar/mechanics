@@ -66,6 +66,9 @@ public:
 
 	void SetNoName(bool bNoName) { m_bNoName = bNoName; };
 	bool GetNoName() { return m_bNoName; };
+	
+	void SetSpamName(bool bSpamName) { m_bSpamName = bSpamName; };
+	bool GetSpamName() { return m_bSpamName; };
 
 	bool GetIsCustomClanTag() { return m_bIsCustomClanTag; };
 
@@ -105,6 +108,7 @@ private:
 	bool m_bIsCustomClanTag;
 	bool m_bAutoAccept;
 	bool m_bNoName;
+	bool m_bSpamName;
 
 	IsReadyCallback_t m_IsReadyCallback;
 

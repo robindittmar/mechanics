@@ -148,7 +148,13 @@ private:
 	CCheckbox* m_pWeaponEspWeaponNameEnabled;
 	CLabel* m_pWeaponEspGrenadeLabel;
 	CCheckbox* m_pWeaponEspGrenadeNameEnabled;
-	CCheckbox* m_pWeaponEspGrenadeNameBoundingBoxEnabled;
+	CCheckbox* m_pWeaponEspGrenadeBoundingBoxEnabled;
+	CLabel* m_pWeaponEspBombLabel;
+	CCheckbox* m_pWeaponEspBombNameEnabled;
+	CCheckbox* m_pWeaponEspBombBoundingBoxEnabled;
+	CCheckbox* m_pWeaponEspBombTimerEnabled;
+	CCheckbox* m_pWeaponEspBombDefuseTimerEnabled;
+	CCheckbox* m_pWeaponEspBombDamageIndicatorEnabled;
 
 	// Chams
 	CGroupbox* m_pChamsGroup;
