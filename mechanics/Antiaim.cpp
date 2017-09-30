@@ -34,7 +34,10 @@ float GetOutgoingLatency()
 bool NextLBYUpdate()
 {
 	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
+
+	if (!pApp->AntiAim()->GetLbyBreaker())
+		return false;
 
 	pApp->m_bLbyUpdate = false;
 
@@ -51,10 +54,10 @@ bool NextLBYUpdate()
 			return false;
 		}
 
-		if(pApp->AntiAim()->GetLbyBreaker())
-			pApp->m_bLbyUpdate = true;
+		pApp->m_bLbyUpdate = true;
 		return true;
 	}
+
 	return false;
 }
 
@@ -105,23 +108,6 @@ void CAntiAim::Update(void* pParameters)
 
 	// Applying Yaw Anti Aims
 	ApplyYawAntiAim(&angles);
-
-
-	static float fRealOldLby = 0.0f;
-	// Checking if LBY updated             todo: in proxy !
-	float fActualLby = pLocalEntity->GetLowerBodyYaw();
-	if (m_pApp->m_flOldLby != fActualLby)
-	{
-		if (m_bIsMoving ||
-			fabs(fRealOldLby - fActualLby) >= 30.0f)
-		{
-			fRealOldLby = fActualLby;
-			m_pApp->m_flRealLbyUpdateTime = m_pApp->GlobalVars()->curtime;
-		}
-
-		m_pApp->m_flOldLby = fActualLby;
-		m_pApp->m_flLbyUpdateTime = m_pApp->GlobalVars()->curtime;
-	}
 
 	// LBY indicator check
 	m_pApp->m_bLBY = !m_bIsMoving && m_pApp->m_flRealLbyUpdateTime + 1.1 < m_pApp->GlobalVars()->curtime;

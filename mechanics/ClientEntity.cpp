@@ -93,6 +93,11 @@ int IClientEntity::GetTickBase()
 	return *(int*)((DWORD)this + Offsets::m_nTickBase);
 }
 
+float IClientEntity::GetC4Blow()
+{
+	return *(float*)((DWORD)this + Offsets::m_flC4Blow);
+}
+
 int IClientEntity::GetShotsFired()
 {
 	return *(int*)((DWORD)this + Offsets::m_iShotsFired);

@@ -34,6 +34,7 @@ namespace Offsets
 	extern int m_hObserverTarget;
 	extern int deadflag;
 	extern int m_nTickBase;
+	extern int m_flC4Blow;
 
 	// DT_Local
 	extern int m_nJumpTimeMsecs;

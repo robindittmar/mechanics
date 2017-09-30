@@ -404,7 +404,7 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	//}
 	//else
 	//{
-		m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	//}
 
 	// Call original func
@@ -644,8 +644,18 @@ void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataC
 
 	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
 	IClientEntity* pEntity = (IClientEntity*)pStruct;
+	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
 
-	g_pConsole->Write("%f - %d\n", pData->m_Value.m_Float, pEntity->EntIndex());
+	//todo: playerlist !!!!
+	if (pLocalEntity && pEntity && pData &&
+		pLocalEntity == pEntity)
+	{
+		if (fabsf(pApp->m_flOldLby - pData->m_Value.m_Float) >= 30.0f)
+		{
+			pApp->m_flOldLby = pData->m_Value.m_Float;
+			pApp->m_flRealLbyUpdateTime = pApp->m_flLbyUpdateTime = pApp->GlobalVars()->curtime;
+		}
+	}
 
 	pApp->m_pLowerBodyYawProxy(pDataConst, pStruct, pOut);
 }
@@ -785,6 +795,7 @@ void CApplication::Setup()
 	CXorString xorBaseCSGrenade("S_Ú€vxàDL÷§yjá§"); // DT_BaseCSGrenade
 	CXorString xorBaseCombatCharacter("S_Ú€vxàxfç£cHí£ejæ¶ry"); // DT_BaseCombatCharacter
 	CXorString xorBaseViewModel("S_Ú€vxà”~nòxoà®"); // DT_BaseViewModel
+	CXorString xorPlantedC4("S_Ú’{jë¶roÆö");
 
 	m_pNetVarMgr = new CNetVarManager();
 	m_pNetVarMgr->AddTable(xorBaseEntity.ToCharArray());
@@ -796,6 +807,7 @@ void CApplication::Setup()
 	m_pNetVarMgr->AddTable(xorBaseCSGrenade.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseCombatCharacter.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseViewModel.ToCharArray());
+	m_pNetVarMgr->AddTable(xorPlantedC4.ToCharArray());
 	m_pNetVarMgr->LoadTables(m_pClient->GetAllClasses(), true);
 
 	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/"m_angRotation");
@@ -835,6 +847,7 @@ void CApplication::Setup()
 		/*deadflag*/CXorString("snä¦qgä¥").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
 	Offsets::m_nTickBase = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
+	Offsets::m_flC4Blow = m_pNetVarMgr->GetOffset(xorPlantedC4.ToCharArray(), /*m_flC4Blow*/CXorString("zTã®T?Ç®x|").ToCharArray());
 
 	CNetVar* pDtLocal = m_pNetVarMgr->GetNetVar(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_ÚŽxhä®").ToCharArray());
 	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("zTëˆbfõ–~fàdnæ±").ToCharArray())->GetOffset();
@@ -930,7 +943,7 @@ void CApplication::Setup()
 
 	// Resolver
 	this->m_resolver.SetEnabled(true);
-	this->m_resolver.SetResolverType(RESOLVERTYPE_NOSPREAD);
+	this->m_resolver.SetResolverType(RESOLVERTYPE_LBY);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -957,11 +970,15 @@ void CApplication::Setup()
 	//this->m_esp.SetColorSpotted();
 
 	// WeaponEsp
-	this->m_weaponesp.SetEnabled(false);
-	this->m_weaponesp.SetDrawWeaponName(true);
+	this->m_weaponesp.SetEnabled(true);
+	this->m_weaponesp.SetDrawWeaponName(false);
 	this->m_weaponesp.SetDrawWeaponBoundingBox(false);
 	this->m_weaponesp.SetDrawGrenadeName(true);
 	this->m_weaponesp.SetDrawGrenadeBoundingBox(false);
+	this->m_weaponesp.SetDrawBombName(false);
+	this->m_weaponesp.SetDrawBombBoundingBox(false);
+	this->m_weaponesp.SetDrawBombTimer(true);
+	this->m_weaponesp.SetDrawBombDamageIndicator(true);
 
 	// Sound Esp
 	this->m_soundEsp.SetEnabled(false);

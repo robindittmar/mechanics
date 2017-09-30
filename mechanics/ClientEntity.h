@@ -264,6 +264,7 @@ public:
 	bool HasHelmet();
 	unsigned long GetMoveType();
 	int GetTickBase();
+	float GetC4Blow();
 	int GetShotsFired();
 	void GetPlayerInfo(PlayerInfo* p);
 	bool IsInvincible();
