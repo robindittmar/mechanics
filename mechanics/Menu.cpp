@@ -811,8 +811,11 @@ void CMenu::CreateConfigTab()
 	m_pDetachBtn = new CButton(16, 64, 120, 45, "Detach");
 	m_pDetachBtn->SetButtonClickEventHandler(DetachBtnClick);
 
+	m_pClrPicker = new CColorPicker(16, 16, 20, 20);
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pDetachBtn);
+	m_pConfigTab->AddChild(m_pClrPicker);
 }
 
 void DetachBtnClick(IControl* p)

@@ -228,6 +228,7 @@ private:
 	// Config tab
 	CTabPage* m_pConfigTab;
 	CButton* m_pDetachBtn;
+	CColorPicker* m_pClrPicker;
 	//
 
 	CApplication* m_pApp;

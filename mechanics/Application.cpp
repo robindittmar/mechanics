@@ -32,6 +32,10 @@ void CApplication::Run(HMODULE hModule)
 
 void CApplication::Detach()
 {
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Detaching ...\n");
+#endif
+
 	// Enable mouse again
 	this->m_pGui->SetEnableMouse(true);
 
@@ -45,10 +49,11 @@ void CApplication::Detach()
 	delete g_pResourceManager;
 	g_pResourceManager = NULL;
 
+#ifdef _DEBUG
 	// Free console
 	delete g_pConsole;
 	g_pConsole = NULL;
-
+#endif
 
 	// ----------- Our stuff -----------
 
@@ -645,79 +650,56 @@ void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataC
 	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
 	IClientEntity* pEntity = (IClientEntity*)pStruct;
 
-	g_pConsole->Write("%f - %d\n", pData->m_Value.m_Float, pEntity->EntIndex());
+	//g_pConsole->Write("%f - %d\n", pData->m_Value.m_Float, pEntity->EntIndex());
 
 	pApp->m_pLowerBodyYawProxy(pDataConst, pStruct, pOut);
 }
 
-/*void BtnDown(IControl* p)
-{
-CButton* btn = (CButton*)p;
-g_pConsole->Write("Button down (%s)\n", btn->ContentText());
-}*/
-
 void CApplication::Setup()
 {
+#ifdef _DEBUG
 	// Setup console
 	g_pConsole = new CConsole();
+	g_pConsole->WritePlain(".mechanics\n > Build date: %s\n > Build time: %s\n > Build number: %d\n\n", __DATE__, __TIME__, __COUNTER__);
+#endif
 
 	// Setup strings
-	CXorString clientDll("tgÏßy´¶{g");
-	CXorString engineDll("re‚´yn´¶{g");
-	CXorString materialSystemDll("zjÒßeb‰Ædrˆ∂rf´¶{g");
-	CXorString createInterface("Ty‡£cnÃ¨cn˜§vh‡");
-	CXorString VEngineClient("ANÎ•~e‡Å{b‡¨c;¥ˆ");
-	CXorString VClient("AHÈ´reÒÚ&3");
-	CXorString VClientEntityList("AHÈ´reÒáyÏ∂nGÏ±c;µÒ");
-	CXorString VModelInfo("¸òÖëœπ£õÃ∫©ô√∞ÑÅöÂﬁ", 0x1235AFAA);
-	CXorString VModelRender("ANÎ•~e‡èxo‡Æ':≥");
-	CXorString EngineTraceClient("_cajthRq{nc@vdcmn=67", 0x1A);
-	CXorString VMaterialSystem("AF‰∂ryÏ£{X¸±cnËÚ/;");
-	CXorString vgui2Dll("al´%%·Æ{");
-	CXorString vguiSurfaceDll("al´zjÒ±by„£tn´¶{g");
-	CXorString VguiPanel("AL–ãH[‰¨rgµÚ.");
-	CXorString VguiSurface("AL–ãHX∞qjÊß'8¥");
-	CXorString GameEventListener("l‘\a`n√\xfk∆\ade‘\r`y•z\x17", 0xF12B);
-	CXorString vphysicsDll("a{ÌªdbÊ±9oÈÆ");
-	CXorString physicsSurfaceProps("A[ÌªdbÊ±D~˜§vh‡íedı±';¥");
-	CXorString renderView("ANÎ•~e‡êre·ße]Ïß`;¥ˆ");
+	CXorString xorCreateInterface("Ty‡£cnÃ¨cn˜§vh‡");
 
 	// Grab engine addresses
-	this->m_dwClientDll = (DWORD)GetModuleHandle(clientDll.ToCharArray());
-	this->m_dwEngineDll = (DWORD)GetModuleHandle(engineDll.ToCharArray());
-	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(materialSystemDll.ToCharArray());
-	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(vgui2Dll.ToCharArray());
-	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(vguiSurfaceDll.ToCharArray());
-	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(vphysicsDll.ToCharArray());
-	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(CXorString("axÒ¶{bÁÏsgÈ").ToCharArray());
-	CreateInterfaceFn CreateClientInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateEngineInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateMaterialSystemInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVgui2Interface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGui2Dll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVguiSurfaceInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVPhysicsInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, createInterface.ToCharArray());
-	CreateInterfaceFn CreateVStdLibInterface = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, createInterface.ToCharArray());
+	this->m_dwClientDll = (DWORD)GetModuleHandle(/*client.dll*/CXorString("tgÏßy´¶{g").ToCharArray());
+	this->m_dwEngineDll = (DWORD)GetModuleHandle(/*engine.dll*/CXorString("re‚´yn´¶{g").ToCharArray());
+	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(/*materialsystem.dll*/CXorString("zjÒßeb‰Ædrˆ∂rf´¶{g").ToCharArray());
+	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("al´%%·Æ{").ToCharArray());
+	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("al´zjÒ±by„£tn´¶{g").ToCharArray());
+	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{ÌªdbÊ±9oÈÆ").ToCharArray());
+	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axÒ¶{bÁÏsgÈ").ToCharArray());
+	CreateInterfaceFn ClientFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn EngineFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn MaterialSystemFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn VGui2Factory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGui2Dll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn VGuiSurfaceFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn VPhysicsFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn VStdLibFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, xorCreateInterface.ToCharArray());
 
-	// TODO: xor
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("EjÎ¶xf÷ßro").ToCharArray());
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("EjÎ¶xfÃ¨c").ToCharArray());
 	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomFloat*/CXorString("EjÎ¶xf√ÆxjÒ").ToCharArray());
 
-	m_pEngineClient = (IVEngineClient*)CreateEngineInterface(VEngineClient.ToCharArray(), NULL);
-	m_pClient = (IBaseClientDLL*)CreateClientInterface(VClient.ToCharArray(), NULL);
-	m_pEntityList = (IClientEntityList*)CreateClientInterface(VClientEntityList.ToCharArray(), NULL);
-	m_pModelInfo = (IVModelInfo*)CreateEngineInterface(VModelInfo.ToCharArray(), NULL);
-	m_pModelRender = (IVModelRender*)CreateEngineInterface(VModelRender.ToCharArray(), NULL);
-	m_pRenderView = (IVRenderView*)CreateEngineInterface(renderView.ToCharArray(), NULL);
-	m_pEngineTrace = (IEngineTrace*)CreateEngineInterface(EngineTraceClient.ToCharArray(), NULL);
-	m_pMaterialSystem = (IMaterialSystem*)CreateMaterialSystemInterface(VMaterialSystem.ToCharArray(), NULL);
-	m_pCVar = (ICVar*)CreateVStdLibInterface(CXorString("ANÎ•~e‡Åaj˜Ú'<").ToCharArray(), NULL);
-
-	m_pPanel = (IPanel*)CreateVgui2Interface(VguiPanel.ToCharArray(), NULL);
-	m_pSurface = (ISurface*)CreateVguiSurfaceInterface(VguiSurface.ToCharArray(), NULL);
-	m_pGameEventManager = (IGameEventManager2*)CreateEngineInterface(GameEventListener.ToCharArray(), NULL);
-	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)CreateVPhysicsInterface(physicsSurfaceProps.ToCharArray(), NULL);
-	m_pEngineSound = (IEngineSound*)CreateEngineInterface(/*IEngineSoundClient003*/CXorString("^NÎ•~e‡ëx~Î¶TgÏßyµÚ$").ToCharArray(), NULL); // TODO
+	m_pEngineClient = (IVEngineClient*)EngineFactory(/*VEngineClient014*/CXorString("ANÎ•~e‡Å{b‡¨c;¥ˆ").ToCharArray(), NULL);
+	m_pClient = (IBaseClientDLL*)ClientFactory(/*VClient018*/CXorString("AHÈ´reÒÚ&3").ToCharArray(), NULL);
+	m_pEntityList = (IClientEntityList*)ClientFactory(/*VClientEntityList003*/CXorString("AHÈ´reÒáyÏ∂nGÏ±c;µÒ").ToCharArray(), NULL);
+	m_pModelInfo = (IVModelInfo*)EngineFactory(/*VModelInfoClient004*/CXorString("AFÍ¶rgÃ¨qd∆Æ~nÎ∂';±").ToCharArray(), NULL);
+	m_pModelRender = (IVModelRender*)EngineFactory(/*VEngineModel016*/CXorString("ANÎ•~e‡èxo‡Æ':≥").ToCharArray(), NULL);
+	m_pRenderView = (IVRenderView*)EngineFactory(/*VEngineRenderView014*/CXorString("ANÎ•~e‡êre·ße]Ïß`;¥ˆ").ToCharArray(), NULL);
+	m_pEngineTrace = (IEngineTrace*)EngineFactory(/*EngineTraceClient004*/CXorString("Re‚´yn—∞vh‡Å{b‡¨c;µˆ").ToCharArray(), NULL);
+	m_pMaterialSystem = (IMaterialSystem*)MaterialSystemFactory(/*VMaterialSystem080*/CXorString("AF‰∂ryÏ£{X¸±cnËÚ/;").ToCharArray(), NULL);
+	m_pCVar = (ICVar*)VStdLibFactory(/*VEngineCvar007*/CXorString("ANÎ•~e‡Åaj˜Ú'<").ToCharArray(), NULL);
+	m_pPanel = (IPanel*)VGui2Factory(/*VGUI_Panel009*/CXorString("AL–ãH[‰¨rgµÚ.").ToCharArray(), NULL);
+	m_pSurface = (ISurface*)VGuiSurfaceFactory(/*VGUI_Surface031*/CXorString("AL–ãHX∞qjÊß'8¥").ToCharArray(), NULL);
+	m_pGameEventManager = (IGameEventManager2*)EngineFactory(/*GAMEEVENTSMANAGER002*/CXorString("PJ»áR]¿åCX»ÉYJ¬áE;µ").ToCharArray(), NULL);
+	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[ÌªdbÊ±D~˜§vh‡íedı±';¥").ToCharArray(), NULL);
+	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^NÎ•~e‡ëx~Î¶TgÏßyµÚ$").ToCharArray(), NULL); // TODO
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
@@ -738,6 +720,40 @@ void CApplication::Setup()
 		"abcdefghijjjjjjjq"
 	);
 	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
+
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "client.dll\t\t=>\t0x%08X\n", m_dwClientDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "engine.dll\t\t=>\t0x%08X\n", m_dwEngineDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "materialsystem.dll\t=>\t0x%08X\n", m_dwMaterialSystemDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "vgui2.dll\t\t=>\t0x%08X\n", m_dwVGui2Dll);
+	g_pConsole->Write(LOGLEVEL_INFO, "vguimatsurface.dll\t=>\t0x%08X\n", m_dwVGuiSurfaceDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "vphysics.dll\t\t=>\t0x%08X\n", m_dwVPhysicsDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "vstdlib.dll\t\t=>\t0x%08X\n", m_dwVStdLibDll);
+	g_pConsole->WritePlain("\n");
+
+	g_pConsole->Write(LOGLEVEL_INFO, "VEngineClient014\t\t=>\t0x%08X\n", m_pEngineClient);
+	g_pConsole->Write(LOGLEVEL_INFO, "VClient018\t\t=>\t0x%08X\n", m_pClient);
+	g_pConsole->Write(LOGLEVEL_INFO, "VClientEntityList003\t=>\t0x%08X\n", m_pEntityList);
+	g_pConsole->Write(LOGLEVEL_INFO, "VModelInfoClient004\t=>\t0x%08X\n", m_pModelInfo);
+	g_pConsole->Write(LOGLEVEL_INFO, "VEngineModel016\t\t=>\t0x%08X\n", m_pModelRender);
+	g_pConsole->Write(LOGLEVEL_INFO, "VEngineRenderView014\t=>\t0x%08X\n", m_pRenderView);
+	g_pConsole->Write(LOGLEVEL_INFO, "EngineTraceClient004\t=>\t0x%08X\n", m_pEngineTrace);
+	g_pConsole->Write(LOGLEVEL_INFO, "VMaterialSystem080\t=>\t0x%08X\n", m_pMaterialSystem);
+	g_pConsole->Write(LOGLEVEL_INFO, "VEngineCvar007\t\t=>\t0x%08X\n", m_pCVar);
+	g_pConsole->Write(LOGLEVEL_INFO, "VGUI_Panel009\t\t=>\t0x%08X\n", m_pPanel);
+	g_pConsole->Write(LOGLEVEL_INFO, "VGUI_Surface031\t\t=>\t0x%08X\n", m_pSurface);
+	g_pConsole->Write(LOGLEVEL_INFO, "GAMEEVENTSMANAGER002\t=>\t0x%08X\n", m_pGameEventManager);
+	g_pConsole->Write(LOGLEVEL_INFO, "VPhysicsSurfaceProps001\t=>\t0x%08X\n", m_pPhysicsSurfaceProps);
+	g_pConsole->Write(LOGLEVEL_INFO, "IEngineSoundClient003\t=>\t0x%08X\n", m_pEngineSound);
+	g_pConsole->WritePlain("\n");
+
+	g_pConsole->Write(LOGLEVEL_INFO, "GlobalVars\t\t=>\t0x%08X\n", m_pGlobalVars);
+	g_pConsole->WritePlain("\n");
+
+	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::Init\t\t=>\t0x%08X\n", m_pInitKeyValues);
+	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::LoadFromBuffer\=>\t0x%08X\n", m_pLoadFromBuffer);
+	g_pConsole->WritePlain("\n");
+#endif
 
 	if (m_pEngineClient->IsInGame())
 	{
@@ -1025,7 +1041,6 @@ void CApplication::Setup()
 
 	this->m_visuals.SetViewmodelFov(true);
 	this->m_visuals.SetViewmodelFovValue(90);
-
 
 	// Mirror
 	this->m_mirror.SetEnabled(false);

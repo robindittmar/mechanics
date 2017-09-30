@@ -7,18 +7,25 @@
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "ColorPickerPopup.h"
 
 class CColorPicker : public IControl
 {
 public:
-	CColorPicker(int x = 0, int y = 0, int w = 30, int h = 30, int a = 255, int r = 255, int g = 255, int b = 255);
+	CColorPicker(int x = 0, int y = 0, int w = 30, int h = 30);
 	~CColorPicker();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
+	void SetValue(Color clrValue) { m_clrValue = clrValue; }
+	Color GetValue() { return m_clrValue; }
+
+	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 private:
 	int m_iColorFadeTexture;
-	int m_iA, m_iR, m_iG, m_iB;
+	Color m_clrValue;
+
+	bool m_bPopupInitialized;
+	CColorPickerPopup* m_pPopup;
 };
 
 #endif // __COLORPICKER_H__

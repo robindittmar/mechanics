@@ -1,26 +1,42 @@
 #include "ColorPicker.h"
+#include "Window.h"
 
-CColorPicker::CColorPicker(int x, int y, int w, int h, int a, int r, int g, int b) : IControl(x, y, w, h)
+CColorPicker::CColorPicker(int x, int y, int w, int h) : IControl(x, y, w, h)
 {
-	m_iA = a;
-	m_iR = r;
-	m_iG = g;
-	m_iB = b;
+	m_bPopupInitialized = false;
+	m_pPopup = NULL;
 
-	m_iColorFadeTexture = g_pResourceManager->GetTexture(RM_TEXTURE_COLORFADE);
+	m_clrValue = Color(255, 255, 255);
+	
 }
 
 CColorPicker::~CColorPicker()
 {
+	if (m_pPopup)
+		delete m_pPopup;
 }
 
-void CColorPicker::ProcessEvent(CInputEvent* pEvent)
+void CColorPicker::OnClicked()
 {
+	CWindow* pWindow = (CWindow*)this->GetParentWindow();
+
+	if (!m_bPopupInitialized)
+	{
+		m_pPopup->SetColorPicker(this);
+		m_pPopup->SetParentWindow(pWindow);
+	}
+
+	pWindow->SetPopup(m_pPopup);
 }
 
 void CColorPicker::Draw(ISurface* pSurface)
 {
-	pSurface->DrawSetColor(255, 255, 255, 255);
-	pSurface->DrawSetTexture(m_iColorFadeTexture);
-	pSurface->DrawTexturedRect(0, 0, 30, CGui::Instance()->GetScreenHeight());
+	int x = 0, y = 0;
+	this->GetAbsolutePosition(&x, &y);
+
+	pSurface->DrawSetColor(m_clrValue);
+	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
+
+	pSurface->DrawSetColor(255, 0, 0, 0);
+	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
 }

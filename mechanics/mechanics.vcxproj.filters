@@ -231,6 +231,9 @@
     <ClCompile Include="Resolver.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="ColorPickerPopup.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -532,6 +535,9 @@
     </ClInclude>
     <ClInclude Include="Resolver.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="ColorPickerPopup.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

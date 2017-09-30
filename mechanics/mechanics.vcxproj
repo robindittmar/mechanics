@@ -152,6 +152,7 @@
     <ClCompile Include="Autowall.cpp" />
     <ClCompile Include="checksum_md5.cpp" />
     <ClCompile Include="ClientClass.cpp" />
+    <ClCompile Include="ColorPickerPopup.cpp" />
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />
@@ -218,6 +219,7 @@
   <ItemGroup>
     <ClInclude Include="Autowall.h" />
     <ClInclude Include="checksum_md5.h" />
+    <ClInclude Include="ColorPickerPopup.h" />
     <ClInclude Include="CreateMove.h" />
     <ClInclude Include="CUtlVector.h" />
     <ClInclude Include="DrawModelExecute.h" />
