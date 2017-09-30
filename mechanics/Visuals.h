@@ -30,7 +30,7 @@ public:
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
-	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; if (!bNoFlash) NoFlash(m_fFlashPercentage); }
+	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
 	void SetFlashPercentage(float fFlashPercentage) { m_fFlashPercentage = fFlashPercentage; }
 	float GetFlashPercentage() { return m_fFlashPercentage; }

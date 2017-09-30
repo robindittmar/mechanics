@@ -361,39 +361,50 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	//IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
 	//IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
 
-	//if(pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
+	//if (pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
 	//{
 	//	matrix3x4_t pMyMat[MAXSTUDIOBONES];
 	//	matrix3x4_t pBoneMat[MAXSTUDIOBONES];
-	//	Vector origin, newOrigin;
-	//	QAngle ang;// = *pLocalEntity->GetAngEyeAngles();
-	//	//ang.y = 90.0f;
-	//	ang.x = 0.0f;
-	//	ang.y = 180.0f;
-	//	ang.z = 0.0f;
-	//	for(int i = 0; i < MAXSTUDIOBONES; i++)
-	//	{
-	//		MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
 
+	//	Vector origin, newOrigin;
+	//	QAngle ang = *pLocalEntity->GetAngEyeAngles();
+	//	QAngle ang1 = { 0, 90, 0 };
+	//	for (int i = 0; i < MAXSTUDIOBONES; i++)
+	//	{
+	//		//MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
 	//		origin.x = pCustomBoneToWorld[i][0][3];
 	//		origin.y = pCustomBoneToWorld[i][1][3];
 	//		origin.z = pCustomBoneToWorld[i][2][3];
-	//		
-	//		AngleMatrix(ang, pMyMat[i]);
-	//		//VectorRotate(pInfo.origin, pMyMat[i], &newOrigin);
-	//		VectorRotate(origin, pMyMat[i], &newOrigin);
 
-	//		//VectorTransform(
+	//		AngleMatrix(*pLocalEntity->GetAngEyeAngles(), pMyMat[i]);
+	//		// maybe pBoneMat = pMyMat * pCustomBone
 
-	//		MatrixSetColumn(newOrigin, 3, pBoneMat[i]);
+	//		/*for (int i = 0; i < 3; i++)
+	//		{
+	//			for (int j = 0; j < 3; j++) {
+	//				for (int u = 0; u < 3; u++)
+	//				{
+	//					results[i][j] += matrix1[i][u] * matrix2[u][j];
+	//					}
+	//					}
+	//			}*/
+	//		//Vector test = VectorRotate(*pLocalEntity->GetAngEyeAngles(), origin);
+	//		newOrigin = VectorRotate(origin, ang1);
+	//		Vector old = VectorRotate(origin, pApp->LastTickAngles());
+
+	//		pMyMat[i][0][3] = origin.x;
+	//		pMyMat[i][1][3] = origin.y + (old.y - newOrigin.y);
+	//		pMyMat[i][2][3] = origin.z;
 	//	}
 
-	//	m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMat);
+	//	m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
+	//}
+	//else
+	//{
+		m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	//}
 
 	// Call original func
-	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-
 	// This is necessary for stuff to work properly
 	pApp->ModelRender()->ForcedMaterialOverride(NULL);
 }
@@ -401,26 +412,26 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce)
 {
 	CApplication* pApp = CApplication::Instance();
+	ISurface* pSurface = pApp->Surface();
+
+	static unsigned int vguiMatSystemTopPanel;
+	if (vguiMatSystemTopPanel == NULL)
+	{
+		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
+		const char* szName = pApp->Panel()->GetName(vguiPanel);
+		if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
+		{
+			vguiMatSystemTopPanel = vguiPanel;
+		}
+	}
 
 	if (pApp->EngineClient()->IsInGame())
 	{
 		if (pApp->Visuals()->NoScope(vguiPanel))
 			return;
 
-		static unsigned int vguiMatSystemTopPanel;
-		if (vguiMatSystemTopPanel == NULL)
-		{
-			static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
-			const char* szName = pApp->Panel()->GetName(vguiPanel);
-			if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
-			{
-				vguiMatSystemTopPanel = vguiPanel;
-			}
-		}
-
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
-			ISurface* pSurface = pApp->Surface();
 
 			pApp->Gui()->GetWorldToScreenMatrix();
 
@@ -449,10 +460,13 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
-
-			// Draw Menu least ;)
-			pApp->Menu()->Draw(pSurface);
 		}
+	}
+
+	if (vguiMatSystemTopPanel == vguiPanel)
+	{
+		// Draw Menu least ;)
+		pApp->Menu()->Draw(pSurface);
 	}
 
 	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);

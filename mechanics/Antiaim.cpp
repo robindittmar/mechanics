@@ -51,7 +51,8 @@ bool NextLBYUpdate()
 			return false;
 		}
 
-		pApp->m_bLbyUpdate = true;
+		if(pApp->AntiAim()->GetLbyBreaker())
+			pApp->m_bLbyUpdate = true;
 		return true;
 	}
 	return false;
