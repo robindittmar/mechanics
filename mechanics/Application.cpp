@@ -784,21 +784,22 @@ void CApplication::Setup()
 	//FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
 	//if (pFile)
 	//{
-	//	g_pConsole->Write("Dumping NetVars ... ");
-	//	CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+	//	g_pConsole->Write(LOGLEVEL_INFO, "Dumping NetVars ... ");
+	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
 	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
-	//	/*CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");*/
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
 
 	//	fclose(pFile);
-	//	g_pConsole->Write("Done!\n");
+	//	g_pConsole->WritePlain("Done!\n");
 	//}
 
 	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
@@ -812,18 +813,21 @@ void CApplication::Setup()
 	CXorString xorBaseCombatCharacter("S_Ú€vxàxfç£cHí£ejæ¶ry"); // DT_BaseCombatCharacter
 	CXorString xorBaseViewModel("S_Ú€vxà”~nòxoà®"); // DT_BaseViewModel
 	CXorString xorPlantedC4("S_Ú’{jë¶roÆö");
+	CXorString xorBaseAttributableItem("S_Ú€vxàƒc÷«u~ñ£ugà‹cnè"); // DT_BaseAttributableItem
+	CXorString xorBaseAnimating("S_Ú€vxàƒybè£cbë¥"); // DT_BaseAnimating
 
 	m_pNetVarMgr = new CNetVarManager();
 	m_pNetVarMgr->AddTable(xorBaseEntity.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBasePlayer.ToCharArray());
 	m_pNetVarMgr->AddTable(xorCSPlayer.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseCombatWeapon.ToCharArray());
-	//m_pNetVarMgr->AddTable("DT_BaseAttributableItem");
 	m_pNetVarMgr->AddTable(xorWeaponCSBase.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseCSGrenade.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseCombatCharacter.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseViewModel.ToCharArray());
 	m_pNetVarMgr->AddTable(xorPlantedC4.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseAttributableItem.ToCharArray());
+	m_pNetVarMgr->AddTable(xorBaseAnimating.ToCharArray());
 	m_pNetVarMgr->LoadTables(m_pClient->GetAllClasses(), true);
 
 	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/"m_angRotation");
@@ -893,6 +897,32 @@ void CApplication::Setup()
 	Offsets::m_flPostponeFireReadyTime = m_pNetVarMgr->GetOffset(xorWeaponCSBase.ToCharArray(), /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r").ToCharArray());
 
 	Offsets::m_fThrowTime = m_pNetVarMgr->GetOffset(xorBaseCSGrenade.ToCharArray(), /*m_fThrowTime*/CXorString("zTã–yêµCbè§").ToCharArray());
+
+	CNetVar* pDtAttributeManager = m_pNetVarMgr->GetNetVar(xorBaseAttributableItem.ToCharArray(), /*DT_AttributeContainer*/CXorString("S_Úƒc÷«u~ñ§Tdë¶vbë§e").ToCharArray());
+	CNetVar* pDtItem = pDtAttributeManager->GetChild(/*DT_ScriptCreatedItem*/CXorString("S_Ú‘tyì²cH÷§và¦^à¯").ToCharArray());
+	int iOffset = pDtAttributeManager->GetOffset() + pDtItem->GetOffset();
+
+	Offsets::m_iItemIDHigh = iOffset + pDtItem->GetChild(/*m_iItemIDHigh*/CXorString("zTì‹cnè‹SCì¥").ToCharArray())->GetOffset();
+	Offsets::m_iItemIDLow = iOffset + pDtItem->GetChild(/*m_iItemIDLow*/CXorString("zTì‹cnè‹SGêµ").ToCharArray())->GetOffset();
+	Offsets::m_iAccountID = iOffset + pDtItem->GetChild(/*m_iAccountID*/CXorString("zTìƒthê·yÌ†").ToCharArray())->GetOffset();
+	Offsets::m_iEntityQuality = iOffset + pDtItem->GetChild(/*m_iEntityQuality*/CXorString("zTì‡yì¶nZð£{bñ»").ToCharArray())->GetOffset();
+	Offsets::m_szCustomName = iOffset + pDtItem->GetChild(/*m_szCustomName*/CXorString("zTö¸T~ö¶xfË£zn").ToCharArray())->GetOffset();
+
+	Offsets::m_OriginalOwnerXuidLow = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_OriginalOwnerXuidLow*/CXorString("zTÊ°~lì¬vgÊµyn÷šbbáŽx|").ToCharArray());
+	Offsets::m_OriginalOwnerXuidHigh = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_OriginalOwnerXuidHigh*/CXorString("zTÊ°~lì¬vgÊµyn÷šbbáŠ~lí").ToCharArray());
+	Offsets::m_nFallbackPaintKit = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_nFallbackPaintKit*/CXorString("“ ‘¹Ÿ““Ÿœ”¯Ÿ–‘‹µ–‹", 0xAFFEAFFE).ToCharArray());
+	Offsets::m_nFallbackSeed = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_nFallbackSeed*/CXorString("zTë„vgé vhî‘rná").ToCharArray());
+	Offsets::m_flFallbackWear = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_flFallbackWear*/CXorString("zTã®Qjé®ujæ©@nä°").ToCharArray());
+	Offsets::m_nFallbackStatTrak = m_pNetVarMgr->GetOffset(xorBaseAttributableItem.ToCharArray(), /*m_nFallbackStatTrak*/CXorString("zTë„vgé vhî‘cjñ–ejî").ToCharArray());
+
+	Offsets::DT_BaseViewModel::m_hWeapon = m_pNetVarMgr->GetOffset(xorBaseViewModel.ToCharArray(), /*m_hWeapon*/CXorString("zTí•rjõ­y").ToCharArray());
+	Offsets::DT_BaseViewModel::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseViewModel.ToCharArray(), /*m_hOwner*/CXorString("zTí`eà°").ToCharArray());
+
+	Offsets::m_nSequence = m_pNetVarMgr->GetOffset(xorBaseAnimating.ToCharArray(), /*m_nSequence*/CXorString("zTë‘rzð§yhà").ToCharArray());
+	Offsets::m_flPoseParameter = m_pNetVarMgr->GetOffset(xorBaseAnimating.ToCharArray(), /*m_flPoseParameter*/CXorString("zTã®Gdö§Gj÷£znñ§e").ToCharArray());
+	Offsets::m_flCycle = m_pNetVarMgr->GetOffset(2, xorBaseAnimating.ToCharArray(),
+		/*DT_ServerAnimationData*/CXorString("S_Ú‘ryó§eJë«zjñ«xeÁ£cj").ToCharArray(),
+		/*m_flCycle*/CXorString("zTã®Træ®r").ToCharArray());
 
 	// Grab NetVars later required for hooking
 	m_pNetVarSequence = m_pNetVarMgr->GetNetVar(xorBaseViewModel.ToCharArray(), /*m_nSequence*/CXorString("zTë‘rzð§yhà").ToCharArray());

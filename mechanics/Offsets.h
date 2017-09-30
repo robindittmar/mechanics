@@ -64,6 +64,31 @@ namespace Offsets
 
 	// DT_BaseCSGrenade
 	extern int m_fThrowTime;
+
+	// DT_BaseAttributableItem
+	extern int m_iItemIDHigh;
+	extern int m_iItemIDLow;
+	extern int m_iAccountID;
+	extern int m_iEntityQuality;
+	extern int m_szCustomName;
+	extern int m_OriginalOwnerXuidLow;
+	extern int m_OriginalOwnerXuidHigh;
+	extern int m_nFallbackPaintKit;
+	extern int m_nFallbackSeed;
+	extern int m_flFallbackWear;
+	extern int m_nFallbackStatTrak;
+
+	// DT_BaseViewModel
+	namespace DT_BaseViewModel
+	{
+		extern int m_hWeapon;
+		extern int m_hOwner;
+	}
+
+	// DT_BaseAnimating
+	extern int m_nSequence;
+	extern int m_flPoseParameter;
+	extern int m_flCycle;
 }
 
 #endif // __OFFSETS_H__

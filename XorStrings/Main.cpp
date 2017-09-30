@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 		CXorString("VEngineCvar007"),
 		CXorString("ü˜…‘Ï¹£›Ìº©™Ã°„šåŞ", 0x1235AFAA),
 		CXorString("_cajthRq{nc@vdcmn=67", 0x1A),
-		CXorString("lÔ\a`nÃ\xfkÆ\adeÔ\r`y¥z\x17", 0xF12B)
+		CXorString("“ ‘¹Ÿ““Ÿœ”¯Ÿ–‘‹µ–‹", 0xAFFEAFFE)
 	};
 	
 	CXorString byteStrings[]{

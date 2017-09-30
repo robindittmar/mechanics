@@ -55,4 +55,26 @@ namespace Offsets
 	int m_flPostponeFireReadyTime;
 
 	int m_fThrowTime;
+
+	int m_iItemIDHigh;
+	int m_iItemIDLow;
+	int m_iAccountID;
+	int m_iEntityQuality;
+	int m_szCustomName;
+	int m_OriginalOwnerXuidLow;
+	int m_OriginalOwnerXuidHigh;
+	int m_nFallbackPaintKit;
+	int m_nFallbackSeed;
+	int m_flFallbackWear;
+	int m_nFallbackStatTrak;
+
+	namespace DT_BaseViewModel
+	{
+		int m_hWeapon;
+		int m_hOwner;
+	}
+
+	int m_nSequence;
+	int m_flPoseParameter;
+	int m_flCycle;
 }
