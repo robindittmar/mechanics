@@ -31,7 +31,7 @@ float GetOutgoingLatency()
 	}
 }
 
-bool NextLBYUpdate()
+bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer)
 {
 	CApplication* pApp = CApplication::Instance();
 	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
@@ -39,19 +39,20 @@ bool NextLBYUpdate()
 	if (!pApp->AntiAim()->GetLbyBreaker())
 		return false;
 
-	pApp->m_bLbyUpdate = false;
+	if(bIsLocalPlayer)
+		pApp->m_bLbyUpdate = false;
 
 	bool bPlayerMoving = pLocalEntity->GetVelocity()->Length2D() > 0.1f;
 	if (bPlayerMoving)
 		return false;
 
-	float value = abs(pApp->m_flLbyUpdateTime - pApp->m_flPredLbyUpdateTime - GetOutgoingLatency());
+	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredictedLbyUpdateTime() - GetOutgoingLatency());
 	if (value > 1.0f)
 	{
 		if (value > 1.1f)
 		{
-			pApp->m_flLbyUpdateTime += 1.125f;
-			return false;
+			pResolverPlayer->SetLbyUpdateTime(pResolverPlayer->GetLbyUpdateTime() + 1.125f);
+			return !bIsLocalPlayer;
 		}
 
 		pApp->m_bLbyUpdate = true;
@@ -101,7 +102,8 @@ void CAntiAim::Update(void* pParameters)
 	QAngle angles;
 	angles = m_pApp->GetClientViewAngles();
 
-	m_bNextLbyUpdate = NextLBYUpdate();
+	CResolverPlayer* pLocalResolverPlayer = m_pApp->Resolver()->GetResolverPlayer(pLocalEntity->EntIndex());
+	m_bNextLbyUpdate = NextLBYUpdate(pLocalResolverPlayer, true);
 
 	// Applying Pitch Anti Aim
 	ApplyPitchAntiAim(&angles);
@@ -110,7 +112,7 @@ void CAntiAim::Update(void* pParameters)
 	ApplyYawAntiAim(&angles);
 
 	// LBY indicator check
-	m_pApp->m_bLBY = !m_bIsMoving && m_pApp->m_flRealLbyUpdateTime + 1.1 < m_pApp->GlobalVars()->curtime;
+	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetRealLbyUpdateTime() + 1.1 < m_pApp->GlobalVars()->curtime;
 
 	// Setting calculated angles to player angles
 	pUserCmd->viewangles[0] = angles.x;

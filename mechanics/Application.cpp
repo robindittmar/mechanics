@@ -238,7 +238,12 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				}
 			}
 
-			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
+			// Setting every lby update prediction
+			for (int i = 0; i < MAX_PLAYERS; i++)
+			{
+				CResolverPlayer* pCurResolverPlayer = pApp->Resolver()->GetResolverPlayer(i);
+				pCurResolverPlayer->SetPredictedLbyUpdateTime(pApp->GlobalVars()->curtime + 1.1f);
+			}
 			
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
@@ -268,6 +273,13 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->Fakelag(pUserCmd);
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
+
+			if (pApp->Ragebot()->IsShooting())
+			{
+				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
+				CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pTarget->GetEntity()->EntIndex());
+				pResolverPlayer->SetShotsFired(pResolverPlayer->GetShotsFired() + 1);
+			}
 
 			// Correct movement & angles
 			CorrectMovement(pUserCmd, qOldAngles);
@@ -649,16 +661,15 @@ void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataC
 
 	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
 	IClientEntity* pEntity = (IClientEntity*)pStruct;
-	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
-
-	//todo: playerlist !!!!
-	if (pLocalEntity && pEntity && pData &&
-		pLocalEntity == pEntity)
+	IClientEntity* pLocal = pApp->GetLocalPlayer();
+	if (pData && pEntity && pLocal)
 	{
-		if (fabsf(pApp->m_flOldLby - pData->m_Value.m_Float) >= 30.0f)
+		CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pEntity->EntIndex());
+		if (fabsf(pResolverPlayer->GetLastLby() - pData->m_Value.m_Float) >= 30.0f)
 		{
-			pApp->m_flOldLby = pData->m_Value.m_Float;
-			pApp->m_flRealLbyUpdateTime = pApp->m_flLbyUpdateTime = pApp->GlobalVars()->curtime;
+			pResolverPlayer->SetLastLby(pData->m_Value.m_Float);
+			pResolverPlayer->SetLbyUpdateTime(pApp->GlobalVars()->curtime);
+			pResolverPlayer->SetRealLbyUpdateTime(pApp->GlobalVars()->curtime);
 		}
 	}
 
@@ -999,7 +1010,7 @@ void CApplication::Setup()
 
 	// Resolver
 	this->m_resolver.SetEnabled(true);
-	this->m_resolver.SetResolverType(RESOLVERTYPE_LBY);
+	this->m_resolver.SetResolverType(RESOLVERTYPE_AUTOMATIC);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);

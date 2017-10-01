@@ -23,11 +23,11 @@ void CResolver::Update(void* pParameters)
 	if (!pLocalEntity)
 		return;
 
-	int iShotsCount = pLocalEntity->GetShotsFired();
-	static int oldShotsCount = 0;
 	for (int i = 1; i < m_pApp->EngineClient()->GetMaxClients(); i++)
 	{
 		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
+		CResolverPlayer* pCurResolverPlayer = this->GetResolverPlayer(i);
+		int iShotsFired = pCurResolverPlayer->GetShotsFired();
 
 		if (!pCurEntity)
 			continue;
@@ -42,20 +42,43 @@ void CResolver::Update(void* pParameters)
 		QAngle* qCurEyeAngles = pCurEntity->GetAngEyeAngles();
 		bool bIsMoving = pCurEntity->GetVelocity()->Length() > 0.1f;
 
+		Vector vRelativeDist = (*pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset()) - (*pCurEntity->GetOrigin() + *pCurEntity->GetEyeOffset());
+		QAngle qAngle(
+			RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
+			RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
+			0.0f
+		);
+
 		switch (m_iResolverType) //todo: check if cur player got other resolver option
 		{
 		case RESOLVERTYPE_AUTOMATIC:
+			//todo: not working
 			// while moving LBY, while standing check if lby updated/bruteforce
+			if (m_pApp->GlobalVars()->curtime - pCurResolverPlayer->GetRealLbyUpdateTime() > 1.1f)
+			{
+				if (!pCurResolverPlayer->m_bDidSet)
+				{
+					pCurResolverPlayer->SetAngles(*qCurEyeAngles);
+					pCurResolverPlayer->m_bDidSet = true;
+				}
+
+				*qCurEyeAngles = pCurResolverPlayer->GetAngles();
+				if (!m_pApp->AntiAim()->NextLBYUpdate(pCurResolverPlayer))
+				{
+					qCurEyeAngles->y += 180.0f;
+				}
+				qCurEyeAngles->x = 89;
+				qCurEyeAngles->NormalizeAngles();
+			}
 			break;
 		case RESOLVERTYPE_NOSPREAD:
-			// change every shot | playerlist and save how many shots u shot on that target!
-			if (iShotsCount > oldShotsCount)
+			/**qCurEyeAngles = qAngle;
+			if (iShotsFired > pCurResolverPlayer->GetShotsBruteforced())
 			{
-				switch (iShotsCount % 9)
+				switch (iShotsFired % 9)
 				{
 				case 8:
 					qCurEyeAngles->y -= 90.0f;
-					oldShotsCount = 0;
 					break;
 				case 7:
 					qCurEyeAngles->y -= 67.5f;
@@ -81,8 +104,8 @@ void CResolver::Update(void* pParameters)
 				case 0:
 					break;
 				}
-				oldShotsCount = iShotsCount;
-			}
+				pCurResolverPlayer->SetShotsBruteforced(pCurResolverPlayer->GetShotsBruteforced() + 1);
+			}*/
 			break;
 		case RESOLVERTYPE_BRUTEFORCE:
 			// start after second shot, save when hit

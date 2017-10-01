@@ -1,7 +1,10 @@
 #ifndef __RESOLVER_H__
 #define __RESOLVER_H__
 
+#include "ResolverPlayer.h"
 #include "IFeature.h"
+
+#define MAX_PLAYERS 64
 
 class CApplication;
 
@@ -20,10 +23,14 @@ public:
 	void SetResolverType(int iResolverType) { m_iResolverType = iResolverType; }
 	int GetResolverType() { return m_iResolverType; }
 
+	CResolverPlayer* GetResolverPlayer(int index) { return &m_pResolverPlayers[index]; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
 	int m_iResolverType;
+
+	CResolverPlayer m_pResolverPlayers[MAX_PLAYERS];
 };
 
 #endif // __RESOLVER_H__
