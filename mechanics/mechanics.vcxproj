@@ -195,6 +195,7 @@
     <ClCompile Include="Pattern.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="Resolver.cpp" />
+    <ClCompile Include="ResolverPlayer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
     <ClCompile Include="Selectbox.cpp" />
     <ClCompile Include="SelectboxItem.cpp" />
@@ -296,6 +297,7 @@
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="Resolver.h" />
+    <ClInclude Include="ResolverPlayer.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Selectbox.h" />
     <ClInclude Include="SelectboxItem.h" />

@@ -3,6 +3,7 @@
 
 #include "IFeature.h"
 #include "Vector.h"
+#include "ResolverPlayer.h"
 
 class CApplication;
 
@@ -72,6 +73,7 @@ public:
 	bool GetLbyBreaker() { return m_bLbyBreaker; }
 
 	bool IsFakeYaw();
+	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false);
 
 	void DrawLBYIndicator();
 
