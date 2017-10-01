@@ -38,9 +38,6 @@ public:
 	void SetYawFakeSettingStanding(int iYawFakeSetting) { m_iYawFakeSettingStanding = iYawFakeSetting; }
 	int GetYawFakeSettingStanding() { return m_iYawFakeSettingStanding; }
 
-	void SetPitchOffsetStanding(float fPitchOffset) { m_fPitchOffsetStanding = fPitchOffset; }
-	float GetPitchOffsetStanding() { return m_fPitchOffsetStanding; }
-
 	void SetYawOffsetStanding(float fYawOffset) { m_fYawOffsetStanding = fYawOffset; }
 	float GetYawOffsetStanding() { return m_fYawOffsetStanding; }
 
@@ -57,11 +54,12 @@ public:
 	void SetYawFakeSettingMoving(int iYawFakeSetting) { m_iYawFakeSettingMoving = iYawFakeSetting; }
 	int GetYawFakeSettingMoving() { return m_iYawFakeSettingMoving; }
 
-	void SetPitchOffsetMoving(float fPitchOffset) { m_fPitchOffsetMoving = fPitchOffset; }
-	float GetPitchOffsetMoving() { return m_fPitchOffsetMoving; }
-
 	void SetYawOffsetMoving(float fYawOffset) { m_fYawOffsetMoving = fYawOffset; }
 	float GetYawOffsetMoving() { return m_fYawOffsetMoving; }
+
+	float GetRealYaw() { return m_fCurRealYaw; }
+	float GetFakeYaw() { return m_fCurFakeYaw; }
+	bool IsLbyUpdate() { return m_bNextLbyUpdate && m_bLbyBreaker; }
 
 	void SetYawFakeOffsetMoving(float fYawFakeOffset) { m_fYawFakeOffsetMoving = fYawFakeOffset; }
 	float GetYawFakeOffsetMoving() { return m_fYawFakeOffsetMoving; }
@@ -85,7 +83,6 @@ private:
 	int m_iYawSettingStanding;
 	int m_iYawFakeSettingStanding;
 
-	float m_fPitchOffsetStanding;
 	float m_fYawOffsetStanding;
 	float m_fYawFakeOffsetStanding;
 
@@ -94,9 +91,11 @@ private:
 	int m_iYawSettingMoving;
 	int m_iYawFakeSettingMoving;
 
-	float m_fPitchOffsetMoving;
 	float m_fYawOffsetMoving;
 	float m_fYawFakeOffsetMoving;
+
+	float m_fCurRealYaw;
+	float m_fCurFakeYaw;
 
 	bool m_bDrawLbyIndicator;
 	bool m_bLbyBreaker;

@@ -374,57 +374,13 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
+		pApp->Chams()->DrawFakeAngle(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		pHands = pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 
-	//IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-	//IClientEntity* pRenderEntity = pApp->EntityList()->GetClientEntity(pInfo.entity_index);
-
-	//if (pLocalEntity == pRenderEntity/* && pApp->Visuals()->GetThirdperson()*/)
-	//{
-	//	matrix3x4_t pMyMat[MAXSTUDIOBONES];
-	//	matrix3x4_t pBoneMat[MAXSTUDIOBONES];
-
-	//	Vector origin, newOrigin;
-	//	QAngle ang = *pLocalEntity->GetAngEyeAngles();
-	//	QAngle ang1 = { 0, 90, 0 };
-	//	for (int i = 0; i < MAXSTUDIOBONES; i++)
-	//	{
-	//		//MatrixCopy(pCustomBoneToWorld[i], pBoneMat[i]);
-	//		origin.x = pCustomBoneToWorld[i][0][3];
-	//		origin.y = pCustomBoneToWorld[i][1][3];
-	//		origin.z = pCustomBoneToWorld[i][2][3];
-
-	//		AngleMatrix(*pLocalEntity->GetAngEyeAngles(), pMyMat[i]);
-	//		// maybe pBoneMat = pMyMat * pCustomBone
-
-	//		/*for (int i = 0; i < 3; i++)
-	//		{
-	//			for (int j = 0; j < 3; j++) {
-	//				for (int u = 0; u < 3; u++)
-	//				{
-	//					results[i][j] += matrix1[i][u] * matrix2[u][j];
-	//					}
-	//					}
-	//			}*/
-	//		//Vector test = VectorRotate(*pLocalEntity->GetAngEyeAngles(), origin);
-	//		newOrigin = VectorRotate(origin, ang1);
-	//		Vector old = VectorRotate(origin, pApp->LastTickAngles());
-
-	//		pMyMat[i][0][3] = origin.x;
-	//		pMyMat[i][1][3] = origin.y + (old.y - newOrigin.y);
-	//		pMyMat[i][2][3] = origin.z;
-	//	}
-
-	//	m_pDrawModelExecute(ecx, ctx, state, pInfo, pMyMat);
-	//}
-	//else
-	//{
-	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-	//}
-
 	// Call original func
+	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	// This is necessary for stuff to work properly
 	pApp->ModelRender()->ForcedMaterialOverride(NULL);
 }
@@ -1010,7 +966,7 @@ void CApplication::Setup()
 
 	// Resolver
 	this->m_resolver.SetEnabled(true);
-	this->m_resolver.SetResolverType(RESOLVERTYPE_AUTOMATIC);
+	this->m_resolver.SetResolverType(RESOLVERTYPE_LBY);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
@@ -1024,7 +980,7 @@ void CApplication::Setup()
 	this->m_esp.SetDrawHealthNumber(true);
 	this->m_esp.SetDrawArmorBar(false);
 	this->m_esp.SetDrawOwnTeam(false);
-	this->m_esp.SetDrawOwnModel(true);
+	this->m_esp.SetDrawOwnModel(false);
 	this->m_esp.SetDrawOnlyVisible(false);
 	this->m_esp.SetDrawOnlySpotted(false);
 	this->m_esp.SetDrawOutline(true);
@@ -1063,6 +1019,7 @@ void CApplication::Setup()
 	this->m_chams.SetRenderLocalplayer(false);
 	this->m_chams.SetOnlyVisible(false);
 	this->m_chams.SetFlatModels(false);
+	this->m_chams.SetRenderFakeAngle(true);
 	this->m_chams.SetColorHiddenCT(Color(0, 0, 255));
 	this->m_chams.SetColorVisibleCT(Color(0, 255, 0));
 	this->m_chams.SetColorHiddenT(Color(255, 0, 0));
@@ -1104,11 +1061,11 @@ void CApplication::Setup()
 	this->m_visuals.SetFlashPercentage(0.0f);
 
 	this->m_visuals.SetThirdperson(false);
-	this->m_visuals.SetThirdpersonDistance(150);
+	this->m_visuals.SetThirdpersonDistance(80);
 
 	this->m_visuals.SetFovChange(true);
 	this->m_visuals.SetFovValue(110);
-	this->m_visuals.SetFovChangeScoped(true);
+	this->m_visuals.SetFovChangeScoped(false);
 
 	this->m_visuals.SetViewmodelFov(true);
 	this->m_visuals.SetViewmodelFovValue(90);

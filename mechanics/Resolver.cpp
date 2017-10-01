@@ -52,23 +52,30 @@ void CResolver::Update(void* pParameters)
 		switch (m_iResolverType) //todo: check if cur player got other resolver option
 		{
 		case RESOLVERTYPE_AUTOMATIC:
-			//todo: not working
-			// while moving LBY, while standing check if lby updated/bruteforce
-			if (m_pApp->GlobalVars()->curtime - pCurResolverPlayer->GetRealLbyUpdateTime() > 1.1f)
+			if (bIsMoving)
 			{
-				if (!pCurResolverPlayer->m_bDidSet)
+				if (qCurEyeAngles->y != fCurLby)
+					qCurEyeAngles->y = fCurLby;
+			}
+			else
+			{
+				//todo: not working
+				if (m_pApp->GlobalVars()->curtime - pCurResolverPlayer->GetRealLbyUpdateTime() > 1.1f)
 				{
-					pCurResolverPlayer->SetAngles(*qCurEyeAngles);
-					pCurResolverPlayer->m_bDidSet = true;
-				}
+					if (!pCurResolverPlayer->m_bDidSet)
+					{
+						pCurResolverPlayer->SetAngles(*qCurEyeAngles);
+						pCurResolverPlayer->m_bDidSet = true;
+					}
 
-				*qCurEyeAngles = pCurResolverPlayer->GetAngles();
-				if (!m_pApp->AntiAim()->NextLBYUpdate(pCurResolverPlayer))
-				{
-					qCurEyeAngles->y += 180.0f;
+					*qCurEyeAngles = pCurResolverPlayer->GetAngles();
+					if (!m_pApp->AntiAim()->NextLBYUpdate(pCurResolverPlayer))
+					{
+						qCurEyeAngles->y += 180.0f;
+					}
+					qCurEyeAngles->x = 89;
+					qCurEyeAngles->NormalizeAngles();
 				}
-				qCurEyeAngles->x = 89;
-				qCurEyeAngles->NormalizeAngles();
 			}
 			break;
 		case RESOLVERTYPE_NOSPREAD:

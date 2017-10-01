@@ -7,26 +7,31 @@ CChams::CChams()
 	m_pDrawModelExecute = NULL;
 
 	m_bMaterialsInitialized = false;
+	m_bFakeAngleMaterialsInitialized = false;
 
 	m_bRenderTeam = false;
 	m_bRenderLocalplayer = false;
 	m_bOnlyVisible = false;
 	m_bFlatModels = false;
+	m_bRenderFakeAngle = false;
 
 	m_pFlatHiddenCT = NULL;
 	m_pFlatVisibleCT = NULL;
 	m_pFlatHiddenT = NULL;
 	m_pFlatVisibleT = NULL;
+	m_pFlatFakeAngle = NULL;
 
 	m_pLitHiddenCT = NULL;
 	m_pLitVisibleCT = NULL;
 	m_pLitHiddenT = NULL;
 	m_pLitVisibleT = NULL;
+	m_pLitFakeAngle = NULL;
 
 	m_pHiddenCT = NULL;
 	m_pVisibleCT = NULL;
 	m_pHiddenT = NULL;
 	m_pVisibleT = NULL;
+	m_pFakeAngle = NULL;
 }
 
 CChams::~CChams()
@@ -49,12 +54,14 @@ void CChams::SetFlatModels(bool bFlatModels)
 {
 	m_bFlatModels = bFlatModels;
 
-	if(m_bFlatModels)
+	if (m_bFlatModels)
 	{
 		m_pHiddenCT = m_pFlatHiddenCT;
 		m_pVisibleCT = m_pFlatVisibleCT;
 		m_pHiddenT = m_pFlatHiddenT;
 		m_pVisibleT = m_pFlatVisibleT;
+
+		m_pFakeAngle = m_pFlatFakeAngle;
 	}
 	else
 	{
@@ -62,12 +69,14 @@ void CChams::SetFlatModels(bool bFlatModels)
 		m_pVisibleCT = m_pLitVisibleCT;
 		m_pHiddenT = m_pLitHiddenT;
 		m_pVisibleT = m_pLitVisibleT;
+
+		m_pFakeAngle = m_pLitFakeAngle;
 	}
 }
 
 void CChams::ReloadMaterials()
 {
-	if(m_pFlatHiddenCT)
+	if (m_pFlatHiddenCT)
 		m_pFlatHiddenCT->DecrementReferenceCount();
 
 	if (m_pFlatVisibleCT)
@@ -78,6 +87,9 @@ void CChams::ReloadMaterials()
 
 	if (m_pFlatVisibleT)
 		m_pFlatVisibleT->DecrementReferenceCount();
+
+	if (m_pFlatFakeAngle)
+		m_pFlatFakeAngle->DecrementReferenceCount();
 
 	if (m_pLitHiddenCT)
 		m_pLitHiddenCT->DecrementReferenceCount();
@@ -91,7 +103,103 @@ void CChams::ReloadMaterials()
 	if (m_pLitVisibleT)
 		m_pLitVisibleT->DecrementReferenceCount();
 
+	if (m_pLitFakeAngle)
+		m_pLitFakeAngle->DecrementReferenceCount();
+
 	m_bMaterialsInitialized = false;
+	m_bFakeAngleMaterialsInitialized = false;
+}
+
+void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bRenderFakeAngle)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	IClientEntity* pRenderEntity = m_pApp->EntityList()->GetClientEntity(pInfo.entity_index);
+
+	if (!pLocalEntity || !pRenderEntity)
+		return;
+
+	if (pLocalEntity != pRenderEntity)
+		return;
+
+	if (!m_pApp->Visuals()->GetThirdperson())
+		return;
+
+	if (!m_pApp->AntiAim()->IsFakeYaw())
+		return;
+
+	if (m_pApp->AntiAim()->IsLbyUpdate())
+		return;
+
+	if (!m_bFakeAngleMaterialsInitialized)
+	{
+		// Grab references
+		m_pModelRender = m_pApp->ModelRender();
+		m_pDrawModelExecute = m_pApp->DrawModelExecute();
+
+		// Create materials
+		m_pFlatFakeAngle = m_pApp->ResourceManager()->CreateMaterial(false, true);
+		m_pLitFakeAngle = m_pApp->ResourceManager()->CreateMaterial(true, false);
+
+		// Colors
+		m_pFlatFakeAngle->AlphaModulate(0.7f);
+		m_pFlatFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
+		m_pLitFakeAngle->AlphaModulate(0.7f);
+		m_pLitFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
+
+		// Force Chams to actually "load" into the pointers
+		this->SetFlatModels(m_bFlatModels);
+
+		m_bFakeAngleMaterialsInitialized = true;
+	}
+
+	matrix3x4_t mRotation;
+	matrix3x4_t mCurBone;
+	matrix3x4_t mCurBoneModified;
+	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
+	Vector vCurPos, vCurPosRotated;
+
+	QAngle qRotationAngles = QAngle(0, m_pApp->AntiAim()->GetFakeYaw() - m_pApp->AntiAim()->GetRealYaw(), 0);
+	QAngle qAngles;
+
+	// Vector2Matrix
+	AngleMatrix(qRotationAngles, mRotation);
+	for (int i = 0; i < MAXSTUDIOBONES; i++)
+	{
+		// Copy original matrix
+		MatrixCopy(pCustomBoneToWorld[i], mCurBone);
+
+		// Get Position and subtract current origin
+		MatrixGetColumn(mCurBone, 3, vCurPos);
+		vCurPos -= pInfo.origin;
+
+		// Transform vector
+		VectorTransform(vCurPos, mRotation, vCurPosRotated);
+
+		// Add origin back to rotated vector
+		vCurPosRotated += pInfo.origin;
+
+		// Set position in saved matrix to 0
+		MatrixSetColumn(Vector(0, 0, 0), 3, mCurBone);
+
+		// Multiply Matrix
+		ConcatTransforms(mRotation, mCurBone, mCurBoneModified);
+
+		// Matrix2Vector
+		MatrixAngles(mCurBoneModified, (float*)&qAngles);
+
+		// Vector2Matrix
+		AngleMatrix(qAngles, vCurPosRotated, pBoneMatrix[i]);
+	}
+
+	m_pModelRender->ForcedMaterialOverride(m_pFakeAngle);
+	m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMatrix);
+	m_pModelRender->ForcedMaterialOverride(NULL);
 }
 
 void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)

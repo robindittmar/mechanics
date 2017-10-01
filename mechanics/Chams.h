@@ -33,6 +33,9 @@ public:
 	void SetFlatModels(bool bFlatModels);
 	bool GetFlatModels() { return m_bFlatModels; }
 
+	void SetRenderFakeAngle(bool bRenderFakeAngle) { m_bRenderFakeAngle = bRenderFakeAngle; }
+	bool GetRenderFakeAngle() { return m_bRenderFakeAngle; }
+
 	void SetColorHiddenCT(Color clrHiddenCT) { m_clrHiddenCT = clrHiddenCT; }
 	Color GetColorHiddenCT() { return m_clrHiddenCT; }
 
@@ -46,6 +49,7 @@ public:
 	Color GetColorVisibleT() { return m_clrVisibleT; }
 
 	void ReloadMaterials();
+	void DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 	void Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 private:
 	IVModelRender* m_pModelRender;
@@ -55,6 +59,7 @@ private:
 	bool m_bRenderLocalplayer;
 	bool m_bOnlyVisible;
 	bool m_bFlatModels;
+	bool m_bRenderFakeAngle;
 
 	Color m_clrHiddenCT;
 	Color m_clrVisibleCT;
@@ -76,6 +81,11 @@ private:
 	IMaterial* m_pVisibleCT;
 	IMaterial* m_pHiddenT;
 	IMaterial* m_pVisibleT;
+
+	bool m_bFakeAngleMaterialsInitialized;
+	IMaterial* m_pFakeAngle;
+	IMaterial* m_pFlatFakeAngle;
+	IMaterial* m_pLitFakeAngle;
 };
 
 #endif // __CHAMS_H__

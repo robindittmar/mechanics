@@ -80,7 +80,6 @@ private:
 
 	CGroupbox* m_pAntiaimStandingGroup;
 	CSelectbox* m_pAntiaimStandingPitch;
-	CSlider* m_pAntiaimStandingPitchOffset;
 	CSelectbox* m_pAntiaimStandingYaw;
 	CSlider* m_pAntiaimStandingYawOffset;
 	CSelectbox* m_pAntiaimStandingYawFake;
@@ -89,7 +88,6 @@ private:
 
 	CGroupbox* m_pAntiaimMovingGroup;
 	CSelectbox* m_pAntiaimMovingPitch;
-	CSlider* m_pAntiaimMovingPitchOffset;
 	CSelectbox* m_pAntiaimMovingYaw;
 	CSlider* m_pAntiaimMovingYawOffset;
 	CSelectbox* m_pAntiaimMovingYawFake;
@@ -168,6 +166,7 @@ private:
 	CCheckbox* m_pChamsDrawOwnTeam;
 	CCheckbox* m_pChamsDrawOwnModel;
 	CCheckbox* m_pChamsIgnoreZ;
+	CCheckbox* m_pChamsFakeAngle;
 
 	// Sound Esp
 	CGroupbox* m_pSoundEspGroup;

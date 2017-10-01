@@ -920,4 +920,36 @@ constexpr T maxof()
 	return ~((T)1 << (sizeof(T) * 8 - 1));
 }
 
+typedef __m128 fltx4;
+
+fltx4 LoadUnalignedSIMD(const void *pSIMD);
+
+#define MM_SHUFFLE_REV(a,b,c,d) _MM_SHUFFLE(d,c,b,a)
+fltx4 SplatXSIMD(fltx4 const & a);
+
+fltx4 SplatYSIMD(fltx4 const &a);
+
+fltx4 SplatZSIMD(fltx4 const &a);
+
+fltx4 MulSIMD(const fltx4 & a, const fltx4 & b);
+
+fltx4 AddSIMD(const fltx4 & a, const fltx4 & b);
+
+fltx4 AndSIMD(const fltx4 & a, const fltx4 & b);
+
+#define RESTRICT __restrict
+void StoreUnalignedSIMD(float * RESTRICT pSIMD, const fltx4 & a);
+
+#define DECL_ALIGN(x) __declspec(align(x))
+#define ALIGN16 DECL_ALIGN(16)
+#define ALIGN16_POST
+const int ALIGN16 g_SIMD_ComponentMask[4][4] ALIGN16_POST =
+{
+	{ 0xFFFFFFFF, 0, 0, 0 },{ 0, 0xFFFFFFFF, 0, 0 },{ 0, 0, 0xFFFFFFFF, 0 },{ 0, 0, 0, 0xFFFFFFFF }
+};
+
+void ConcatTransforms(const matrix3x4_t& in1, const matrix3x4_t& in2, matrix3x4_t& out);
+
+void MatrixAngles(const matrix3x4_t& matrix, float *angles);
+
 #endif // __VECTOR_H__

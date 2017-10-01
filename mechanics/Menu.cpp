@@ -87,14 +87,12 @@ void CMenu::ApplySettings()
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	// Standing
 	m_pAntiaimStandingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingStanding());
-	m_pAntiaimStandingPitchOffset->SetValue(m_pApp->AntiAim()->GetPitchOffsetStanding());
 	m_pAntiaimStandingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingStanding());
 	m_pAntiaimStandingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetStanding());
 	m_pAntiaimStandingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingStanding());
 	m_pAntiaimYawStandingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
 	// Moving
 	m_pAntiaimMovingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingMoving());
-	m_pAntiaimMovingPitchOffset->SetValue(m_pApp->AntiAim()->GetPitchOffsetMoving());
 	m_pAntiaimMovingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingMoving());
 	m_pAntiaimMovingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetMoving());
 	m_pAntiaimMovingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingMoving());
@@ -144,6 +142,7 @@ void CMenu::ApplySettings()
 	m_pChamsDrawOwnTeam->SetChecked(m_pApp->Chams()->GetRenderTeam());
 	m_pChamsDrawOwnModel->SetChecked(m_pApp->Chams()->GetRenderLocalplayer());
 	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
+	m_pChamsFakeAngle->SetChecked(m_pApp->Chams()->GetRenderFakeAngle());
 
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
 	m_pSoundEspShowTime->SetValue(m_pApp->SoundEsp()->GetShowTime());
@@ -351,25 +350,22 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimMovingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingPitchOffset = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
-	m_pAntiaimMovingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
-
-	m_pAntiaimMovingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
+	m_pAntiaimMovingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_NONE, "None");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimMovingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingYawOffset = new CSlider(4, 104, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
-	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimMovingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimMovingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
+	m_pAntiaimMovingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 166, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawMovingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	//Standing
@@ -379,45 +375,40 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimStandingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingPitchOffset = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -90.0f, 90.0f);
-	m_pAntiaimStandingPitchOffset->SetEventHandler(std::bind(&CAntiAim::SetPitchOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
-
-	m_pAntiaimStandingYaw = new CSelectbox(4, 72, 128, 20, "Yaw");
+	m_pAntiaimStandingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_NONE, "None");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimStandingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingYawOffset = new CSlider(4, 104, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimStandingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimStandingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingYawFake = new CSelectbox(4, 134, 128, 20, "Yaw Fake");
+	m_pAntiaimStandingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 166, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
+	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 185, 128, 16, "LBY Breaker");
+	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 159, 128, 16, "LBY Breaker");
 	m_pAntiaimStandingLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimLbyIndicator = new CCheckbox(62, 0, 128, 16, "LBY Indicator");
 	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 230, "Standing");
+	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 200, "Standing");
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingPitch);
-	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingPitchOffset);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYaw);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawOffset);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawFake);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimYawStandingFakeOffset);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingLbyBreaker);
 
-	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 230, "Moving");
+	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 200, "Moving");
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingPitch);
-	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingPitchOffset);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYaw);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawOffset);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawFake);
@@ -635,12 +626,16 @@ void CMenu::CreateVisualsTab()
 	m_pChamsIgnoreZ = new CCheckbox(4, 104, 128, 16, "Only Visible");
 	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetOnlyVisible, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
+	m_pChamsFakeAngle = new CCheckbox(4, 132, 128, 16, "Fake Angle");
+	m_pChamsFakeAngle->SetEventHandler(std::bind(&CChams::SetRenderFakeAngle, m_pApp->Chams(), std::placeholders::_1));
+
+	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams"); 
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnTeam);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnModel);
 	m_pChamsGroup->AddChild(m_pChamsIgnoreZ);
+	m_pChamsGroup->AddChild(m_pChamsFakeAngle);
 
 	m_pSoundEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pSoundEspEnabled->SetEventHandler(std::bind(&CSoundEsp::SetEnabled, m_pApp->SoundEsp(), std::placeholders::_1));

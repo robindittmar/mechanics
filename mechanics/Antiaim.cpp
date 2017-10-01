@@ -64,6 +64,9 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 
 void CAntiAim::Update(void* pParameters)
 {
+	m_fCurRealYaw = 0.0f;
+	m_fCurFakeYaw = 0.0f;
+
 	if (!m_bIsEnabled)
 		return;
 
@@ -121,7 +124,7 @@ void CAntiAim::Update(void* pParameters)
 
 void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
 {
-	float fRealPitchAngle = 0.0f + (m_bIsMoving ? m_fPitchOffsetMoving : m_fPitchOffsetStanding);
+	float fRealPitchAngle = angles->x;
 
 	switch ((m_bIsMoving ? m_iPitchSettingMoving : m_iPitchSettingStanding))
 	{
@@ -192,6 +195,9 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		fFakeYaw = 0.0f;
 		break;
 	}
+
+	m_fCurRealYaw = angles->y + fRealYaw;
+	m_fCurFakeYaw = angles->y + fFakeYaw;
 
 	if (IsFakeYaw())
 	{
@@ -271,5 +277,5 @@ void CAntiAim::DrawLBYIndicator()
 
 bool CAntiAim::IsFakeYaw()
 {
-	return m_bIsMoving ? m_iYawFakeSettingMoving == FAKEYAWANTIAIM_STATIC : m_iYawFakeSettingStanding == FAKEYAWANTIAIM_STATIC;
+	return m_bIsMoving ? m_iYawFakeSettingMoving == FAKEYAWANTIAIM_STATIC : m_iYawFakeSettingStanding == FAKEYAWANTIAIM_STATIC && m_bIsEnabled;
 }
