@@ -6,6 +6,7 @@
 
 // Custom
 #include "Console.h"
+#include "Config.h"
 #include "Pattern.h"
 #include "XorString.h"
 #include "VTableHook.h"
@@ -107,6 +108,9 @@ public:
 	static CApplication* Instance();
 	void Run(HMODULE hModule);
 	void Detach();
+
+	const char* GetWorkingDirectory() { return m_pFilepath; }
+	const char* GetFilename() { return m_pFilename; }
 
 	// TODO: REMOVE
 	void LoadSkinChangerConfig();

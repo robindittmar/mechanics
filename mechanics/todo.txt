@@ -45,3 +45,5 @@ Priority Low
 -> Hitchance Revolver/Negev + Hitchance generell (nospread?)
 
 // NoSmoke nach mapchange
+
+=> SkinChanger KillIcons werden replaced, auch wenn skinchanger disabled ist :D

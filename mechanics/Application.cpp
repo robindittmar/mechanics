@@ -937,6 +937,10 @@ void CApplication::Setup()
 		"ghdrtzuigkog----trg"
 	)));
 
+	CConfig config;
+	config.Init(this);
+	config.LoadFile("testconfig.cfg");
+
 	// Target Selector
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(false);
