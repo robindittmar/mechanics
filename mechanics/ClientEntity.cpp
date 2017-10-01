@@ -198,4 +198,6 @@ int IClientEntity::GetBoneByName(const char* pBoneName)
 		if (pBone->pszName() && !strcmp(pBone->pszName(), pBoneName))
 			return i;
 	}
+
+	return -1;
 }

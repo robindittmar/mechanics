@@ -33,6 +33,9 @@ public:
 	void SetDrawBoundingBox(int iDrawBoundingBox) { m_iDrawBoundingBox = iDrawBoundingBox; }
 	int GetDrawBoundingBox() { return m_iDrawBoundingBox; }
 
+	void SetDrawSkeleton(bool bDrawSkeleton) { m_bDrawSkeleton = bDrawSkeleton; }
+	bool GetDrawSkeleton() { return m_bDrawSkeleton; }
+
 	void SetDrawHealthBar(bool bDrawHealthBar) { m_bDrawHealthBar = bDrawHealthBar; }
 	bool GetDrawHealthBar() { return m_bDrawHealthBar; }
 
@@ -81,11 +84,14 @@ public:
 	void SetColorSpotted(Color clrSpotted) { m_clrSpotted = clrSpotted; }
 	Color GetColorSpotted() { return m_clrSpotted; }
 
+	void ResetHeadBones();
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
 	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
 	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);
+	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
 	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha);
@@ -94,6 +100,7 @@ private:
 
 	bool m_bFillBoundingBox;
 	int m_iDrawBoundingBox;
+	bool m_bDrawSkeleton;
 
 	bool m_bDrawHealthBar;
 	bool m_bDrawHealthNumber;
@@ -109,6 +116,9 @@ private:
 
 	bool m_bFadeoutEnabled;
 	int m_iFadeoutTime;
+
+	int m_iHeadBoneCT;
+	int m_iHeadBoneT;
 
 	Color m_clrCT;
 	Color m_clrT;

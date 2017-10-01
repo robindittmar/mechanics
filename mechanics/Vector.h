@@ -867,6 +867,7 @@ void VectorRotate(Vector& in1, const matrix3x4_t& in2, Vector* out);
 
 void MatrixCopy(const matrix3x4_t& in, matrix3x4_t& out);
 void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out);
+void MatrixGetColumn(const matrix3x4_t& in, int column, Vector &out);
 void AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix);
 void AngleMatrix(const QAngle &angles, matrix3x4_t& matrix);
 

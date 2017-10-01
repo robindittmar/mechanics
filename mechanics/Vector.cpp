@@ -153,6 +153,13 @@ void MatrixSetColumn(const Vector &in, int column, matrix3x4_t& out)
 	out[2][column] = in.z;
 }
 
+void MatrixGetColumn(const matrix3x4_t& in, int column, Vector &out)
+{
+	out.x = in[0][column];
+	out.y = in[1][column];
+	out.z = in[2][column];
+}
+
 void AngleMatrix(const QAngle &angles, const Vector &position, matrix3x4_t& matrix)
 {
 	AngleMatrix(angles, matrix);

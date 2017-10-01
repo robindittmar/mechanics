@@ -10,6 +10,7 @@
 #define EVENT_BTN_MMOUSE			(1 << 2)
 #define EVENT_BTN_TOGGLEMENU		(1 << 3)
 #define EVENT_BTN_THIRDPERSON		(1 << 4)
+#define EVENT_BTN_SWITCHREALFAKE	(1 << 5)
 #define EVENT_BTN_DETACH			(1 << 31)
 
 class CInputEvent

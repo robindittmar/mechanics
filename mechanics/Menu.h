@@ -123,6 +123,11 @@ private:
 	CCheckbox* m_pEspDrawHealthnumber;
 	CCheckbox* m_pEspDrawArmorbar;
 	CCheckbox* m_pEspDrawArmornumber;
+	CCheckbox* m_pEspDrawAmmobar;
+	CCheckbox* m_pEspDrawAmmonumber;
+
+	CCheckbox* m_pEspDrawGlowEnabled;
+	CCheckbox* m_pEspDrawSkeletonEnabled;
 
 	CCheckbox* m_pEspDrawOwnTeam;
 	CCheckbox* m_pEspDrawOwnModel;

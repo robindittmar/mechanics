@@ -249,7 +249,15 @@ private:
 	void Setup();
 	void Hook();
 
+	void GetModuleInfo();
+
 	HMODULE m_hModule;
+	
+	int m_iLenFilepath;
+	char* m_pFilepath;
+
+	int m_iLenFilename;
+	char* m_pFilename;
 
 	float m_flRecoilCompensation;
 

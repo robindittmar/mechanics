@@ -8,10 +8,18 @@ CEsp::CEsp()
 	m_clrCT = Color(0, 0, 255);
 	m_clrT = Color(255, 0, 0);
 	m_clrSpotted = Color(255, 128, 0);
+
+	this->ResetHeadBones();
 }
 
 CEsp::~CEsp()
 {
+}
+
+void CEsp::ResetHeadBones()
+{
+	m_iHeadBoneCT = -1;
+	m_iHeadBoneT = -1;
 }
 
 void CEsp::Setup()
@@ -33,6 +41,8 @@ void CEsp::Update(void* pParameters)
 	IClientEntity* pCurEntity;
 	int iLocalTeam;
 	Vector vMyHeadPos;
+
+	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 
 	// Grab LocalPlayer
 	pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
@@ -84,9 +94,29 @@ void CEsp::Update(void* pParameters)
 			iCurEntityTeam == 0)
 			continue;
 
+		if (m_iHeadBoneCT == -1)
+		{
+			if (iCurEntityTeam == TEAMNUM_CT)
+			{
+				m_iHeadBoneCT = pCurEntity->GetBoneByName("head_0");
+			}
+		}
+		
+		if (m_iHeadBoneT == -1)
+		{
+			if (iCurEntityTeam == TEAMNUM_T)
+			{
+				m_iHeadBoneT = pCurEntity->GetBoneByName("head_0");
+			}
+		}
+
+		if (!pCurEntity->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, m_pApp->EngineClient()->GetLastTimeStamp()))
+			continue;
+
 		Vector vScreenOrigin, vScreenHead;
 		Vector vCurEntOrigin = *pCurEntity->GetOrigin();
-		Vector vCurEntHeadPos = vCurEntOrigin + *pCurEntity->GetEyeOffset();
+		Vector vCurEntHeadPos;
+		MatrixGetColumn(pBoneMatrix[iCurEntityTeam == TEAMNUM_CT ? m_iHeadBoneCT : m_iHeadBoneT], 3, vCurEntHeadPos);
 
 		Ray_t ray;
 		trace_t trace;
@@ -148,6 +178,10 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			}
+			if (m_bDrawSkeleton)
+			{
+				DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
+			}
 			if (m_bDrawHealthBar)
 			{
 				DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
@@ -193,6 +227,7 @@ void CEsp::DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int 
 		posX - width / 2 - 3,
 		posY + 6);
 }
+
 void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color)
 {
 	int x1 = posX - width / 2 - 1;	// left
@@ -327,6 +362,39 @@ void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, i
 		break;
 	}
 }
+
+void CEsp::DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha)
+{
+	studiohdr_t* pStudioHdr = m_pApp->ModelInfo()->GetStudiomodel(pEntity->GetModel());
+	if (!pStudioHdr)
+		return;
+
+	pSurface->DrawSetColor(alpha, 255, 255, 255);
+
+	Vector vBonePos1, vBonePos2;
+	Vector vPos1, vPos2;
+	for (int i = 0; i < pStudioHdr->numbones; i++)
+	{
+		mstudiobone_t* pBone = pStudioHdr->pBone(i);
+		if (!pBone)
+			continue;
+
+		if (!(pBone->flags & FL_CLIENT))
+			continue;
+
+		if (pBone->parent == -1)
+			continue;
+
+		MatrixGetColumn(pBoneMatrix[i], 3, vBonePos1);
+		MatrixGetColumn(pBoneMatrix[pBone->parent], 3, vBonePos2);
+
+		if (!m_pGui->WorldToScreen(vBonePos1, vPos1) || !m_pGui->WorldToScreen(vBonePos2, vPos2))
+			continue;
+
+		pSurface->DrawLine(vPos1.x, vPos1.y, vPos2.x, vPos2.y);
+	}
+}
+
 void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
 	float healthpercentage = (100 - health) / 100.0f;
@@ -356,6 +424,7 @@ void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int
 		posY + 6
 	);
 }
+
 void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
 	float healthpercentage = (100 - health) / 100.0f;
@@ -393,6 +462,7 @@ void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int wi
 
 	pDevice->Clear(1, &helmet, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 83, 83, 83), 0, 0);*/
 }
+
 void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha) {
 	// TODO
 	static unsigned long font = NULL;
@@ -416,6 +486,7 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	pSurface->DrawSetTextPos(posX - w / 2, posY - height - 17);
 	pSurface->DrawPrintText(name, iLen);
 }
+
 void CEsp::DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha)
 {
 	Vector vForward, vAimPos, vAimPosScreen;

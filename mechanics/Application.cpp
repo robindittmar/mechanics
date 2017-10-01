@@ -239,9 +239,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			}
 
 			pApp->m_flPredLbyUpdateTime = pApp->GlobalVars()->curtime + 1.1f;
-			// TODO
-			int i = pLocalEntity->GetBoneByName("head_0");
-			g_pConsole->Write(LOGLEVEL_WARNING, "%d: %s\n", i, "head_0");
 			
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
@@ -673,9 +670,12 @@ void CApplication::Setup()
 #ifdef _DEBUG
 	// Setup console
 	g_pConsole = new CConsole();
-	g_pConsole->WritePlain(".mechanics\n > Build date: %s\n > Build time: %s\n > Build number: %d\n\n", __DATE__, __TIME__, __COUNTER__);
+	g_pConsole->WritePlain(".mechanics\n > Build date: %s\n > Build time: %s\n\n", __DATE__, __TIME__);
 #endif
 
+	// Grab info about our own dll path etc
+	this->GetModuleInfo();
+	
 	// Setup strings
 	CXorString xorCreateInterface("Tyà£cnÌ¬cn÷¤vhà");
 
@@ -784,26 +784,26 @@ void CApplication::Setup()
 	m_pResourceManager->CreateFonts();
 
 	// NetVar Dumps
-	FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
-	if (pFile)
-	{
-		g_pConsole->Write(LOGLEVEL_INFO, "Dumping NetVars ... ");
-		//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
-		//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
-		CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
+	//FILE* pFile = fopen("C:\\Users\\Robin\\Desktop\\dump.txt", "w");
+	//if (pFile)
+	//{
+	//	g_pConsole->Write(LOGLEVEL_INFO, "Dumping NetVars ... ");
+	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
+	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
-		//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_ScriptCreatedItem");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAttributableItem");
 
-		fclose(pFile);
-		g_pConsole->WritePlain("Done!\n");
-	}
+	//	fclose(pFile);
+	//	g_pConsole->WritePlain("Done!\n");
+	//}
 
 	CXorString xorBaseEntity("S_Ú€vxà‡yì¶n"); // DT_BaseEntity
 	CXorString xorBasePlayer("S_Ú€vxà’{jü§e"); // DT_BasePlayer
@@ -1019,6 +1019,7 @@ void CApplication::Setup()
 	this->m_esp.SetFadeoutTime(1.0f);
 	this->m_esp.SetColorCT(Color(0, 0, 255));
 	this->m_esp.SetColorT(Color(255, 0, 0));
+	this->m_esp.SetDrawSkeleton(true);
 	//this->m_esp.SetColorSpotted();
 
 	// WeaponEsp
@@ -1180,6 +1181,37 @@ void CApplication::Hook()
 
 	this->m_bIsHooked = true;
 	this->m_bInitialHookDone = true;
+}
+
+void CApplication::GetModuleInfo()
+{
+	int iLenFullpath;
+	char pFullpath[MAX_PATH];
+
+	iLenFullpath = GetModuleFileName(m_hModule, pFullpath, MAX_PATH);
+
+	for (int i = iLenFullpath - 1; i >= 0; i--)
+	{
+		if (pFullpath[i] == '\\')
+		{
+			m_iLenFilepath = i + 1;
+			m_pFilepath = new char[m_iLenFilepath + 1];
+			strncpy(m_pFilepath, pFullpath, m_iLenFilepath + 1);
+			m_pFilepath[m_iLenFilepath] = '\0';
+
+			m_iLenFilename = iLenFullpath - i - 1;
+			m_pFilename = new char[m_iLenFilename + 1];
+			strcpy(m_pFilename, pFullpath + i + 1);
+
+			break;
+		}
+	}
+
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Module path: %s\n", m_pFilepath);
+	g_pConsole->Write(LOGLEVEL_INFO, "Module name: %s\n", m_pFilename);
+	g_pConsole->WritePlain("\n");
+#endif
 }
 
 // Singleton
