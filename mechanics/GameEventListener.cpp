@@ -57,6 +57,9 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 		case 0xf1a6fc33: // round_end
 			this->round_end(pEvent);
 			break;
+		case 0x3b27ece4: // weapon_fire
+			this->weapon_fire(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -177,7 +180,7 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
 	
-	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(userid);
+	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pApp->EngineClient()->GetPlayerForUserID(userid));
 	if (pResolverPlayer)
 	{
 		pResolverPlayer->SetShotsFired(0);
@@ -227,4 +230,40 @@ void CGameEventListener::round_end(IGameEvent* pEvent)
 
 	// no fking clue what to do here :D
 	// (maybe if localplayer->team == winner taunt enemies?)
+}
+
+void CGameEventListener::weapon_fire(IGameEvent* pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
+	// Check if local shot
+	if (pApp->EngineClient()->GetPlayerForUserID(userid) == pApp->GetLocalPlayer()->EntIndex())
+	{
+		// Check if target exists
+		CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
+		if (pTarget)
+		{
+			// Check if target ent exists
+			IClientEntity* pEnt = pTarget->GetEntity();
+			if (pEnt)
+			{
+				// Check for valid weapon
+				CWeapon* pActive = pEnt->GetActiveWeapon();
+				if (pActive &&
+					(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
+				{
+					// Check if ResolverPlayer for target exists
+					CResolverPlayer* pCur = pApp->Resolver()->GetResolverPlayer(pEnt->EntIndex());
+					if (pCur)
+					{
+						// Setting shots fired + 1
+						pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+					}
+				}
+			}
+		}
+	}
+
+	//todo: bullet tracer ;)
 }

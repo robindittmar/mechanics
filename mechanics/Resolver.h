@@ -31,6 +31,7 @@ private:
 	int m_iResolverType;
 
 	bool PredictLbyBreak(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
+	float BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 
 	CResolverPlayer m_pResolverPlayers[MAX_PLAYERS];
 };

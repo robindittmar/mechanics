@@ -437,7 +437,6 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
 
-
 			// ****TEST*****
 			pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
 			pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
@@ -451,6 +450,9 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 					continue;
 
 				if (pCurEnt->IsDormant())
+					continue;
+
+				if (!pCurEnt->IsAlive())
 					continue;
 
 				if (!pCurRes)
@@ -1118,6 +1120,7 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ¦rjñª").ToCharArray(), false); // player_death
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("`nä²xeÚ¤~yà").ToCharArray(), false); // weapon_fire
 
 	// CGui initialization
 	m_pGui = CGui::Instance();

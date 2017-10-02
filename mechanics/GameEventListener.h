@@ -28,6 +28,7 @@ private:
 	void player_death(IGameEvent* pEvent);
 	void round_start(IGameEvent* pEvent);
 	void round_end(IGameEvent* pEvent);
+	void weapon_fire(IGameEvent* pEvent);
 
 	// player_hurt & player_death
 	CXorString m_xorUserId;
