@@ -3,10 +3,20 @@
 CResolverPlayer::CResolverPlayer()
 {
 	m_iShotsFired = 0;
-	m_fLastLby = 0.0f;
+	m_fLbyProxyLastValue = 0.0f;
 	m_fLbyUpdateTime = 0.0f;
-	m_fRealLbyUpdateTime = 0.0f;
-	m_fPredictedLbyUpdateTime = 0.0f;
+	m_fLbyProxyUpdatedTime = 0.0f;
+	m_fPredLbyUpdateTime = 0.0f;
+
+
+
+	m_fFirstLbySinceStanding = -1;
+
+	m_fPossibleLbyBreakerReal = -1;
+	m_fPossibleLbyBreakerFake = -1;
+	m_fPossibleLbyBreakerStart = -1;
+
+	m_bStartPredLbyBreaks = false;
 }
 
 CResolverPlayer::~CResolverPlayer()

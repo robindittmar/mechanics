@@ -46,7 +46,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 	if (bPlayerMoving)
 		return false;
 
-	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredictedLbyUpdateTime() - GetOutgoingLatency());
+	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredLbyUpdateTime() - GetOutgoingLatency());
 	if (value > 1.0f)
 	{
 		if (value > 1.1f)
@@ -115,7 +115,7 @@ void CAntiAim::Update(void* pParameters)
 	ApplyYawAntiAim(&angles);
 
 	// LBY indicator check
-	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetRealLbyUpdateTime() + 1.1 < m_pApp->GlobalVars()->curtime;
+	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime;
 
 	// Setting calculated angles to player angles
 	pUserCmd->viewangles[0] = angles.x;

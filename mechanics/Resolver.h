@@ -2,6 +2,7 @@
 #define __RESOLVER_H__
 
 #include "ResolverPlayer.h"
+#include "ClientEntity.h"
 #include "IFeature.h"
 
 #define MAX_PLAYERS 64
@@ -11,8 +12,7 @@ class CApplication;
 #define RESOLVERTYPE_NONE						0
 #define RESOLVERTYPE_LBY						1
 #define RESOLVERTYPE_BRUTEFORCE					2
-#define RESOLVERTYPE_NOSPREAD					3
-#define RESOLVERTYPE_AUTOMATIC					4
+#define RESOLVERTYPE_AUTOMATIC					3
 
 class CResolver : public IFeature
 {
@@ -29,6 +29,8 @@ public:
 	virtual void Update(void* pParameters = 0);
 private:
 	int m_iResolverType;
+
+	bool PredictLbyBreak(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 
 	CResolverPlayer m_pResolverPlayers[MAX_PLAYERS];
 };

@@ -177,6 +177,12 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
 	
+	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(userid);
+	if (pResolverPlayer)
+	{
+		pResolverPlayer->SetShotsFired(0);
+	}
+
 	// Set here instead of player_spawned because of IsAlive check
 	if (pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
 		pApp->SkinChanger()->SetForceFullUpdate();

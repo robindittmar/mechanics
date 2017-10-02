@@ -337,8 +337,7 @@ void CMenu::CreateRageTab()
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NONE, "None");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_LBY, "LBY");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_BRUTEFORCE, "Bruteforce (WIP)");
-	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NOSPREAD, "No Spread");
-	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_AUTOMATIC, "Automatic (WIP");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_AUTOMATIC, "Automatic (WIP)");
 	m_pRageOthersResolverType->SetEventHandler(std::bind(&CResolver::SetResolverType, m_pApp->Resolver(), std::placeholders::_1));
 
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");

@@ -242,9 +242,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			for (int i = 0; i < MAX_PLAYERS; i++)
 			{
 				CResolverPlayer* pCurResolverPlayer = pApp->Resolver()->GetResolverPlayer(i);
-				pCurResolverPlayer->SetPredictedLbyUpdateTime(pApp->GlobalVars()->curtime + 1.1f);
+				pCurResolverPlayer->SetPredLbyUpdateTime(pApp->GlobalVars()->curtime + 1.1f);
 			}
-			
+
 			// Save Viewangles before doing stuff
 			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
 			QAngle qOldAngles = pApp->GetClientViewAngles();
@@ -289,7 +289,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->EngineClient()->SetViewAngles(pApp->GetClientViewAngles());
 
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
-				pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
+				*pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate ||
 				!pApp->AntiAim()->GetEnabled() ||
 				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
@@ -436,6 +436,42 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
+
+
+			// ****TEST*****
+			pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+			pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
+			IClientEntity* pLocal = pApp->GetLocalPlayer();
+			for (int i = 0; i < MAX_PLAYERS; i++)
+			{
+				IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(i);
+				CResolverPlayer* pCurRes = pApp->Resolver()->GetResolverPlayer(i);
+
+				if (!pCurEnt)
+					continue;
+
+				if (pCurEnt->IsDormant())
+					continue;
+
+				if (!pCurRes)
+					continue;
+
+				Vector screen, origin = *pCurEnt->GetOrigin();
+				if (pApp->Gui()->WorldToScreen(origin, screen))
+				{
+					if (pCurRes->m_bHasFakeActive)
+					{
+						pApp->Surface()->DrawSetTextPos(screen.x - 3, screen.y + 10);
+						pApp->Surface()->DrawPrintText(L"FAKE", lstrlenW(L"FAKE"));
+					}
+
+					if (pCurRes->m_bStartPredLbyBreaks)
+					{
+						pApp->Surface()->DrawSetTextPos(screen.x - 8, screen.y + 25);
+						pApp->Surface()->DrawPrintText(L"LBY-Breaker", lstrlenW(L"LBY-Breaker"));
+					}
+				}
+			}
 		}
 	}
 
@@ -621,11 +657,11 @@ void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataC
 	if (pData && pEntity && pLocal)
 	{
 		CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pEntity->EntIndex());
-		if (fabsf(pResolverPlayer->GetLastLby() - pData->m_Value.m_Float) >= 30.0f)
+		if (fabsf(pResolverPlayer->GetLbyProxyLastValue() - pData->m_Value.m_Float) >= 30.0f)
 		{
-			pResolverPlayer->SetLastLby(pData->m_Value.m_Float);
+			pResolverPlayer->SetLbyProxyLastValue(pData->m_Value.m_Float);
 			pResolverPlayer->SetLbyUpdateTime(pApp->GlobalVars()->curtime);
-			pResolverPlayer->SetRealLbyUpdateTime(pApp->GlobalVars()->curtime);
+			pResolverPlayer->SetLbyProxyUpdatedTime(pApp->GlobalVars()->curtime);
 		}
 	}
 
@@ -642,7 +678,7 @@ void CApplication::Setup()
 
 	// Grab info about our own dll path etc
 	this->GetModuleInfo();
-	
+
 	// Setup strings
 	CXorString xorCreateInterface("Tyà£cnÌ¬cn÷¤vhà");
 
@@ -835,7 +871,7 @@ void CApplication::Setup()
 	Offsets::deadflag = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(),
 		/*DT_PlayerState*/CXorString("S_Ú’{jü§eXñ£cn").ToCharArray(),
 		/*deadflag*/CXorString("snä¦qgä¥").ToCharArray());
-	m_pNetVarMgr->SetSummarizeOffsets(false); 
+	m_pNetVarMgr->SetSummarizeOffsets(false);
 	Offsets::m_nTickBase = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë–~hî€vxà").ToCharArray());
 	Offsets::m_bIsDefusing = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bIsDefusing*/CXorString("zTç‹dOà¤bxì¬p").ToCharArray());
 	Offsets::m_flC4Blow = m_pNetVarMgr->GetOffset(xorPlantedC4.ToCharArray(), /*m_flC4Blow*/CXorString("zTã®T?Ç®x|").ToCharArray());
