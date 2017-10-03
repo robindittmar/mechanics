@@ -229,7 +229,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			continue;
 
 		// Calculate a few values
-		qAimAngles = this->CalcAngle(vMyHeadPos, vEnemyPos);
+		qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);
 		fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyPos);
 		fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, qAimAngles/*, fOriginDist*/));
 
@@ -271,18 +271,6 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			);
 		}
 	}
-}
-
-QAngle CTargetSelector::CalcAngle(Vector& vStartPos, Vector& vEndPos)
-{
-	Vector vRelativeDist = vEndPos - vStartPos;
-	QAngle qAngle(
-		RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
-		RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
-		0.0f
-	);
-
-	return qAngle;
 }
 
 void CTargetSelector::GetHitBoxCenter(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector& hitBoxVector)

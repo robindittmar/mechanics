@@ -24,6 +24,7 @@
 
 // Features
 #include "Ragebot.h"
+#include "Legitbot.h"
 #include "Triggerbot.h"
 #include "Antiaim.h"
 #include "Bhop.h"
@@ -191,6 +192,7 @@ public:
 
 	// Features
 	CRagebot* Ragebot() { return &m_ragebot; }
+	CLegitbot* Legitbot() { return &m_legitbot; }
 	CTriggerbot* Triggerbot() { return &m_triggerbot; }
 	CAntiAim* AntiAim() { return &m_antiAim; }
 	CBhop* Bhop() { return &m_bhop; }
@@ -339,6 +341,7 @@ private:
 
 	// Features
 	CRagebot m_ragebot;
+	CLegitbot m_legitbot;
 	CTriggerbot m_triggerbot;
 	CAntiAim m_antiAim;
 	CBhop m_bhop;

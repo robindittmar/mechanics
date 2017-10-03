@@ -258,6 +258,10 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Update Aimbot & AutoRevolver
 			pApp->Ragebot()->Update((void*)&createMoveParam);
 			pApp->Ragebot()->AutoRevolver(pUserCmd);
+
+			// Update Legitbot
+			pApp->Legitbot()->Update((void*)&createMoveParam);
+
 			// Update Triggerbot
 			pApp->Triggerbot()->Update((void*)&createMoveParam);
 
@@ -954,6 +958,7 @@ void CApplication::Setup()
 
 	// Setups
 	this->m_ragebot.Setup();
+	this->m_legitbot.Setup();
 	this->m_triggerbot.Setup();
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
@@ -979,6 +984,10 @@ void CApplication::Setup()
 	this->m_ragebot.SetHitchance(25.0f);
 	this->m_ragebot.SetNoSpread(false);
 	this->m_ragebot.SetAutoRevolver(true);
+
+	// Legitbot
+	this->m_legitbot.SetEnabled(true);
+	this->m_legitbot.SetTimeToAim(0.05f);
 
 	// Triggerbot
 	this->m_triggerbot.SetEnabled(false);
