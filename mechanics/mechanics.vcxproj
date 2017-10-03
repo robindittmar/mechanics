@@ -211,6 +211,7 @@
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="TargetSelector.cpp" />
     <ClCompile Include="Triggerbot.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="VTableHook.cpp" />
     <ClCompile Include="Visuals.cpp" />
@@ -315,6 +316,7 @@
     <ClInclude Include="TargetSelector.h" />
     <ClInclude Include="Triggerbot.h" />
     <ClInclude Include="UserCmd.h" />
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="IVEngineClient.h" />
     <ClInclude Include="VTableHook.h" />

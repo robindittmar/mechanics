@@ -8,6 +8,7 @@
 #include "IVModelInfo.h"
 
 // Custom
+#include "Utils.h"
 #include "Target.h"
 #include "Autowall.h"
 
@@ -67,8 +68,6 @@ public:
 	void SetMultipoint(bool bMultipoint) { m_bMultipoint = bMultipoint; }
 	bool GetMultipoint() { return m_bMultipoint; }
 private:
-	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
-
 	void GetHitBoxCenter(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector& hitBoxVector);
 	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors);
 
