@@ -105,7 +105,7 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 				pGrenadeName = m_pMolotov;
 				break;
 			}
-			DrawWeaponName(pCurWeapon, pGrenadeName, vScreenOrigin.x, vScreenOrigin.y);
+			DrawWeaponName(pGrenadeName, vScreenOrigin.x, vScreenOrigin.y);
 		}
 	}
 }
@@ -167,7 +167,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 	{
 		if (bGotWorldToScreen = m_pApp->Gui()->WorldToScreen(vCurEntOrigin, vScreenOrigin))
 		{
-			iPlantedTextHeight = DrawWeaponName(pCurWeapon, m_pC4Planted, vScreenOrigin.x, vScreenOrigin.y);
+			iPlantedTextHeight = DrawWeaponName(m_pC4Planted, vScreenOrigin.x, vScreenOrigin.y);
 		}
 	}
 
@@ -185,7 +185,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 			{
 				wchar_t pBombTimeText[256];
 				swprintf(pBombTimeText, m_pC4Time, fTimeToExplode);
-				iPlantedTextHeight += DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+				iPlantedTextHeight += DrawWeaponName(pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
 			}
 		}
 	}
@@ -207,7 +207,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 				{
 					wchar_t pBombTimeText[256];
 					swprintf(pBombTimeText, m_pC4DefuseCountDown, fTimeToDefused);
-					iPlantedTextHeight += DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+					iPlantedTextHeight += DrawWeaponName(pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
 				}
 			}
 		}
@@ -229,7 +229,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 
 		wchar_t pBombTimeText[256];
 		swprintf(pBombTimeText, m_pC4DamageIndicator, damage);
-		DrawWeaponName(pCurWeapon, pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
+		DrawWeaponName(pBombTimeText, vScreenOrigin.x, vScreenOrigin.y + iPlantedTextHeight);
 	}
 
 }
@@ -261,22 +261,14 @@ void CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, int posX, int posY)
 	m_pApp->Surface()->DrawSetTextFont(iFont);
 
 
-	// TODO
-	// remove weapon_
-	// r8 = weapon_deagle
+	static int iWeaponUnderscoreLen = strlen("weapon_");
+
 	wchar_t wcWeaponName[256];
 	mbstowcs(wcWeaponName, pCurEntity->GetWeaponInfo()->szWeaponName, 256);
-	int iWeaponNameLen = lstrlenW(wcWeaponName);
-
-	int w, h;
-	m_pApp->Surface()->GetTextSize(iFont, wcWeaponName, w, h);
-
-	m_pApp->Surface()->DrawSetTextColor(255, 255, 255, 255);
-	m_pApp->Surface()->DrawSetTextPos(posX - w / 2, posY);
-	m_pApp->Surface()->DrawPrintText(wcWeaponName, iWeaponNameLen);
+	DrawWeaponName(wcWeaponName + iWeaponUnderscoreLen, posX, posY);
 }
 
-int CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, wchar_t* pWeaponName, int posX, int posY)
+int CWeaponEsp::DrawWeaponName(wchar_t* pWeaponName, int posX, int posY)
 {
 	static unsigned int iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 	m_pApp->Surface()->DrawSetTextFont(iFont);

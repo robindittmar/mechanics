@@ -4,6 +4,7 @@
 CEsp::CEsp()
 {
 	m_iFadeoutTime = 1500;
+	m_iWeaponStuffOffset = 0;
 
 	m_clrCT = Color(0, 0, 255);
 	m_clrT = Color(255, 0, 0);
@@ -26,6 +27,8 @@ void CEsp::Setup()
 {
 	m_pApp = CApplication::Instance();
 	m_pGui = CGui::Instance();
+
+	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
 void CEsp::Update(void* pParameters)
@@ -54,6 +57,8 @@ void CEsp::Update(void* pParameters)
 	vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
 	ULONGLONG llTimestamp = GetTickCount64();
+
+	m_iWeaponStuffOffset = 0;
 
 	int iMaxClients = m_pApp->EngineClient()->GetMaxClients();
 	for (int i = 0; i < iMaxClients; i++)
@@ -101,7 +106,7 @@ void CEsp::Update(void* pParameters)
 				m_iHeadBoneCT = pCurEntity->GetBoneByName("head_0");
 			}
 		}
-		
+
 		if (m_iHeadBoneT == -1)
 		{
 			if (iCurEntityTeam == TEAMNUM_T)
@@ -190,6 +195,10 @@ void CEsp::Update(void* pParameters)
 			{
 				DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			}
+
+			DrawAmmoBar(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
+			DrawAmmoNumber(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
+			DrawActiveWeapon(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
 
 			if (m_bDrawArmorBar)
 			{
@@ -451,6 +460,107 @@ void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, 
 	pSurface->DrawSetTextPos(x1 - w, posY - (height - (height * healthpercentage)) - h);
 	pSurface->DrawPrintText(sHealth, iLen);
 }
+
+void CEsp::DrawActiveWeapon(ISurface * pSurface, IClientEntity* pEntity, int posX, int posY, int alpha)
+{
+	if (!m_bDrawActiveWeapon)
+		return;
+
+	CWeapon* pActiveWeapon = pEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
+		return;
+
+	static int iWeaponUnderscoreLen = strlen("weapon_");
+
+	bool bIsFireableWeapon = !(pActiveWeapon->IsKnife() || pActiveWeapon->IsNade() || pActiveWeapon->IsTaser() || pActiveWeapon->IsC4());
+	if (bIsFireableWeapon && (m_bDrawAmmoNumber || m_bDrawAmmoBar))
+	{
+		int w, h;
+		pSurface->GetTextSize(m_iFont, L"", w, h);
+
+		posY += h;
+	}
+
+	wchar_t wcWeaponName[256];
+	mbstowcs(wcWeaponName, pActiveWeapon->GetWeaponInfo()->szWeaponName, 256);
+
+	DrawWeaponText(pSurface, wcWeaponName + iWeaponUnderscoreLen, posX, posY, alpha);
+}
+
+void CEsp::DrawAmmoBar(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha)
+{
+	if (!m_bDrawAmmoBar)
+		return;
+
+	CWeapon* pActiveWeapon = pEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
+		return;
+
+	if (pActiveWeapon->IsKnife() ||
+		pActiveWeapon->IsNade() ||
+		pActiveWeapon->IsTaser() ||
+		pActiveWeapon->IsC4())
+		return;
+
+	int iClip1 = pActiveWeapon->GetClip1();
+	// Ammo reserver m_iPrimaryReserveAmmoCount
+	CWeaponInfo* pWeaponInfo = pActiveWeapon->GetWeaponInfo();
+	if (!pWeaponInfo)
+		return;
+
+	float ammopercentage = (pWeaponInfo->iMaxClip1 - iClip1) / (float)pWeaponInfo->iMaxClip1;
+	int x1 = posX - width / 2;
+	int x2 = posX + width / 2;
+
+	int w, h;
+	pSurface->GetTextSize(m_iFont, L"", w, h);
+
+	//background
+	pSurface->DrawSetColor(alpha, 0, 0, 0);
+	pSurface->DrawFilledRect(
+		x1,
+		posY + h + 1,
+		x2,
+		posY + h + 6 + 3
+	);
+
+	// actual ammo
+	pSurface->DrawSetColor(alpha, 0, 0, 255);
+	pSurface->DrawFilledRect(
+		x1,
+		posY + h + 1,
+		x2 - (width * ammopercentage),
+		posY + h + 6 + 3
+	);
+}
+
+void CEsp::DrawAmmoNumber(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int alpha)
+{
+	if (!m_bDrawAmmoNumber)
+		return;
+
+	CWeapon* pActiveWeapon = pEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
+		return;
+
+	if (pActiveWeapon->IsKnife() ||
+		pActiveWeapon->IsNade() ||
+		pActiveWeapon->IsTaser() ||
+		pActiveWeapon->IsC4())
+		return;
+
+	int iClip1 = pActiveWeapon->GetClip1();
+	// Ammo reserver m_iPrimaryReserveAmmoCount
+	CWeaponInfo* pWeaponInfo = pActiveWeapon->GetWeaponInfo();
+	if (!pWeaponInfo)
+		return;
+
+	wchar_t wAmmoNumber[256];
+	swprintf(wAmmoNumber, 16, L"%d / %d", iClip1, pWeaponInfo->iMaxClip1);
+
+	DrawWeaponText(pSurface, wAmmoNumber, posX, posY, alpha);
+}
+
 void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha)
 {
 	//todo: iwie symbol zeichnen oder sonst etwas
@@ -464,14 +574,7 @@ void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int wi
 }
 
 void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha) {
-	// TODO
-	static unsigned long font = NULL;
-	if (font == NULL)
-	{
-		font = m_pApp->Surface()->SCreateFont();
-		pSurface->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
-	}
-	pSurface->DrawSetTextFont(font);
+	pSurface->DrawSetTextFont(m_iFont);
 
 	PlayerInfo pInfo;
 	pEntity->GetPlayerInfo(&pInfo);
@@ -480,7 +583,7 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	int iLen = pInfo.GetName(name, 256);
 
 	int w, h;
-	pSurface->GetTextSize(font, name, w, h);
+	pSurface->GetTextSize(m_iFont, name, w, h);
 
 	pSurface->DrawSetTextColor(alpha, 255, 255, 255);
 	pSurface->DrawSetTextPos(posX - w / 2, posY - height - 17);
@@ -500,4 +603,21 @@ void CEsp::DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headP
 		pSurface->DrawSetColor(alpha, 255, 255, 255);
 		pSurface->DrawLine(headX, headY, vAimPosScreen.x, vAimPosScreen.y);
 	}
+}
+
+int CEsp::DrawWeaponText(ISurface* pSurface, wchar_t * pText, int posX, int posY, int alpha)
+{
+	pSurface->DrawSetTextColor(alpha, 255, 255, 255);
+	pSurface->DrawSetTextFont(m_iFont);
+
+	int iLen = lstrlenW(pText);
+
+	int w, h;
+	pSurface->GetTextSize(m_iFont, pText, w, h);
+
+	pSurface->DrawSetTextColor(alpha, 255, 255, 255);
+	pSurface->DrawSetTextPos(posX - w / 2, posY + h + m_iWeaponStuffOffset);
+	pSurface->DrawPrintText(pText, iLen);
+
+	return h;
 }

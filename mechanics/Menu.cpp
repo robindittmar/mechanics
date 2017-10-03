@@ -113,6 +113,8 @@ void CMenu::ApplySettings()
 	m_pEspDrawOutline->SetChecked(m_pApp->Esp()->GetDrawOutline());
 	m_pEspDrawHealthbar->SetChecked(m_pApp->Esp()->GetDrawHealthBar());
 	m_pEspDrawHealthnumber->SetChecked(m_pApp->Esp()->GetDrawHealthNumber());
+	m_pEspDrawAmmonumber->SetChecked(m_pApp->Esp()->GetDrawAmmoNumber());
+	m_pEspDrawAmmobar->SetChecked(m_pApp->Esp()->GetDrawAmmoBar());
 	m_pEspDrawArmorbar->SetChecked(m_pApp->Esp()->GetDrawArmorBar());
 	m_pEspDrawSkeletonEnabled->SetChecked(m_pApp->Esp()->GetDrawSkeleton());
 	m_pEspDrawOwnTeam->SetChecked(m_pApp->Esp()->GetDrawOwnTeam());
@@ -121,6 +123,7 @@ void CMenu::ApplySettings()
 	m_pEspFadeoutValue->SetValue(m_pApp->Esp()->GetFadeoutTime());
 	m_pEspDrawOnlyVisible->SetChecked(m_pApp->Esp()->GetDrawOnlyVisible());
 	m_pEspDrawOnlySpotted->SetChecked(m_pApp->Esp()->GetDrawOnlySpotted());
+	m_pEspDrawActiveWeapon->SetChecked(m_pApp->Esp()->GetDrawActiveWeapon());
 	m_pEspDrawNames->SetChecked(m_pApp->Esp()->GetDrawNames());
 	m_pEspBarrelEnabled->SetChecked(m_pApp->Esp()->GetDrawViewangles());
 	m_pEspBarrelValue->SetValue(m_pApp->Esp()->GetViewanglesLength());
@@ -486,11 +489,11 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawArmornumber = new CCheckbox(4, 164, 128, 16, "Armor Number (WIP)");
 	//m_pEspDrawArmornumber->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
 
-	m_pEspDrawAmmobar = new CCheckbox(4, 184, 128, 16, "Ammo Bar (WIP)");
-	//m_pEspDrawArmornumber->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pEspDrawAmmobar = new CCheckbox(4, 184, 128, 16, "Ammo Bar");
+	m_pEspDrawAmmobar->SetEventHandler(std::bind(&CEsp::SetDrawAmmoBar, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawAmmonumber = new CCheckbox(4, 204, 128, 16, "Ammo Number (WIP)");
-	//m_pEspDrawArmornumber->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pEspDrawAmmonumber = new CCheckbox(4, 204, 128, 16, "Ammo Number");
+	m_pEspDrawAmmonumber->SetEventHandler(std::bind(&CEsp::SetDrawAmmoNumber, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspFadeoutEnabled = new CCheckbox(4, 232, 128, 16, "Fadeout");
 	m_pEspFadeoutEnabled->SetEventHandler(std::bind(&CEsp::SetFadeoutEnabled, m_pApp->Esp(), std::placeholders::_1));
@@ -519,7 +522,7 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspDrawOwnModel = new CCheckbox(156, 124, 128, 16, "Own Model (3rd person)");
-	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1)); 
 
 	m_pEspDrawOnlyVisible = new CCheckbox(156, 164, 128, 16, "Only Visible");
 	m_pEspDrawOnlyVisible->SetEventHandler(std::bind(&CEsp::SetDrawOnlyVisible, m_pApp->Esp(), std::placeholders::_1));
@@ -527,7 +530,10 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawOnlySpotted = new CCheckbox(156, 184, 128, 16, "Only Spotted");
 	m_pEspDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, m_pApp->Esp(), std::placeholders::_1));
 
-	m_pEspDrawNames = new CCheckbox(156, 34, 208, 16, "Names");
+	m_pEspDrawActiveWeapon = new CCheckbox(156, 204, 128, 16, "Active Weapon");
+	m_pEspDrawActiveWeapon->SetEventHandler(std::bind(&CEsp::SetDrawActiveWeapon, m_pApp->Esp(), std::placeholders::_1));
+
+	m_pEspDrawNames = new CCheckbox(156, 34, 128, 16, "Names");
 	m_pEspDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspGroup = new CGroupbox(16, 16, 304, 308, "Esp");
@@ -548,6 +554,7 @@ void CMenu::CreateVisualsTab()
 	m_pEspGroup->AddChild(m_pEspDrawSkeletonEnabled);
 	m_pEspGroup->AddChild(m_pEspDrawOwnTeam);
 	m_pEspGroup->AddChild(m_pEspDrawOwnModel);
+	m_pEspGroup->AddChild(m_pEspDrawActiveWeapon);
 	m_pEspGroup->AddChild(m_pEspDrawOnlyVisible);
 	m_pEspGroup->AddChild(m_pEspDrawOnlySpotted);
 	m_pEspGroup->AddChild(m_pEspDrawNames);

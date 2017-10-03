@@ -50,7 +50,7 @@ private:
 
 	float DamageIndicatorArmor(float flDamage, int ArmorValue);
 	void DrawWeaponName(CWeapon* pCurEntity, int posX, int posY);
-	int DrawWeaponName(CWeapon* pCurEntity, wchar_t* pWeaponName, int posX, int posY);
+	int DrawWeaponName(wchar_t* pWeaponName, int posX, int posY);
 	bool ShouldDrawBox(IClientEntity* pCurEntity, int &x0, int &y0, int &x1, int &y1);
 
 	bool m_bDrawWeaponName;

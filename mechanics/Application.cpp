@@ -1017,6 +1017,9 @@ void CApplication::Setup()
 	this->m_esp.SetDrawHealthBar(true);
 	this->m_esp.SetDrawHealthNumber(true);
 	this->m_esp.SetDrawArmorBar(false);
+	this->m_esp.SetDrawActiveWeapon(true);
+	this->m_esp.SetDrawAmmoBar(true);
+	this->m_esp.SetDrawAmmoNumber(true);
 	this->m_esp.SetDrawOwnTeam(false);
 	this->m_esp.SetDrawOwnModel(false);
 	this->m_esp.SetDrawOnlyVisible(false);

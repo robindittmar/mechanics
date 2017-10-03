@@ -45,6 +45,15 @@ public:
 	void SetDrawArmorBar(bool bDrawArmorBar) { m_bDrawArmorBar = bDrawArmorBar; }
 	bool GetDrawArmorBar() { return m_bDrawArmorBar; }
 
+	void SetDrawActiveWeapon(bool bDrawActiveWeapon) { m_bDrawActiveWeapon = bDrawActiveWeapon; }
+	bool GetDrawActiveWeapon() { return m_bDrawActiveWeapon; }
+
+	void SetDrawAmmoBar(bool bDrawAmmoBar) { m_bDrawAmmoBar = bDrawAmmoBar; }
+	bool GetDrawAmmoBar() { return m_bDrawAmmoBar; }
+
+	void SetDrawAmmoNumber(bool bDrawAmmoNumber) { m_bDrawAmmoNumber = bDrawAmmoNumber; }
+	bool GetDrawAmmoNumber() { return m_bDrawAmmoNumber; }
+
 	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; }
 	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; }
 
@@ -94,9 +103,14 @@ private:
 	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
 	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
+	void DrawActiveWeapon(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int alpha);
+	void DrawAmmoBar(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha);
+	void DrawAmmoNumber(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int alpha);
 	void DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int width, int alpha);
 	void DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha);
 	void DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha);
+
+	int DrawWeaponText(ISurface* pSurface, wchar_t* pText, int posX, int posY, int alpha);
 
 	bool m_bFillBoundingBox;
 	int m_iDrawBoundingBox;
@@ -105,6 +119,9 @@ private:
 	bool m_bDrawHealthBar;
 	bool m_bDrawHealthNumber;
 	bool m_bDrawArmorBar;
+	bool m_bDrawActiveWeapon;
+	bool m_bDrawAmmoBar;
+	bool m_bDrawAmmoNumber;
 	bool m_bDrawOwnTeam;
 	bool m_bDrawOwnModel;
 	bool m_bDrawOnlyVisible;
@@ -119,6 +136,9 @@ private:
 
 	int m_iHeadBoneCT;
 	int m_iHeadBoneT;
+
+	int m_iFont;
+	int m_iWeaponStuffOffset;
 
 	Color m_clrCT;
 	Color m_clrT;

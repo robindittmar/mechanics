@@ -136,6 +136,7 @@ private:
 
 	CCheckbox* m_pEspDrawOnlyVisible;
 	CCheckbox* m_pEspDrawOnlySpotted;
+	CCheckbox* m_pEspDrawActiveWeapon;
 
 	CCheckbox* m_pEspDrawNames;
 
