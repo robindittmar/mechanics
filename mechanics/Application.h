@@ -37,6 +37,7 @@
 #include "Skinchanger.h"
 #include "Visuals.h"
 #include "Mirror.h"
+#include "LagCompensation.h"
 
 // Source SDK
 #include "CreateInterface.h"
@@ -71,6 +72,8 @@
 #define OFFSET_GLOBALS 0x1B
 
 #define RECOIL_TRACKING 0.4499999f
+
+#define TEST_INDEX 4
 
 #define CLIENTDLL_SIZE			0x50E5000
 #define ENGINEDLL_SIZE			0x8C7000
@@ -205,6 +208,7 @@ public:
 	CSkinChanger* SkinChanger() { return &m_skinchanger; }
 	CVisuals* Visuals() { return &m_visuals; }
 	CMirror* Mirror() { return &m_mirror; }
+	CLagCompensation* LagCompensation() { return &m_lagcompensation; }
 
 	// Resource Manager
 	CResourceManager* ResourceManager() { return m_pResourceManager; }
@@ -354,6 +358,7 @@ private:
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
 	CMirror m_mirror;
+	CLagCompensation m_lagcompensation;
 
 	// Event listener
 	CGameEventListener m_gameEventListener;

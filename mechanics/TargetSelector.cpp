@@ -228,6 +228,12 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 		if (!bIsHittable)
 			continue;
 
+		// todo: ONLY TEST !!!!!
+		/*LagCompensationList pCur = m_pApp->LagCompensation()->GetLCList(i);
+		pCur.CheckPlayerEntries();
+		Vector headpos = pCur.m_pPlayerEntries[TEST_INDEX].m_vHeadPos;
+		qAimAngles = Utils::CalcAngle(vMyHeadPos, headpos);*/
+
 		// Calculate a few values
 		qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);
 		fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyPos);

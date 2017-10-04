@@ -196,10 +196,13 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 	return pEntity;
 }
 
+
+int tickcount = 0;
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
+	tickcount = pUserCmd->tick_count;
 	CApplication* pApp = CApplication::Instance();
 
 	// Update timer for hitmarker
@@ -281,8 +284,17 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			if (pApp->Ragebot()->IsShooting())
 			{
 				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
-				CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pTarget->GetEntity()->EntIndex());
-				pResolverPlayer->SetShotsFired(pResolverPlayer->GetShotsFired() + 1);
+				if (pTarget)
+				{
+					if (pTarget->GetEntity())
+					{
+						//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
+						//pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).m_pPlayerEntries[TEST_INDEX].m_iTickCount;
+
+						CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pTarget->GetEntity()->EntIndex());
+						pResolverPlayer->SetShotsFired(pResolverPlayer->GetShotsFired() + 1);
+					}
+				}
 			}
 
 			// Correct movement & angles
@@ -344,6 +356,7 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	}
 	else if (curStage == FRAME_NET_UPDATE_END)
 	{
+		pApp->LagCompensation()->Update((void*)tickcount);
 		//g_pConsole->Write("%f\n", pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer())->GetSimulationTime());
 	}
 
@@ -441,8 +454,11 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
 
+			// LC Draw
+			pApp->LagCompensation()->DrawLagCompensationEntries();
+
 			// ****TEST*****
-			pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
+			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
 			pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
 			IClientEntity* pLocal = pApp->GetLocalPlayer();
 			for (int i = 0; i < MAX_PLAYERS; i++)
@@ -477,7 +493,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 						pApp->Surface()->DrawPrintText(L"LBY-Breaker", lstrlenW(L"LBY-Breaker"));
 					}
 				}
-			}
+			}*/
 		}
 	}
 
@@ -971,6 +987,7 @@ void CApplication::Setup()
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
 	this->m_mirror.Setup();
+	this->m_lagcompensation.Setup();
 
 	// Aimbot
 	this->m_ragebot.SetEnabled(false);
@@ -986,7 +1003,7 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoRevolver(true);
 
 	// Legitbot
-	this->m_legitbot.SetEnabled(true);
+	this->m_legitbot.SetEnabled(false);
 	this->m_legitbot.SetTimeToAim(0.05f);
 
 	// Triggerbot
@@ -1122,6 +1139,9 @@ void CApplication::Setup()
 
 	// Mirror
 	this->m_mirror.SetEnabled(false);
+
+	// LagCompensation
+	this->m_lagcompensation.SetEnabled(true);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap

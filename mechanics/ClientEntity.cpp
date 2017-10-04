@@ -174,9 +174,9 @@ int IClientEntity::GetSequence()
 	return *(int*)((DWORD)this + Offsets::m_nSequence);
 }
 
-float* IClientEntity::GetPoseParameter()
+float IClientEntity::GetPoseParameter(int index)
 {
-	return (float*)((DWORD)this + Offsets::m_flPoseParameter);
+	return *(float*)((DWORD)this + Offsets::m_flPoseParameter + sizeof(float) * index);
 }
 
 float IClientEntity::GetCycle()

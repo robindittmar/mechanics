@@ -157,6 +157,7 @@
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />
+    <ClCompile Include="LagCompensation.cpp" />
     <ClCompile Include="Legitbot.cpp" />
     <ClCompile Include="ConVar.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="IEngineSound.h" />
     <ClInclude Include="ITexture.h" />
     <ClInclude Include="IViewRender.h" />
+    <ClInclude Include="LagCompensation.h" />
     <ClInclude Include="Legitbot.h" />
     <ClInclude Include="ConVar.h" />
     <ClInclude Include="ICVar.h" />
