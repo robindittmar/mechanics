@@ -280,6 +280,7 @@ public:
 	QAngle* GetViewPunchAngle();
 	QAngle* GetAimPunchAngle();
 	int GetSequence();
+	float* GetPoseParameter();
 	float GetPoseParameter(int index);
 	float GetCycle();
 

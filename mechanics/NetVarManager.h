@@ -9,6 +9,7 @@
 #include "ClientClass.h"
 
 // Custom
+#include "Console.h"
 #include "NetVar.h"
 
 class CNetVarManager

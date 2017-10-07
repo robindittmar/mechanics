@@ -12,6 +12,8 @@
 class CWindow;
 class CSelectbox;
 
+const Color g_clrSelectboxPopupSelection(255, 255, 128, 0);
+
 class CSelectboxPopup : public IControl
 {
 public:
@@ -21,6 +23,7 @@ public:
 	void SetSelectbox(CSelectbox* pSelectbox) { m_pSelectbox = pSelectbox; }
 	void SetParentWindow(CWindow* pParentWindow) { m_pParentWindow = pParentWindow; }
 
+	virtual void OnMouseMove(int mx, int my);
 	virtual void OnMouseUp(int mx, int my);
 
 	virtual void GetAbsolutePosition(int* pX, int* pY);
@@ -35,6 +38,8 @@ private:
 
 	int m_iLenLargestOptionString;
 	int m_iLargestOptionStringIndex;
+
+	int m_iSelectedOption;
 
 	int m_iRowRenderWidth;
 	int m_iRowRenderHeight;

@@ -436,6 +436,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// Draw Esp
 			pApp->Esp()->Update((void*)pSurface);
 
+			// Draw Weapon Esp
 			pApp->WeaponEsp()->Update();
 
 			// Draw Sound Esp
@@ -446,6 +447,9 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker();
+
+			// Draw SpreadCone
+			pApp->Visuals()->DrawSpreadCone();
 
 			// Draw Crosshair last (but not least)
 			pApp->Visuals()->DrawCrosshair();
@@ -815,10 +819,10 @@ void CApplication::Setup()
 	//	//CNetVarManager::DumpAll(pFile, m_pClient->GetAllClasses());
 	//	//CNetVarManager::DumpClientClasses(pFile, m_pClient->GetAllClasses());
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CollisionProperty");
-	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
+	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_CSPlayer");
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BasePlayer");
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseAnimating");
-	//	CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
+	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseCombatWeapon");
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_BaseViewModel");
 
 	//	//CNetVarManager::DumpTable(pFile, m_pClient->GetAllClasses(), "DT_AttributeContainer");
@@ -855,7 +859,17 @@ void CApplication::Setup()
 	m_pNetVarMgr->AddTable(xorPlantedC4.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseAttributableItem.ToCharArray());
 	m_pNetVarMgr->AddTable(xorBaseAnimating.ToCharArray());
+
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Loading NetVars... ");
+#endif
+
 	m_pNetVarMgr->LoadTables(m_pClient->GetAllClasses(), true);
+
+#ifdef _DEBUG
+	g_pConsole->WritePlain("Done\n");
+	g_pConsole->Write(LOGLEVEL_INFO, "Loading Offsets... ");
+#endif
 
 	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/"m_angRotation");
 	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
@@ -951,6 +965,10 @@ void CApplication::Setup()
 		/*DT_ServerAnimationData*/CXorString("S_Ú‘ryó§eJë«zjñ«xeÁ£cj").ToCharArray(),
 		/*m_flCycle*/CXorString("zTã®Træ®r").ToCharArray());
 
+#ifdef _DEBUG
+	g_pConsole->WritePlain("Done\n\n");
+#endif
+
 	// Grab NetVars later required for hooking
 	m_pNetVarSequence = m_pNetVarMgr->GetNetVar(xorBaseViewModel.ToCharArray(), /*m_nSequence*/CXorString("zTë‘rzð§yhà").ToCharArray());
 
@@ -1002,8 +1020,8 @@ void CApplication::Setup()
 	this->m_ragebot.SetAutoRevolver(true);
 
 	// Legitbot
-	this->m_legitbot.SetEnabled(false);
-	this->m_legitbot.SetTimeToAim(0.05f);
+	this->m_legitbot.SetEnabled(true);
+	this->m_legitbot.SetTimeToAim(0.15f);
 
 	// Triggerbot
 	this->m_triggerbot.SetEnabled(false);
@@ -1116,6 +1134,7 @@ void CApplication::Setup()
 
 	this->m_visuals.SetCrosshair(true);
 	this->m_visuals.SetCrosshairShowRecoil(true);
+	this->m_visuals.SetSpreadCone(true);
 	this->m_visuals.SetHitmarker(true);
 	this->m_visuals.NoSmoke(false);
 	this->m_visuals.SetHandsDrawStyle(HANDSDRAWSTYLE_NONE);

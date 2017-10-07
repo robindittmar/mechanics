@@ -47,7 +47,11 @@ void CLegitbot::Update(void* pParameters)
 
 	if (m_bHasTarget)
 	{
-		qLocalAngles += m_qAngleStep;
+		float addPitch = 5.0f * -sinf((1.0f - (m_iStepsRequired / (float)m_iMaxStepsRequired)) * (2*PI_F));
+
+		m_qPathAngles += m_qAngleStep;
+		qLocalAngles = m_qPathAngles;
+		qLocalAngles.x += addPitch;
 		m_pApp->SetClientViewAngles(qLocalAngles);
 
 		m_iStepsRequired--;
@@ -59,9 +63,10 @@ void CLegitbot::Update(void* pParameters)
 			}
 			else
 			{
-				pParam->pUserCmd->buttons |= IN_ATTACK;
-				m_iStepsRequired += m_iMaxStepsRequired * 0.2f;
-				m_bDidShoot = true;
+				m_bHasTarget = false;
+				//pParam->pUserCmd->buttons |= IN_ATTACK;
+				//m_iStepsRequired += m_iMaxStepsRequired * 0.2f;
+				//m_bDidShoot = true;
 			}
 		}
 	}
@@ -165,6 +170,7 @@ void CLegitbot::Update(void* pParameters)
 		{
 			m_iMaxStepsRequired = m_fTimeToAim / m_pApp->GlobalVars()->interval_per_tick;
 			m_iStepsRequired = m_iMaxStepsRequired;
+			m_qPathAngles = qLocalAngles;
 
 			m_qAngleStep = qDist / m_iStepsRequired;
 			m_bHasTarget = true;
