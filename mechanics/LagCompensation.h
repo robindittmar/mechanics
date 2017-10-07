@@ -7,11 +7,16 @@
 
 class CApplication;
 
-#define MAX_PLAYERS 64
-#define LC_MAXSAVEDTICKS 26
-#define MAXSTUDIOPOSEPARAM 24
+#define MAX_PLAYERS			64
+#define LC_MAXSAVEDTICKS	26
+#define MAXSTUDIOPOSEPARAM	24
+#define MAXSTUDIOBONES		128
 
 #define TIME_TO_TICKS(dt) ((int)(0.5f + (float)(dt) / CApplication::Instance()->GlobalVars()->interval_per_tick))
+
+#define LC_DRAWSTYLE_NONE		0
+#define LC_DRAWSTYLE_CROSS		1
+#define LC_DRAWSTYLE_BONES		2
 
 class CLagCompensationPlayerEntry
 {
@@ -19,6 +24,8 @@ public:
 	CLagCompensationPlayerEntry();
 
 	int m_iTickCount;
+
+	matrix3x4_t m_pBoneMatrix[MAXSTUDIOBONES];
 
 	Vector m_vOrigin;
 	Vector m_vHeadPos;
@@ -56,12 +63,23 @@ public:
 	CLagCompensation();
 	~CLagCompensation();
 
+	void SetDrawStyle(int iDrawStyle) { m_iDrawStyle = iDrawStyle; }
+	int GetDrawStyle() { return m_iDrawStyle; }
+
+	void SetDrawFrequency(int iDrawFrequency) { m_iDrawFrequency = iDrawFrequency; }
+	int GetDrawFrequency() { return m_iDrawFrequency; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
+
+	int RestorePlayerClosestToCrosshair();
 
 	void DrawLagCompensationEntries();
 	LagCompensationList* GetLCList(int index);
 private:
+	int m_iDrawStyle;
+	int m_iDrawFrequency;
+
 	LagCompensationList m_pPlayerList[MAX_PLAYERS];
 };
 

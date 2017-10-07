@@ -92,6 +92,9 @@ void CVisuals::DrawCrosshair()
 
 void CVisuals::DrawSpreadCone()
 {
+	if (!m_bSpreadCone)
+		return;
+
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return;

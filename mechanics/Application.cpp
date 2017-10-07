@@ -297,6 +297,12 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 					}
 
 				}
+
+				int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
+				if (iTick != -1)
+				{
+					pUserCmd->tick_count = iTick + 1;
+				}
 			}
 
 			// Correct movement & angles
@@ -1160,6 +1166,7 @@ void CApplication::Setup()
 
 	// LagCompensation
 	this->m_lagcompensation.SetEnabled(true);
+	this->m_lagcompensation.SetDrawStyle(LC_DRAWSTYLE_CROSS);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap

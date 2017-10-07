@@ -25,6 +25,9 @@ void CTriggerbot::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	if (!(GetAsyncKeyState(VK_XBUTTON1) & 0x8000))
+		return;
+
 	// Grab params
 	CreateMoveParam* pCreateMoveParam = (CreateMoveParam*)pParameters;
 	if (!pCreateMoveParam) // Shouldn't happen, but just to be safe
@@ -64,6 +67,11 @@ void CTriggerbot::Update(void* pParameters)
 
 	// Get local angles and forward vector
 	QAngle qLocalAngles = m_pApp->GetClientViewAngles();
+
+	QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
+	qLocalAngles.x -= aimPunchAngle.x * m_pApp->GetRecoilCompensation();
+	qLocalAngles.y -= aimPunchAngle.y * m_pApp->GetRecoilCompensation();
+
 	Vector vForward;
 	AngleVectors(qLocalAngles, &vForward);
 

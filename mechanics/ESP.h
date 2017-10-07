@@ -97,10 +97,12 @@ public:
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
+
+	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
 private:
 	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
 	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);
-	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
+	/*void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);*/
 	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawActiveWeapon(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int alpha);

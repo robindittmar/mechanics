@@ -182,6 +182,11 @@ private:
 	CCheckbox* m_pSoundEspDrawOwnTeam;
 	CCheckbox* m_pSoundEspOnlyNotVisible;
 
+	// LC Drawing
+	CGroupbox* m_pDrawLagCompensationGroup;
+	CSelectbox* m_pDrawLagCompensationStyle;
+	CSlider* m_pDrawLagCompensationFrequency;
+
 	CTabPage* m_pOtherVisualsTab;
 
 	CGroupbox* m_pFovChangerGroup;

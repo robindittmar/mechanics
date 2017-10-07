@@ -154,6 +154,9 @@ void CMenu::ApplySettings()
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
 
+	m_pDrawLagCompensationStyle->SetSelection(m_pApp->LagCompensation()->GetDrawStyle());
+	m_pDrawLagCompensationFrequency->SetValue(m_pApp->LagCompensation()->GetDrawFrequency());
+
 	m_pEffectsNoVisualRecoil->SetChecked(m_pApp->Visuals()->GetNoVisualRecoil());
 	m_pEffectsNoSmoke->SetChecked(m_pApp->Visuals()->GetNoSmoke());
 	m_pEffectsNoScope->SetChecked(m_pApp->Visuals()->GetNoScope());
@@ -675,11 +678,26 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspGroup->AddChild(m_pSoundEspDrawOwnTeam);
 	m_pSoundEspGroup->AddChild(m_pSoundEspOnlyNotVisible);
 
+	// Lag Compensation
+	m_pDrawLagCompensationStyle = new CSelectbox(4, 10, 128, 20, "Draw Style");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_NONE, "None");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_CROSS, "Cross");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_BONES, "Bones");
+	m_pDrawLagCompensationStyle->SetEventHandler(std::bind(&CLagCompensation::SetDrawStyle, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pDrawLagCompensationFrequency = new CSlider(4, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
+	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pDrawLagCompensationGroup = new CGroupbox(840, 16, 152, 308, "Lag Compensation");
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequency);
+
 	m_pPlayerVisualsTab = new CTabPage("Player Visuals");
 	m_pPlayerVisualsTab->AddChild(m_pEspGroup);
 	m_pPlayerVisualsTab->AddChild(m_pWeaponEspGroup);
 	m_pPlayerVisualsTab->AddChild(m_pChamsGroup);
 	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup);
+	m_pPlayerVisualsTab->AddChild(m_pDrawLagCompensationGroup);
 
 
 	// EffectsGroup

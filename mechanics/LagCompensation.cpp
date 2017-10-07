@@ -57,7 +57,7 @@ void LagCompensationList::RemoveInvalidPlayerEntries()
 	int iTempCount = 0;
 	CLagCompensationPlayerEntry pTempList[LC_MAXSAVEDTICKS];
 
-	for (int i = 0; i < (int)fmin(m_iEntryCount, LC_MAXSAVEDTICKS); i++)
+	for (int i = 0; i < min(m_iEntryCount, LC_MAXSAVEDTICKS - 1); i++)
 	{
 		// End of list -> should never be the case!!
 		if (m_pPlayerEntries[i].m_bIsEndOfList)
@@ -78,6 +78,9 @@ void LagCompensationList::RemoveInvalidPlayerEntries()
 			break;
 
 		m_pPlayerEntries[i].m_iTickCount = pTempList[i].m_iTickCount;
+
+		for (int x = 0; x < MAXSTUDIOBONES; x++)
+			m_pPlayerEntries[i].m_pBoneMatrix[x] = pTempList[i].m_pBoneMatrix[x];
 
 		m_pPlayerEntries[i].m_vOrigin = pTempList[i].m_vOrigin;
 		m_pPlayerEntries[i].m_llAddTime = pTempList[i].m_llAddTime;
@@ -104,15 +107,21 @@ void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 {
 	static CXorString pHeadZero("nä¦H;");
 
+	float intervalPerTick = CApplication::Instance()->GlobalVars()->interval_per_tick;
+
 	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 	if (!pCurEnt->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, CApplication::Instance()->EngineClient()->GetLastTimeStamp()))
 		return;
 
 	m_pPlayerEntries[m_iEntryCount].m_iTickCount = tickcount;
 
+	for (int i = 0; i < MAXSTUDIOBONES; i++)
+		m_pPlayerEntries[m_iEntryCount].m_pBoneMatrix[i] = pBoneMatrix[i];
+
 	m_pPlayerEntries[m_iEntryCount].m_vOrigin = *pCurEnt->GetOrigin();
 	m_pPlayerEntries[m_iEntryCount].m_llAddTime = GetTickCount64();
 	MatrixGetColumn(pBoneMatrix[pCurEnt->GetBoneByName(pHeadZero.ToCharArray())], 3, m_pPlayerEntries[m_iEntryCount].m_vHeadPos);
+	m_pPlayerEntries[m_iEntryCount].m_vHeadPos += *pCurEnt->GetVelocity() * intervalPerTick;
 	m_pPlayerEntries[m_iEntryCount].m_vVelocity = *pCurEnt->GetVelocity();
 	m_pPlayerEntries[m_iEntryCount].m_angEyeAngles = *pCurEnt->GetAngEyeAngles();
 	m_pPlayerEntries[m_iEntryCount].m_fSimulationTime = pCurEnt->GetSimulationTime();
@@ -151,6 +160,8 @@ void LagCompensationList::RestorePlayerEntry(IClientEntity* pCurEnt, int iEntryI
 
 CLagCompensation::CLagCompensation()
 {
+	m_iDrawStyle = LC_DRAWSTYLE_NONE;
+	m_iDrawFrequency = 1;
 }
 
 CLagCompensation::~CLagCompensation()
@@ -197,9 +208,79 @@ void CLagCompensation::Update(void* pParameters)
 	}
 }
 
+int CLagCompensation::RestorePlayerClosestToCrosshair()
+{
+	if (!m_bIsEnabled)
+		return -1;
+
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
+		return -1;
+
+	Vector vLocalHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+	QAngle qLocalAngles = m_pApp->GetClientViewAngles();
+	
+	QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
+	qLocalAngles.x -= aimPunchAngle.x * m_pApp->GetRecoilCompensation();
+	qLocalAngles.y -= aimPunchAngle.y * m_pApp->GetRecoilCompensation();
+
+	float fViewangleDist = 99999.0f;
+	int iCurTickcount = -1;
+
+	for (int i = 0; i < MAX_PLAYERS; i++)
+	{
+		IClientEntity* pCurEnt = m_pApp->EntityList()->GetClientEntity(i);
+		if (!pCurEnt)
+			continue;
+
+		if (pCurEnt == pLocalEntity)
+			continue;
+
+		if (pCurEnt->IsDormant())
+			continue;
+
+		if (!(pCurEnt->GetFlags() & FL_CLIENT))
+			continue;
+
+		if (!pCurEnt->IsAlive())
+			continue;
+
+		if (pCurEnt->GetTeamNum() == pLocalEntity->GetTeamNum())
+			continue;
+
+		LagCompensationList lcCurList = m_pPlayerList[i];
+		//lcCurList.RemoveInvalidPlayerEntries();
+		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
+		{
+			// End of list -> should never be the case!!
+			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
+				break;
+
+			QAngle qCurAngle = Utils::CalcAngle(vLocalHeadPos, lcCurList.m_pPlayerEntries[x].m_vHeadPos);
+			float fCurDist = (qLocalAngles - qCurAngle).Length();
+
+			if (fCurDist < fViewangleDist)
+			{
+				fViewangleDist = fCurDist;
+				iCurTickcount = lcCurList.m_pPlayerEntries[x].m_iTickCount;
+			}
+		}
+	}
+
+	return iCurTickcount;
+}
+
 void CLagCompensation::DrawLagCompensationEntries()
 {
+	if (m_iDrawStyle == LC_DRAWSTYLE_NONE)
+		return;
+
 	IClientEntity* pLocalEnt = m_pApp->GetLocalPlayer();
+	if (!pLocalEnt)
+		return;
+
+	Vector vScreenOrigin;
+
 	m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
 	for (int i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -224,17 +305,25 @@ void CLagCompensation::DrawLagCompensationEntries()
 
 		LagCompensationList lcCurList = m_pPlayerList[i];
 		lcCurList.RemoveInvalidPlayerEntries();
-		for (int x = 0; x < (int)fmin(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
+		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
 		{
 			// End of list -> should never be the case!!
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
-				return;
+				break;
 
-			Vector vScreenOrigin;
-			if (m_pApp->Gui()->WorldToScreen(lcCurList.m_pPlayerEntries[x].m_vHeadPos, vScreenOrigin))
+			switch (m_iDrawStyle)
 			{
-				m_pApp->Surface()->DrawLine(vScreenOrigin.x - 2, vScreenOrigin.y - 2, vScreenOrigin.x + 2, vScreenOrigin.y + 2);
-				m_pApp->Surface()->DrawLine(vScreenOrigin.x - 2, vScreenOrigin.y + 2, vScreenOrigin.x + 2, vScreenOrigin.y - 2);
+			case LC_DRAWSTYLE_CROSS:
+				if (m_pApp->Gui()->WorldToScreen(lcCurList.m_pPlayerEntries[x].m_vHeadPos, vScreenOrigin))
+				{
+					m_pApp->Surface()->DrawLine(vScreenOrigin.x - 2, vScreenOrigin.y - 2, vScreenOrigin.x + 2, vScreenOrigin.y + 2);
+					m_pApp->Surface()->DrawLine(vScreenOrigin.x - 2, vScreenOrigin.y + 2, vScreenOrigin.x + 2, vScreenOrigin.y - 2);
+				}
+				break;
+			case LC_DRAWSTYLE_BONES:
+				m_pApp->Esp()->DrawSkeleton(m_pApp->Surface(), pCurEnt, lcCurList.m_pPlayerEntries[x].m_pBoneMatrix, 255);
+			default:
+				break;
 			}
 		}
 	}
