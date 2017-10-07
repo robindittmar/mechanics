@@ -27,6 +27,8 @@ private:
 	int m_iMaxStepsRequired;
 	int m_iStepsRequired;
 	QAngle m_qAngleStep;
+
+	QAngle m_qPathAngles;
 };
 
 #endif // __LEGITBOT_H__

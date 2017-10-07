@@ -27,6 +27,9 @@ public:
 	void SetCrosshairShowRecoil(bool bCrosshairShowRecoil) { m_bCrosshairShowRecoil = bCrosshairShowRecoil; }
 	bool GetCrosshairShowRecoil() { return m_bCrosshairShowRecoil; }
 
+	void SetSpreadCone(bool bSpreadCone) { m_bSpreadCone = bSpreadCone; }
+	bool GetSpreadCone() { return m_bSpreadCone; }
+
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
@@ -77,6 +80,7 @@ public:
 	void UpdateHitmarker(float fInputSampleTime);
 
 	void DrawCrosshair();
+	void DrawSpreadCone();
 	void DrawHitmarker();
 	void NoFlash(float fFlashPercentage);
 	void NoSmoke(bool bNoSmoke);
@@ -94,6 +98,8 @@ private:
 
 	bool m_bCrosshair;
 	bool m_bCrosshairShowRecoil;
+
+	bool m_bSpreadCone;
 
 	bool m_bHitmarker;
 	float m_fDrawHitmarkerTime;

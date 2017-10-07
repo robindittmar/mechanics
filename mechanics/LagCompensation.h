@@ -10,7 +10,7 @@ class CApplication;
 #define LC_MAXSAVEDTICKS 26
 #define MAXSTUDIOPOSEPARAM 24
 
-#define TIME_TO_TICKS(dt) ((int)( 0.5f + (float)(dt) / CApplication::Instance()->GlobalVars()->interval_per_tick))
+#define TIME_TO_TICKS(dt) ((int)(0.5f + (float)(dt) / CApplication::Instance()->GlobalVars()->interval_per_tick))
 
 class CLagCompensationPlayerEntry
 {

@@ -23,6 +23,29 @@ CSelectboxPopup::~CSelectboxPopup()
 	}
 }
 
+void CSelectboxPopup::OnMouseMove(int mx, int my)
+{
+	CGui* pGui = CGui::Instance();
+
+	m_iSelectedOption = -1;
+
+	int x = 0, y = 0;
+	this->GetAbsolutePosition(&x, &y);
+
+	int iCountOptions = m_pSelectbox->GetCountOptions();
+	int iCurY = y + SELECTBOX_PADDING;
+	for (int i = 0; i < iCountOptions; i++)
+	{
+		if (pGui->IsMouseInRect(x, iCurY, m_iWidth, m_iRowRenderHeight))
+		{
+			m_iSelectedOption = i;
+			break;
+		}
+
+		iCurY += m_iRowRenderHeight;
+	}
+}
+
 void CSelectboxPopup::OnMouseUp(int mx, int my)
 {
 	CGui* pGui = CGui::Instance();
@@ -31,10 +54,10 @@ void CSelectboxPopup::OnMouseUp(int mx, int my)
 	this->GetAbsolutePosition(&x, &y);
 
 	int iCountOptions = m_pSelectbox->GetCountOptions();
-	int iCurY = y;
+	int iCurY = y + SELECTBOX_PADDING;
 	for (int i = 0; i < iCountOptions; i++)
 	{
-		if (pGui->IsMouseInRect(x, iCurY, m_iRowRenderWidth, m_iRowRenderHeight))
+		if (pGui->IsMouseInRect(x, iCurY, m_iWidth, m_iRowRenderHeight))
 		{
 			m_pSelectbox->SetSelection(i);
 			m_pParentWindow->SetPopup(NULL);
@@ -107,6 +130,13 @@ void CSelectboxPopup::Draw(ISurface* pSurface)
 	int iCurY = y + SELECTBOX_PADDING;
 	for (int i = 0; i < iCountOptions; i++)
 	{
+		if (m_iSelectedOption == i)
+		{
+			pSurface->DrawSetColor(g_clrSelectboxPopupSelection);
+			pSurface->DrawFilledRect(x, iCurY, x + m_iWidth, iCurY + m_iRowRenderHeight);
+			pSurface->DrawSetColor(255, 50, 50, 50);
+		}
+
 		m_vOptionLabels[i]->SetBoundaries(x + SELECTBOX_PADDING, iCurY, m_iRowRenderWidth, m_iRowRenderHeight);
 		m_vOptionLabels[i]->Draw(pSurface);
 

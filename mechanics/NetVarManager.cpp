@@ -19,6 +19,10 @@ CNetVarManager::~CNetVarManager()
 
 void CNetVarManager::AddTable(const char* pTable)
 {
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Added '%s' to NetVarMgr\n", pTable);
+#endif
+
 	uint32_t iHash = murmurhash(pTable, strlen(pTable), 0xB16B00B5);
 	m_mapTablesToLoad[iHash] = true;
 }

@@ -90,6 +90,26 @@ void CVisuals::DrawCrosshair()
 	pSurface->DrawLine(iMidX, iMidY - (crosshair_size / 2), iMidX, iMidY + (crosshair_size / 2));
 }
 
+void CVisuals::DrawSpreadCone()
+{
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
+		return;
+
+	CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
+	if (!pActiveWeapon)
+		return;
+
+	int width = CGui::Instance()->GetScreenWidth();
+	int height = CGui::Instance()->GetScreenHeight();
+
+	float spread = ((pActiveWeapon->GetInaccuracy() + pActiveWeapon->GetSpread()) * 320.f) / tanf(DEG2RAD(this->m_iFovValue) * 0.5f) * height / 480.f;
+
+	ISurface* pSurface = m_pApp->Surface();
+	pSurface->DrawSetColor(255, 255, 0, 0);
+	pSurface->DrawOutlinedCircle(width / 2, height / 2, spread, 64);
+}
+
 void CVisuals::DrawHitmarker()
 {
 	if (!m_bIsEnabled)
