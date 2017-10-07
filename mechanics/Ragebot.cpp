@@ -106,7 +106,7 @@ void CRagebot::Update(void* pParameters)
 
 	// Hitchance
 	float fHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
-	if (fHitchance < m_fHitchance)
+	if (fHitchance < m_fHitchance && m_pTarget->GetIsBacktracked() == -1)
 		return;
 
 	// Checks if weapon could hit
@@ -252,7 +252,14 @@ void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocal
 	}
 	else if (!this->m_bAutoshoot && bAbleToHit)
 	{
-		this->Aim(pUserCmd);
+		if (m_pTarget->GetIsBacktracked() != -1)
+		{
+			this->Shoot(pUserCmd, fNextattack, fServertime);
+		}
+		else
+		{
+			this->Aim(pUserCmd);
+		}
 	}
 }
 

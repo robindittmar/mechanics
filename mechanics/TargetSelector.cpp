@@ -229,13 +229,20 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			continue;
 
 		// todo: ONLY TEST !!!!!
-		/*LagCompensationList pCur = m_pApp->LagCompensation()->GetLCList(i);
-		pCur.CheckPlayerEntries();
-		Vector headpos = pCur.m_pPlayerEntries[TEST_INDEX].m_vHeadPos;
-		qAimAngles = Utils::CalcAngle(vMyHeadPos, headpos);*/
+		LagCompensationList pCur = *m_pApp->LagCompensation()->GetLCList(i);
+		pCur.RemoveInvalidPlayerEntries();
+		int iBacktracked = -1;
+
 
 		// Calculate a few values
-		qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);
+		if (iBacktracked == -1)
+		{
+			qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);
+		}
+		else
+		{
+			qAimAngles = Utils::CalcAngle(vMyHeadPos, pCur.m_pPlayerEntries[iBacktracked].m_vHeadPos);
+		}
 		fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyPos);
 		fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, qAimAngles/*, fOriginDist*/));
 
@@ -247,7 +254,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				qAimAngles,
 				pCurEntity,
 				fViewangleDist,
-				fOriginDist
+				fOriginDist,
+				iBacktracked
 			);
 		}
 
@@ -260,7 +268,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				qAimAngles,
 				pCurEntity,
 				fViewangleDist,
-				fOriginDist
+				fOriginDist,
+				iBacktracked
 			);
 		}
 
@@ -273,7 +282,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				qAimAngles,
 				pCurEntity,
 				fViewangleDist,
-				fOriginDist
+				fOriginDist,
+				iBacktracked
 			);
 		}
 	}

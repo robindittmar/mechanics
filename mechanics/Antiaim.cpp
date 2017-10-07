@@ -47,7 +47,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 		return false;
 
 	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredLbyUpdateTime() - GetOutgoingLatency());
-	if (value > 1.0f)
+	if (value > 1.05f)
 	{
 		if (value > 1.1f)
 		{

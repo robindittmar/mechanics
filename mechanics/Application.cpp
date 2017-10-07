@@ -196,14 +196,13 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 	return pEntity;
 }
 
-
 int tickcount = 0;
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
 	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
 
-	tickcount = pUserCmd->tick_count;
 	CApplication* pApp = CApplication::Instance();
+	tickcount = pUserCmd->tick_count;
 
 	// Update timer for hitmarker
 	pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
@@ -281,19 +280,22 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
 
-			if (pApp->Ragebot()->IsShooting())
+			if (pUserCmd->buttons & IN_ATTACK)
 			{
 				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
 				if (pTarget)
 				{
-					if (pTarget->GetEntity())
+					int iIsBacktracked = pTarget->GetIsBacktracked();
+					if (iIsBacktracked != -1)
 					{
-						//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
-						//pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).m_pPlayerEntries[TEST_INDEX].m_iTickCount;
-
-						CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pTarget->GetEntity()->EntIndex());
-						pResolverPlayer->SetShotsFired(pResolverPlayer->GetShotsFired() + 1);
+						IClientEntity* pTargetEntity = pTarget->GetEntity();
+						if (pTargetEntity)
+						{
+							//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
+							pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex())->m_pPlayerEntries[iIsBacktracked].m_iTickCount + 1;
+						}
 					}
+
 				}
 			}
 
@@ -336,6 +338,8 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
+			pApp->LagCompensation()->Update((void*)tickcount);
+
 			pApp->Resolver()->Update();
 
 			pApp->SkinChanger()->Update(pLocalEntity);
@@ -353,11 +357,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 
 		// Menu input handling
 		pApp->m_pMenu->HandleInput();
-	}
-	else if (curStage == FRAME_NET_UPDATE_END)
-	{
-		pApp->LagCompensation()->Update((void*)tickcount);
-		//g_pConsole->Write("%f\n", pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer())->GetSimulationTime());
 	}
 
 	m_pFrameStageNotify(ecx, curStage);

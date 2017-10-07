@@ -12,7 +12,7 @@ public:
 	CTarget();
 	~CTarget();
 
-	void SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity, float fViewAngleDist = INVALID_DISTANCE, float fOriginDist = INVALID_DISTANCE);
+	void SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity, float fViewAngleDist = INVALID_DISTANCE, float fOriginDist = INVALID_DISTANCE, int bIsBacktracked = -1);
 	void Invalidate();
 
 	void SetValid(bool b) { m_bIsValid = b; }
@@ -30,6 +30,8 @@ public:
 	float GetViewAngleDist() { return m_fViewAngleDist; }
 
 	float GetOriginDist() { return m_fOriginDist; }
+
+	int GetIsBacktracked() { return m_iIsBacktracked; }
 private:
 	bool m_bIsValid;
 	Vector m_vAimPoint;
@@ -38,6 +40,8 @@ private:
 
 	float m_fViewAngleDist;
 	float m_fOriginDist;
+
+	int m_iIsBacktracked;
 };
 
 #endif // __TARGET_H__

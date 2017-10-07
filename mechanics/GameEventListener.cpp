@@ -237,33 +237,37 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 	CApplication* pApp = CApplication::Instance();
 
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
-	// Check if local shot
-	if (pApp->EngineClient()->GetPlayerForUserID(userid) == pApp->GetLocalPlayer()->EntIndex())
+
+	IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetPlayerForUserID(userid));
+	if (pCurEnt)
 	{
-		// Check if target exists
-		CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
-		if (pTarget)
+		// Check if local shot
+		if (pCurEnt->EntIndex() == pApp->GetLocalPlayer()->EntIndex())
 		{
-			// Check if target ent exists
-			IClientEntity* pEnt = pTarget->GetEntity();
-			if (pEnt)
+			// Check if target exists
+			CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
+			if (pTarget)
 			{
-				// Check for valid weapon
-				CWeapon* pActive = pEnt->GetActiveWeapon();
-				if (pActive &&
-					(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
+				// Check if target ent exists
+				IClientEntity* pEnt = pTarget->GetEntity();
+				if (pEnt)
 				{
-					// Check if ResolverPlayer for target exists
-					CResolverPlayer* pCur = pApp->Resolver()->GetResolverPlayer(pEnt->EntIndex());
-					if (pCur)
+					// Check for valid weapon
+					CWeapon* pActive = pEnt->GetActiveWeapon();
+					if (pActive &&
+						(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
 					{
-						// Setting shots fired + 1
-						pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+						// Check if ResolverPlayer for target exists
+						CResolverPlayer* pCur = pApp->Resolver()->GetResolverPlayer(pEnt->EntIndex());
+						if (pCur)
+						{
+							// Setting shots fired + 1
+							pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+						}
 					}
 				}
 			}
 		}
 	}
-
 	//todo: bullet tracer ;)
 }

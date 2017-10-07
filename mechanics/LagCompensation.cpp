@@ -7,50 +7,50 @@ CLagCompensationPlayerEntry::CLagCompensationPlayerEntry()
 }
 
 
-float CLagCompensationPlayerEntry::LerpTime()
-{
-	CApplication* pApp = CApplication::Instance();
-	static ConVar* cl_update_rate = pApp->CVar()->FindVar("cl_updaterate");
-	static ConVar* min_ud_rate = pApp->CVar()->FindVar("sv_minupdaterate");
-	static ConVar* max_ud_rate = pApp->CVar()->FindVar("sv_maxupdaterate");
+//float CLagCompensationPlayerEntry::LerpTime()
+//{
+//	CApplication* pApp = CApplication::Instance();
+//	static ConVar* cl_update_rate = pApp->CVar()->FindVar("cl_updaterate");
+//	static ConVar* min_ud_rate = pApp->CVar()->FindVar("sv_minupdaterate");
+//	static ConVar* max_ud_rate = pApp->CVar()->FindVar("sv_maxupdaterate");
+//
+//	static ConVar* cl_interp_ratio = pApp->CVar()->FindVar("cl_interp_ratio");
+//
+//	static ConVar* cl_interp = pApp->CVar()->FindVar("cl_interp");
+//	static ConVar* c_min_ratio = pApp->CVar()->FindVar("sv_client_min_interp_ratio");
+//	static ConVar* c_max_ratio = pApp->CVar()->FindVar("sv_client_max_interp_ratio");
+//
+//	int ud_rate = atoi(cl_update_rate->value);
+//
+//
+//	if (min_ud_rate && max_ud_rate)
+//		ud_rate = atoi(max_ud_rate->value);
+//
+//	float ratio = atof(cl_interp_ratio->value);
+//
+//	if (ratio == 0)
+//		ratio = 1.0f;
+//
+//	float lerp = atof(cl_interp->value);
+//
+//	if (c_min_ratio && c_max_ratio && atof(c_min_ratio->value) != 1)
+//		ratio = clamp(ratio, atof(c_min_ratio->value), atof(c_max_ratio->value));
+//
+//	return fmax(lerp, (ratio / ud_rate));
+//}
+//
+//int CLagCompensationPlayerEntry::FixedTickcount(IClientEntity* pCur)
+//{
+//	if (m_fSimulationTime == 0.0f)
+//		return TIME_TO_TICKS(pCur->GetSimulationTime() + LerpTime()) + 1;
+//
+//	int iLerpTicks = TIME_TO_TICKS(LerpTime());
+//	int iTargetTickCount = TIME_TO_TICKS(m_fSimulationTime) + iLerpTicks;
+//
+//	return iTargetTickCount + 1;
+//}
 
-	static ConVar* cl_interp_ratio = pApp->CVar()->FindVar("cl_interp_ratio");
-
-	static ConVar* cl_interp = pApp->CVar()->FindVar("cl_interp");
-	static ConVar* c_min_ratio = pApp->CVar()->FindVar("sv_client_min_interp_ratio");
-	static ConVar* c_max_ratio = pApp->CVar()->FindVar("sv_client_max_interp_ratio");
-
-	int ud_rate = atoi(cl_update_rate->value);
-
-
-	if (min_ud_rate && max_ud_rate)
-		ud_rate = atoi(max_ud_rate->value);
-
-	float ratio = atof(cl_interp_ratio->value);
-
-	if (ratio == 0)
-		ratio = 1.0f;
-
-	float lerp = atof(cl_interp->value);
-
-	if (c_min_ratio && c_max_ratio && atof(c_min_ratio->value) != 1)
-		ratio = clamp(ratio, atof(c_min_ratio->value), atof(c_max_ratio->value));
-
-	return fmax(lerp, (ratio / ud_rate));
-}
-
-int CLagCompensationPlayerEntry::FixedTickcount(IClientEntity* pCur)
-{
-	if (m_fSimulationTime == 0.0f)
-		return TIME_TO_TICKS(pCur->GetSimulationTime() + LerpTime()) + 1;
-
-	int iLerpTicks = TIME_TO_TICKS(LerpTime());
-	int iTargetTickCount = TIME_TO_TICKS(m_fSimulationTime) + iLerpTicks;
-
-	return iTargetTickCount + 1;
-}
-
-void LagCompensationList::CheckPlayerEntries()
+void LagCompensationList::RemoveInvalidPlayerEntries()
 {
 	ULONGLONG llCurTime = GetTickCount64();
 
@@ -102,6 +102,8 @@ void LagCompensationList::CheckPlayerEntries()
 
 void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 {
+	static CXorString pHeadZero("nä¦H;");
+
 	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 	if (!pCurEnt->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, CApplication::Instance()->EngineClient()->GetLastTimeStamp()))
 		return;
@@ -110,7 +112,7 @@ void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 
 	m_pPlayerEntries[m_iEntryCount].m_vOrigin = *pCurEnt->GetOrigin();
 	m_pPlayerEntries[m_iEntryCount].m_llAddTime = GetTickCount64();
-	MatrixGetColumn(pBoneMatrix[pCurEnt->GetBoneByName("head_0")], 3, m_pPlayerEntries[m_iEntryCount].m_vHeadPos);
+	MatrixGetColumn(pBoneMatrix[pCurEnt->GetBoneByName(pHeadZero.ToCharArray())], 3, m_pPlayerEntries[m_iEntryCount].m_vHeadPos);
 	m_pPlayerEntries[m_iEntryCount].m_vVelocity = *pCurEnt->GetVelocity();
 	m_pPlayerEntries[m_iEntryCount].m_angEyeAngles = *pCurEnt->GetAngEyeAngles();
 	m_pPlayerEntries[m_iEntryCount].m_fSimulationTime = pCurEnt->GetSimulationTime();
@@ -128,7 +130,7 @@ void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 	m_pPlayerEntries[++m_iEntryCount].m_bIsEndOfList = true;
 }
 
-void LagCompensationList::SetPlayerEntry(IClientEntity* pCurEnt, int iEntryIndex)
+void LagCompensationList::RestorePlayerEntry(IClientEntity* pCurEnt, int iEntryIndex)
 {
 	CLagCompensationPlayerEntry pEntry = m_pPlayerEntries[iEntryIndex];
 
@@ -190,7 +192,7 @@ void CLagCompensation::Update(void* pParameters)
 		if (pCurEnt->GetTeamNum() == pLocalEnt->GetTeamNum())
 			continue;
 
-		m_pPlayerList[i].CheckPlayerEntries();
+		m_pPlayerList[i].RemoveInvalidPlayerEntries();
 		m_pPlayerList[i].AddPlayerEntry(pCurEnt, (int)pParameters);
 	}
 }
@@ -221,6 +223,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 			continue;
 
 		LagCompensationList lcCurList = m_pPlayerList[i];
+		lcCurList.RemoveInvalidPlayerEntries();
 		for (int x = 0; x < (int)fmin(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
 		{
 			// End of list -> should never be the case!!
@@ -237,7 +240,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 	}
 }
 
-LagCompensationList CLagCompensation::GetLCList(int index)
+LagCompensationList* CLagCompensation::GetLCList(int index)
 {
-	return m_pPlayerList[index];
+	return &m_pPlayerList[index];
 }

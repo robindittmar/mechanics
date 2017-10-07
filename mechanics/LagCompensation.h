@@ -3,6 +3,7 @@
 
 #include "IFeature.h"
 #include "ClientEntity.h"
+#include "XorString.h"
 
 class CApplication;
 
@@ -33,9 +34,9 @@ public:
 	ULONGLONG m_llAddTime;
 	bool m_bIsEndOfList;
 
-	int FixedTickcount(IClientEntity* pCur);
+	//int FixedTickcount(IClientEntity* pCur);
 private:
-	float LerpTime();
+	//float LerpTime();
 };
 
 class LagCompensationList
@@ -44,9 +45,9 @@ public:
 	int m_iEntryCount = 0;
 	CLagCompensationPlayerEntry m_pPlayerEntries[LC_MAXSAVEDTICKS];
 
-	void CheckPlayerEntries();
+	void RemoveInvalidPlayerEntries();
 	void AddPlayerEntry(IClientEntity* pCurEnt, int tickcount);
-	void SetPlayerEntry(IClientEntity* pCurEnt, int iEntryIndex);
+	void RestorePlayerEntry(IClientEntity* pCurEnt, int iEntryIndex);
 };
 
 class CLagCompensation : public IFeature
@@ -59,7 +60,7 @@ public:
 	virtual void Update(void* pParameters = 0);
 
 	void DrawLagCompensationEntries();
-	LagCompensationList GetLCList(int index);
+	LagCompensationList* GetLCList(int index);
 private:
 	LagCompensationList m_pPlayerList[MAX_PLAYERS];
 };
