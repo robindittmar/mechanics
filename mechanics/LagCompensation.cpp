@@ -275,11 +275,17 @@ void CLagCompensation::DrawLagCompensationEntries()
 	if (m_iDrawStyle == LC_DRAWSTYLE_NONE)
 		return;
 
-	IClientEntity* pLocalEnt = m_pApp->GetLocalPlayer();
-	if (!pLocalEnt)
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
 		return;
 
+	Vector vLocalHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+	Vector vCurHeadPos;
 	Vector vScreenOrigin;
+
+	Ray_t ray;
+	trace_t trace;
+	CTraceFilterSkipEntity traceFilter(pLocalEntity);
 
 	m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
 	for (int i = 0; i < MAX_PLAYERS; i++)
@@ -288,7 +294,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 		if (!pCurEnt)
 			continue;
 
-		if (pCurEnt == pLocalEnt)
+		if (pCurEnt == pLocalEntity)
 			continue;
 
 		if (pCurEnt->IsDormant())
@@ -300,11 +306,29 @@ void CLagCompensation::DrawLagCompensationEntries()
 		if (!pCurEnt->IsAlive())
 			continue;
 
-		if (pCurEnt->GetTeamNum() == pLocalEnt->GetTeamNum())
+		if (pCurEnt->GetTeamNum() == pLocalEntity->GetTeamNum())
 			continue;
 
 		LagCompensationList lcCurList = m_pPlayerList[i];
 		lcCurList.RemoveInvalidPlayerEntries();
+
+		// TODO: Head bone
+		// also: bool einbauen ob überhaupt vis check gemacht werden soll :D
+		vCurHeadPos = *pCurEnt->GetOrigin() + *pCurEnt->GetEyeOffset();
+		ray.Init(vLocalHeadPos, vCurHeadPos);
+		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
+		if (!trace.IsEntityVisible(pCurEnt))
+			continue;
+
+		if (lcCurList.m_pPlayerEntries[0].m_bIsEndOfList)
+			continue;
+
+		vCurHeadPos = lcCurList.m_pPlayerEntries[0].m_vHeadPos;
+		ray.Init(vLocalHeadPos, vCurHeadPos);
+		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
+		if (!trace.IsVisible())
+			continue;
+		
 		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
 		{
 			// End of list -> should never be the case!!
