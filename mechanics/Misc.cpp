@@ -126,6 +126,13 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 		switch (m_iAutoStrafeMode)
 		{
 		case AUTOSTRAFEMODE_RAGE:
+			if (pUserCmd->mousedx > 1 || pUserCmd->mousedx < -1) {
+				pUserCmd->sidemove = pUserCmd->mousedx < 0.f ? -450.f : 450.f;
+			}
+			else {
+				pUserCmd->forwardmove = (1800.f * 4.f) / pLocalEntity->GetVelocity()->Length2D();
+				pUserCmd->sidemove = (pUserCmd->command_number % 2) == 0 ? -450.f : 450.f;
+			}
 			break;
 		case AUTOSTRAFEMODE_LEGIT:
 			if (pUserCmd->mousedx > 0)

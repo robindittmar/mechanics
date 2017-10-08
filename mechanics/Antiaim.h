@@ -74,6 +74,7 @@ public:
 	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false);
 
 	void DrawLBYIndicator();
+	bool m_bNextLbyUpdate;
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -99,7 +100,6 @@ private:
 
 	bool m_bDrawLbyIndicator;
 	bool m_bLbyBreaker;
-	bool m_bNextLbyUpdate;
 
 	bool m_bIsMoving;
 	bool m_bWasMoving;

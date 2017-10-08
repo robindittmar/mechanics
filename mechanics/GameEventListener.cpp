@@ -94,6 +94,7 @@ void CGameEventListener::switch_team(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
+	pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
 	pApp->SkinChanger()->SetForceFullUpdate();
 }
 
