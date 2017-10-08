@@ -213,6 +213,9 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 	if (!m_bIsEnabled)
 		return -1;
 
+	if (m_pApp->Ragebot()->IsShooting())
+		return -1;
+
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return -1;
