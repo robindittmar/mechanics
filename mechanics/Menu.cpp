@@ -193,6 +193,8 @@ void CMenu::ApplySettings()
 
 	m_pMiscBhopEnabled->SetChecked(m_pApp->Bhop()->GetEnabled());
 	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Misc()->GetAutoStrafeMode());
+	m_pMiscBhopCircleStrafeEnabled->SetChecked(m_pApp->Misc()->GetCircleStrafe());
+	m_pMiscBhopCircleStrafeDirection->SetSelection(m_pApp->Misc()->GetCircleStrafeStartDirection());
 }
 
 void CMenu::HandleInput()
@@ -877,12 +879,30 @@ void CMenu::CreateMiscTab()
 	m_pFakelagGroup->AddChild(m_pFakelagLabel);
 	m_pFakelagGroup->AddChild(m_pFakelagChokeAmount);
 
+	m_pMiscBhopCircleStrafeEnabled = new CCheckbox(4, 0, 128, 16, "Circle Strafe");
+	m_pMiscBhopCircleStrafeEnabled->SetEventHandler(std::bind(&CMisc::SetCircleStrafe, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscBhopCircleStrafeDirection = new CSelectbox(4, 32, 124, 16, "Circle Strafe Direction");
+	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_RIGHT, "Right");
+	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_LEFT, "Left");
+	m_pMiscBhopCircleStrafeDirection->SetEventHandler(std::bind(&CMisc::SetCircleStrafeStartDirection, m_pApp->Misc(), std::placeholders::_1));
+
+	m_pMiscBhopCircleStrafeLabel = new CLabel(4, 46, 128, 16, "On: MENU");
+
+	m_pMiscBhopCircleStrafeGroup = new CGroupbox(4, 80, 136, 80, "Circle Strafe");
+	m_pMiscBhopCircleStrafeGroup->AddChild(m_pMiscBhopCircleStrafeEnabled);
+	m_pMiscBhopCircleStrafeGroup->AddChild(m_pMiscBhopCircleStrafeDirection);
+	m_pMiscBhopCircleStrafeGroup->AddChild(m_pMiscBhopCircleStrafeLabel);
+
+	CSelectbox* m_pMiscBhopCircleStrafeDirection;
+
 	m_pMiscBhopAutoStrafeGroup = new CGroupbox(4, 20, 136, 50, "Auto Strafe");
 	m_pMiscBhopAutoStrafeGroup->AddChild(m_pMiscBhopAutoStrafeMode);
 
 	m_pMiscBhopGroup = new CGroupbox(352, 16, 152, 308, "Bhop");
 	m_pMiscBhopGroup->AddChild(m_pMiscBhopEnabled);
 	m_pMiscBhopGroup->AddChild(m_pMiscBhopAutoStrafeGroup);
+	m_pMiscBhopGroup->AddChild(m_pMiscBhopCircleStrafeGroup);
 
 	m_pMiscTab = new CTabPage("Misc");
 	m_pMiscTab->AddChild(m_pMiscOthersGroup);

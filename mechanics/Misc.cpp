@@ -152,6 +152,66 @@ void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 	}
 }
 
+//todo: Robin wohin damit ?
+float GetTraceFractionWorldProps(Vector start, Vector end)
+{
+	Ray_t ray;
+	trace_t tr;
+	CTraceFilterWorldAndPropsOnly filter;
+
+	ray.Init(start, end);
+	CApplication::Instance()->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &tr);
+
+	return tr.fraction;
+}
+
+void CMisc::CircleStrafe(IClientEntity * pLocalEntity, CUserCmd * pUserCmd)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bCircleStrafe)
+		return;
+
+	//todo: which key? maybe better method?
+	if (!GetAsyncKeyState(VK_MENU))
+		return;
+
+	static float fStrafeAngle = 0.0f;
+
+	Vector vOrigin = *pLocalEntity->GetOrigin();
+
+	Vector Velocity = *pLocalEntity->GetVelocity();
+	Velocity.z = 0;
+
+	float Speed = Velocity.Length();
+	if (Speed < 45)
+		Speed = 45;
+
+	if (Speed > 750)
+		Speed = 750;
+
+	float FinalPath = GetTraceFractionWorldProps(vOrigin + Vector(0, 0, 10), vOrigin + Vector(0, 0, 10) + Velocity / 2.0f);
+	float DeltaAngle = m_fCircleStrafeStartDirection * fmax((275.0f / Speed) * (2.0f / FinalPath) * (128.0f / (1.7f / m_pApp->GlobalVars()->interval_per_tick)) * 4.20f, 2.0f);
+	fStrafeAngle += DeltaAngle;
+
+	// Autojump
+	if (!(pLocalEntity->GetFlags() & FL_ONGROUND))
+		pUserCmd->buttons &= ~IN_JUMP;
+	else
+		pUserCmd->buttons |= IN_JUMP;
+
+	if (fabs(fStrafeAngle) >= 360.0f)
+	{
+		fStrafeAngle = 0.0f;
+	}
+	else
+	{
+		pUserCmd->forwardmove = cos((fStrafeAngle + 90 * m_fCircleStrafeStartDirection) * (PI_F / 180.0f)) * 450.0f;
+		pUserCmd->sidemove = sin((fStrafeAngle + 90 * m_fCircleStrafeStartDirection) * (PI_F / 180.0f)) * 450.0f;
+	}
+}
+
 void CMisc::AutoPistol(CUserCmd* pUserCmd)
 {
 	if (!m_bIsEnabled)

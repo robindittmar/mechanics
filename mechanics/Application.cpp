@@ -276,6 +276,7 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->NoRecoil(pUserCmd);
 			pApp->Misc()->Fakelag(pUserCmd);
 			pApp->Misc()->AutoStrafe(pUserCmd);
+			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
 
 			if (pUserCmd->buttons & IN_ATTACK)
@@ -876,7 +877,7 @@ void CApplication::Setup()
 	g_pConsole->Write(LOGLEVEL_INFO, "Loading Offsets... ");
 #endif
 
-	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/"m_angRotation");
+	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_angRotation*/CXorString("zTä¬pYê¶vì­y").ToCharArray());
 	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_nModelIndex*/CXorString("zTëxoà®^eá§o").ToCharArray());
 	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter.ToCharArray(), /*m_hMyWeapons*/CXorString("zTín\\à£gdë±").ToCharArray());
 	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_hViewModel[0]*/CXorString("zTí”~nòxoà®L;Ø").ToCharArray());
@@ -1122,6 +1123,7 @@ void CApplication::Setup()
 	this->m_misc.SetFakelag(false);
 	this->m_misc.SetFakelagChokeAmount(10);
 	this->m_misc.SetAutoStrafeMode(AUTOSTRAFEMODE_LEGIT);
+	this->m_misc.SetCircleStrafe(true);
 	this->m_misc.SetAutoPistol(false);
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);

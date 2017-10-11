@@ -156,6 +156,11 @@ public:
 	bool	IsLengthGreaterThan(float val) const;
 	bool	IsLengthLessThan(float val) const;
 
+	Vector Direction()
+	{
+		return Vector(cos(y * PI_F / 180.0f) * cos(x * PI_F / 180.0f), sin(y * PI_F / 180.0f) * cos(x * PI_F / 180.0f), sin(-x * PI_F / 180.0f));
+	}
+
 	// check if a vector is within the box defined by two other vectors
 	bool WithinAABox(Vector const &boxmin, Vector const &boxmax);
 
@@ -259,8 +264,21 @@ public:
 		return n;
 	}
 
+	void VectorCrossProduct(const Vector& a, const Vector& b, Vector& result)
+	{
+		
+	}
+
 	// Cross product between two vectors.
-	Vector	Cross(const Vector &vOther) const;
+	Vector Cross(const Vector &vOther) const
+	{
+		Vector res;
+		// VectorCrossProduct
+		res.x = y * vOther.z - z * vOther.y;
+		res.y = z * vOther.x - x * vOther.z;
+		res.z = x * vOther.y - y * vOther.x;
+		return res;
+	}
 
 	// Returns a vector with the min or max in X, Y, and Z.
 	Vector	Min(const Vector &vOther) const;

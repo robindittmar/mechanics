@@ -240,6 +240,10 @@ private:
 	CCheckbox* m_pMiscBhopEnabled;
 	CGroupbox* m_pMiscBhopAutoStrafeGroup;
 	CSelectbox* m_pMiscBhopAutoStrafeMode;
+	CGroupbox* m_pMiscBhopCircleStrafeGroup;
+	CCheckbox* m_pMiscBhopCircleStrafeEnabled;
+	CSelectbox* m_pMiscBhopCircleStrafeDirection;
+	CLabel* m_pMiscBhopCircleStrafeLabel;
 
 	//
 	// SkinChanger tab

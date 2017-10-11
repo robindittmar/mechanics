@@ -3,12 +3,16 @@
 
 #include "IFeature.h"
 #include "XorString.h"
+#include "ClientEntity.h"
 
-#define MAXPACKETSCHOKED		16
+#define MAXPACKETSCHOKED				16
 
-#define AUTOSTRAFEMODE_NONE		0
-#define AUTOSTRAFEMODE_LEGIT	1
-#define AUTOSTRAFEMODE_RAGE		2
+#define AUTOSTRAFEMODE_NONE				0
+#define AUTOSTRAFEMODE_LEGIT			1
+#define AUTOSTRAFEMODE_RAGE				2
+
+#define CIRCLESTRAFEDIRECTION_RIGHT		1
+#define CIRCLESTRAFEDIRECTION_LEFT		-1
 
 class CApplication;
 class CUserCmd;
@@ -49,6 +53,12 @@ public:
 	void SetAutoStrafeMode(int iAutoStrafeMode) { m_iAutoStrafeMode = iAutoStrafeMode; }
 	int GetAutoStrafeMode() { return m_iAutoStrafeMode; }
 
+	void SetCircleStrafe(bool bCircleStrafe) { m_bCircleStrafe = bCircleStrafe; }
+	bool GetCircleStrafe() { return m_bCircleStrafe; }
+
+	void SetCircleStrafeStartDirection(float fCircleStrafeStartDirection) { m_fCircleStrafeStartDirection = fCircleStrafeStartDirection; }
+	float GetCircleStrafeStartDirection() { return m_fCircleStrafeStartDirection; }
+
 	void SetAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; }
 	bool GetAutoPistol() { return m_bAutoPistol; }
 
@@ -84,6 +94,7 @@ public:
 	void NoRecoil(CUserCmd* pUserCmd);
 	void Fakelag(CUserCmd* pUserCmd);
 	void AutoStrafe(CUserCmd* pUserCmd);
+	void CircleStrafe(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
 	void AutoPistol(CUserCmd* pUserCmd);
 	void SpectatorList();
 	void SetClanTag(const char* tag);
@@ -100,6 +111,10 @@ private:
 	int m_iFakelagChokedAmount;
 
 	int m_iAutoStrafeMode;
+
+	bool m_bCircleStrafe;
+	float m_fCircleStrafeStartDirection;
+
 	bool m_bAutoPistol;
 	bool m_bSpectators;
 	bool m_bOnlyMySpectators;
