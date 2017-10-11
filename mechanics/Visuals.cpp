@@ -4,6 +4,7 @@
 CVisuals::CVisuals()
 {
 	m_bCrosshair = false;
+	m_fDrawHitmarkerStartTime = 0.0f;
 }
 
 CVisuals::~CVisuals()
@@ -28,22 +29,10 @@ void CVisuals::Update(void* pParameters)
 		return;
 }
 
-void CVisuals::TriggerHitmarker(float fTime)
+void CVisuals::TriggerHitmarker()
 {
-	m_fDrawHitmarkerStartTime = fTime;
-	m_fDrawHitmarkerTime = fTime;
-
+	m_fDrawHitmarkerStartTime = m_pApp->GlobalVars()->curtime;
 	PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
-}
-
-void CVisuals::UpdateHitmarker(float fInputSampleTime)
-{
-	if (!m_bHitmarker || m_fDrawHitmarkerTime == 0.0f)
-		return;
-
-	m_fDrawHitmarkerTime -= fInputSampleTime;
-	if (m_fDrawHitmarkerTime < 0.0f)
-		m_fDrawHitmarkerTime = 0.0f;
 }
 
 void CVisuals::DrawCrosshair()
@@ -117,7 +106,7 @@ void CVisuals::DrawSpreadCone()
 	pSurface->DrawOutlinedCircle(width / 2, height / 2, spread, 64);
 }
 
-void CVisuals::DrawHitmarker()
+void CVisuals::DrawHitmarker(ISurface* pSurface)
 {
 	if (!m_bIsEnabled)
 		return;
@@ -128,18 +117,22 @@ void CVisuals::DrawHitmarker()
 	const int hitmarker_gap = 4;
 	const int hitmarker_size = 6;
 
-	if (m_fDrawHitmarkerTime > 0.0f && m_bHitmarker)
-	{
-		int iMidX = m_iSurfaceWidth / 2;
-		int iMidY = m_iSurfaceHeight / 2;
+	int iMidX = m_iSurfaceWidth / 2;
+	int iMidY = m_iSurfaceHeight / 2;
 
-		ISurface* pSurface = m_pApp->Surface();
-		pSurface->DrawSetColor((int)((m_fDrawHitmarkerTime / m_fDrawHitmarkerStartTime) * 255.0f), 255, 255, 255);
-		pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY - hitmarker_gap); // Top left
-		pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY + hitmarker_gap); // Bottom left
-		pSurface->DrawLine(iMidX + hitmarker_gap, iMidY - hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size)); // Top right
-		pSurface->DrawLine(iMidX + hitmarker_gap, iMidY + hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size)); // Bottom right
-	}
+	float fTime = m_pApp->GlobalVars()->curtime - m_fDrawHitmarkerStartTime;
+	if (fTime > HITMARKER_DEFAULT_TIME)
+		return;
+
+	int iAlpha = 255 - ((fTime / HITMARKER_DEFAULT_TIME) * 255.0f);
+	if (iAlpha == 0)
+		return;
+
+	pSurface->DrawSetColor(iAlpha, 255, 255, 255);
+	pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY - hitmarker_gap); // Top left
+	pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY + hitmarker_gap); // Bottom left
+	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY - hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size)); // Top right
+	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY + hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size)); // Bottom right
 }
 
 void CVisuals::NoFlash(float fFlashPercentage)
