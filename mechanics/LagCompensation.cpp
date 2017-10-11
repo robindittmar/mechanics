@@ -288,7 +288,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 
 	Ray_t ray;
 	trace_t trace;
-	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+	CTraceFilterWorldOnly filter;
 
 	m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
 	for (int i = 0; i < MAX_PLAYERS; i++)
@@ -315,28 +315,20 @@ void CLagCompensation::DrawLagCompensationEntries()
 		LagCompensationList lcCurList = m_pPlayerList[i];
 		lcCurList.RemoveInvalidPlayerEntries();
 
-		// TODO: Head bone
-		// also: bool einbauen ob überhaupt vis check gemacht werden soll :D
-		vCurHeadPos = *pCurEnt->GetOrigin() + *pCurEnt->GetEyeOffset();
-		ray.Init(vLocalHeadPos, vCurHeadPos);
-		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
-		if (!trace.IsEntityVisible(pCurEnt))
-			continue;
-
-		if (lcCurList.m_pPlayerEntries[0].m_bIsEndOfList)
-			continue;
-
-		vCurHeadPos = lcCurList.m_pPlayerEntries[0].m_vHeadPos;
-		ray.Init(vLocalHeadPos, vCurHeadPos);
-		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
-		if (!trace.IsVisible())
-			continue;
-		
 		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
 		{
 			// End of list -> should never be the case!!
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
 				break;
+
+			if (m_bDrawOnlyVisible)
+			{
+				vCurHeadPos = lcCurList.m_pPlayerEntries[x].m_vHeadPos;
+				ray.Init(vLocalHeadPos, vCurHeadPos);
+				m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
+				if (!trace.IsVisible())
+					continue;
+			}
 
 			switch (m_iDrawStyle)
 			{

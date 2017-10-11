@@ -69,6 +69,9 @@ public:
 	void SetDrawFrequency(int iDrawFrequency) { m_iDrawFrequency = iDrawFrequency; }
 	int GetDrawFrequency() { return m_iDrawFrequency; }
 
+	void SetDrawOnlyVisible(bool bDrawOnlyVisible) { m_bDrawOnlyVisible = bDrawOnlyVisible; }
+	bool GetDrawOnlyVisible() { return m_bDrawOnlyVisible; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -79,6 +82,8 @@ public:
 private:
 	int m_iDrawStyle;
 	int m_iDrawFrequency;
+
+	bool m_bDrawOnlyVisible;
 
 	LagCompensationList m_pPlayerList[MAX_PLAYERS];
 };

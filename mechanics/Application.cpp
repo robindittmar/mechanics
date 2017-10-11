@@ -1037,7 +1037,9 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(false);
 	this->m_antiAim.SetDrawLbyIndicator(true);
+	this->m_antiAim.SetDoEdgeAntiAim(true);
 	this->m_antiAim.SetLbyBreaker(true);
+
 	// Standing
 	this->m_antiAim.SetPitchSettingStanding(PITCHANTIAIM_DOWN);
 	this->m_antiAim.SetYawSettingStanding(YAWANTIAIM_STATIC);
@@ -1166,7 +1168,9 @@ void CApplication::Setup()
 
 	// LagCompensation
 	this->m_lagcompensation.SetEnabled(true);
-	this->m_lagcompensation.SetDrawStyle(LC_DRAWSTYLE_CROSS);
+	this->m_lagcompensation.SetDrawStyle(LC_DRAWSTYLE_BONES);
+	this->m_lagcompensation.SetDrawFrequency(2);
+	this->m_lagcompensation.SetDrawOnlyVisible(false);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap

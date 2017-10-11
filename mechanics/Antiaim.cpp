@@ -39,7 +39,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 	if (!pApp->AntiAim()->GetLbyBreaker())
 		return false;
 
-	if(bIsLocalPlayer)
+	if (bIsLocalPlayer)
 		pApp->m_bLbyUpdate = false;
 
 	bool bPlayerMoving = pLocalEntity->GetVelocity()->Length2D() > 0.1f;
@@ -47,7 +47,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 		return false;
 
 	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredLbyUpdateTime() - GetOutgoingLatency());
-	if (value > 1.05f)
+	if (value > 1.0f)
 	{
 		if (value > 1.1f)
 		{
@@ -108,8 +108,13 @@ void CAntiAim::Update(void* pParameters)
 	CResolverPlayer* pLocalResolverPlayer = m_pApp->Resolver()->GetResolverPlayer(pLocalEntity->EntIndex());
 	m_bNextLbyUpdate = NextLBYUpdate(pLocalResolverPlayer, true);
 
-	// Applying Pitch Anti Aim
+	// Applying Pitch Anti Aim and setting calculated angles
 	ApplyPitchAntiAim(&angles);
+	pUserCmd->viewangles[0] = angles.x;
+
+	m_bIsEdgeAntiAim = EdgeAntiAim(pLocalEntity, pUserCmd);
+	if (m_bIsEdgeAntiAim)
+		return;
 
 	// Applying Yaw Anti Aims
 	ApplyYawAntiAim(&angles);
@@ -118,9 +123,135 @@ void CAntiAim::Update(void* pParameters)
 	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime;
 
 	// Setting calculated angles to player angles
-	pUserCmd->viewangles[0] = angles.x;
 	pUserCmd->viewangles[1] = angles.y;
 }
+
+bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
+{
+	if (!m_bDoEdgeAntiAim)
+		return false;
+
+	if (m_bIsMoving)
+		return false;
+
+	CTraceFilterWorldOnly filter;
+
+	bool bDoesEdgeAntiAim = false;
+	Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+
+	float length = ((16.0f + 3.0f) + ((16.0f + 3.0f) * sin(DEG2RAD(10.0f)))) + 10.0f;
+	for (int y = 0; y < 360; y += 20)
+	{
+		Vector vTemp(10.0f, pUserCmd->viewangles[1], 0.0f);
+		vTemp.y += y;
+		vTemp.NormalizeAngles();
+
+		Vector forward;
+		AngleVectors(vTemp, &forward);
+
+		forward *= length;
+
+		Ray_t ray;
+		trace_t traceData;
+
+		ray.Init(vMyHeadPos, (vMyHeadPos + forward));
+		m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &traceData);
+		if (traceData.fraction != 1.0f)
+		{
+			Vector angles;
+			Vector Negate = traceData.plane.normal;
+
+			Negate *= -1;
+			VectorAngles(Negate, angles);
+
+			/*if (angles.y == 0.0f)
+				continue;*/
+
+			vTemp.y = angles.y;
+			vTemp.NormalizeAngles();
+			trace_t leftTrace, rightTrace;
+
+			Vector left, right;
+			AngleVectors(vTemp + Vector(0.0f, 30.0f, 0.0f), &left);
+			AngleVectors(vTemp - Vector(0.0f, 30.0f, 0.0f), &right);
+
+			left *= (length + (length * sin(DEG2RAD(30.0f))));
+			right *= (length + (length * sin(DEG2RAD(30.0f))));
+
+			ray.Init(vMyHeadPos, (vMyHeadPos + left));
+			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, (CTraceFilter*)&filter, &leftTrace);
+
+			ray.Init(vMyHeadPos, (vMyHeadPos + right));
+			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, (CTraceFilter*)&filter, &rightTrace);
+
+			if ((leftTrace.fraction == 1.0f)
+				&& (rightTrace.fraction != 1.0f))
+			{
+				// LEFT
+
+				if (!m_bEdgeAntiAimFakeSwitch)
+				{
+					// real
+					vTemp.y -= 90.0f;
+				}
+				else
+				{
+					// fake
+					vTemp.y += 90.0f;
+				}
+
+			}
+			else if ((leftTrace.fraction != 1.0f)
+				&& (rightTrace.fraction == 1.0f))
+			{
+				// RIGHT
+				if (!m_bEdgeAntiAimFakeSwitch)
+				{
+					// real
+					vTemp.y += 90.0f;
+				}
+				else
+				{
+					// fake
+					vTemp.y -= 90.0f;
+				}
+			}
+
+			if (leftTrace.fraction == 1.0f || rightTrace.fraction == 1.0f)
+			{
+				pUserCmd->viewangles[1] = vTemp.y;
+				bDoesEdgeAntiAim = true;
+			}
+		}
+	}
+
+	if (bDoesEdgeAntiAim)
+	{
+		Vector vTempYaw = Vector(0.0f, pUserCmd->viewangles[1] + 180.0f, 0.0f);
+		vTempYaw.NormalizeAngles();
+		if (m_bEdgeAntiAimFakeSwitch)
+		{
+			m_fCurRealYaw = vTempYaw.y;
+			m_fCurFakeYaw = pUserCmd->viewangles[1];
+		}
+		else
+		{
+			m_fCurRealYaw = pUserCmd->viewangles[1];
+			m_fCurFakeYaw = vTempYaw.y;
+		}
+
+		*m_pApp->m_bSendPackets = m_bEdgeAntiAimFakeSwitch;
+		m_bEdgeAntiAimFakeSwitch = !m_bEdgeAntiAimFakeSwitch;
+
+		if (!m_bIsMoving && m_bLbyBreaker && m_bNextLbyUpdate && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
+		{
+			pUserCmd->viewangles[1] = vTempYaw.y;
+		}
+	}
+
+	return bDoesEdgeAntiAim;
+}
+
 
 void CAntiAim::ApplyPitchAntiAim(QAngle* angles)
 {
@@ -147,7 +278,7 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 	static float trigger = 0.0f;
 
 	bool bSetMovingSettings = false;
-	if (IsFakeYaw() && m_bWasMoving && !m_bNextLbyUpdate)
+	if (m_bWasMoving && !m_bNextLbyUpdate)
 	{
 		bSetMovingSettings = true;
 	}
@@ -183,11 +314,21 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 
 void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 {
+	static float trigger = 0.0f;
 	static bool bFakeAngleSwitch = true;
 	float fFakeYaw = 0.0f + (m_bIsMoving ? m_fYawFakeOffsetMoving : m_fYawFakeOffsetStanding);
 
 	switch ((m_bIsMoving ? m_iYawFakeSettingMoving : m_iYawFakeSettingStanding))
 	{
+	case FAKEYAWANTIAIM_STATICJITTER:
+		trigger += 15.0f;
+		fFakeYaw -= trigger > 80.0f ? -35.0f : 35.0f;
+
+		if (trigger > 160.0f)
+		{
+			trigger = 0.0f;
+		}
+		break;
 	case FAKEYAWANTIAIM_STATIC:
 		break;
 	case FAKEYAWANTIAIM_NONE:
@@ -224,7 +365,7 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		angles->y += -fRealYaw + fFakeYaw;
 	}
 
-	if (m_bWasMoving && m_bNextLbyUpdate && !m_bIsMoving)
+	if (m_bWasMoving && (!m_bLbyBreaker || m_bNextLbyUpdate) && !m_bIsMoving)
 		m_bWasMoving = false;
 }
 
@@ -277,5 +418,5 @@ void CAntiAim::DrawLBYIndicator()
 
 bool CAntiAim::IsFakeYaw()
 {
-	return m_bIsMoving ? m_iYawFakeSettingMoving == FAKEYAWANTIAIM_STATIC : m_iYawFakeSettingStanding == FAKEYAWANTIAIM_STATIC && m_bIsEnabled;
+	return (m_bIsMoving ? m_iYawFakeSettingMoving != FAKEYAWANTIAIM_NONE : m_iYawFakeSettingStanding != FAKEYAWANTIAIM_NONE) || (m_bIsEdgeAntiAim && !m_bEdgeAntiAimFakeSwitch) && m_bIsEnabled;
 }
