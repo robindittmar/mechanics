@@ -79,9 +79,10 @@ void CApplication::Detach()
 
 	// ClanTag
 	if (m_misc.GetIsCustomClanTag())
+	{
 		m_misc.SetClanTag(NULL);
-	else if (m_misc.GetNoName())
-		m_misc.SetNoNameClanTag(false);
+		m_misc.ApplyClanTag();
+	}
 
 
 	// Free & Exit
@@ -203,9 +204,6 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 
 	CApplication* pApp = CApplication::Instance();
 	tickcount = pUserCmd->tick_count;
-
-	// Update timer for hitmarker
-	pApp->Visuals()->UpdateHitmarker(fInputSampleTime);
 
 	// Instantly return
 	if (!pUserCmd || !pUserCmd->command_number)
@@ -452,7 +450,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			pApp->Mirror()->Render(pSurface, pApp->Menu()->GetMirrorWindow());
 
 			// Draw Hitmarker
-			pApp->Visuals()->DrawHitmarker();
+			pApp->Visuals()->DrawHitmarker(pSurface);
 
 			// Draw SpreadCone
 			pApp->Visuals()->DrawSpreadCone();

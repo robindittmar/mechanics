@@ -1,11 +1,20 @@
 #ifndef __VISUALS_H__
 #define __VISUALS_H__
 
-#include "Offsets.h"
-#include "IFeature.h"
+// Std Lib
+#include <Windows.h>
+
+// Source SDK
 #include "IVModelRender.h"
 #include "ClientEntity.h"
 #include "CViewSetup.h"
+#include "ISurface.h"
+
+// Custom
+#include "Offsets.h"
+#include "IFeature.h"
+
+#pragma comment(lib, "winmm.lib")
 
 #define HITMARKER_DEFAULT_TIME		1.0f
 
@@ -76,12 +85,11 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
-	void TriggerHitmarker(float fTime = HITMARKER_DEFAULT_TIME);
-	void UpdateHitmarker(float fInputSampleTime);
+	void TriggerHitmarker();
 
 	void DrawCrosshair();
 	void DrawSpreadCone();
-	void DrawHitmarker();
+	void DrawHitmarker(ISurface* pSurface);
 	void NoFlash(float fFlashPercentage);
 	void NoSmoke(bool bNoSmoke);
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
@@ -102,8 +110,8 @@ private:
 	bool m_bSpreadCone;
 
 	bool m_bHitmarker;
-	float m_fDrawHitmarkerTime;
 	float m_fDrawHitmarkerStartTime;
+	char m_pHitmarkerSound[MAX_PATH];
 
 	bool m_bNoFlash;
 	float m_fFlashPercentage;

@@ -3,7 +3,7 @@
 
 CButton::CButton(int x, int y, int w, int h, const char* pText) : IControl(x, y, w, h)
 {
-	m_pButtonClicked = NULL;
+	m_pEventHandler = NULL;
 
 	// Add Label as child so we get correct positioning (also autocleanup)
 	m_pLabel = new CLabel(0, 0, w, h, pText, RM_FONT_NORMAL, LABEL_ORIENTATION_CENTER);
@@ -16,8 +16,8 @@ CButton::~CButton()
 
 void CButton::OnClicked()
 {
-	if (m_pButtonClicked)
-		m_pButtonClicked(this);
+	if (m_pEventHandler)
+		m_pEventHandler();
 }
 
 void CButton::Draw(ISurface* pSurface)

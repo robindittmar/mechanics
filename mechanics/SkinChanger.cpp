@@ -192,6 +192,9 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 
 bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 {
+	if (!m_bIsEnabled)
+		return false;
+
 	static CXorString xorAttacker("vñ£t`à°");
 	static CXorString xorPlayerDeath("ggä»ryÚ¦rjñª");
 	static CXorString xorWeapon("`nä²xe");

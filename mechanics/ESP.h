@@ -98,11 +98,9 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
-	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
-private:
 	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
 	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);
-	/*void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);*/
+	void DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha);
 	void DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha);
 	void DrawActiveWeapon(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int alpha);
@@ -113,7 +111,7 @@ private:
 	void DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha);
 
 	int DrawWeaponText(ISurface* pSurface, wchar_t* pText, int posX, int posY, int alpha);
-
+private:
 	bool m_bFillBoundingBox;
 	int m_iDrawBoundingBox;
 	bool m_bDrawSkeleton;

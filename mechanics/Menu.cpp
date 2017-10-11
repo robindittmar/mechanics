@@ -846,7 +846,7 @@ void CMenu::CreateMiscTab()
 	m_pMiscOthersAutoAcceptEnabled->SetEventHandler(std::bind(&CMisc::SetAutoAccept, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pMiscOthersNoNameEnabled = new CCheckbox(4, 80, 128, 16, "Remove Name");
-	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoNameClanTag, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoName, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1));
@@ -900,16 +900,11 @@ void CMenu::CreateSkinChangerTab()
 void CMenu::CreateConfigTab()
 {
 	m_pDetachBtn = new CButton(16, 64, 120, 45, "Detach");
-	m_pDetachBtn->SetButtonClickEventHandler(DetachBtnClick);
+	m_pDetachBtn->SetEventHandler(std::bind(&CApplication::Detach, m_pApp));
 
 	m_pClrPicker = new CColorPicker(16, 16, 20, 20);
 
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pClrPicker);
-}
-
-void DetachBtnClick(IControl* p)
-{
-	CApplication::Instance()->Detach();
 }
