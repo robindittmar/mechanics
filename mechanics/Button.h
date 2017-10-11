@@ -3,6 +3,7 @@
 
 // Std lib
 #include <cstring>
+#include <functional>
 
 // Custom
 #include "Gui.h"
@@ -22,10 +23,10 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
-	void SetButtonClickEventHandler(SimpleEventHandler_t onClicked) { m_pButtonClicked = onClicked; }
+	void SetEventHandler(std::function<void()> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	CLabel* m_pLabel;
-	SimpleEventHandler_t m_pButtonClicked;
+	std::function<void()> m_pEventHandler;
 };
 
 #endif // __BUTTON_H__

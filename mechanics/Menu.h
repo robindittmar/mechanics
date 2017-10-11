@@ -5,8 +5,6 @@
 #include "InputHandler.h"
 #include "Controls.h"
 
-void DetachBtnClick(IControl* p);
-
 class CApplication;
 
 class CMenu

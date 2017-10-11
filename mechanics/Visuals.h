@@ -1,11 +1,17 @@
 #ifndef __VISUALS_H__
 #define __VISUALS_H__
 
+// Std Lib
+#include <Windows.h>
+
+// Custom
 #include "Offsets.h"
 #include "IFeature.h"
 #include "IVModelRender.h"
 #include "ClientEntity.h"
 #include "CViewSetup.h"
+
+#pragma comment(lib, "winmm.lib")
 
 #define HITMARKER_DEFAULT_TIME		1.0f
 
@@ -101,6 +107,7 @@ private:
 
 	bool m_bSpreadCone;
 
+	char m_pHitmarkerSound[MAX_PATH];
 	bool m_bHitmarker;
 	float m_fDrawHitmarkerTime;
 	float m_fDrawHitmarkerStartTime;

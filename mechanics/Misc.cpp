@@ -3,6 +3,7 @@
 
 CMisc::CMisc()
 {
+	m_bIsCustomClanTag = false;
 }
 
 CMisc::~CMisc()
@@ -332,10 +333,10 @@ void CMisc::SetClanTag(const char* tag)
 	int iLen = strlen(tag) + 1;
 	memcpy(m_pClanTag, tag, iLen < 128 ? iLen : 128);
 
-	m_pSetClanTag(tag, "");
+	//m_pSetClanTag(tag, "");
 }
 
-void CMisc::SetNoNameClanTag(bool bSetNoName)
+/*void CMisc::SetNoNameClanTag(bool bSetNoName)
 {
 	m_bNoName = bSetNoName;
 
@@ -352,6 +353,22 @@ void CMisc::SetNoNameClanTag(bool bSetNoName)
 	}
 
 	m_pSetClanTag(tempBuffer, "");
+}*/
+
+void CMisc::ApplyClanTag()
+{
+	if (!m_bIsCustomClanTag)
+		return;
+
+	char pBuffer[128];
+	strcpy(pBuffer, m_pClanTag);
+
+	if (m_bNoName)
+	{
+		strcat(pBuffer, "\n");
+	}
+
+	m_pSetClanTag(pBuffer, "");
 }
 
 void CMisc::JumpScout(CUserCmd* pUserCmd)

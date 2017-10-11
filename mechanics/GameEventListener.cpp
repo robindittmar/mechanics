@@ -94,7 +94,8 @@ void CGameEventListener::switch_team(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+	//pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+	pApp->Misc()->ApplyClanTag();
 	pApp->SkinChanger()->SetForceFullUpdate();
 }
 
@@ -112,7 +113,8 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 	{
 		// ClanTag Things
 		//pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
-		pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+		//pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+		pApp->Misc()->ApplyClanTag();
 		// Name Things
 		pApp->Misc()->SpamNameFix();
 
@@ -152,14 +154,9 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 				// "say +1"
 				pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
 			}
-			pApp->EngineClient()->ExecuteClientCmd("play buttons/blip2.wav"); // TODO: Xor
-		}
-		else
-		{
-			pApp->EngineClient()->ExecuteClientCmd("play buttons/blip1.wav"); // TODO: Xor
 		}
 
-		// Draw hitmarker
+		// Trigger hitmarker
 		pApp->Visuals()->TriggerHitmarker();
 	}
 }

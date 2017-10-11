@@ -18,6 +18,8 @@ void CVisuals::Setup()
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
 
 	m_iViewmodelFovValue = 70;
+
+	sprintf(m_pHitmarkerSound, "%s%s", m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
 }
 
 void CVisuals::Update(void* pParameters)
@@ -30,6 +32,8 @@ void CVisuals::TriggerHitmarker(float fTime)
 {
 	m_fDrawHitmarkerStartTime = fTime;
 	m_fDrawHitmarkerTime = fTime;
+
+	PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
 }
 
 void CVisuals::UpdateHitmarker(float fInputSampleTime)

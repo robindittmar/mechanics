@@ -79,9 +79,10 @@ void CApplication::Detach()
 
 	// ClanTag
 	if (m_misc.GetIsCustomClanTag())
+	{
 		m_misc.SetClanTag(NULL);
-	else if (m_misc.GetNoName())
-		m_misc.SetNoNameClanTag(false);
+		m_misc.ApplyClanTag();
+	}
 
 
 	// Free & Exit
