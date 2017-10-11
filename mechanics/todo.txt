@@ -49,3 +49,6 @@ Priority Low
 => SkinChanger KillIcons werden replaced, auch wenn skinchanger disabled ist :D
 
 -> FakeYaw Moving
+
+=> Zoom Sensitivity
+=> Hitmarker on game_newmap

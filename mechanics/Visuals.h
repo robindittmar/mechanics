@@ -86,6 +86,7 @@ public:
 	virtual void Update(void* pParameters = 0);
 
 	void TriggerHitmarker();
+	void ResetHitmarker();
 
 	void DrawCrosshair();
 	void DrawSpreadCone();

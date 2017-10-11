@@ -35,6 +35,11 @@ void CVisuals::TriggerHitmarker()
 	PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
 }
 
+void CVisuals::ResetHitmarker()
+{
+	m_fDrawHitmarkerStartTime = 0.0f;
+}
+
 void CVisuals::DrawCrosshair()
 {
 	if (!m_bIsEnabled)
