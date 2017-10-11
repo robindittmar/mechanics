@@ -688,6 +688,7 @@ void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataC
 	if (pData && pEntity && pLocal)
 	{
 		CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pEntity->EntIndex());
+
 		if (fabsf(pResolverPlayer->GetLbyProxyLastValue() - pData->m_Value.m_Float) >= 30.0f)
 		{
 			pResolverPlayer->SetLbyProxyLastValue(pData->m_Value.m_Float);

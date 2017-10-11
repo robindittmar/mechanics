@@ -52,7 +52,8 @@ CLagCompensationPlayerEntry::CLagCompensationPlayerEntry()
 
 void LagCompensationList::RemoveInvalidPlayerEntries()
 {
-	ULONGLONG llCurTime = GetTickCount64();
+	ULONGLONG llCurTime = CApplication::Instance()->GlobalVars()->curtime * 1000;
+
 
 	int iTempCount = 0;
 	CLagCompensationPlayerEntry pTempList[LC_MAXSAVEDTICKS];
@@ -78,6 +79,7 @@ void LagCompensationList::RemoveInvalidPlayerEntries()
 			break;
 
 		m_pPlayerEntries[i].m_iTickCount = pTempList[i].m_iTickCount;
+		m_pPlayerEntries[i].m_bIsLbyUpdate = pTempList[i].m_bIsLbyUpdate;
 
 		for (int x = 0; x < MAXSTUDIOBONES; x++)
 			m_pPlayerEntries[i].m_pBoneMatrix[x] = pTempList[i].m_pBoneMatrix[x];
@@ -103,7 +105,7 @@ void LagCompensationList::RemoveInvalidPlayerEntries()
 	m_pPlayerEntries[iTempCount + 1].m_bIsEndOfList = true;
 }
 
-void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
+void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount, bool bIsLbyUpdate)
 {
 	static CXorString pHeadZero("nä¦H;");
 
@@ -114,12 +116,13 @@ void LagCompensationList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 		return;
 
 	m_pPlayerEntries[m_iEntryCount].m_iTickCount = tickcount;
+	m_pPlayerEntries[m_iEntryCount].m_bIsLbyUpdate = bIsLbyUpdate;
 
 	for (int i = 0; i < MAXSTUDIOBONES; i++)
 		m_pPlayerEntries[m_iEntryCount].m_pBoneMatrix[i] = pBoneMatrix[i];
 
 	m_pPlayerEntries[m_iEntryCount].m_vOrigin = *pCurEnt->GetOrigin();
-	m_pPlayerEntries[m_iEntryCount].m_llAddTime = GetTickCount64();
+	m_pPlayerEntries[m_iEntryCount].m_llAddTime = CApplication::Instance()->GlobalVars()->curtime * 1000;
 	MatrixGetColumn(pBoneMatrix[pCurEnt->GetBoneByName(pHeadZero.ToCharArray())], 3, m_pPlayerEntries[m_iEntryCount].m_vHeadPos);
 	m_pPlayerEntries[m_iEntryCount].m_vHeadPos += *pCurEnt->GetVelocity() * intervalPerTick;
 	m_pPlayerEntries[m_iEntryCount].m_vVelocity = *pCurEnt->GetVelocity();
@@ -320,6 +323,9 @@ void CLagCompensation::DrawLagCompensationEntries()
 			// End of list -> should never be the case!!
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
 				break;
+
+			if (*pCurEnt->GetOrigin() == lcCurList.m_pPlayerEntries[x].m_vOrigin)
+				continue;
 
 			if (m_bDrawOnlyVisible)
 			{

@@ -72,6 +72,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 	Ray_t ray;
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
+	CTraceFilterWorldOnly filter;
 
 	iMyTeamNum = pLocalEntity->GetTeamNum();
 	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);
@@ -224,14 +225,31 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				break;
 		}
 
+		LagCompensationList pCurLCList = *m_pApp->LagCompensation()->GetLCList(i);
+		pCurLCList.RemoveInvalidPlayerEntries();
+		int iBacktracked = -1;
+
 		// Nothing visible :(
 		if (!bIsHittable)
-			continue;
+		{
+			Ray_t lcRay;
+			trace_t lcTrace;
+			Vector vCurHeadPos;
+			for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
+			{
+				vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
+				ray.Init(vMyHeadPos, vCurHeadPos);
+				m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
+				if (!trace.IsVisible())
+					continue;
 
-		// todo: ONLY TEST !!!!!
-		LagCompensationList pCur = *m_pApp->LagCompensation()->GetLCList(i);
-		pCur.RemoveInvalidPlayerEntries();
-		int iBacktracked = -1;
+				iBacktracked = x;
+				break;
+			}
+			
+			if(iBacktracked == -1)
+				continue;
+		}
 
 
 		// Calculate a few values
@@ -241,7 +259,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 		}
 		else
 		{
-			qAimAngles = Utils::CalcAngle(vMyHeadPos, pCur.m_pPlayerEntries[iBacktracked].m_vHeadPos);
+			qAimAngles = Utils::CalcAngle(vMyHeadPos, pCurLCList.m_pPlayerEntries[iBacktracked].m_vHeadPos);
 		}
 		fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyPos);
 		fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, qAimAngles/*, fOriginDist*/));

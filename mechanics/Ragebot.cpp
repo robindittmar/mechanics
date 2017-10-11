@@ -252,14 +252,7 @@ void CRagebot::ApplyViewanglesAndShoot(CUserCmd* pUserCmd, IClientEntity* pLocal
 	}
 	else if (!this->m_bAutoshoot && bAbleToHit)
 	{
-		if (m_pTarget->GetIsBacktracked() != -1)
-		{
-			this->Shoot(pUserCmd, fNextattack, fServertime);
-		}
-		else
-		{
-			this->Aim(pUserCmd);
-		}
+		this->Aim(pUserCmd);
 	}
 }
 

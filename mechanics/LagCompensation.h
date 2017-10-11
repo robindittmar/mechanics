@@ -24,6 +24,7 @@ public:
 	CLagCompensationPlayerEntry();
 
 	int m_iTickCount;
+	bool m_bIsLbyUpdate;
 
 	matrix3x4_t m_pBoneMatrix[MAXSTUDIOBONES];
 
@@ -53,7 +54,7 @@ public:
 	CLagCompensationPlayerEntry m_pPlayerEntries[LC_MAXSAVEDTICKS];
 
 	void RemoveInvalidPlayerEntries();
-	void AddPlayerEntry(IClientEntity* pCurEnt, int tickcount);
+	void AddPlayerEntry(IClientEntity* pCurEnt, int tickcount, bool bIsLbyUpdate = false);
 	void RestorePlayerEntry(IClientEntity* pCurEnt, int iEntryIndex);
 };
 
