@@ -4,6 +4,8 @@
 #include "IFeature.h"
 #include "Vector.h"
 #include "ResolverPlayer.h"
+#include "ClientEntity.h"
+#include "UserCmd.h"
 
 class CApplication;
 
@@ -21,6 +23,7 @@ class CApplication;
 // Yaw Fake
 #define FAKEYAWANTIAIM_NONE						0
 #define FAKEYAWANTIAIM_STATIC					1
+#define FAKEYAWANTIAIM_STATICJITTER				2
 
 class CAntiAim : public IFeature
 {
@@ -70,11 +73,15 @@ public:
 	void SetLbyBreaker(bool bLbyBreaker) { m_bLbyBreaker = bLbyBreaker; }
 	bool GetLbyBreaker() { return m_bLbyBreaker; }
 
+	void SetDoEdgeAntiAim(bool bDoEdgeAntiAim) { m_bDoEdgeAntiAim = bDoEdgeAntiAim; }
+	bool GetDoEdgeAntiAim() { return m_bDoEdgeAntiAim; }
+
 	bool IsFakeYaw();
 	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false);
 
 	void DrawLBYIndicator();
 	bool m_bNextLbyUpdate;
+
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -103,6 +110,12 @@ private:
 
 	bool m_bIsMoving;
 	bool m_bWasMoving;
+
+	bool m_bDoEdgeAntiAim;
+	bool m_bIsEdgeAntiAim;
+	bool m_bEdgeAntiAimFakeSwitch;
+
+	bool EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
 
 	void ApplyPitchAntiAim(QAngle* angles);
 	void ApplyYawAntiAim(QAngle* angles);

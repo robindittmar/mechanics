@@ -99,6 +99,7 @@ void CMenu::ApplySettings()
 	m_pAntiaimYawMovingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetMoving());
 
 	m_pAntiaimLbyIndicator->SetChecked(m_pApp->AntiAim()->GetDrawLbyIndicator());
+	m_pAntiaimStandingEdgeAntiaim->SetChecked(m_pApp->AntiAim()->GetDoEdgeAntiAim());
 	m_pAntiaimStandingLbyBreaker->SetChecked(m_pApp->AntiAim()->GetLbyBreaker());
 
 	// Legit
@@ -134,7 +135,7 @@ void CMenu::ApplySettings()
 	m_pWeaponEspWeaponBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawWeaponBoundingBox());
 	m_pWeaponEspGrenadeNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeName());
 	m_pWeaponEspGrenadeBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawGrenadeBoundingBox());
-	m_pWeaponEspBombNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombName()); 
+	m_pWeaponEspBombNameEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombName());
 	m_pWeaponEspBombBoundingBoxEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombBoundingBox());
 	m_pWeaponEspBombTimerEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombTimer());
 	m_pWeaponEspBombDefuseTimerEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombDefuseTimer());
@@ -156,6 +157,7 @@ void CMenu::ApplySettings()
 
 	m_pDrawLagCompensationStyle->SetSelection(m_pApp->LagCompensation()->GetDrawStyle());
 	m_pDrawLagCompensationFrequency->SetValue(m_pApp->LagCompensation()->GetDrawFrequency());
+	m_pDrawLagCompensationOnlyVisible->SetChecked(m_pApp->LagCompensation()->GetDrawOnlyVisible());
 
 	m_pEffectsNoVisualRecoil->SetChecked(m_pApp->Visuals()->GetNoVisualRecoil());
 	m_pEffectsNoSmoke->SetChecked(m_pApp->Visuals()->GetNoSmoke());
@@ -168,6 +170,7 @@ void CMenu::ApplySettings()
 	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->Visuals()->GetHitmarker());
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
+	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->Visuals()->GetSpreadCone());
 	m_pVisualsOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
 	m_pVisualsOthersThirdpersonDistance->SetValue(m_pApp->Visuals()->GetThirdpersonDistance());
 	m_pVisualsOthersMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
@@ -359,7 +362,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_NONE, "None");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
-	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
+	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Static Jitter Backwards");
 	m_pAntiaimMovingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimMovingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
@@ -368,6 +371,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
+	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
@@ -393,26 +397,31 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
+	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 159, 128, 16, "LBY Breaker");
+	m_pAntiaimStandingEdgeAntiaim = new CCheckbox(4, 159, 128, 16, "Edge AntiAim");
+	m_pAntiaimStandingEdgeAntiaim->SetEventHandler(std::bind(&CAntiAim::SetDoEdgeAntiAim, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 179, 128, 16, "LBY Breaker");
 	m_pAntiaimStandingLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimLbyIndicator = new CCheckbox(62, 0, 128, 16, "LBY Indicator");
 	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 200, "Standing");
+	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 220, "Standing");
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingPitch);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYaw);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawOffset);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawFake);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimYawStandingFakeOffset);
+	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingEdgeAntiaim);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingLbyBreaker);
 
-	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 200, "Moving");
+	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 220, "Moving");
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingPitch);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYaw);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawOffset);
@@ -525,7 +534,7 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspDrawOwnModel = new CCheckbox(156, 124, 128, 16, "Own Model (3rd person)");
-	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1)); 
+	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1));
 
 	m_pEspDrawOnlyVisible = new CCheckbox(156, 164, 128, 16, "Only Visible");
 	m_pEspDrawOnlyVisible->SetEventHandler(std::bind(&CEsp::SetDrawOnlyVisible, m_pApp->Esp(), std::placeholders::_1));
@@ -638,7 +647,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsFakeAngle = new CCheckbox(4, 132, 128, 16, "Fake Angle");
 	m_pChamsFakeAngle->SetEventHandler(std::bind(&CChams::SetRenderFakeAngle, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams"); 
+	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnTeam);
@@ -688,9 +697,13 @@ void CMenu::CreateVisualsTab()
 	m_pDrawLagCompensationFrequency = new CSlider(4, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
 	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
 
+	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 54, 128, 16, "Only Visible");
+	m_pDrawLagCompensationOnlyVisible->SetEventHandler(std::bind(&CLagCompensation::SetDrawOnlyVisible, m_pApp->LagCompensation(), std::placeholders::_1));
+
 	m_pDrawLagCompensationGroup = new CGroupbox(840, 16, 152, 308, "Lag Compensation");
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequency);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationOnlyVisible);
 
 	m_pPlayerVisualsTab = new CTabPage("Player Visuals");
 	m_pPlayerVisualsTab->AddChild(m_pEspGroup);
@@ -737,17 +750,19 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersRecoilCrosshairEnabled = new CCheckbox(4, 88, 128, 16, "Show Recoil Crosshair");
 	m_pVisualsOthersRecoilCrosshairEnabled->SetEventHandler(std::bind(&CVisuals::SetCrosshairShowRecoil, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdperson = new CCheckbox(4, 116, 128, 16, "Thirdperson");
+	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 116, 128, 16, "Show Spread Cone");
+	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CVisuals::SetSpreadCone, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pVisualsOthersThirdperson = new CCheckbox(4, 144, 128, 16, "Thirdperson");
 	m_pVisualsOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 130, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 158, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 152, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
+	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 180, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersMirror = new CCheckbox(4, 176, 128, 16, "Mirror");
+	m_pVisualsOthersMirror = new CCheckbox(4, 204, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
-
 
 
 	// FovChangerGroup
@@ -786,6 +801,7 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonLabel);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonDistance);

@@ -47,3 +47,5 @@ Priority Low
 // NoSmoke nach mapchange
 
 => SkinChanger KillIcons werden replaced, auch wenn skinchanger disabled ist :D
+
+-> FakeYaw Moving

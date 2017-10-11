@@ -82,6 +82,7 @@ private:
 	CSlider* m_pAntiaimStandingYawOffset;
 	CSelectbox* m_pAntiaimStandingYawFake;
 	CSlider* m_pAntiaimYawStandingFakeOffset;
+	CCheckbox* m_pAntiaimStandingEdgeAntiaim;
 	CCheckbox* m_pAntiaimStandingLbyBreaker;
 
 	CGroupbox* m_pAntiaimMovingGroup;
@@ -184,9 +185,11 @@ private:
 	CGroupbox* m_pDrawLagCompensationGroup;
 	CSelectbox* m_pDrawLagCompensationStyle;
 	CSlider* m_pDrawLagCompensationFrequency;
+	CCheckbox* m_pDrawLagCompensationOnlyVisible;
 
 	CTabPage* m_pOtherVisualsTab;
 
+	// FOV Changer
 	CGroupbox* m_pFovChangerGroup;
 	CCheckbox* m_pFovChangerFovEnabled;
 	CCheckbox* m_pFovChangerFovScopeEnabled;
@@ -196,6 +199,7 @@ private:
 	CLabel* m_pFovChangerViewmodelFovLabel;
 	CSlider* m_pFovChangerViewmodelFovValue;
 
+	// Effects
 	CGroupbox* m_pEffectsGroup;
 	CCheckbox* m_pEffectsNoVisualRecoil;
 	CCheckbox* m_pEffectsNoSmoke;
@@ -205,11 +209,13 @@ private:
 	CLabel* m_pEffectsNoFlashLabel;
 	CSlider* m_pEffectsNoFlashValue;
 
+	// Others
 	CGroupbox* m_pVisualsOthersGroup;
 	CSelectbox* m_pVisualsOthersHandsDrawStyle;
 	CCheckbox* m_pVisualsOthersHitmarkerEnabled;
 	CCheckbox* m_pVisualsOthersCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
+	CCheckbox* m_pVisualsOthersSpreadConeEnabled;
 	CCheckbox* m_pVisualsOthersThirdperson;
 	CLabel* m_pVisualsOthersThirdpersonLabel;
 	CSlider* m_pVisualsOthersThirdpersonDistance;
