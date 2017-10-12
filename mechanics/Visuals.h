@@ -22,6 +22,13 @@
 #define HANDSDRAWSTYLE_NOHANDS		1
 #define HANDSDRAWSTYLE_WIREFRAME	2
 
+#define CAM_MIN_DIST				30.0
+#define CAM_MAX_DIST				300.0
+#define CAM_HULL_OFFSET		9.0    // the size of the bounding hull used for collision checking
+static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET, -CAM_HULL_OFFSET, -CAM_HULL_OFFSET);
+static Vector CAM_HULL_MAX(CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
+
+
 class IMatRenderContext;
 
 class CVisuals : public IFeature

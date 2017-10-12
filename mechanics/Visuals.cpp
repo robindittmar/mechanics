@@ -269,7 +269,41 @@ void CVisuals::Thirdperson()
 	if (!m_pApp->Input()->m_fCameraInThirdPerson || m_iThirdpersonDistance != m_pApp->Input()->m_vecCameraOffset.z)
 	{
 		m_pApp->Input()->m_fCameraInThirdPerson = true;
-		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, m_iThirdpersonDistance);
+
+		Ray_t ray;
+		trace_t trace;
+		CTraceFilterWorldAndPropsOnly filter;
+		float fAdjDist = m_iThirdpersonDistance;
+
+		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset(); 
+
+		Vector camForward;
+		AngleVectors(QAngle(vecAngles.x, vecAngles.y, vecAngles.z),	&camForward, NULL, NULL);
+
+		ray.Init(vMyHeadPos, vMyHeadPos - (camForward * m_iThirdpersonDistance));
+		m_pApp->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &trace);
+
+		if (trace.fraction < 1.0) {
+			// - 2 because of otherwise IN_WALL
+			fAdjDist = m_iThirdpersonDistance * trace.fraction - 2;
+		}
+		else {
+			fAdjDist = m_iThirdpersonDistance;
+		}
+
+		//todo: TRANS DIST AND MIN MAYBE?
+		//if (adjDist < START_TRANS_DIST) {
+		//	localPlayer->SetRenderMode(kRenderTransColor); // make him translucent
+		//	localPlayer->SetRenderColorA((byte)(adjDist * TRANS_DELTA)); // closer=less opacity
+		//}
+
+		//if (adjDist < CAM_MIN_DIST)
+		//	adjDist = CAM_MIN_DIST;
+
+		if (fAdjDist > CAM_MAX_DIST)
+			fAdjDist = CAM_MAX_DIST;
+
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, fAdjDist);
 	}
 }
 
