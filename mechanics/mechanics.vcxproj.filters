@@ -246,6 +246,12 @@
     <ClCompile Include="LagCompensation.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="LagCompensationPlayerEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LagCompensationPlayerList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -562,6 +568,12 @@
     </ClInclude>
     <ClInclude Include="LagCompensation.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="LagCompensationPlayerEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LagCompensationPlayerList.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

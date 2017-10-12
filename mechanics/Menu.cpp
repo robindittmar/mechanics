@@ -82,6 +82,7 @@ void CMenu::ApplySettings()
 
 	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
 	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
+	m_pRageOthersLagCompensationEnabled->SetChecked(m_pApp->LagCompensation()->GetRageLagCompensationEnabled());
 	m_pRageOthersResolverType->SetSelectionByValue(m_pApp->Resolver()->GetResolverType());
 
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
@@ -344,7 +345,10 @@ void CMenu::CreateRageTab()
 	m_pRageOthersAutoRevolverEnabled = new CCheckbox(4, 20, 128, 16, "Auto Revolver");
 	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pRageOthersResolverType = new CSelectbox(4, 48, 128, 20, "Resolver Type");
+	m_pRageOthersLagCompensationEnabled = new CCheckbox(4, 40, 128, 16, "Lag Compensation");
+	m_pRageOthersLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetRageLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pRageOthersResolverType = new CSelectbox(4, 70, 128, 20, "Resolver Type");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NONE, "None");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_LBY, "LBY");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_BRUTEFORCE, "Bruteforce (WIP)");
@@ -433,6 +437,7 @@ void CMenu::CreateRageTab()
 	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 308, "Others");
 	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
 	m_pRageOthersGroup->AddChild(m_pRageOthersAutoRevolverEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersLagCompensationEnabled);
 	m_pRageOthersGroup->AddChild(m_pRageOthersResolverType);
 
 	m_pAntiaimGroup = new CGroupbox(520, 16, 324, 308, "AntiAim");

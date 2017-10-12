@@ -464,6 +464,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// LC Draw
 			pApp->LagCompensation()->DrawLagCompensationEntries();
+			pApp->LagCompensation()->DrawLagCompensationIndicator();
 
 			// ****TEST*****
 			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
@@ -1169,6 +1170,9 @@ void CApplication::Setup()
 
 	// LagCompensation
 	this->m_lagcompensation.SetEnabled(true);
+	this->m_lagcompensation.SetRageLagCompensationEnabled(true);
+	this->m_lagcompensation.SetLegitLagCompensationEnabled(true);
+	this->m_lagcompensation.SetLegitLagCompensationDuration(200);
 	this->m_lagcompensation.SetDrawStyle(LC_DRAWSTYLE_BONES);
 	this->m_lagcompensation.SetDrawFrequency(2);
 	this->m_lagcompensation.SetDrawOnlyVisible(false);

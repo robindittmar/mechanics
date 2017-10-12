@@ -225,7 +225,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				break;
 		}
 
-		LagCompensationList pCurLCList = *m_pApp->LagCompensation()->GetLCList(i);
+		CLagCompensationPlayerList pCurLCList = *m_pApp->LagCompensation()->GetLCList(i);
 		pCurLCList.RemoveInvalidPlayerEntries();
 		int iBacktracked = -1;
 
