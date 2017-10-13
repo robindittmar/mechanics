@@ -2,6 +2,7 @@
 
 IControl::IControl(int x, int y, int w, int h)
 {
+	m_bIsVisible = true;
 	m_bIsEnabled = true;
 	m_pParent = NULL;
 
@@ -62,7 +63,7 @@ void IControl::GetAbsolutePosition(int* pX, int* pY)
 
 void IControl::ProcessEvent(CInputEvent* pEvent)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	CGui* pGui = CGui::Instance();
@@ -131,7 +132,7 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 
 void IControl::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	for (std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)

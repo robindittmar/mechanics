@@ -59,14 +59,28 @@ void CSlider::OnMouseDown(int mx, int my)
 
 void CSlider::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
+	Color clrControl;
+	Color clrKnob;
+
+	if (!m_bIsEnabled)
+	{
+		clrControl = g_clrControlDisabled;
+		clrKnob = g_clrControlDisabled;
+	}
+	else
+	{
+		clrControl = g_clrControl;
+		clrKnob = g_clrKnob;
+	}
+
 	int knob;
-	pSurface->DrawSetColor(g_clrControl);
+	pSurface->DrawSetColor(clrControl);
 
 	float fValue = (m_fValue - m_fMinValue) / m_fValueSpan;
 
@@ -81,7 +95,7 @@ void CSlider::Draw(ISurface* pSurface)
 		if (m_bReverse)
 			knob = m_iWidth - knob;
 
-		pSurface->DrawSetColor(g_clrKnob);
+		pSurface->DrawSetColor(clrKnob);
 		pSurface->DrawFilledRect((x + knob) - SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) - (SLIDER_KNOBSIZE / 2), (x + knob) + SLIDER_KNOBSIZE / 2, (y + m_iHeight / 2) + (SLIDER_KNOBSIZE / 2));
 		//pSurface->DrawLine(x + knob, y, x + knob, y + m_iHeight);
 		// TODO: 18? 16? pls
@@ -96,7 +110,7 @@ void CSlider::Draw(ISurface* pSurface)
 		if (m_bReverse)
 			knob = m_iHeight - knob;
 
-		pSurface->DrawSetColor(g_clrKnob);
+		pSurface->DrawSetColor(clrKnob);
 		pSurface->DrawFilledRect((x + m_iWidth / 2) - SLIDER_KNOBSIZE / 2, (y + knob) - SLIDER_KNOBSIZE / 2, (x + m_iWidth / 2) + SLIDER_KNOBSIZE / 2, (y + knob) + SLIDER_KNOBSIZE / 2);
 		//pSurface->DrawLine(x, y + knob, x + m_iWidth, y + knob);
 		// TODO:
@@ -107,6 +121,20 @@ void CSlider::Draw(ISurface* pSurface)
 	}
 
 	m_pLabel->Draw(pSurface);
+}
+
+void CSlider::SetEnabled(bool bIsEnabled)
+{
+	IControl::SetEnabled(bIsEnabled);
+
+	if (m_bIsEnabled)
+	{
+		m_pLabel->SetTextColor(Color(255, 255, 255, 255));
+	}
+	else
+	{
+		m_pLabel->SetTextColor(g_clrControlDisabled);
+	}
 }
 
 void CSlider::SetValue(float fValue)

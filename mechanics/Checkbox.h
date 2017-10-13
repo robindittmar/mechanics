@@ -30,15 +30,21 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
-	void SetChecked(bool bIsChecked) { m_bIsChecked = bIsChecked; }
+	void SetChecked(bool bIsChecked);
 	bool GetChecked() { return m_bIsChecked; }
 
 	void SetEventHandler(std::function<void(bool)> pEventHandler) { m_pEventHandler = pEventHandler; }
+
+	void EnableOnChecked(IControl* p);
+	void DisableOnChecked(IControl* p);
 private:
 	CLabel* m_pLabel;
 
 	bool m_bIsChecked;
 	std::function<void(bool)> m_pEventHandler;
+
+	std::vector<IControl*> m_pEnableOnChecked;
+	std::vector<IControl*> m_pDisableOnChecked;
 };
 
 #endif // __CHECKBOX_H__

@@ -11,6 +11,9 @@ CCanvas::~CCanvas()
 
 void CCanvas::Draw(ISurface* pSurface)
 {
+	if (!m_bIsVisible)
+		return;
+
 	if(m_clrBackground.a() > 0)
 	{
 		int x = 0, y = 0;

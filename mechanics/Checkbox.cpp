@@ -12,42 +12,48 @@ CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isCheck
 
 CCheckbox::~CCheckbox()
 {
+	m_pEnableOnChecked.clear();
+	m_pDisableOnChecked.clear();
 }
 
 void CCheckbox::OnClicked()
 {
-	m_bIsChecked = !m_bIsChecked;
-
-	if (m_pEventHandler)
-		m_pEventHandler(m_bIsChecked);
+	this->SetChecked(!m_bIsChecked);
 }
 
 void CCheckbox::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	Color borderColor;
-	Color fillColor;
-	Color textColor;
-	if(m_bMouseOver)
+	Color clrBorderColor;
+	Color clrFillColor;
+	Color clrTextColor;
+
+	if (!m_bIsEnabled)
 	{
-		borderColor = g_clrCheckboxBorderHover;
-		fillColor = g_clrCheckboxFillerHover;
-		textColor = g_clrCheckboxTextHover;
+		clrBorderColor = g_clrControlDisabled;
+		clrFillColor = g_clrControlDisabled;
+		clrTextColor = g_clrControlDisabled;
+	}
+	else if (m_bMouseOver)
+	{
+		clrBorderColor = g_clrCheckboxBorderHover;
+		clrFillColor = g_clrCheckboxFillerHover;
+		clrTextColor = g_clrCheckboxTextHover;
 	}
 	else
 	{
-		borderColor = g_clrCheckboxBorder;
-		fillColor = g_clrCheckboxFiller;
-		textColor = g_clrCheckboxText;
+		clrBorderColor = g_clrCheckboxBorder;
+		clrFillColor = g_clrCheckboxFiller;
+		clrTextColor = g_clrCheckboxText;
 	}
 
 	// Draw box that holds the checkmark
-	pSurface->DrawSetColor(borderColor);
+	pSurface->DrawSetColor(clrBorderColor);
 	pSurface->DrawOutlinedRect(
 		x,
 		y + CHECKBOX_BOXPADDING + ((m_iHeight / 2) - CHECKBOX_BOXSIZE),
@@ -57,7 +63,7 @@ void CCheckbox::Draw(ISurface* pSurface)
 	// Draw checkmark if checked
 	if (m_bIsChecked)
 	{
-		pSurface->DrawSetColor(fillColor);
+		pSurface->DrawSetColor(clrFillColor);
 		pSurface->DrawFilledRect(
 			x + CHECKBOX_FILLERPADDING,
 			y + CHECKBOX_BOXPADDING + CHECKBOX_FILLERPADDING + ((m_iHeight / 2) - (CHECKBOX_BOXSIZE)),
@@ -67,6 +73,34 @@ void CCheckbox::Draw(ISurface* pSurface)
 	}
 
 	// Draw label
-	m_pLabel->SetTextColor(textColor);
+	m_pLabel->SetTextColor(clrTextColor);
 	m_pLabel->Draw(pSurface);
+}
+
+void CCheckbox::SetChecked(bool bIsChecked)
+{
+	m_bIsChecked = bIsChecked;
+
+	if (m_pEventHandler)
+		m_pEventHandler(m_bIsChecked);
+
+	for (std::vector<IControl*>::iterator it = m_pEnableOnChecked.begin(); it != m_pEnableOnChecked.end(); it++)
+	{
+		(*it)->SetEnabled(m_bIsChecked);
+	}
+
+	for (std::vector<IControl*>::iterator it = m_pDisableOnChecked.begin(); it != m_pDisableOnChecked.end(); it++)
+	{
+		(*it)->SetEnabled(!m_bIsChecked);
+	}
+}
+
+void CCheckbox::EnableOnChecked(IControl* p)
+{
+	m_pEnableOnChecked.push_back(p);
+}
+
+void CCheckbox::DisableOnChecked(IControl* p)
+{
+	m_pDisableOnChecked.push_back(p);
 }

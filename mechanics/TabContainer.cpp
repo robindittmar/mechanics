@@ -30,12 +30,12 @@ void CTabContainer::SelectTab(int idx)
 	{
 		if(i == idx)
 		{
-			m_pChildren[i]->SetEnabled(true);
+			m_pChildren[i]->SetVisible(true);
 			m_iSelectedTab = i;
 		}
 		else
 		{
-			m_pChildren[i]->SetEnabled(false);
+			m_pChildren[i]->SetVisible(false);
 		}
 	}
 }
@@ -123,7 +123,7 @@ void CTabContainer::AddChild(IControl* pControl)
 
 void CTabContainer::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	int x = 0, y = 0;

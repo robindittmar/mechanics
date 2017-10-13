@@ -7,7 +7,7 @@ CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int select
 	m_iSelection = selection;
 
 	m_bPopupInitialized = false;
-	m_pPopup = new CSelectboxPopup(0, h - 1);
+	m_pPopup = new CSelectboxPopup(0, h);
 
 	m_pLabel = new CLabel(0, -18, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 	m_pSelectionLabel = new CLabel(SELECTBOX_PADDING, 0, w, h);
@@ -46,18 +46,52 @@ void CSelectbox::OnClicked()
 
 void CSelectbox::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
+	Color clrOutline;
+
+	if (!m_bIsEnabled)
+	{
+		clrOutline = g_clrControlDisabled;
+	}
+	else if (m_bMouseOver)
+	{
+		clrOutline = g_clrSelectboxBackgroundOutlineHover;
+	}
+	else
+	{
+		clrOutline = g_clrSelectboxBackgroundOutline;
+	}
+
 	// Draw box that holds the current selection
-	pSurface->DrawSetColor(255, 50, 50, 50);
+	pSurface->DrawSetColor(g_clrSelectboxBackground);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
+
+	pSurface->DrawSetColor(clrOutline);
+	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	// Draw labels
 	IControl::Draw(pSurface);
+}
+
+void CSelectbox::SetEnabled(bool bIsEnabled)
+{
+	IControl::SetEnabled(bIsEnabled);
+
+	if (m_bIsEnabled)
+	{
+		m_pLabel->SetTextColor(g_clrSelectboxText);
+		m_pSelectionLabel->SetTextColor(g_clrSelectboxText);
+	}
+	else
+	{
+		m_pLabel->SetTextColor(g_clrControlDisabled);
+		m_pSelectionLabel->SetTextColor(g_clrControlDisabled);
+	}
 }
 
 void CSelectbox::AddOption(int id, const char* text)
@@ -69,6 +103,14 @@ void CSelectbox::AddOption(int id, const char* text)
 	m_iCountOptions++;
 }
 
+void CSelectbox::EnableControlOnSelected(int id, IControl* p)
+{
+	if (id >= 0 && id < m_iCountOptions)
+	{
+		m_vOptions[id]->AddControlToEnable(p);
+	}
+}
+
 // Selection represents the index (0->first, 1->second, 2->third, etc)
 void CSelectbox::SetSelection(int iSelection)
 {
@@ -77,6 +119,18 @@ void CSelectbox::SetSelection(int iSelection)
 		m_iSelection = iSelection;
 		m_pSelectionLabel->SetContentText(m_vOptions[m_iSelection]->GetContentText());
 		
+		for (int i = 0; i < m_iCountOptions; i++)
+		{
+			if (i == m_iSelection)
+			{
+				m_vOptions[i]->EnableDependentControls();
+			}
+			else
+			{
+				m_vOptions[i]->DisableDependentControls();
+			}
+		}
+
 		if (m_pEventHandler)
 			m_pEventHandler(m_vOptions[m_iSelection]->GetId());
 	}

@@ -21,13 +21,9 @@ CLabel::~CLabel()
 		delete[] m_pContentText;
 }
 
-void CLabel::ProcessEvent(CInputEvent* pEvent)
-{
-}
-
 void CLabel::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	if (!m_pContentTextW)

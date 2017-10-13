@@ -38,6 +38,8 @@ public:
 
 	virtual void Draw(ISurface* pSurface);
 
+	virtual void SetEnabled(bool bIsEnabled);
+
 	// SetValue is used for technical stuff mostly, Label won't be updated
 	void SetValue(float fValue);
 	float GetValue() { return m_fValue; }

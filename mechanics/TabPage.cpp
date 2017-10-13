@@ -3,8 +3,6 @@
 // Setting y=TABCONTAINER_TABHEIGHT for correct Child alignment
 CTabPage::CTabPage(const char* pTitle) : IControl(0, TABCONTAINER_TABHEIGHT)
 {
-	m_bIsEnabled = false;
-
 	m_pTitle = NULL;
 	this->SetTitle(pTitle);
 }

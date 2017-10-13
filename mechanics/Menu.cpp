@@ -296,6 +296,19 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
 	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, m_pApp->TargetSelector(), std::placeholders::_1));
 
+	// TODO: <TEST>
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotSilentAim);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoshoot);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoscope);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoReload);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotMultipoint);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotNoSpreadEnabled);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceEnabled);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotTargetCriteria);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotVisibleMode);
+	// TODO: </TEST>
+
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotSilentAim);

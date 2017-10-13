@@ -13,6 +13,11 @@
 
 #define SELECTBOX_PADDING	4
 
+const Color g_clrSelectboxText(255, 255, 255, 255);
+const Color g_clrSelectboxBackground(255, 50, 50, 50);
+const Color g_clrSelectboxBackgroundOutline(255, 80, 80, 80);
+const Color g_clrSelectboxBackgroundOutlineHover(255, 255, 128, 0);
+
 class CSelectbox : public IControl
 {
 public:
@@ -22,8 +27,13 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
+	virtual void SetEnabled(bool bIsEnabled);
+
 	void AddOption(int id, const char* text);
 	int GetCountOptions() { return m_iCountOptions; }
+
+	// OptionId & Control to enable/disable
+	void EnableControlOnSelected(int id, IControl* p);
 
 	void SetSelection(int iSelection);
 	int GetSelection() { return m_iSelection; }

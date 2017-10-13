@@ -22,7 +22,7 @@ void CButton::OnClicked()
 
 void CButton::Draw(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
+	if (!m_bIsVisible)
 		return;
 
 	int x = 0, y = 0;

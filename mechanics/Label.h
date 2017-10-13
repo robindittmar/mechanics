@@ -27,7 +27,6 @@ public:
 	);
 	~CLabel();
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
 	void GetTextSize(ISurface* pSurface, int& width, int& height);

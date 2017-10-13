@@ -20,6 +20,8 @@
  *			- ???
  */
 
+const Color g_clrControlDisabled(255, 100, 100, 100);
+
 class IControl
 {
 public:
@@ -50,7 +52,10 @@ public:
 
 	IControl* GetParentWindow();
 
-	void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
+	void SetVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
+	bool GetVisible() { return m_bIsVisible; }
+
+	virtual void SetEnabled(bool bIsEnabled) { m_bIsEnabled = bIsEnabled; }
 	bool GetEnabled() { return m_bIsEnabled; }
 
 	void SetPosition(int x, int y);
@@ -63,6 +68,7 @@ public:
 	void Parent(IControl* pParent) { m_pParent = pParent; }
 	IControl* Parent() { return m_pParent; }
 protected:
+	bool m_bIsVisible;
 	bool m_bIsEnabled;
 	int m_iX;
 	int m_iY;

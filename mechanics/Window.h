@@ -34,9 +34,6 @@ public:
 	void SetClientPosition(int x, int y);
 	void GetClientPosition(int* x, int* y);
 
-	void SetVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
-	bool GetVisible() { return m_bIsVisible; }
-
 	void SetPopup(IControl* pPopup) { m_pPopup = pPopup; }
 	IControl* GetPopup() { return m_pPopup; }
 private:
@@ -44,8 +41,6 @@ private:
 	CLabel* m_pLabelTitle;
 
 	IControl* m_pPopup;
-
-	bool m_bIsVisible;
 
 	bool m_bIsDragging;
 	int m_iDragOffsetX, m_iDragOffsetY;

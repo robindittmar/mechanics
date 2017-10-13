@@ -31,6 +31,9 @@ void CColorPicker::OnClicked()
 
 void CColorPicker::Draw(ISurface* pSurface)
 {
+	if (!m_bIsVisible)
+		return;
+
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
