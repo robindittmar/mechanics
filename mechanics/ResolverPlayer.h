@@ -12,8 +12,12 @@ public:
 	void SetShotsFired(int iShotsFired) { m_iShotsFired = iShotsFired; }
 	int GetShotsFired() { return m_iShotsFired; }
 
-	void SetShotsBruteforced(int iShotsBruteforced) { m_iShotsBruteforced = iShotsBruteforced; }
-	int GetShotsBruteforced() { return m_iShotsBruteforced; }
+	void SetShotHit(int iShotHit) { m_iShotHit = iShotHit; }
+	int GetShotHit() { return m_iShotHit; }
+
+	void SetOriginalYaw(float fOriginalYaw) { m_fOriginalYaw = fOriginalYaw; }
+	float GetOriginalYaw() { return m_fOriginalYaw; }
+
 
 	void SetLastMovingTime(float fLastMovingTime) { m_fLastMovingTime = fLastMovingTime; }
 	float GetLastMovingTime() { return m_fLastMovingTime; }
@@ -44,7 +48,8 @@ public:
 	bool m_bStartPredLbyBreaks;
 private:
 	int m_iShotsFired;
-	int m_iShotsBruteforced;
+	int m_iShotHit;
+	float m_fOriginalYaw;
 
 	float m_fLastMovingTime;
 	float m_fLbyAfterPossibleBreaker;

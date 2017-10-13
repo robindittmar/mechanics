@@ -85,7 +85,7 @@ void CAntiAim::Update(void* pParameters)
 	if (!pActiveWeapon)
 		return;
 
-	if (pActiveWeapon->IsKnife() && pUserCmd->buttons & IN_ATTACK2)
+	if (pActiveWeapon->IsKnife() && (!pActiveWeapon->IsSniper() && pUserCmd->buttons & IN_ATTACK2))
 		return;
 
 	if (pActiveWeapon->IsNade())
