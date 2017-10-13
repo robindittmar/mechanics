@@ -217,6 +217,7 @@ private:
 	CCheckbox* m_pVisualsOthersCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersSpreadConeEnabled;
+	CCheckbox* m_pVisualsOthersNightmodeEnabled;
 	CCheckbox* m_pVisualsOthersThirdperson;
 	CLabel* m_pVisualsOthersThirdpersonLabel;
 	CSlider* m_pVisualsOthersThirdpersonDistance;

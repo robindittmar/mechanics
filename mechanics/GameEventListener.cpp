@@ -114,6 +114,8 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 		// ClanTag Things
 		//pApp->Misc()->SetClanTag(".mechanics"); //todo: dynamic clantag!
 		//pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
+		pApp->Visuals()->SetNightmodeMapChanged(true);
+		pApp->Visuals()->SetNightmodePerfomed(false);
 		pApp->Visuals()->ResetHitmarker();
 		pApp->Misc()->ApplyClanTag();
 		// Name Things

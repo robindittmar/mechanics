@@ -89,6 +89,12 @@ public:
 	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
 	bool GetNoScope() { return m_bNoScope; };
 
+	void SetNightmode(bool bNightmode) { m_bNightmode = bNightmode; };
+	bool GetNightmode() { return m_bNightmode; };
+
+	void SetNightmodePerfomed(bool bNightmodePerfomed) { m_bNightmodePerfomed = bNightmodePerfomed; };
+	void SetNightmodeMapChanged(bool bNightmodeMapChange) { m_bNightmodeMapChange = bNightmodeMapChange; };
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 
@@ -108,6 +114,7 @@ public:
 	void DisablePostProcessing(bool bDisablePostProcessing);
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
+	void Nightmode();
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
@@ -144,6 +151,10 @@ private:
 	bool* m_dwOverridePostProcessingDisable;
 
 	bool m_bNoScope;
+
+	bool m_bNightmode;
+	bool m_bNightmodePerfomed;
+	bool m_bNightmodeMapChange;
 };
 
 #endif // __VISUALS_H__

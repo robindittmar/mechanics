@@ -85,11 +85,17 @@ enum CompiledVtfFlags
 	TEXTUREFLAGS_UNUSED_80000000 = 0x80000000,
 };
 
+typedef unsigned short MaterialHandle_t;
+
 class IMaterialSystem
 {
 public:
 	IMaterial* CreateMaterial(const char* pFilename, KeyValues* pKeyValues);
 	IMaterial* FindMaterial(char const* pMaterialName, const char* pTextureGroupName, bool complain = true, const char* pComplainPrefix = NULL);
+	MaterialHandle_t FirstMaterial();
+	MaterialHandle_t NextMaterial(MaterialHandle_t h);
+	MaterialHandle_t InvalidMaterial();
+	IMaterial* GetMaterial(MaterialHandle_t h);
 	
 	void GetBackBufferDimensions(int &width, int &height);
 	ImageFormat GetBackBufferFormat();

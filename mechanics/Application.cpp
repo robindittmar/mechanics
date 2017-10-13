@@ -84,6 +84,14 @@ void CApplication::Detach()
 		m_misc.ApplyClanTag();
 	}
 
+	// Nightmode
+	if (m_visuals.GetNightmode())
+	{
+		m_visuals.SetNightmode(false);
+		m_visuals.SetNightmodePerfomed(false);
+		m_visuals.Nightmode();
+	}
+
 
 	// Free & Exit
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
@@ -197,6 +205,7 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 	return pEntity;
 }
 
+
 int tickcount = 0;
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {
@@ -278,6 +287,9 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
+
+			// Visuals
+			pApp->Visuals()->Nightmode();
 
 			if (pUserCmd->buttons & IN_ATTACK)
 			{
@@ -1151,6 +1163,7 @@ void CApplication::Setup()
 	this->m_visuals.SetNoVisualRecoil(false);
 	this->m_visuals.DisablePostProcessing(true);
 	this->m_visuals.SetNoScope(true);
+	this->m_visuals.SetNightmode(false);
 
 	this->m_visuals.SetNoFlash(false);
 	this->m_visuals.SetFlashPercentage(0.0f);

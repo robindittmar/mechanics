@@ -12,6 +12,31 @@ IMaterial* IMaterialSystem::FindMaterial(char const* pMaterialName, const char* 
 	return ((FindMaterial_t)(*(void***)this)[84])(this, pMaterialName, pTextureGroupName, complain, pComplainPrefix);
 }
 
+MaterialHandle_t IMaterialSystem::FirstMaterial()
+{
+	typedef MaterialHandle_t(__thiscall *FirstMaterial_t)(void*);
+	return ((FirstMaterial_t)(*(void***)this)[86])(this);
+}
+
+MaterialHandle_t IMaterialSystem::NextMaterial(MaterialHandle_t h)
+{
+	typedef MaterialHandle_t(__thiscall *NextMaterial_t)(void*, MaterialHandle_t);
+	return ((NextMaterial_t)(*(void***)this)[87])(this, h);
+}
+
+MaterialHandle_t IMaterialSystem::InvalidMaterial()
+{
+	typedef MaterialHandle_t(__thiscall *InvalidMaterial_t)(void*);
+	return ((InvalidMaterial_t)(*(void***)this)[88])(this);
+}
+
+IMaterial* IMaterialSystem::GetMaterial(MaterialHandle_t h)
+{
+	typedef IMaterial*(__thiscall *GetMaterial_t)(void*, MaterialHandle_t);
+	return ((GetMaterial_t)(*(void***)this)[89])(this, h);
+}
+
+
 void IMaterialSystem::GetBackBufferDimensions(int &width, int &height)
 {
 	typedef void(__thiscall *GetBackBufferDimensions_t)(void*, int&, int&);

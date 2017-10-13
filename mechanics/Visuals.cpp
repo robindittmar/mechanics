@@ -189,7 +189,7 @@ void CVisuals::NoSmoke(bool bNoSmoke)
 	for (int i = 0; i < sizeof(smoke_materials) / sizeof(*smoke_materials); i++)
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(smoke_materials[i].ToCharArray(), pOtherTextures.ToCharArray());
-		
+
 		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, bNoSmokeDisabled);
 	}
 	bNoSmokeDisabled = !bNoSmokeDisabled;
@@ -275,10 +275,10 @@ void CVisuals::Thirdperson()
 		CTraceFilterWorldAndPropsOnly filter;
 		float fAdjDist = m_iThirdpersonDistance;
 
-		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset(); 
+		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
 		Vector camForward;
-		AngleVectors(QAngle(vecAngles.x, vecAngles.y, vecAngles.z),	&camForward, NULL, NULL);
+		AngleVectors(QAngle(vecAngles.x, vecAngles.y, vecAngles.z), &camForward, NULL, NULL);
 
 		ray.Init(vMyHeadPos, vMyHeadPos - (camForward * m_iThirdpersonDistance));
 		m_pApp->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &trace);
@@ -398,4 +398,65 @@ bool CVisuals::NoScope(unsigned int vguiPanel)
 	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
 		return true;
 	return false;
+}
+
+void CVisuals::Nightmode()
+{
+	static CXorString xorSkyname("d}Ú±|rë£zn");
+	static CXorString xorDrawSpecificStaticProp("eTÁ°v|Ö²rhì¤~hÖ¶vì¡Gyê²");
+	static CXorString xorWorld("@d÷®s");
+	static CXorString xorStaticProp("Dä¶~hÕ°x{");
+	static CXorString xorSkyNight("d`ütxâ­Heì¥µð");
+
+	static bool bLastSetting = m_bNightmode;
+
+	static ConVar* sv_skyname = m_pApp->CVar()->FindVar(xorSkyname.ToCharArray());
+	//sv_skyname->nFlags &= ~FCVAR_CHEAT; // needed?
+	static char oldSkyname[256];
+	if (oldSkyname[0] == '\0' || m_bNightmodeMapChange)
+	{
+		int iLen = strlen(sv_skyname->value) + 1;
+		memcpy(oldSkyname, sv_skyname->value, iLen < 256 ? iLen : 256);
+		m_bNightmodeMapChange = false;
+	}
+
+	//static ConVar* r_drawspecificstaticprop = m_pApp->CVar()->FindVar(xorDrawSpecificStaticProp.ToCharArray());
+
+	if (bLastSetting != m_bNightmode)
+	{
+		bLastSetting = m_bNightmode;
+		m_bNightmodePerfomed = false;
+	}
+
+	if (!m_bNightmodePerfomed)
+	{
+		//r_drawspecificstaticprop->SetValue(0); // needed?
+		for (auto i = m_pApp->MaterialSystem()->FirstMaterial(); i != m_pApp->MaterialSystem()->InvalidMaterial(); i = m_pApp->MaterialSystem()->NextMaterial(i))
+		{
+			IMaterial* pMaterial = m_pApp->MaterialSystem()->GetMaterial(i);
+
+			if (!pMaterial || pMaterial->IsErrorMaterial())
+				continue;
+
+			if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()) || strstr(pMaterial->GetTextureGroupName(), xorStaticProp.ToCharArray()))
+			{
+				if (bLastSetting)
+				{
+					sv_skyname->SetValue(xorSkyNight.ToCharArray());
+					pMaterial->ColorModulate(0.25, 0.25, 0.25);
+				}
+				else
+				{
+					sv_skyname->SetValue(oldSkyname);
+					pMaterial->ColorModulate(1.00, 1.00, 1.00);
+				}
+			}
+		}
+
+		if (!bLastSetting)
+		{
+			oldSkyname[0] = '\0';
+		}
+		m_bNightmodePerfomed = true;
+	}
 }

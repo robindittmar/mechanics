@@ -172,6 +172,7 @@ void CMenu::ApplySettings()
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
 	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->Visuals()->GetSpreadCone());
+	m_pVisualsOthersNightmodeEnabled->SetChecked(m_pApp->Visuals()->GetNightmode());
 	m_pVisualsOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
 	m_pVisualsOthersThirdpersonDistance->SetValue(m_pApp->Visuals()->GetThirdpersonDistance());
 	m_pVisualsOthersMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
@@ -760,15 +761,18 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 116, 128, 16, "Show Spread Cone");
 	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CVisuals::SetSpreadCone, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdperson = new CCheckbox(4, 144, 128, 16, "Thirdperson");
+	m_pVisualsOthersNightmodeEnabled = new CCheckbox(4, 144, 128, 16, "Nightmode");
+	m_pVisualsOthersNightmodeEnabled->SetEventHandler(std::bind(&CVisuals::SetNightmode, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pVisualsOthersThirdperson = new CCheckbox(4, 172, 128, 16, "Thirdperson");
 	m_pVisualsOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 158, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 186, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 180, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
+	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 208, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersMirror = new CCheckbox(4, 204, 128, 16, "Mirror");
+	m_pVisualsOthersMirror = new CCheckbox(4, 232, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
 
@@ -809,6 +813,7 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmodeEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonLabel);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonDistance);
