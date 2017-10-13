@@ -284,8 +284,7 @@ void CVisuals::Thirdperson()
 		m_pApp->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &trace);
 
 		if (trace.fraction < 1.0) {
-			// - 2 because of otherwise IN_WALL
-			fAdjDist = m_iThirdpersonDistance * trace.fraction - 2;
+			fAdjDist = m_iThirdpersonDistance * (trace.fraction - 0.07f);
 		}
 		else {
 			fAdjDist = m_iThirdpersonDistance;
