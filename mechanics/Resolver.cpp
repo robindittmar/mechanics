@@ -72,47 +72,45 @@ void CResolver::Update(void* pParameters)
 
 			if (bIsMoving)
 			{
-				if (fabsf(qCurEyeAngles->y - fCurLby) >= 10.0f)
-				{
-					qCurEyeAngles->y = fCurLby;
-				}
+				qCurEyeAngles->y = fCurLby;
 
-				pCurResolverPlayer->m_fFirstLbySinceStanding = -1;
+				/*pCurResolverPlayer->m_fFirstLbySinceStanding = -1;
 				pCurResolverPlayer->m_fPossibleLbyBreakerStart = -1;
-				pCurResolverPlayer->m_bStartPredLbyBreaks = false;
+				pCurResolverPlayer->m_bStartPredLbyBreaks = false;*/
 			}
 			else
 			{
-				if (pCurResolverPlayer->m_fFirstLbySinceStanding == -1)
-				{
-					// Setting first LBY after moving
-					pCurResolverPlayer->m_fFirstLbySinceStanding = fCurLby;
-				}
+				BruteforcePlayer(pCurResolverPlayer, pCurEntity);
+				//if (pCurResolverPlayer->m_fFirstLbySinceStanding == -1)
+					//{
+					//	// Setting first LBY after moving
+					//	pCurResolverPlayer->m_fFirstLbySinceStanding = fCurLby;
+					//}
 
-				// Predicting LBY-Break
-				if (!PredictLbyBreak(pCurResolverPlayer, pCurEntity))
-				{
-					// Bruteforcing Player's Real
-					if (m_pApp->Ragebot()->IsShooting())
-					{
-						// Setting Bruteforced Real
-						qCurEyeAngles->y = BruteforcePlayer(pCurResolverPlayer, pCurEntity);
-					}
-					else
-					{
-						// Setting PossibleReal
-						qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerReal;
-					}
-				}
-				else
-				{
-					// Setting to PossibleFake because he needs to break
-					qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerFake;
-				}
+					//// Predicting LBY-Break
+					//if (!PredictLbyBreak(pCurResolverPlayer, pCurEntity))
+					//{
+					//	// Bruteforcing Player's Real
+					//	if (m_pApp->Ragebot()->IsShooting())
+					//	{
+					//		// Setting Bruteforced Real
+					//		BruteforcePlayer(pCurResolverPlayer, pCurEntity);
+					//	}
+					//	else
+					//	{
+					//		// Setting PossibleReal
+					//		qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerReal;
+					//	}
+					//}
+					//else
+					//{
+					//	// Setting to PossibleFake because he needs to break
+					//	qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerFake;
+					//}
 			}
 			break;
 		case RESOLVERTYPE_BRUTEFORCE:
-			qCurEyeAngles->y = BruteforcePlayer(pCurResolverPlayer, pCurEntity);
+			BruteforcePlayer(pCurResolverPlayer, pCurEntity);
 			// start after second shot, save when hit
 			break;
 		case RESOLVERTYPE_LBY:
@@ -170,58 +168,60 @@ bool CResolver::PredictLbyBreak(CResolverPlayer * pCurResolverPlayer, IClientEnt
 	return false;
 }
 
-float CResolver::BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity)
+void CResolver::BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity)
 {
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	QAngle* qCurEyeAngle = pCurEntity->GetAngEyeAngles();
 	qCurEyeAngle->NormalizeAngles();
 
-	Vector vRelativeDist = (*pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset()) - (*pCurEntity->GetOrigin() + *pCurEntity->GetEyeOffset());
-	QAngle qAngle(RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())), RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)), 0.0f);
+	int iModuloShots = pCurResolverPlayer->GetShotsFired() % 13;
+	int iShotHit = pCurResolverPlayer->GetShotHit();
 
-	bool bIsNoSpread = m_pApp->Ragebot()->IsNoSpread() || m_pApp->Ragebot()->GetNoSpread() && m_pApp->Ragebot()->IsAbleToApplyNoSpread();
-	int iModuloShots = pCurResolverPlayer->GetShotsFired() % 9;
-	/*if (bIsNoSpread)
+	if (iShotHit != -1)
 	{
-		iModuloShots--;
-	}*/
-
-	float fYawOffset = 0.0f;
+		iModuloShots = iShotHit;
+	}
+	// + links, - rechts
 	switch (iModuloShots)
 	{
+	case 12:
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 150.0f;
+		break;
+	case 11:
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() + 150.0f;
+		break;
+	case 10:
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 120.0f;
+		break;
+	case 9:
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() + 120.0f;
+		break;
 	case 8:
-		fYawOffset = -90.0f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 90.0f;
 		break;
 	case 7:
-		fYawOffset = -67.5f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() + 90.0f;
 		break;
 	case 6:
-		fYawOffset = -45.0f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 60.0f;
 		break;
 	case 5:
-		fYawOffset = -22.5f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() + 60.0f;
 		break;
 	case 4:
-		fYawOffset = 22.5f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 30.0f;
 		break;
 	case 3:
-		fYawOffset = 45.0f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() + 30.0f;
 		break;
 	case 2:
-		fYawOffset = 67.5f;
+		qCurEyeAngle->y = pCurResolverPlayer->GetOriginalYaw() - 180.0f;
 		break;
 	case 1:
-		fYawOffset = 90.0f;
-		break;
 	case 0:
-	case -1:
-		// Test if not fake because of spread/real
-		fYawOffset = 0.0f;
+		pCurResolverPlayer->SetOriginalYaw(qCurEyeAngle->y);
 		break;
 	}
 
-	qAngle.y += fYawOffset;
-	qAngle.NormalizeAngles();
-
-	return qAngle.y;
+	qCurEyeAngle->NormalizeAngles();
 }

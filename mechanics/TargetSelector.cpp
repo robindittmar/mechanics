@@ -72,7 +72,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 	Ray_t ray;
 	trace_t trace;
 	CTraceFilterSkipEntity traceFilter(pLocalEntity);
-	CTraceFilterWorldOnly filter;
+	CTraceFilterWorldAndPropsOnly filter;
 
 	iMyTeamNum = pLocalEntity->GetTeamNum();
 	vMyHeadPos = *pLocalEntity->GetOrigin() + (*pLocalEntity->GetVelocity() * fInputSampleTime);

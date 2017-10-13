@@ -139,15 +139,22 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	int dmg_armor = pEvent->GetInt(m_xorDmgArmor.ToCharArray());
 	int hitgroup = pEvent->GetBool(m_xorHitgroup.ToCharArray());*/
 
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 		return;
+
+	int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
+	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pApp->EngineClient()->GetPlayerForUserID(userid));
+	if (pResolverPlayer && hitgroup == 1)
+	{
+		pResolverPlayer->SetShotHit(pResolverPlayer->GetShotsFired() - 1);
+	}
 
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
 	if (pApp->Visuals()->GetHitmarker())
 	{
 		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
-		int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
 		bool sayTaunt = false; // TODO
 
 		if (dmg_health > 100 && hitgroup == 1)
@@ -185,6 +192,7 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	if (pResolverPlayer)
 	{
 		pResolverPlayer->SetShotsFired(0);
+		pResolverPlayer->SetShotHit(-1);
 	}
 
 	// Set here instead of player_spawned because of IsAlive check
@@ -245,18 +253,18 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 		// Check if local shot
 		if (pCurEnt->EntIndex() == pApp->GetLocalPlayer()->EntIndex())
 		{
-			// Check if target exists
-			CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
-			if (pTarget)
+			// Check for valid weapon
+			CWeapon* pActive = pCurEnt->GetActiveWeapon();
+			if (pActive &&
+				(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
 			{
-				// Check if target ent exists
-				IClientEntity* pEnt = pTarget->GetEntity();
-				if (pEnt)
+				// Check if target exists
+				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
+				if (pTarget)
 				{
-					// Check for valid weapon
-					CWeapon* pActive = pEnt->GetActiveWeapon();
-					if (pActive &&
-						(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
+					// Check if target ent exists
+					IClientEntity* pEnt = pTarget->GetEntity();
+					if (pEnt)
 					{
 						// Check if ResolverPlayer for target exists
 						CResolverPlayer* pCur = pApp->Resolver()->GetResolverPlayer(pEnt->EntIndex());
@@ -264,6 +272,11 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 						{
 							// Setting shots fired + 1
 							pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+
+							if (pCur->GetShotsFired() > pCur->GetShotHit() + 2)
+							{
+								pCur->SetShotHit(-1);
+							}
 						}
 					}
 				}

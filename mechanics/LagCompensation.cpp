@@ -135,7 +135,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 
 	Ray_t ray;
 	trace_t trace;
-	CTraceFilterWorldOnly filter;
+	CTraceFilterWorldAndPropsOnly filter;
 
 	m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
 	for (int i = 0; i < MAX_PLAYERS; i++)

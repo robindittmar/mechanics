@@ -323,12 +323,19 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			// Set ViewAngles we prepared for display
 			pApp->EngineClient()->SetViewAngles(pApp->GetClientViewAngles());
 
+			bool bIsSniper = false;
+			CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
+			if (pActiveWeapon)
+			{
+				bIsSniper = pActiveWeapon->IsSniper();
+			}
+
 			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
 				*pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate ||
 				!pApp->AntiAim()->GetEnabled() ||
 				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
-				pUserCmd->buttons & IN_ATTACK2)
+				!bIsSniper && pUserCmd->buttons & IN_ATTACK2)
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
