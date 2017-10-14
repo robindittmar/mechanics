@@ -252,6 +252,9 @@
     <ClCompile Include="LagCompensationPlayerList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Tooltip.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -574,6 +577,9 @@
     </ClInclude>
     <ClInclude Include="LagCompensationPlayerList.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Tooltip.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
