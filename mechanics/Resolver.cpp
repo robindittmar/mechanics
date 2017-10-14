@@ -19,6 +19,9 @@ void CResolver::Update(void* pParameters)
 	if (!m_bIsEnabled)
 		return;
 
+	if (m_iResolverType == RESOLVERTYPE_NONE)
+		return;
+
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return;
@@ -38,84 +41,28 @@ void CResolver::Update(void* pParameters)
 		if (pCurEntity->IsDormant())
 			continue;
 
-		if (pCurEntity == pLocalEntity) // dont need to resolve myself
+		if (!(pCurEntity->GetFlags() & FL_CLIENT))
 			continue;
 
 		if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) // same team dont need to resolve
 			continue;
 
-		if (!(pCurEntity->GetFlags() & FL_CLIENT))
-			continue;
-
-		float fCurtime = m_pApp->GlobalVars()->curtime;
-		float fCurLby = pCurEntity->GetLowerBodyYaw();
-		QAngle* qCurEyeAngles = pCurEntity->GetAngEyeAngles();
-		qCurEyeAngles->NormalizeAngles();
 		bool bIsMoving = pCurEntity->GetVelocity()->Length() > 0.1f;
-		bool bLbyBreakPredicted = false;
-
-		if (bIsMoving)
-			pCurResolverPlayer->SetLastMovingTime(fCurtime);
 
 		switch (m_iResolverType) //todo: check if cur player got other resolver option
 		{
 		case RESOLVERTYPE_AUTOMATIC:
 			// if moving
-			// - lby resolver
+			//  - lby resolver
 			// else
-			// - if lby breaker (after moving lby - lby after 1.1s <= 30)
-			// - - predictlbybreak
-			// bruteforce
+			//  - bruteforce
+			//  - if lby breaker (after moving lby - lby after 1.1s <= 30)
+			//  - - predictlbybreak
 
-			// Checks if Fake Angles active
-			pCurResolverPlayer->m_bHasFakeActive = fabsf(qCurEyeAngles->y - fCurLby) > 35.0f;
-
-			if (bIsMoving)
-			{
-				qCurEyeAngles->y = fCurLby;
-
-				/*pCurResolverPlayer->m_fFirstLbySinceStanding = -1;
-				pCurResolverPlayer->m_fPossibleLbyBreakerStart = -1;
-				pCurResolverPlayer->m_bStartPredLbyBreaks = false;*/
-			}
-			else
+			if (!bIsMoving)
 			{
 				BruteforcePlayer(pCurResolverPlayer, pCurEntity);
-				//if (pCurResolverPlayer->m_fFirstLbySinceStanding == -1)
-					//{
-					//	// Setting first LBY after moving
-					//	pCurResolverPlayer->m_fFirstLbySinceStanding = fCurLby;
-					//}
-
-					//// Predicting LBY-Break
-					//if (!PredictLbyBreak(pCurResolverPlayer, pCurEntity))
-					//{
-					//	// Bruteforcing Player's Real
-					//	if (m_pApp->Ragebot()->IsShooting())
-					//	{
-					//		// Setting Bruteforced Real
-					//		BruteforcePlayer(pCurResolverPlayer, pCurEntity);
-					//	}
-					//	else
-					//	{
-					//		// Setting PossibleReal
-					//		qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerReal;
-					//	}
-					//}
-					//else
-					//{
-					//	// Setting to PossibleFake because he needs to break
-					//	qCurEyeAngles->y = pCurResolverPlayer->m_fPossibleLbyBreakerFake;
-					//}
 			}
-			break;
-		case RESOLVERTYPE_BRUTEFORCE:
-			BruteforcePlayer(pCurResolverPlayer, pCurEntity);
-			// start after second shot, save when hit
-			break;
-		case RESOLVERTYPE_LBY:
-			if (qCurEyeAngles->y != fCurLby)
-				qCurEyeAngles->y = fCurLby;
 			break;
 		case RESOLVERTYPE_NONE:
 		default:

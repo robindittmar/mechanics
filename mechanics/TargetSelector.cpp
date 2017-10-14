@@ -229,24 +229,46 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 		pCurLCList.RemoveInvalidPlayerEntries();
 		int iBacktracked = -1;
 
+		int iVisible = -1;
+		int iMoving = -1;
+
+		Ray_t lcRay;
+		trace_t lcTrace;
+		Vector vCurHeadPos;
+		for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
+		{
+			vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
+			ray.Init(vMyHeadPos, vCurHeadPos);
+			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
+			if (!trace.IsVisible())
+				continue;
+
+			// Setting first moving entry
+			if (iMoving != -1 && pCurLCList.m_pPlayerEntries[x].m_vVelocity.Length() > 0.1)
+				iMoving = x;
+
+			// Setting first visible entry
+			if(iVisible != -1)
+				iVisible = x;
+
+			if(iMoving != -1)
+				break;
+		}
+
+		// Prioritize moving cause lby always real
+		if (iMoving != -1)
+			iBacktracked = iMoving;
+
+
 		// Nothing visible :(
 		if (!bIsHittable)
 		{
-			Ray_t lcRay;
-			trace_t lcTrace;
-			Vector vCurHeadPos;
-			for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
+			// If no hit possible and no moving LC go on visible LC
+			if (iBacktracked == -1)
 			{
-				vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
-				ray.Init(vMyHeadPos, vCurHeadPos);
-				m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
-				if (!trace.IsVisible())
-					continue;
-
-				iBacktracked = x;
-				break;
+				iBacktracked = iVisible;
 			}
-			
+
 			if(iBacktracked == -1)
 				continue;
 		}
