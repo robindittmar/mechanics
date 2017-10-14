@@ -8,6 +8,7 @@
 // Custom
 #include "Gui.h"
 #include "IControl.h"
+#include "Tooltip.h"
 #include "Canvas.h"
 
 #define TITLEBAR_HEIGHT	30
@@ -36,11 +37,15 @@ public:
 
 	void SetPopup(IControl* pPopup) { m_pPopup = pPopup; }
 	IControl* GetPopup() { return m_pPopup; }
+
+	void SetTooltip(CTooltip* pTooltip) { m_pTooltip = pTooltip; }
+	CTooltip* GetTooltip() { return m_pTooltip; }
 private:
 	CCanvas* m_pCanvas;
 	CLabel* m_pLabelTitle;
 
 	IControl* m_pPopup;
+	CTooltip* m_pTooltip;
 
 	bool m_bIsDragging;
 	int m_iDragOffsetX, m_iDragOffsetY;

@@ -1,10 +1,13 @@
 #include "IControl.h"
+#include "Application.h"
 
 IControl::IControl(int x, int y, int w, int h)
 {
 	m_bIsVisible = true;
 	m_bIsEnabled = true;
 	m_pParent = NULL;
+
+	m_pTooltip = NULL;
 
 	m_bHitcheckForMouseMove = true;
 	m_bHitcheckForMouseUp = true;
@@ -26,6 +29,9 @@ IControl::~IControl()
 			delete p;
 		}
 	}
+
+	if (m_pTooltip)
+		delete m_pTooltip;
 }
 
 void IControl::OnMouseMove(int mx, int my)
@@ -66,6 +72,7 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 	if (!m_bIsVisible)
 		return;
 
+	CApplication* pApp = CApplication::Instance();
 	CGui* pGui = CGui::Instance();
 
 	if (pEvent->eventType == EVENT_TYPE_MOUSE)
@@ -97,6 +104,12 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 			else if (pEvent->DidMouseMove())
 			{
 				this->OnMouseMove(pEvent->mousex, pEvent->mousey);
+
+				if (m_pTooltip)
+				{
+					m_fTimeLastMouseMovement = pApp->GlobalVars()->curtime;
+					m_pTooltip->SetPosition(pEvent->mousex + TOOLTIP_DISTANCE_TO_MOUSE_X, pEvent->mousey + TOOLTIP_DISTANCE_TO_MOUSE_Y);
+				}
 			}
 		}
 		else // Mouse outside control
@@ -135,11 +148,29 @@ void IControl::Draw(ISurface* pSurface)
 	if (!m_bIsVisible)
 		return;
 
+	if (m_pTooltip && m_bMouseOver)
+	{
+		CApplication* pApp = CApplication::Instance();
+		if (pApp->GlobalVars()->curtime - m_fTimeLastMouseMovement > TOOLTIP_TIME_TO_DISPLAY)
+		{
+			CWindow* pParentWindow = (CWindow*)this->GetParentWindow();
+			pParentWindow->SetTooltip(m_pTooltip);
+		}
+	}
+
 	for (std::vector<IControl*>::iterator it = m_pChildren.begin(); it != m_pChildren.end(); it++)
 	{
 		IControl* p = *it;
 		p->Draw(pSurface);
 	}
+}
+
+void IControl::SetTooltipText(const char* p)
+{
+	if (!m_pTooltip)
+		m_pTooltip = new CTooltip();
+
+	m_pTooltip->SetText(p);
 }
 
 IControl* IControl::GetParentWindow()

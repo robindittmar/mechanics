@@ -12,6 +12,12 @@
 
 // GUI Stuff (rendering etc)
 #include "Gui.h"
+#include "Tooltip.h"
+
+#define TOOLTIP_DISTANCE_TO_MOUSE_X		15
+#define TOOLTIP_DISTANCE_TO_MOUSE_Y		0
+
+#define TOOLTIP_TIME_TO_DISPLAY			0.5f
 
 /*
  * TODO:	- Hover effects?
@@ -50,6 +56,7 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
+	void SetTooltipText(const char* p);
 	IControl* GetParentWindow();
 
 	void SetVisible(bool bIsVisible) { m_bIsVisible = bIsVisible; }
@@ -77,13 +84,14 @@ protected:
 	IControl* m_pParent;
 	std::vector<IControl*> m_pChildren;
 
+	float m_fTimeLastMouseMovement;
+	CTooltip* m_pTooltip;
+
 	bool m_bHitcheckForMouseMove;
 	bool m_bHitcheckForMouseUp;
 
 	bool m_bMouseOver;
 	bool m_bMouseDown;
 };
-
-typedef void(*SimpleEventHandler_t)(IControl*);
 
 #endif // __ICONTROL_H__

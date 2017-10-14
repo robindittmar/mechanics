@@ -74,7 +74,8 @@ void CCheckbox::Draw(ISurface* pSurface)
 
 	// Draw label
 	m_pLabel->SetTextColor(clrTextColor);
-	m_pLabel->Draw(pSurface);
+	//m_pLabel->Draw(pSurface);
+	IControl::Draw(pSurface);
 }
 
 void CCheckbox::SetChecked(bool bIsChecked)

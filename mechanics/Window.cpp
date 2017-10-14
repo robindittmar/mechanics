@@ -9,6 +9,7 @@ CWindow::CWindow(int x, int y, int w, int h, const char* pTitle) : IControl(x, y
 	m_bIsDragging = false;
 
 	m_pPopup = NULL;
+	m_pTooltip = NULL;
 
 	m_pLabelTitle = new CLabel(0, 0, w, TITLEBAR_HEIGHT, pTitle, RM_FONT_HEADER, LABEL_ORIENTATION_CENTER);
 	m_pCanvas = new CCanvas(0, TITLEBAR_HEIGHT, m_iWidth, m_iHeight - TITLEBAR_HEIGHT, g_clrClientRegion);
@@ -24,6 +25,9 @@ CWindow::~CWindow()
 void CWindow::OnMouseMove(int mx, int my)
 {
 	CGui* pGui = CGui::Instance();
+
+	if (m_pTooltip)
+		m_pTooltip = NULL;
 
 	if (m_bIsDragging)
 	{
@@ -86,6 +90,10 @@ void CWindow::Draw(ISurface* pSurface)
 	// Client region is drawn by m_pCanvas
 
 	IControl::Draw(pSurface);
+
+	// Render tooltip if we have one
+	if (m_pTooltip)
+		m_pTooltip->Draw(pSurface);
 
 	// Render Popup if we have one
 	if (m_pPopup)

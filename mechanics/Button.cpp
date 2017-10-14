@@ -38,5 +38,6 @@ void CButton::Draw(ISurface* pSurface)
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	// Draw label
-	m_pLabel->Draw(pSurface);
+	//m_pLabel->Draw(pSurface);
+	IControl::Draw(pSurface);
 }
