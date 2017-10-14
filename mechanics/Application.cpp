@@ -362,6 +362,29 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
+			if (pApp->Resolver()->GetResolverType() != RESOLVERTYPE_NONE)
+			{
+				// Setting LowerBodyYaw
+				for (int i = 1; i < pApp->EngineClient()->GetMaxClients(); i++)
+				{
+					IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
+
+					if (!pCurEntity)
+						continue;
+
+					if (pCurEntity->IsDormant())
+						continue;
+
+					if (!(pCurEntity->GetFlags() & FL_CLIENT))
+						continue;
+
+					if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) // same team dont need to resolve
+						continue;
+
+					pCurEntity->GetAngEyeAngles()->y = pCurEntity->GetLowerBodyYaw();
+				}
+			}
+
 			pApp->LagCompensation()->Update((void*)tickcount);
 
 			pApp->Resolver()->Update();
@@ -1075,7 +1098,7 @@ void CApplication::Setup()
 
 	// Resolver
 	this->m_resolver.SetEnabled(true);
-	this->m_resolver.SetResolverType(RESOLVERTYPE_LBY);
+	this->m_resolver.SetResolverType(RESOLVERTYPE_NONE);
 
 	// Bhop
 	this->m_bhop.SetEnabled(true);
