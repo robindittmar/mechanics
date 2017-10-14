@@ -27,7 +27,7 @@ void CTargetSelector::Setup(CApplication* pApp)
 void CTargetSelector::SelectTargets(float fInputSampleTime)
 {
 	this->ResetTargets();
-	
+
 	int iLocalPlayerIdx;
 	IClientEntity* pLocalEntity;
 	IClientEntity* pCurEntity;
@@ -63,7 +63,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 	float fHighestDamage = -1.0f;
 
 	qLocalViewAngles = m_pApp->GetClientViewAngles();
-	
+
 	iLocalPlayerIdx = m_pEngineClient->GetLocalPlayer();
 	pLocalEntity = m_pEntityList->GetClientEntity(iLocalPlayerIdx);
 	if (!pLocalEntity)
@@ -143,7 +143,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			pHitbox = pHitboxSet->pHitbox(m_iHitboxes[i]);
 			if (!pHitbox)
 				continue;
-			
+
 			// If we shouldn't check visibility, get hitbox pos and go on
 			if (m_iVisibleMode == VISIBLEMODE_IGNORE)
 			{
@@ -188,7 +188,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 							}
 						}
 					}
-					
+
 				}
 			}
 			else
@@ -229,50 +229,27 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 		pCurLCList.RemoveInvalidPlayerEntries();
 		int iBacktracked = -1;
 
-		int iVisible = -1;
-		int iMoving = -1;
-
-		Ray_t lcRay;
-		trace_t lcTrace;
-		Vector vCurHeadPos;
-		for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
-		{
-			vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
-			ray.Init(vMyHeadPos, vCurHeadPos);
-			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
-			if (!trace.IsVisible())
-				continue;
-
-			// Setting first moving entry
-			if (iMoving != -1 && pCurLCList.m_pPlayerEntries[x].m_vVelocity.Length() > 0.1)
-				iMoving = x;
-
-			// Setting first visible entry
-			if(iVisible != -1)
-				iVisible = x;
-
-			if(iMoving != -1)
-				break;
-		}
-
-		// Prioritize moving cause lby always real
-		if (iMoving != -1)
-			iBacktracked = iMoving;
-
-
 		// Nothing visible :(
 		if (!bIsHittable)
 		{
-			// If no hit possible and no moving LC go on visible LC
-			if (iBacktracked == -1)
+			Ray_t lcRay;
+			trace_t lcTrace;
+			Vector vCurHeadPos;
+			for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
 			{
-				iBacktracked = iVisible;
+				vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
+				ray.Init(vMyHeadPos, vCurHeadPos);
+				m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
+				if (!trace.IsVisible())
+					continue;
+
+				iBacktracked = x;
+				break;
 			}
 
-			if(iBacktracked == -1)
+			if (iBacktracked == -1)
 				continue;
 		}
-
 
 		// Calculate a few values
 		if (iBacktracked == -1)
