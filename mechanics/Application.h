@@ -229,10 +229,6 @@ public:
 
 	//todo: change!!!
 	bool m_bLBY;
-	float m_flOldLby;
-	float m_flLbyUpdateTime;
-	float m_flRealLbyUpdateTime;
-	float m_flPredLbyUpdateTime;
 	bool m_bLbyUpdate;
 
 	static bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd);

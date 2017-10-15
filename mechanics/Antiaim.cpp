@@ -12,10 +12,50 @@ CAntiAim::~CAntiAim()
 {
 }
 
+void CAntiAim::DrawEdgeAntiAimPoints()
+{
+	if (!m_pApp->Visuals()->GetThirdperson())
+		return;
+
+	CTarget* pTarget = this->GetTarget(m_pApp->Ragebot()->GetTargetCriteria());
+	if (!pTarget || (pTarget && !pTarget->GetValid()))
+		return;
+
+	Vector vScreenRight[EDGEANTIAIM_RANGE];
+	Vector vScreenLeft[EDGEANTIAIM_RANGE];
+
+	for (int i = 0; i < EDGEANTIAIM_RANGE; i++)
+	{
+		if (m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsRight[i].vPoint, vScreenRight[i]) && m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsLeft[i].vPoint, vScreenLeft[i]))
+		{
+			if (EdgeAntiAimPointsRight[i].bIsHidden)
+			{
+				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
+			}
+			else
+			{
+				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
+			}
+			m_pApp->Surface()->DrawOutlinedCircle(vScreenRight[i].x, vScreenRight[i].y, 5, 16);
+
+			if (EdgeAntiAimPointsLeft[i].bIsHidden)
+			{
+				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
+			}
+			else
+			{
+				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
+			}
+			m_pApp->Surface()->DrawOutlinedCircle(vScreenLeft[i].x, vScreenLeft[i].y, 5, 16);
+		}
+	}
+}
+
 void CAntiAim::Setup()
 {
 	m_pApp = CApplication::Instance();
 }
+
 
 float GetOutgoingLatency()
 {
@@ -61,6 +101,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 
 	return false;
 }
+
 
 void CAntiAim::Update(void* pParameters)
 {
@@ -112,6 +153,9 @@ void CAntiAim::Update(void* pParameters)
 	ApplyPitchAntiAim(&angles);
 	pUserCmd->viewangles[0] = angles.x;
 
+	// LBY indicator check
+	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime;
+
 	m_bIsEdgeAntiAim = EdgeAntiAim(pLocalEntity, pUserCmd);
 	if (m_bIsEdgeAntiAim)
 		return;
@@ -119,11 +163,87 @@ void CAntiAim::Update(void* pParameters)
 	// Applying Yaw Anti Aims
 	ApplyYawAntiAim(&angles);
 
-	// LBY indicator check
-	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime;
-
 	// Setting calculated angles to player angles
 	pUserCmd->viewangles[1] = angles.y;
+}
+
+
+void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection)
+{
+	if (iHideDirection == HIDEDIRECTION_INVALID)
+		return;
+
+	if (m_bEdgeAntiAimFakeSwitch)
+	{
+		// real
+		if (iHideDirection == HIDEDIRECTION_LEFT)
+		{
+			pUserCmd->viewangles[1] = qAimAngle.y - 90.0f;
+		}
+		else
+		{
+			pUserCmd->viewangles[1] = qAimAngle.y + 90.0f;
+		}
+	}
+	else
+	{
+		// fake
+		if (iHideDirection == HIDEDIRECTION_LEFT)
+		{
+			pUserCmd->viewangles[1] = qAimAngle.y + 90.0f;
+		}
+		else
+		{
+			pUserCmd->viewangles[1] = qAimAngle.y - 90.0f;
+		}
+	}
+}
+
+int CAntiAim::CheckHeadPoint(Vector vEnemyHeadPos, EdgeAntiAimPoint* vRight, EdgeAntiAimPoint* vLeft)
+{
+	Ray_t rayRight, rayLeft;
+	trace_t traceRight, traceLeft;
+	CTraceFilterWorldAndPropsOnly filter;
+
+	rayRight.Init(vEnemyHeadPos, vRight->vPoint);
+	m_pApp->EngineTrace()->TraceRay(rayRight, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceRight);
+	rayLeft.Init(vEnemyHeadPos, vLeft->vPoint);
+	m_pApp->EngineTrace()->TraceRay(rayLeft, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceLeft);
+
+	if (traceRight.fraction < 1.0f)
+	{
+		vRight->bIsHidden = true;
+	}
+	else
+	{
+		vRight->bIsHidden = false;
+	}
+
+	if (traceLeft.fraction < 1.0f)
+	{
+		vLeft->bIsHidden = true;
+	}
+	else
+	{
+		vLeft->bIsHidden = false;
+	}
+
+	if (traceRight.fraction == 1.0f && traceLeft.fraction == 1.0)
+	{
+		return HIDEDIRECTION_INVALID;
+	}
+	else if (traceRight.fraction < 1.0f && traceLeft.fraction == 1.0f)
+	{
+		return HIDEDIRECTION_RIGHT;
+	}
+	else if (traceRight.fraction == 1.0f && traceLeft.fraction < 1.0f)
+	{
+		return HIDEDIRECTION_LEFT;
+	}
+	else
+	{
+		return HIDEDIRECTION_NEXT;
+	}
 }
 
 bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
@@ -131,125 +251,194 @@ bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
 	if (!m_bDoEdgeAntiAim)
 		return false;
 
-	if (m_bIsMoving)
+	bool bDoesEdgeAntiAim = false;
+	Vector vLocalHeadpos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+
+	this->GetAntiAimTargets();
+	CTarget* pTarget = this->GetTarget(m_pApp->Ragebot()->GetTargetCriteria());
+	if (!pTarget || (pTarget && !pTarget->GetValid()))
 		return false;
 
-	CTraceFilterWorldOnly filter;
+	IClientEntity* pEnemyEntity = pTarget->GetEntity();
+	if (!pEnemyEntity)
+		return false;
 
-	bool bDoesEdgeAntiAim = false;
-	Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+	CWeapon* pEnemyActiveWeapon = pEnemyEntity->GetActiveWeapon();
+	if (!pEnemyActiveWeapon)
+		return false;
 
-	float length = ((16.0f + 3.0f) + ((16.0f + 3.0f) * sin(DEG2RAD(10.0f)))) + 10.0f;
-	for (int y = 0; y < 360; y += 20)
+	QAngle qAimAngle = *pTarget->GetAimAngles();
+
+	Vector right;
+	AngleVectors(qAimAngle, NULL, &right);
+
+	// Initialize checkpoints
+	for (int i = 0; i < EDGEANTIAIM_RANGE; i++)
 	{
-		Vector vTemp(10.0f, pUserCmd->viewangles[1], 0.0f);
-		vTemp.y += y;
-		vTemp.NormalizeAngles();
+		EdgeAntiAimPointsRight[i].vPoint = vLocalHeadpos + (right * (15 + (i * 10)));
+		EdgeAntiAimPointsLeft[i].vPoint = vLocalHeadpos - (right * (15 + (i * 10)));
+	}
 
-		Vector forward;
-		AngleVectors(vTemp, &forward);
+	Vector vEnemyHeadPos = *pEnemyEntity->GetOrigin() + *pEnemyEntity->GetEyeOffset();
 
-		forward *= length;
+	bool bWasInvalid = false;
+	// Check if edge antiaim
+	for (int i = 0; i < EDGEANTIAIM_RANGE; i++)
+	{
+		int iHideDirection = CheckHeadPoint(vEnemyHeadPos, &EdgeAntiAimPointsRight[i], &EdgeAntiAimPointsLeft[i]);
+		if (iHideDirection == HIDEDIRECTION_INVALID)
+			bWasInvalid = true;
 
-		Ray_t ray;
-		trace_t traceData;
-
-		ray.Init(vMyHeadPos, (vMyHeadPos + forward));
-		m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &traceData);
-		if (traceData.fraction != 1.0f)
+		if (iHideDirection != HIDEDIRECTION_NEXT && iHideDirection != HIDEDIRECTION_INVALID)
 		{
-			Vector angles;
-			Vector Negate = traceData.plane.normal;
-
-			Negate *= -1;
-			VectorAngles(Negate, angles);
-
-			/*if (angles.y == 0.0f)
-				continue;*/
-
-			vTemp.y = angles.y;
-			vTemp.NormalizeAngles();
-			trace_t leftTrace, rightTrace;
-
-			Vector left, right;
-			AngleVectors(vTemp + Vector(0.0f, 30.0f, 0.0f), &left);
-			AngleVectors(vTemp - Vector(0.0f, 30.0f, 0.0f), &right);
-
-			left *= (length + (length * sin(DEG2RAD(30.0f))));
-			right *= (length + (length * sin(DEG2RAD(30.0f))));
-
-			ray.Init(vMyHeadPos, (vMyHeadPos + left));
-			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, (CTraceFilter*)&filter, &leftTrace);
-
-			ray.Init(vMyHeadPos, (vMyHeadPos + right));
-			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, (CTraceFilter*)&filter, &rightTrace);
-
-			if ((leftTrace.fraction == 1.0f)
-				&& (rightTrace.fraction != 1.0f))
+			if (!bDoesEdgeAntiAim && !bWasInvalid)
 			{
-				// LEFT
-
-				if (!m_bEdgeAntiAimFakeSwitch)
-				{
-					// real
-					vTemp.y -= 90.0f;
-				}
-				else
-				{
-					// fake
-					vTemp.y += 90.0f;
-				}
-
-			}
-			else if ((leftTrace.fraction != 1.0f)
-				&& (rightTrace.fraction == 1.0f))
-			{
-				// RIGHT
-				if (!m_bEdgeAntiAimFakeSwitch)
-				{
-					// real
-					vTemp.y += 90.0f;
-				}
-				else
-				{
-					// fake
-					vTemp.y -= 90.0f;
-				}
-			}
-
-			if (leftTrace.fraction == 1.0f || rightTrace.fraction == 1.0f)
-			{
-				pUserCmd->viewangles[1] = vTemp.y;
+				HideHead(pUserCmd, qAimAngle, iHideDirection);
 				bDoesEdgeAntiAim = true;
 			}
 		}
 	}
 
-	if (bDoesEdgeAntiAim)
+	// No edge antiaim so no need to break/fake
+	if (!bDoesEdgeAntiAim)
+		return false;
+
+	Vector vTempYaw = Vector(0.0f, pUserCmd->viewangles[1] + 180.0f, 0.0f);
+	vTempYaw.NormalizeAngles();
+	if (m_bEdgeAntiAimFakeSwitch)
 	{
-		Vector vTempYaw = Vector(0.0f, pUserCmd->viewangles[1] + 180.0f, 0.0f);
-		vTempYaw.NormalizeAngles();
-		if (m_bEdgeAntiAimFakeSwitch)
-		{
-			m_fCurRealYaw = vTempYaw.y;
-			m_fCurFakeYaw = pUserCmd->viewangles[1];
-		}
-		else
-		{
-			m_fCurRealYaw = pUserCmd->viewangles[1];
-			m_fCurFakeYaw = vTempYaw.y;
-		}
+		m_fCurRealYaw = vTempYaw.y;
+		m_fCurFakeYaw = pUserCmd->viewangles[1];
+	}
+	else
+	{
+		m_fCurRealYaw = pUserCmd->viewangles[1];
+		m_fCurFakeYaw = vTempYaw.y;
+	}
 
-		*m_pApp->m_bSendPackets = m_bEdgeAntiAimFakeSwitch;
-		m_bEdgeAntiAimFakeSwitch = !m_bEdgeAntiAimFakeSwitch;
+	*m_pApp->m_bSendPackets = m_bEdgeAntiAimFakeSwitch;
+	m_bEdgeAntiAimFakeSwitch = !m_bEdgeAntiAimFakeSwitch;
 
-		if (!m_bIsMoving && m_bLbyBreaker && m_bNextLbyUpdate && !*m_pApp->m_bSendPackets) //todo check if !bSendPackets is needed
-		{
-			pUserCmd->viewangles[1] = vTempYaw.y;
-		}
+	if (!m_bIsMoving && m_bLbyBreaker && m_bNextLbyUpdate && !*m_pApp->m_bSendPackets)
+	{
+		pUserCmd->viewangles[1] = vTempYaw.y;
 	}
 
 	return bDoesEdgeAntiAim;
+}
+
+
+void CAntiAim::GetAntiAimTargets()
+{
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	int iLocalTeamNum = pLocalEntity->GetTeamNum();
+	Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+
+	// Angle stuff
+	QAngle qLocalViewAngles = m_pApp->GetClientViewAngles();
+	QAngle qAimAngles;
+
+	// Position stuff
+	Vector vEnemyPos;
+
+	float fViewangleDist;
+	float fOriginDist;
+	float fLowestViewangleDist = 999999.0f;
+	float fLowestOriginDist = 999999.0f;
+
+	int iTargetCount = 0;
+	for (int i = 0; i < m_pApp->EngineClient()->GetMaxClients(); i++)
+	{
+		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
+
+		// Filter entites
+		if (!pCurEntity)
+			continue;
+
+		// Skip dormant entities
+		if (pCurEntity->IsDormant())
+			continue;
+
+		// If the possible target isn't alive
+		if (!pCurEntity->IsAlive())
+			continue;
+
+		// Only from enemy team & we don't want spectators or something
+		int entityTeam = pCurEntity->GetTeamNum();
+		if (entityTeam == iLocalTeamNum || entityTeam != TEAMNUM_T && entityTeam != TEAMNUM_CT)
+			continue;
+
+		iTargetCount++;
+
+		vEnemyPos = *pCurEntity->GetOrigin() + *pCurEntity->GetEyeOffset();
+
+		// Calculate a values
+		qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);
+		fOriginDist = this->GetOriginDist(vMyHeadPos, vEnemyPos);
+		fViewangleDist = fabs(this->GetViewangleDist(qLocalViewAngles, qAimAngles));
+
+		// Unspecified
+		if (!m_pTargets[TARGETCRITERIA_UNSPECIFIED].GetValid())
+		{
+			m_pTargets[TARGETCRITERIA_UNSPECIFIED].SetTarget(
+				vEnemyPos,
+				qAimAngles,
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist,
+				-1
+			);
+		}
+
+		// Origin
+		if (fOriginDist < fLowestOriginDist)
+		{
+			fLowestOriginDist = fOriginDist;
+			m_pTargets[TARGETCRITERIA_ORIGIN].SetTarget(
+				vEnemyPos,
+				qAimAngles,
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist,
+				-1
+			);
+		}
+
+		// Viewangles
+		if (fViewangleDist < fLowestViewangleDist)
+		{
+			fLowestViewangleDist = fViewangleDist;
+			m_pTargets[TARGETCRITERIA_VIEWANGLES].SetTarget(
+				vEnemyPos,
+				qAimAngles,
+				pCurEntity,
+				fViewangleDist,
+				fOriginDist,
+				-1
+			);
+		}
+	}
+
+	if (iTargetCount == 0)
+	{
+		m_pTargets[TARGETCRITERIA_UNSPECIFIED].SetValid(false);
+		m_pTargets[TARGETCRITERIA_ORIGIN].SetValid(false);
+		m_pTargets[TARGETCRITERIA_VIEWANGLES].SetValid(false);
+	}
+}
+
+float CAntiAim::GetOriginDist(Vector& vSource, Vector& vTarget)
+{
+	return (vTarget - vSource).Length();
+}
+
+float CAntiAim::GetViewangleDist(QAngle& qSource, QAngle& qTarget)
+{
+	QAngle qDist = qTarget - qSource;
+	qDist.NormalizeAngles();
+	float fAng = qDist.Length();
+
+	return fAng;
 }
 
 

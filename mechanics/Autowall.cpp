@@ -3,11 +3,17 @@
 
 namespace Autowall
 {
-	bool CanHit(Vector &point, float *damage_given)
+	bool CanHit(Vector &point, float *damage_given, Vector* vHeadPos)
 	{
 		IClientEntity* local = (IClientEntity*)CApplication::Instance()->EntityList()->GetClientEntity(CApplication::Instance()->EngineClient()->GetLocalPlayer());
 
-		FireBulletData data(*local->GetOrigin() + *local->GetEyeOffset(), local);
+		Vector headPos = *local->GetOrigin() + *local->GetEyeOffset();
+		if (vHeadPos)
+		{
+			headPos = *vHeadPos;
+		}
+
+		FireBulletData data(headPos, local);
 
 		Vector angles = ACalcAngle(data.src, point);
 		AngleVectors(angles, &data.direction);
@@ -75,27 +81,33 @@ namespace Autowall
 		}
 	}
 
-	void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, int collisionGroup, trace_t *tr)
+	void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity* ignore, int collisionGroup, trace_t* tr)
 	{
-		typedef int(__fastcall* UTIL_TraceLine_t)(const Vector&, const Vector&, unsigned int, const IClientEntity*, int, trace_t*);
-		static UTIL_TraceLine_t TraceLine = (UTIL_TraceLine_t)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x7C\x56\x52", "xxxxxxxxxxx");
-		//TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
+		//typedef int(__fastcall* UTIL_TraceLine_t)(const Vector&, const Vector&, unsigned int, const IClientEntity*, int, trace_t*);
+		//static UTIL_TraceLine_t TraceLine = (UTIL_TraceLine_t)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x7C\x56\x52", "xxxxxxxxxxx");
+		////TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
 
-		__asm
-		{
-			mov eax, tr;
-			push eax;
-			mov ecx, collisionGroup;
-			push ecx;
-			mov edx, ignore;
-			push edx;
-			mov eax, mask;
-			push eax;
-			mov edx, vecAbsEnd;
-			mov ecx, vecAbsStart;
-			call TraceLine;
-			add esp, 0x10;
-		}
+		//__asm
+		//{
+		//	mov eax, tr;
+		//	push eax;
+		//	mov ecx, collisionGroup;
+		//	push ecx;
+		//	mov edx, ignore;
+		//	push edx;
+		//	mov eax, mask;
+		//	push eax;
+		//	mov edx, vecAbsEnd;
+		//	mov ecx, vecAbsStart;
+		//	call TraceLine;
+		//	add esp, 0x10;
+		//}
+
+		Ray_t ray;
+		CTraceFilterSkipEntity filter((IClientEntity*)ignore);
+
+		ray.Init(vecAbsStart, vecAbsEnd);
+		CApplication::Instance()->EngineTrace()->TraceRay(ray, mask, &filter, tr);
 	}
 
 	void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr)
