@@ -11,6 +11,7 @@ IControl::IControl(int x, int y, int w, int h)
 
 	m_bHitcheckForMouseMove = true;
 	m_bHitcheckForMouseUp = true;
+	m_bCanHaveFocus = false;
 
 	m_bMouseOver = false;
 	m_bMouseDown = false;
@@ -87,6 +88,15 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 			{
 				if (pEvent->buttonProperties & EVENT_BTN_LMOUSE) // Button down
 				{
+					if (m_bCanHaveFocus)
+					{
+						CWindow* pParent = (CWindow*)this->GetParentWindow();
+						if (pParent)
+						{
+							pParent->SetFocus(this);
+						}
+					}
+
 					this->OnMouseDown(pEvent->mousex, pEvent->mousey);
 					m_bMouseDown = true;
 				}

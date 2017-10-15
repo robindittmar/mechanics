@@ -94,6 +94,23 @@ void CSelectbox::SetEnabled(bool bIsEnabled)
 	}
 }
 
+void CSelectbox::ClearOptions()
+{
+	m_pPopup->ClearOptions();
+
+	CSelectboxItem* pCurrent;
+	for (std::vector<CSelectboxItem*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
+	{
+		pCurrent = *it;
+
+		if (pCurrent)
+			delete pCurrent;
+	}
+
+	m_vOptions.clear();
+	m_iCountOptions = 0;
+}
+
 void CSelectbox::AddOption(int id, const char* text)
 {
 	CSelectboxItem* pOption = new CSelectboxItem(id, text);

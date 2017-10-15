@@ -81,6 +81,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	pApp->Chams()->ReloadMaterials();
 	pApp->Esp()->ResetHeadBones();
 	pApp->Visuals()->NoSmoke(pApp->Visuals()->GetNoSmoke());
+	pApp->Visuals()->ResetHitmarker();
 
 	m_bNewGame = true;
 }
@@ -116,7 +117,7 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 		//pApp->Misc()->SetNoNameClanTag(pApp->Misc()->GetNoName());
 		pApp->Visuals()->SetNightmodeMapChanged(true);
 		pApp->Visuals()->SetNightmodePerfomed(false);
-		pApp->Visuals()->ResetHitmarker();
+		//pApp->Visuals()->ResetHitmarker();
 		pApp->Misc()->ApplyClanTag();
 		// Name Things
 		pApp->Misc()->SpamNameFix();

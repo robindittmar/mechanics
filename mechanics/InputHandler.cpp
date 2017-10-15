@@ -14,6 +14,9 @@ CInputHandler::CInputHandler()
 	m_mapMouseBtnStates[VK_LBUTTON] = false;
 	m_mapMouseBtnStates[VK_RBUTTON] = false;
 	m_mapMouseBtnStates[VK_MBUTTON] = false;
+
+	m_cLastChar = ' ';
+	m_llTimestampLastChar = 0;
 }
 
 CInputHandler::~CInputHandler()
@@ -45,9 +48,13 @@ void CInputHandler::CreateInput(CInputEvent* pEvent, bool bCreateMouseEvent)
 	}
 
 	// Check keyboard
-	if(this->CheckKeyChanges(m_mapKeys, m_mapKeyStates, pEvent))
+	if (this->CheckKeyChanges(m_mapKeys, m_mapKeyStates, pEvent))
 	{
 		pEvent->eventType = EVENT_TYPE_KEYBOARD;
+	}
+	else if (this->CheckCharacterKeys(pEvent))
+	{
+		pEvent->eventType = EVENT_TYPE_CHARACTER;
 	}
 }
 
@@ -102,4 +109,54 @@ bool CInputHandler::CheckKeyChanges(std::map<unsigned short, int>& mapKeys, std:
 	}
 
 	return bStateChange;
+}
+
+bool CInputHandler::CheckCharacterKeys(CInputEvent* pEvent)
+{
+	bool bGotKey = false;
+	bool bShift = GetAsyncKeyState(VK_SHIFT) & 0x8000;
+	ULONGLONG llTimestamp = GetTickCount64();
+
+	if (GetAsyncKeyState(VK_BACK) & 1)
+	{
+		/*if (llTimestamp - m_llTimestampLastChar >= TEXTINPUT_DELAY)
+		{*/
+			m_llTimestampLastChar = llTimestamp;
+			pEvent->character = TEXTINPUT_BACKSPACE;
+			return true;
+		/*}*/
+	}
+	else if (GetAsyncKeyState(VK_SPACE) & 1)
+	{
+		/*if (llTimestamp - m_llTimestampLastChar >= TEXTINPUT_DELAY)
+		{*/
+			m_llTimestampLastChar = llTimestamp;
+			pEvent->character = ' ';
+			return true;
+		/*}*/
+	}
+
+	for (int i = 'A'; i <= 'Z'; i++)
+	{
+		if (GetAsyncKeyState(i) & 1)
+		{
+			char c = i;
+			if (!bShift)
+				c += ('a' - 'A');
+
+			/*if (m_cLastChar == c)
+			{
+				if (llTimestamp - m_llTimestampLastChar < TEXTINPUT_DELAY)
+					continue;
+			}*/
+
+			bGotKey = true;
+			pEvent->character = c;
+			m_cLastChar = c;
+			m_llTimestampLastChar = llTimestamp;
+			break;
+		}
+	}
+
+	return bGotKey;
 }

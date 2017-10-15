@@ -29,6 +29,7 @@ public:
 
 	virtual void SetEnabled(bool bIsEnabled);
 
+	void ClearOptions();
 	void AddOption(int id, const char* text);
 	int GetCountOptions() { return m_iCountOptions; }
 

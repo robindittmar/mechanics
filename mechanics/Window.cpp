@@ -4,6 +4,7 @@ CWindow::CWindow(int x, int y, int w, int h, const char* pTitle) : IControl(x, y
 {
 	m_bHitcheckForMouseMove = false;
 	m_bHitcheckForMouseUp = false;
+	m_bCanHaveFocus = true;
 
 	m_bIsVisible = false;
 	m_bIsDragging = false;
