@@ -251,7 +251,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				continue;
 		}
 
-		// Calculate a few values
+		// Calculate a values
 		if (iBacktracked == -1)
 		{
 			qAimAngles = Utils::CalcAngle(vMyHeadPos, vEnemyPos);

@@ -5,6 +5,7 @@ CVisuals::CVisuals()
 {
 	m_bCrosshair = false;
 	m_fDrawHitmarkerStartTime = 0.0f;
+	m_flZoomSensitivity = 1.0f;
 }
 
 CVisuals::~CVisuals()

@@ -6,6 +6,7 @@
 #include "ResolverPlayer.h"
 #include "ClientEntity.h"
 #include "UserCmd.h"
+#include "Target.h"
 
 class CApplication;
 
@@ -24,6 +25,22 @@ class CApplication;
 #define FAKEYAWANTIAIM_NONE						0
 #define FAKEYAWANTIAIM_STATIC					1
 #define FAKEYAWANTIAIM_STATICJITTER				2
+
+
+// Hide Direction
+#define HIDEDIRECTION_INVALID					-1
+#define HIDEDIRECTION_NEXT						0
+#define HIDEDIRECTION_RIGHT						1
+#define HIDEDIRECTION_LEFT						2
+
+#define EDGEANTIAIM_RANGE						3
+#define TARGETCRITERIA_COUNT					3
+
+struct EdgeAntiAimPoint
+{
+	Vector vPoint;
+	bool bIsHidden;
+};
 
 class CAntiAim : public IFeature
 {
@@ -82,6 +99,9 @@ public:
 	void DrawLBYIndicator();
 	bool m_bNextLbyUpdate;
 
+	CTarget* GetTarget(int iTargetCriteria) { return &m_pTargets[iTargetCriteria]; }
+
+	void DrawEdgeAntiAimPoints();
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -115,7 +135,19 @@ private:
 	bool m_bIsEdgeAntiAim;
 	bool m_bEdgeAntiAimFakeSwitch;
 
+	bool m_bHasTargets;
+	CTarget m_pTargets[TARGETCRITERIA_COUNT];
+
+	EdgeAntiAimPoint EdgeAntiAimPointsRight[EDGEANTIAIM_RANGE];
+	EdgeAntiAimPoint EdgeAntiAimPointsLeft[EDGEANTIAIM_RANGE];
+
+	void HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection);
+	int CheckHeadPoint(Vector vEnemyHeadPos, EdgeAntiAimPoint* vRight, EdgeAntiAimPoint* vLeft);
 	bool EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
+
+	void GetAntiAimTargets();
+	float GetOriginDist(Vector& a, Vector& b);
+	float GetViewangleDist(QAngle& a, QAngle& b);
 
 	void ApplyPitchAntiAim(QAngle* angles);
 	void ApplyYawAntiAim(QAngle* angles);

@@ -80,7 +80,6 @@ public:
 	void SetViewmodelFovValue(int iViewmodelFovValue) { m_iViewmodelFovValue = iViewmodelFovValue; }
 	int GetViewmodelFovValue() { return m_iViewmodelFovValue; }
 
-	void SetZoomSensitivity(float flZoomSensitivity) { m_flZoomSensitivity = flZoomSensitivity; }
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
 
 	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };

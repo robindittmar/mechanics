@@ -528,10 +528,12 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();
+			pApp->AntiAim()->DrawEdgeAntiAimPoints();
 
 			// LC Draw
 			pApp->LagCompensation()->DrawLagCompensationEntries();
 			pApp->LagCompensation()->DrawLagCompensationIndicator();
+
 
 			// ****TEST*****
 			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
@@ -874,7 +876,6 @@ void CApplication::Setup()
 	{
 		SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	}
-	m_visuals.SetZoomSensitivity(atof(m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray())->value));
 
 	// Resource manager
 	g_pResourceManager = new CResourceManager();

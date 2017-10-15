@@ -27,7 +27,7 @@ namespace Autowall
 		int             penetrate_count;
 	};
 
-	bool CanHit(Vector &point, float *damage_given);
+	bool CanHit(Vector &point, float *damage_given, Vector* vHeadPos = NULL);
 	inline bool DidHitWorld(IClientEntity* m_pEnt);
 	inline bool DidHitNonWorldEntity(IClientEntity* m_pEnt);
 	void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage);
