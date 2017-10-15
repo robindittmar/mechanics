@@ -141,6 +141,9 @@ void CSlider::SetValue(float fValue)
 {
 	m_fValue = fValue;
 	this->SetLabelText();
+
+	if (m_pEventHandler)
+		m_pEventHandler(m_fValue);
 }
 
 void CSlider::SetValueToCursorPos(int mx, int my)
@@ -199,10 +202,6 @@ void CSlider::SetValueToCursorPos(int mx, int my)
 	}
 
 	this->SetValue(fDelta);
-	this->SetLabelText();
-
-	if (m_pEventHandler)
-		m_pEventHandler(m_fValue);
 }
 
 void CSlider::SetLabelText()

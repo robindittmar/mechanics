@@ -308,6 +308,8 @@ void CMenu::CreateRageTab()
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotTargetCriteria);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotVisibleMode);
 
+	m_pAimbotHitchanceEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
+
 	m_pAimbotEnabled->SetTooltipText("Enables/Disables the Aimbot entirely");
 	m_pAimbotSilentAim->SetTooltipText("Toggles wether or not the movement of the aimbot is visible to you");
 	// TODO: </TEST>
