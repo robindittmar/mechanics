@@ -1,7 +1,8 @@
 #include "Esp.h"
 #include "Application.h"
 
-CEsp::CEsp()
+CEsp::CEsp() :
+	m_xorHeadZero("nä¦H;")
 {
 	m_iFadeoutTime = 1500;
 	m_iWeaponStuffOffset = 0;
@@ -48,7 +49,7 @@ void CEsp::Update(void* pParameters)
 	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 
 	// Grab LocalPlayer
-	pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+	pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return;
 
@@ -69,6 +70,9 @@ void CEsp::Update(void* pParameters)
 
 		if (pCurEntity->IsDormant())
 		{
+			if (!m_bFadeoutEnabled)
+				continue;
+
 			// If it was NOT dormant before (first tick player is dormant)
 			if (!m_pPastPlayers[i].GetIsDormant())
 			{
@@ -103,7 +107,7 @@ void CEsp::Update(void* pParameters)
 		{
 			if (iCurEntityTeam == TEAMNUM_CT)
 			{
-				m_iHeadBoneCT = pCurEntity->GetBoneByName("head_0");
+				m_iHeadBoneCT = pCurEntity->GetBoneByName(m_xorHeadZero.ToCharArray());
 			}
 		}
 
@@ -111,17 +115,21 @@ void CEsp::Update(void* pParameters)
 		{
 			if (iCurEntityTeam == TEAMNUM_T)
 			{
-				m_iHeadBoneT = pCurEntity->GetBoneByName("head_0");
+				m_iHeadBoneT = pCurEntity->GetBoneByName(m_xorHeadZero.ToCharArray());
 			}
 		}
 
 		if (!pCurEntity->SetupBones(pBoneMatrix, MAXSTUDIOBONES, BONE_USED_BY_HITBOX, m_pApp->EngineClient()->GetLastTimeStamp()))
 			continue;
 
-		Vector vScreenOrigin, vScreenHead;
+		Vector vScreenOrigin, vScreenHead, vScreenUpperOrigin;
 		Vector vCurEntOrigin = *pCurEntity->GetOrigin();
 		Vector vCurEntHeadPos;
+		Vector vCurEntUpperOrigin;
 		MatrixGetColumn(pBoneMatrix[iCurEntityTeam == TEAMNUM_CT ? m_iHeadBoneCT : m_iHeadBoneT], 3, vCurEntHeadPos);
+
+		vCurEntUpperOrigin = vCurEntHeadPos;
+		vCurEntUpperOrigin.z += 5.0f;
 
 		Ray_t ray;
 		trace_t trace;
@@ -173,52 +181,36 @@ void CEsp::Update(void* pParameters)
 		int armor = pCurEntity->GetArmor();
 		bool hasHelmet = pCurEntity->HasHelmet();
 
-		if (m_pGui->WorldToScreen(vCurEntOrigin, vScreenOrigin) && m_pGui->WorldToScreen(vCurEntHeadPos, vScreenHead))
+		if (m_pGui->WorldToScreen(vCurEntOrigin, vScreenOrigin) && m_pGui->WorldToScreen(vCurEntHeadPos, vScreenHead) && m_pGui->WorldToScreen(vCurEntUpperOrigin, vScreenUpperOrigin))
 		{
-			float height = abs(vScreenHead.y - vScreenOrigin.y);
+			float height = abs(vScreenUpperOrigin.y - vScreenOrigin.y);
 			float width = height * 0.65f;
 
 			DrawBoundingBox(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, color);
-			if (m_bDrawNames)
-			{
-				DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
-			}
-			if (m_bDrawSkeleton)
-			{
-				DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
-			}
-			if (m_bDrawHealthBar)
-			{
-				DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
-			}
-			if (m_bDrawHealthNumber && iHealth < 100)
-			{
-				DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
-			}
-
+			DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
+			DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
+			DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
+			DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			DrawAmmoBar(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			DrawAmmoNumber(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
 			DrawActiveWeapon(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
+			DrawArmorBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, armor, alpha);
 
-			if (m_bDrawArmorBar)
-			{
-				DrawArmorBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, armor, alpha);
-			}
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{
 				DrawHelmet(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
 			}
 
-			if (m_bDrawViewangles)
-			{
-				DrawViewangles(pSurface, vScreenHead.x, vScreenHead.y, vCurEntHeadPos, *pCurEntity->GetAngEyeAngles(), alpha);
-			}
+			DrawViewangles(pSurface, vScreenHead.x, vScreenHead.y, vCurEntHeadPos, *pCurEntity->GetAngEyeAngles(), alpha);
 		}
 	}
 }
 
 void CEsp::DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha)
 {
+	if (!m_bDrawArmorBar)
+		return;
+
 	float armorpercentage = (100 - armor) / 100.0f;
 
 	//background
@@ -374,6 +366,9 @@ void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, i
 
 void CEsp::DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha)
 {
+	if (!m_bDrawSkeleton)
+		return;
+
 	studiohdr_t* pStudioHdr = m_pApp->ModelInfo()->GetStudiomodel(pEntity->GetModel());
 	if (!pStudioHdr)
 		return;
@@ -406,6 +401,9 @@ void CEsp::DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t*
 
 void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
+	if (!m_bDrawHealthBar)
+		return;
+
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2 - 8;
 	int x2 = posX - width / 2 - 4;
@@ -436,6 +434,12 @@ void CEsp::DrawHealthBar(ISurface* pSurface, int posX, int posY, int height, int
 
 void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, int width, int health, int alpha)
 {
+	if (!m_bDrawHealthNumber)
+		return;
+
+	if (health == 100)
+		return;
+
 	float healthpercentage = (100 - health) / 100.0f;
 	int x1 = posX - width / 2;
 	if (m_bDrawArmorBar)
@@ -470,7 +474,7 @@ void CEsp::DrawActiveWeapon(ISurface * pSurface, IClientEntity* pEntity, int pos
 	if (!pActiveWeapon)
 		return;
 
-	static int iWeaponUnderscoreLen = strlen("weapon_");
+	static int iWeaponUnderscoreLen = strlen(/*weapon_*/CXorString("`nä²xeÚ").ToCharArray());
 
 	bool bIsFireableWeapon = !(pActiveWeapon->IsKnife() || pActiveWeapon->IsNade() || pActiveWeapon->IsTaser() || pActiveWeapon->IsC4());
 	if (bIsFireableWeapon && (m_bDrawAmmoNumber || m_bDrawAmmoBar))
@@ -573,7 +577,11 @@ void CEsp::DrawHelmet(ISurface* pSurface, int posX, int posY, int height, int wi
 	pDevice->Clear(1, &helmet, D3DCLEAR_TARGET, D3DCOLOR_ARGB(200, 83, 83, 83), 0, 0);*/
 }
 
-void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha) {
+void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int posY, int height, int width, int alpha)
+{
+	if (!m_bDrawNames)
+		return;
+
 	pSurface->DrawSetTextFont(m_iFont);
 
 	PlayerInfo pInfo;
@@ -592,6 +600,9 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 
 void CEsp::DrawViewangles(ISurface* pSurface, int headX, int headY, Vector headPos, QAngle angles, int alpha)
 {
+	if (!m_bDrawViewangles)
+		return;
+
 	Vector vForward, vAimPos, vAimPosScreen;
 
 	// Create forward vector & get aim point
