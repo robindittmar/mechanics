@@ -158,6 +158,30 @@ void CApplication::LoadSkinChangerConfig()
 		CXorString("|eì¤rTá§qjð®cTæ¶").ToCharArray(),
 		CXorString("|eì¤rTî£ejè ~").ToCharArray()
 	);
+
+	// Deagle 'Kamochi Dragon'
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_DEAGLE,
+		new CSkinMetadata(
+			WEAPON_DEAGLE,
+			527,
+			0,
+			420,
+			0
+		)
+	);
+
+	// SSG08 'Dragonfire'
+	this->m_skinchanger.AddSkinReplacement(
+		WEAPON_SSG08,
+		new CSkinMetadata(
+			WEAPON_SSG08,
+			624,
+			0,
+			420,
+			0
+		)
+	);
 }
 
 void CApplication::Unhook()
@@ -1179,7 +1203,7 @@ void CApplication::Setup()
 	this->m_misc.SetSpamName(false);
 
 	// SkinChanger
-	this->m_skinchanger.SetEnabled(false);
+	this->m_skinchanger.SetEnabled(true);
 	// TODO: Config und sowas
 	this->LoadSkinChangerConfig();
 
