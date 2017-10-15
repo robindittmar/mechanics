@@ -4,49 +4,26 @@ Priority High
 =======> PLAYERLIST!!!!
 ==> AUTOWALL!
 => GUI/Menu
-=> ConVar->FindVar(...) [x]
-=> Netvars [x]
- => Proxy Hooks (Netvars) [x]
 => Colorpicker
 
 --------------------------------------
 Priority Medium
 --------------------------------------
 => psilent?
-=> Skin changer [x]
-=> Viewmodel changer (viewmodel position) [x]
-=> Accuracy Penalty (Hitchance)
-=> backtracking
 
 --------------------------------------
 Priority Low
 --------------------------------------
 => https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Events
-=> Antiaim Wall detection
 => Multipoint visibility check [(kind of) x]
-=> AntiAim target von aimbot wenn möglich, sonst closest to origin
-=> Sound Esp [x]
-
 
 // Uhrzeit als clantag?
-
-// 2017-09-19
--> Sound ESP [ ]
--> Fadeouts [ ]
--> Config [ ]
--> Menu [ ]
-
-// 2017-09-24
--> Menu (Visuals/Misc)
--> Trigger/(Legitbot?)
 
 -> NoRecoil/NoSpread after aimbot if aimbotshoot or variable true
 
 -> Hitchance Revolver/Negev + Hitchance generell (nospread?)
 
 // NoSmoke nach mapchange
-
-=> SkinChanger KillIcons werden replaced, auch wenn skinchanger disabled ist :D
 
 -> FakeYaw Moving
 

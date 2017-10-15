@@ -89,6 +89,7 @@ protected:
 
 	bool m_bHitcheckForMouseMove;
 	bool m_bHitcheckForMouseUp;
+	bool m_bCanHaveFocus;
 
 	bool m_bMouseOver;
 	bool m_bMouseDown;

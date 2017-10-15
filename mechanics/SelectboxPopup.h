@@ -31,6 +31,7 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
+	void ClearOptions();
 	void AddOption(int curIdx, const char* text, int len);
 private:
 	CSelectbox* m_pSelectbox;

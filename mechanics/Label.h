@@ -37,6 +37,8 @@ public:
 	void SetOrientation(int iOrientation) { m_iOrientation = iOrientation; }
 	int GetOrientation() { return m_iOrientation; }
 
+	int GetContentTextLength() { return m_iContentTextLen; }
+
 	void SetContentText(const char* pText);
 	const char* GetContentText() { return (const char*)m_pContentText; }
 private:

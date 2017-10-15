@@ -11,6 +11,7 @@
 #include "ClientEntity.h"
 
 // Custom
+#include "XorString.h"
 #include "IFeature.h"
 #include "Gui.h"
 #include "EspPlayer.h"
@@ -145,6 +146,8 @@ private:
 	Color m_clrSpotted;
 
 	CEspPlayer m_pPastPlayers[MAX_PLAYERS];
+
+	CXorString m_xorHeadZero;
 
 	CGui* m_pGui;
 };

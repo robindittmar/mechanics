@@ -144,6 +144,20 @@ void CSelectboxPopup::Draw(ISurface* pSurface)
 	}
 }
 
+void CSelectboxPopup::ClearOptions()
+{
+	CLabel* pCurLabel;
+	for (std::vector<CLabel*>::iterator it = m_vOptionLabels.begin(); it != m_vOptionLabels.end(); it++)
+	{
+		pCurLabel = *it;
+
+		if (pCurLabel)
+			delete pCurLabel;
+	}
+
+	m_vOptionLabels.clear();
+}
+
 void CSelectboxPopup::AddOption(int curIdx, const char* text, int len)
 {
 	m_vOptionLabels.push_back(new CLabel(0, 0, 0, 0, text));

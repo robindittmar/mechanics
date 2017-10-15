@@ -231,18 +231,14 @@ void CMenu::HandleInput()
 			bool bNewValue = !m_pApp->Visuals()->GetThirdperson();
 
 			m_pVisualsOthersThirdperson->SetChecked(bNewValue);
-			m_pApp->Visuals()->SetThirdperson(bNewValue);
 		}
 		else if (m_inputEvent.buttons & EVENT_BTN_SWITCHREALFAKE &&
 			!(m_inputEvent.buttonProperties & EVENT_BTN_SWITCHREALFAKE))
 		{
 			float fOffsetSwap = m_pApp->AntiAim()->GetYawOffsetStanding();
 
-			m_pApp->AntiAim()->SetYawOffsetStanding(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
-			m_pApp->AntiAim()->SetYawFakeOffsetStanding(fOffsetSwap);
-
-			m_pAntiaimStandingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetStanding());
-			m_pAntiaimYawStandingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
+			m_pAntiaimStandingYawOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
+			m_pAntiaimYawStandingFakeOffset->SetValue(fOffsetSwap);
 		}
 	}
 
@@ -962,7 +958,10 @@ void CMenu::CreateConfigTab()
 
 	m_pClrPicker = new CColorPicker(16, 16, 20, 20);
 
+	m_pTextbox = new CTextbox(16, 128, 120, 20);
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pClrPicker);
+	m_pConfigTab->AddChild(m_pTextbox);
 }

@@ -35,6 +35,9 @@ public:
 	void SetClientPosition(int x, int y);
 	void GetClientPosition(int* x, int* y);
 
+	void SetFocus(IControl* pFocus) { m_pFocus = pFocus; }
+	IControl* GetFocus() { return m_pFocus; }
+
 	void SetPopup(IControl* pPopup) { m_pPopup = pPopup; }
 	IControl* GetPopup() { return m_pPopup; }
 
@@ -44,6 +47,7 @@ private:
 	CCanvas* m_pCanvas;
 	CLabel* m_pLabelTitle;
 
+	IControl* m_pFocus;
 	IControl* m_pPopup;
 	CTooltip* m_pTooltip;
 

@@ -1,9 +1,10 @@
 #ifndef __GUIEVENT_H__
 #define __GUIEVENT_H__
 
-#define EVENT_TYPE_NONE		0
-#define EVENT_TYPE_KEYBOARD	1
-#define EVENT_TYPE_MOUSE	2
+#define EVENT_TYPE_NONE			0
+#define EVENT_TYPE_KEYBOARD		1
+#define EVENT_TYPE_MOUSE		2
+#define EVENT_TYPE_CHARACTER	3
 
 #define EVENT_BTN_LMOUSE			(1 << 0)
 #define EVENT_BTN_RMOUSE			(1 << 1)
@@ -27,6 +28,7 @@ public:
 	int mousex_old, mousey_old;
 	int buttons;
 	int buttonProperties; // Down = 1, Up = 0
+	char character;
 private:
 };
 

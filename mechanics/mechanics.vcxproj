@@ -213,6 +213,7 @@
     <ClCompile Include="TabPage.cpp" />
     <ClCompile Include="Target.cpp" />
     <ClCompile Include="TargetSelector.cpp" />
+    <ClCompile Include="Textbox.cpp" />
     <ClCompile Include="Tooltip.cpp" />
     <ClCompile Include="Triggerbot.cpp" />
     <ClCompile Include="Utils.cpp" />
@@ -321,6 +322,7 @@
     <ClInclude Include="TabPage.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="TargetSelector.h" />
+    <ClInclude Include="Textbox.h" />
     <ClInclude Include="Tooltip.h" />
     <ClInclude Include="Triggerbot.h" />
     <ClInclude Include="UserCmd.h" />
