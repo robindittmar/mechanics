@@ -12,8 +12,10 @@ CChams::CChams()
 	m_bRenderTeam = false;
 	m_bRenderLocalplayer = false;
 	m_bOnlyVisible = false;
-	m_bFlatModels = false;
+	m_iPlayerChamsStyle = PLAYER_CHAMSSTYLE_NONE;
 	m_bRenderFakeAngle = false;
+
+	m_iWeaponChamsStyle = WEAPON_CHAMSSTYLE_NONE;
 
 	m_pFlatHiddenCT = NULL;
 	m_pFlatVisibleCT = NULL;
@@ -50,27 +52,31 @@ void CChams::Update(void* pParameters)
 {
 }
 
-void CChams::SetFlatModels(bool bFlatModels)
+void CChams::SetFlatModels(int iPlayerChamsStyle)
 {
-	m_bFlatModels = bFlatModels;
+	m_iPlayerChamsStyle = iPlayerChamsStyle;
 
-	if (m_bFlatModels)
+	switch (m_iPlayerChamsStyle)
 	{
+	case PLAYER_CHAMSSTYLE_FLAT:
 		m_pHiddenCT = m_pFlatHiddenCT;
 		m_pVisibleCT = m_pFlatVisibleCT;
 		m_pHiddenT = m_pFlatHiddenT;
 		m_pVisibleT = m_pFlatVisibleT;
 
 		m_pFakeAngle = m_pFlatFakeAngle;
-	}
-	else
-	{
+		break;
+	case PLAYER_CHAMSSTYLE_LIT:
 		m_pHiddenCT = m_pLitHiddenCT;
 		m_pVisibleCT = m_pLitVisibleCT;
 		m_pHiddenT = m_pLitHiddenT;
 		m_pVisibleT = m_pLitVisibleT;
 
 		m_pFakeAngle = m_pLitFakeAngle;
+		break;
+	case PLAYER_CHAMSSTYLE_NONE:
+	default:
+		break;
 	}
 }
 
@@ -153,7 +159,7 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 		m_pLitFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
 
 		// Force Chams to actually "load" into the pointers
-		this->SetFlatModels(m_bFlatModels);
+		this->SetFlatModels(m_iPlayerChamsStyle);
 
 		m_bFakeAngleMaterialsInitialized = true;
 	}
@@ -202,9 +208,12 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	m_pModelRender->ForcedMaterialOverride(NULL);
 }
 
-void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
 {
 	if (!m_bIsEnabled)
+		return;
+
+	if (m_iPlayerChamsStyle == PLAYER_CHAMSSTYLE_NONE)
 		return;
 
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
@@ -240,7 +249,7 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 		m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
 
 		// Force Chams to actually "load" into the pointers
-		this->SetFlatModels(m_bFlatModels);
+		this->SetFlatModels(m_iPlayerChamsStyle);
 
 		// Don't do this again :)
 		m_bMaterialsInitialized = true;
@@ -285,6 +294,54 @@ void CChams::Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx,
 				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 			}
 			m_pModelRender->ForcedMaterialOverride(m_pVisibleCT);
+		}
+	}
+}
+
+void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (m_iWeaponChamsStyle == WEAPON_CHAMSSTYLE_NONE)
+		return;
+
+	static CXorString xorWeaponsV("`nä²xeöía");
+	static CXorString xorWeaponsVModels("zdá§{xªµrjõ­yxª´Hfê¦rgöí");
+	static CXorString xorOtherTextures("Xí§e+ñ§oð°rx");
+	static CXorString xorGoldMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8lê®s");
+	static CXorString xorCrystalMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8h÷»dä®Hié·r");
+	static CXorString xorPlatMat("zdá§{xª²{jü§e$æ¶Hmç«8hñqiìpgä±d");
+	static CXorString xorGlassMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8h÷»dä®Hhé§vy");
+
+
+	if (strstr(pszModelName, xorWeaponsV.ToCharArray()) != NULL &&
+		strstr(pszModelName, xorWeaponsVModels.ToCharArray()) == NULL)
+	{
+		IMaterial* pMat;
+		switch (m_iWeaponChamsStyle)
+		{
+		case WEAPON_CHAMSSTYLE_GOLD:
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGoldMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			break;
+		case WEAPON_CHAMSSTYLE_CRYSTAL:
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorCrystalMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			break;
+		case WEAPON_CHAMSSTYLE_PLATINUM:
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorPlatMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			break;
+		case WEAPON_CHAMSSTYLE_GLASS:
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGlassMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			break;
+		case WEAPON_CHAMSSTYLE_NONE:
+		default:
+			break;
+		}
+
+		if (pMat)
+		{
+			m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
+			m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		}
 	}
 }

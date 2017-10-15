@@ -142,13 +142,16 @@ void CMenu::ApplySettings()
 	m_pWeaponEspBombDefuseTimerEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombDefuseTimer());
 	m_pWeaponEspBombDamageIndicatorEnabled->SetChecked(m_pApp->WeaponEsp()->GetDrawBombDamageIndicator());
 
+	// Chams
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
 	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetFlatModels());
 	m_pChamsDrawOwnTeam->SetChecked(m_pApp->Chams()->GetRenderTeam());
 	m_pChamsDrawOwnModel->SetChecked(m_pApp->Chams()->GetRenderLocalplayer());
 	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
 	m_pChamsFakeAngle->SetChecked(m_pApp->Chams()->GetRenderFakeAngle());
+	m_pChamsWeaponChams->SetSelection(m_pApp->Chams()->GetWeaponChamsStyle());
 
+	// Sound ESP
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
 	m_pSoundEspShowTime->SetValue(m_pApp->SoundEsp()->GetShowTime());
 	m_pSoundEspFadeoutEnabled->SetChecked(m_pApp->SoundEsp()->GetFadeoutEnabled());
@@ -156,6 +159,7 @@ void CMenu::ApplySettings()
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
 	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
 
+	// LC
 	m_pDrawLagCompensationStyle->SetSelection(m_pApp->LagCompensation()->GetDrawStyle());
 	m_pDrawLagCompensationFrequency->SetValue(m_pApp->LagCompensation()->GetDrawFrequency());
 	m_pDrawLagCompensationOnlyVisible->SetChecked(m_pApp->LagCompensation()->GetDrawOnlyVisible());
@@ -307,7 +311,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotTargetCriteria);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotVisibleMode);
-	
+
 	m_pAimbotEnabled->SetTooltipText("Enables/Disables the Aimbot entirely");
 	m_pAimbotSilentAim->SetTooltipText("Toggles wether or not the movement of the aimbot is visible to you");
 	// TODO: </TEST>
@@ -652,9 +656,10 @@ void CMenu::CreateVisualsTab()
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pChamsEnabled->SetEventHandler(std::bind(&CChams::SetEnabled, m_pApp->Chams(), std::placeholders::_1));
 
-	m_pChamsStyle = new CSelectbox(4, 36, 128, 20, "Chams Style");
-	m_pChamsStyle->AddOption(0, "Lit");
-	m_pChamsStyle->AddOption(1, "Flat");
+	m_pChamsStyle = new CSelectbox(4, 36, 128, 20, "Playerchams Style");
+	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_NONE, "None");
+	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_LIT, "Lit");
+	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_FLAT, "Flat");
 	m_pChamsStyle->SetEventHandler(std::bind(&CChams::SetFlatModels, m_pApp->Chams(), std::placeholders::_1));
 
 	m_pChamsDrawOwnTeam = new CCheckbox(4, 56, 128, 16, "Own Team");
@@ -669,6 +674,14 @@ void CMenu::CreateVisualsTab()
 	m_pChamsFakeAngle = new CCheckbox(4, 132, 128, 16, "Fake Angle");
 	m_pChamsFakeAngle->SetEventHandler(std::bind(&CChams::SetRenderFakeAngle, m_pApp->Chams(), std::placeholders::_1));
 
+	m_pChamsWeaponChams = new CSelectbox(4, 166, 128, 20, "Weaponchams Style");
+	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_NONE, "None");
+	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_GLASS, "Glass");
+	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_PLATINUM, "Platinum");
+	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_CRYSTAL, "Crystal");
+	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_GOLD, "Gold");
+	m_pChamsWeaponChams->SetEventHandler(std::bind(&CChams::SetWeaponChamsStyle, m_pApp->Chams(), std::placeholders::_1));
+
 	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
@@ -676,6 +689,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnModel);
 	m_pChamsGroup->AddChild(m_pChamsIgnoreZ);
 	m_pChamsGroup->AddChild(m_pChamsFakeAngle);
+	m_pChamsGroup->AddChild(m_pChamsWeaponChams);
 
 	m_pSoundEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pSoundEspEnabled->SetEventHandler(std::bind(&CSoundEsp::SetEnabled, m_pApp->SoundEsp(), std::placeholders::_1));

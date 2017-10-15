@@ -438,7 +438,8 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
 		pApp->Chams()->DrawFakeAngle(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pApp->Chams()->Render(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Chams()->RenderPlayerChams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
+		pApp->Chams()->RenderWeaponChams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		pHands = pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
 	}
 
@@ -1112,7 +1113,7 @@ void CApplication::Setup()
 	this->m_esp.SetDrawHealthNumber(true);
 	this->m_esp.SetDrawArmorBar(false);
 	this->m_esp.SetDrawActiveWeapon(true);
-	this->m_esp.SetDrawAmmoBar(true);
+	this->m_esp.SetDrawAmmoBar(false);
 	this->m_esp.SetDrawAmmoNumber(true);
 	this->m_esp.SetDrawOwnTeam(false);
 	this->m_esp.SetDrawOwnModel(false);
@@ -1153,20 +1154,21 @@ void CApplication::Setup()
 	this->m_chams.SetRenderTeam(false);
 	this->m_chams.SetRenderLocalplayer(false);
 	this->m_chams.SetOnlyVisible(false);
-	this->m_chams.SetFlatModels(false);
+	this->m_chams.SetFlatModels(PLAYER_CHAMSSTYLE_LIT);
 	this->m_chams.SetRenderFakeAngle(true);
 	this->m_chams.SetColorHiddenCT(Color(0, 0, 255));
 	this->m_chams.SetColorVisibleCT(Color(0, 255, 0));
 	this->m_chams.SetColorHiddenT(Color(255, 0, 0));
 	this->m_chams.SetColorVisibleT(Color(255, 255, 0));
+	this->m_chams.SetWeaponChamsStyle(WEAPON_CHAMSSTYLE_NONE);
 
 	// Misc
 	this->m_misc.SetEnabled(true);
 	this->m_misc.SetNoRecoil(false);
 	this->m_misc.SetFakelag(false);
 	this->m_misc.SetFakelagChokeAmount(10);
-	this->m_misc.SetAutoStrafeMode(AUTOSTRAFEMODE_LEGIT);
-	this->m_misc.SetCircleStrafe(true);
+	this->m_misc.SetAutoStrafeMode(AUTOSTRAFEMODE_RAGE);
+	this->m_misc.SetCircleStrafe(false);
 	this->m_misc.SetAutoPistol(false);
 	this->m_misc.SetShowSpectators(false);
 	this->m_misc.SetShowOnlyMySpectators(false);

@@ -168,6 +168,7 @@ private:
 	CCheckbox* m_pChamsDrawOwnModel;
 	CCheckbox* m_pChamsIgnoreZ;
 	CCheckbox* m_pChamsFakeAngle;
+	CSelectbox* m_pChamsWeaponChams;
 
 	// Sound Esp
 	CGroupbox* m_pSoundEspGroup;

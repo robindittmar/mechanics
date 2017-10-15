@@ -9,6 +9,16 @@
 // Custom
 #include "IFeature.h"
 
+#define PLAYER_CHAMSSTYLE_NONE			0
+#define PLAYER_CHAMSSTYLE_LIT			1
+#define PLAYER_CHAMSSTYLE_FLAT			2
+
+#define WEAPON_CHAMSSTYLE_NONE			0
+#define WEAPON_CHAMSSTYLE_GLASS			1
+#define WEAPON_CHAMSSTYLE_PLATINUM		2
+#define WEAPON_CHAMSSTYLE_CRYSTAL		3
+#define WEAPON_CHAMSSTYLE_GOLD			4
+
 class IMatRenderContext;
 typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 
@@ -30,8 +40,8 @@ public:
 	void SetOnlyVisible(bool bOnlyVisible) { m_bOnlyVisible = bOnlyVisible; }
 	bool GetOnlyVisible() { return m_bOnlyVisible; }
 
-	void SetFlatModels(bool bFlatModels);
-	bool GetFlatModels() { return m_bFlatModels; }
+	void SetFlatModels(int iPlayerChamsStyle);
+	int GetFlatModels() { return m_iPlayerChamsStyle; }
 
 	void SetRenderFakeAngle(bool bRenderFakeAngle) { m_bRenderFakeAngle = bRenderFakeAngle; }
 	bool GetRenderFakeAngle() { return m_bRenderFakeAngle; }
@@ -48,9 +58,13 @@ public:
 	void SetColorVisibleT(Color clrVisibleT) { m_clrVisibleT = clrVisibleT; }
 	Color GetColorVisibleT() { return m_clrVisibleT; }
 
+	void SetWeaponChamsStyle(int iWeaponChamStyle) { m_iWeaponChamsStyle = iWeaponChamStyle; }
+	int GetWeaponChamsStyle() { return m_iWeaponChamsStyle; }
+
 	void ReloadMaterials();
 	void DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
-	void Render(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
+	void RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
+	void RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 private:
 	IVModelRender* m_pModelRender;
 	DrawModelExecute_t m_pDrawModelExecute;
@@ -58,13 +72,15 @@ private:
 	bool m_bRenderTeam;
 	bool m_bRenderLocalplayer;
 	bool m_bOnlyVisible;
-	bool m_bFlatModels;
+	int m_iPlayerChamsStyle;
 	bool m_bRenderFakeAngle;
 
 	Color m_clrHiddenCT;
 	Color m_clrVisibleCT;
 	Color m_clrHiddenT;
 	Color m_clrVisibleT;
+
+	int m_iWeaponChamsStyle;
 
 	bool m_bMaterialsInitialized;
 	IMaterial* m_pFlatHiddenCT;
