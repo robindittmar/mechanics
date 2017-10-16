@@ -100,8 +100,12 @@ void CMenu::ApplySettings()
 	m_pAntiaimYawMovingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetMoving());
 
 	m_pAntiaimLbyIndicator->SetChecked(m_pApp->AntiAim()->GetDrawLbyIndicator());
-	m_pAntiaimStandingEdgeAntiaim->SetChecked(m_pApp->AntiAim()->GetDoEdgeAntiAim());
 	m_pAntiaimStandingLbyBreaker->SetChecked(m_pApp->AntiAim()->GetLbyBreaker());
+
+	m_pAntiaimEdgeAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetDoEdgeAntiAim());
+	m_pAntiaimEdgeAntiaimCheckOffset->SetValue(m_pApp->AntiAim()->GetEdgeAntiAimCheckPointsAmount());
+	m_pAntiaimEdgeAntiaimDrawPoints->SetChecked(m_pApp->AntiAim()->GetDrawEdgeAntiAimPoints());
+	m_pAntiaimEdgeAntiaimDrawLines->SetChecked(m_pApp->AntiAim()->GetDrawEdgeAntiAimLines());
 
 	// Legit
 	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
@@ -426,30 +430,48 @@ void CMenu::CreateRageTab()
 	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingEdgeAntiaim = new CCheckbox(4, 159, 128, 16, "Edge AntiAim");
-	m_pAntiaimStandingEdgeAntiaim->SetEventHandler(std::bind(&CAntiAim::SetDoEdgeAntiAim, m_pApp->AntiAim(), std::placeholders::_1));
-
-	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 179, 128, 16, "LBY Breaker");
+	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 159, 128, 16, "LBY Breaker");
 	m_pAntiaimStandingLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimLbyIndicator = new CCheckbox(62, 0, 128, 16, "LBY Indicator");
 	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));
 
-	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 220, "Standing");
+	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 190, "Standing");
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingPitch);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYaw);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawOffset);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingYawFake);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimYawStandingFakeOffset);
-	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingEdgeAntiaim);
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingLbyBreaker);
 
-	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 220, "Moving");
+	m_pAntiaimMovingGroup = new CGroupbox(160, 20, 152, 190, "Moving");
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingPitch);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYaw);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawOffset);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimMovingYawFake);
 	m_pAntiaimMovingGroup->AddChild(m_pAntiaimYawMovingFakeOffset);
+
+
+	m_pAntiaimEdgeAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
+	m_pAntiaimEdgeAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetDoEdgeAntiAim, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimEdgeAntiaimCheckOffsetLabel = new CLabel(4, 14, 128, 16, "Amount of Checkpoints (WIP)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pAntiaimEdgeAntiaimCheckOffset = new CSlider(4, 34, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 2.0f, 6.0f);
+	m_pAntiaimEdgeAntiaimCheckOffset->SetEventHandler(std::bind(&CAntiAim::SetEdgeAntiAimCheckPointsAmount, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimEdgeAntiaimDrawPoints = new CCheckbox(164, 0, 128, 16, "Draw Points");
+	m_pAntiaimEdgeAntiaimDrawPoints->SetEventHandler(std::bind(&CAntiAim::SetDrawEdgeAntiAimPoints, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimEdgeAntiaimDrawLines = new CCheckbox(164, 20, 128, 16, "Draw Lines");
+	m_pAntiaimEdgeAntiaimDrawLines->SetEventHandler(std::bind(&CAntiAim::SetDrawEdgeAntiAimLines, m_pApp->AntiAim(), std::placeholders::_1));
+
+	m_pAntiaimEdgeAntiaimGroup = new CGroupbox(4, 222, 308, 65, "Edge Antiaim");
+	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimEnabled);
+	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimCheckOffsetLabel);
+	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimCheckOffset);
+	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimDrawPoints);
+	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimDrawLines);
 
 	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 308, "Others");
 	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
@@ -462,6 +484,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimGroup->AddChild(m_pAntiaimLbyIndicator);
 	m_pAntiaimGroup->AddChild(m_pAntiaimStandingGroup);
 	m_pAntiaimGroup->AddChild(m_pAntiaimMovingGroup);
+	m_pAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimGroup);
 
 	m_pRageTab = new CTabPage("Rage");
 	m_pRageTab->AddChild(m_pAimbotGroup);
@@ -728,14 +751,17 @@ void CMenu::CreateVisualsTab()
 	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_BONES, "Bones");
 	m_pDrawLagCompensationStyle->SetEventHandler(std::bind(&CLagCompensation::SetDrawStyle, m_pApp->LagCompensation(), std::placeholders::_1));
 
-	m_pDrawLagCompensationFrequency = new CSlider(4, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
+	m_pDrawLagCompensationFrequencyLabel = new CLabel(4, 28, 128, 20, "Draw Frequency");
+
+	m_pDrawLagCompensationFrequency = new CSlider(4, 54, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
 	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
 
-	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 54, 128, 16, "Only Visible");
+	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 68, 128, 16, "Only Visible");
 	m_pDrawLagCompensationOnlyVisible->SetEventHandler(std::bind(&CLagCompensation::SetDrawOnlyVisible, m_pApp->LagCompensation(), std::placeholders::_1));
 
 	m_pDrawLagCompensationGroup = new CGroupbox(840, 16, 152, 308, "Lag Compensation");
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequencyLabel);
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequency);
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationOnlyVisible);
 

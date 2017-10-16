@@ -38,6 +38,7 @@ namespace Offsets
 	extern int m_flC4Blow;
 	extern int m_flDefuseCountDown;
 	extern int m_hBombDefuser;
+	extern int m_bHasHeavyArmor;
 
 	// DT_Local
 	extern int m_nJumpTimeMsecs;

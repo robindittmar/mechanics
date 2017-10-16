@@ -426,16 +426,19 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 				pApp->Visuals()->ThirdpersonAntiAim();
 			}
 
-			// PVS Fix
-			for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
+			// PVS Fix, only needed while Rage and Mirror
+			if (pApp->Ragebot()->GetEnabled() || pApp->Mirror()->GetEnabled())
 			{
-				IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
+				for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
+				{
+					IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
 
-				if (!pCurEntity)
-					continue;
+					if (!pCurEntity)
+						continue;
 
-				*(int*)((DWORD)pCurEntity + OFFSET_LASTOCCLUSIONCHECK) = pApp->GlobalVars()->framecount;
-				*(int*)((DWORD)pCurEntity + OFFSET_OCCLUSIONFLAGS) = 0;
+					*(int*)((DWORD)pCurEntity + OFFSET_LASTOCCLUSIONCHECK) = pApp->GlobalVars()->framecount;
+					*(int*)((DWORD)pCurEntity + OFFSET_OCCLUSIONFLAGS) = 0;
+				}
 			}
 		}
 
@@ -971,6 +974,7 @@ void CApplication::Setup()
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
+	Offsets::m_bHasHeavyArmor = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bHasHeavyArmor*/CXorString("zTçŠvxÍ§v}üƒefê°").ToCharArray());
 	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
 	Offsets::m_flLowerBodyYawTarget = m_pNetVarLowerBodyYaw->GetOffset();
 	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµŸ").ToCharArray());
@@ -1119,7 +1123,6 @@ void CApplication::Setup()
 	// Antiaim
 	this->m_antiAim.SetEnabled(false);
 	this->m_antiAim.SetDrawLbyIndicator(true);
-	this->m_antiAim.SetDoEdgeAntiAim(true);
 	this->m_antiAim.SetLbyBreaker(true);
 
 	// Standing
@@ -1134,6 +1137,11 @@ void CApplication::Setup()
 	this->m_antiAim.SetYawOffsetMoving(0);
 	this->m_antiAim.SetYawFakeSettingMoving(FAKEYAWANTIAIM_STATIC);
 	this->m_antiAim.SetYawFakeOffsetMoving(90);
+
+	// Edge AA
+	this->m_antiAim.SetDoEdgeAntiAim(true);
+	this->m_antiAim.SetDrawEdgeAntiAimPoints(true);
+	this->m_antiAim.SetDrawEdgeAntiAimLines(true);
 
 	// Resolver
 	this->m_resolver.SetEnabled(true);

@@ -35,6 +35,7 @@ namespace Offsets
 	int m_flC4Blow;
 	int m_flDefuseCountDown;
 	int m_hBombDefuser;
+	int m_bHasHeavyArmor;
 
 	int m_nJumpTimeMsecs;
 	int m_flFallVelocity;

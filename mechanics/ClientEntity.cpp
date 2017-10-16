@@ -78,6 +78,11 @@ int IClientEntity::GetArmor()
 	return *(int*)((DWORD)this + Offsets::m_ArmorValue);
 }
 
+bool IClientEntity::HasHeavyArmor()
+{
+	return *(bool*)((DWORD)this + Offsets::m_bHasHeavyArmor);
+}
+
 bool IClientEntity::HasHelmet()
 {
 	return *(bool*)((DWORD)this + Offsets::m_bHasHelmet);

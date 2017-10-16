@@ -83,7 +83,6 @@ private:
 	CSlider* m_pAntiaimStandingYawOffset;
 	CSelectbox* m_pAntiaimStandingYawFake;
 	CSlider* m_pAntiaimYawStandingFakeOffset;
-	CCheckbox* m_pAntiaimStandingEdgeAntiaim;
 	CCheckbox* m_pAntiaimStandingLbyBreaker;
 
 	CGroupbox* m_pAntiaimMovingGroup;
@@ -92,6 +91,13 @@ private:
 	CSlider* m_pAntiaimMovingYawOffset;
 	CSelectbox* m_pAntiaimMovingYawFake;
 	CSlider* m_pAntiaimYawMovingFakeOffset;
+
+	CGroupbox* m_pAntiaimEdgeAntiaimGroup;
+	CCheckbox* m_pAntiaimEdgeAntiaimEnabled;
+	CLabel* m_pAntiaimEdgeAntiaimCheckOffsetLabel;
+	CSlider* m_pAntiaimEdgeAntiaimCheckOffset;
+	CCheckbox* m_pAntiaimEdgeAntiaimDrawPoints;
+	CCheckbox* m_pAntiaimEdgeAntiaimDrawLines;
 
 	//
 	// Legit tab
@@ -186,6 +192,7 @@ private:
 	// LC Drawing
 	CGroupbox* m_pDrawLagCompensationGroup;
 	CSelectbox* m_pDrawLagCompensationStyle;
+	CLabel* m_pDrawLagCompensationFrequencyLabel;
 	CSlider* m_pDrawLagCompensationFrequency;
 	CCheckbox* m_pDrawLagCompensationOnlyVisible;
 

@@ -27,15 +27,26 @@ namespace Autowall
 		int             penetrate_count;
 	};
 
-	bool CanHit(Vector &point, float *damage_given, Vector* vHeadPos = NULL);
-	inline bool DidHitWorld(IClientEntity* m_pEnt);
-	inline bool DidHitNonWorldEntity(IClientEntity* m_pEnt);
-	void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage);
-	void TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, trace_t *tr);
-	void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr);
+	// Function
+	bool CanHit(Vector &point, float *damage_given, Vector* vHeadPos = NULL, IClientEntity* pEntity = NULL);
 	bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &data);
-	bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* trace);
-	bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data);
+
+	// Engine Functions
+	void TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, trace_t* tr, IClientEntity* ignore = NULL);
+	bool TraceToExit(Vector& end, trace_t& enter_trace, Vector vStart, Vector vEnd, trace_t* exit_trace);
+	bool IsBreakableEntity(IClientEntity* pEntity);
+	void ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr);
+	bool HandleBulletPenetration(CWeaponInfo* wpn_data, FireBulletData& data);
+
+	// Helper Funcs
+	bool IsArmored(IClientEntity* pEntity, int iArmorValue, int iHitgroup);
+	void ScaleDamage(int iHitgroup, IClientEntity* pEntity, float weapon_armor_ratio, float &current_damage);
+
+	float DistanceToRay(const Vector& pos, const Vector& rayStart, const Vector& rayEnd, float* along = nullptr, Vector* pointOnRay = nullptr);
+
+	inline bool DidHitNonWorldEntity(IClientEntity* pEntity);
+	inline bool DidHitWorld(IClientEntity* pEntity);
+
 	inline vec_t VectorNormalize(Vector& v);
 }
 

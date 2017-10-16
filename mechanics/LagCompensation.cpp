@@ -168,7 +168,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
 				break;
 
-			if (*pCurEnt->GetOrigin() == lcCurList.m_pPlayerEntries[x].m_vOrigin && pCurEnt->GetFlags() == lcCurList.m_pPlayerEntries[x].m_fFlags) // todo: check if flags work
+			if (*pCurEnt->GetOrigin() == lcCurList.m_pPlayerEntries[x].m_vOrigin)
 				continue;
 
 			if (m_bDrawOnlyVisible)

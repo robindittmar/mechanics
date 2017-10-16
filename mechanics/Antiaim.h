@@ -33,13 +33,19 @@ class CApplication;
 #define HIDEDIRECTION_RIGHT						1
 #define HIDEDIRECTION_LEFT						2
 
-#define EDGEANTIAIM_RANGE						3
+#define EDGEANTIAIM_RANGE						4
+#define EDGEANTIAIM_DAMAGEOFFSET				10
 #define TARGETCRITERIA_COUNT					3
+
+#define EDGEANTIAIMPOINT_NODAMAGE				0
+#define EDGEANTIAIMPOINT_LESSDAMAGE				1
+#define EDGEANTIAIMPOINT_HIGHERDAMAGE			2
+#define EDGEANTIAIMPOINT_HIGHESTDAMAGE			3
 
 struct EdgeAntiAimPoint
 {
 	Vector vPoint;
-	bool bIsHidden;
+	int iIsHidden;
 };
 
 class CAntiAim : public IFeature
@@ -93,6 +99,15 @@ public:
 	void SetDoEdgeAntiAim(bool bDoEdgeAntiAim) { m_bDoEdgeAntiAim = bDoEdgeAntiAim; }
 	bool GetDoEdgeAntiAim() { return m_bDoEdgeAntiAim; }
 
+	void SetEdgeAntiAimCheckPointsAmount(int iEdgeAntiAimCheckPointAmount) { m_iEdgeAntiAimCheckPointAmount = iEdgeAntiAimCheckPointAmount; }
+	int GetEdgeAntiAimCheckPointsAmount() { return m_iEdgeAntiAimCheckPointAmount; }
+
+	void SetDrawEdgeAntiAimPoints(bool bDrawEdgeAntiAimPoints) { m_bDrawEdgeAntiAimPoints = bDrawEdgeAntiAimPoints; }
+	bool GetDrawEdgeAntiAimPoints() { return m_bDrawEdgeAntiAimPoints; }
+
+	void SetDrawEdgeAntiAimLines(bool bDrawEdgeAntiAimLines) { m_bDrawEdgeAntiAimLines = bDrawEdgeAntiAimLines; }
+	bool GetDrawEdgeAntiAimLines() { return m_bDrawEdgeAntiAimLines; }
+
 	bool IsFakeYaw();
 	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false);
 
@@ -135,14 +150,19 @@ private:
 	bool m_bIsEdgeAntiAim;
 	bool m_bEdgeAntiAimFakeSwitch;
 
+	int m_iEdgeAntiAimCheckPointAmount;
+	bool m_bDrawEdgeAntiAimPoints;
+	bool m_bDrawEdgeAntiAimLines;
+
 	bool m_bHasTargets;
 	CTarget m_pTargets[TARGETCRITERIA_COUNT];
 
+	//todo: dynamic
 	EdgeAntiAimPoint EdgeAntiAimPointsRight[EDGEANTIAIM_RANGE];
 	EdgeAntiAimPoint EdgeAntiAimPointsLeft[EDGEANTIAIM_RANGE];
 
 	void HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection);
-	int CheckHeadPoint(Vector vEnemyHeadPos, EdgeAntiAimPoint* vRight, EdgeAntiAimPoint* vLeft);
+	int CheckHeadPoint(IClientEntity* pEnemy, int iIndex);
 	bool EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
 
 	void GetAntiAimTargets();

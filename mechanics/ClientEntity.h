@@ -261,6 +261,7 @@ public:
 	Vector* GetVelocity();
 	bool IsSpotted();
 	int GetArmor();
+	bool HasHeavyArmor();
 	bool HasHelmet();
 	unsigned long GetMoveType();
 	int GetTickBase();

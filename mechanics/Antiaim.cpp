@@ -1,11 +1,14 @@
 #include "Antiaim.h"
 #include "Application.h"
 #include "Console.h"
+#include "Autowall.h"
 
 CAntiAim::CAntiAim()
 {
 	m_iPitchSettingStanding = PITCHANTIAIM_NONE;
 	m_iYawSettingStanding = YAWANTIAIM_NONE;
+
+	m_iEdgeAntiAimCheckPointAmount = 3;
 }
 
 CAntiAim::~CAntiAim()
@@ -14,39 +17,78 @@ CAntiAim::~CAntiAim()
 
 void CAntiAim::DrawEdgeAntiAimPoints()
 {
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_pApp->GetLocalPlayer()->IsAlive())
+		return;
+
 	if (!m_pApp->Visuals()->GetThirdperson())
+		return;
+
+	if (!m_bDrawEdgeAntiAimPoints && !m_bDrawEdgeAntiAimLines)
 		return;
 
 	CTarget* pTarget = this->GetTarget(m_pApp->Ragebot()->GetTargetCriteria());
 	if (!pTarget || (pTarget && !pTarget->GetValid()))
 		return;
 
+	Vector originScreen, origin = *pTarget->GetEntity()->GetOrigin() + *pTarget->GetEntity()->GetEyeOffset();
+
 	Vector vScreenRight[EDGEANTIAIM_RANGE];
 	Vector vScreenLeft[EDGEANTIAIM_RANGE];
 
 	for (int i = 0; i < EDGEANTIAIM_RANGE; i++)
 	{
-		if (m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsRight[i].vPoint, vScreenRight[i]) && m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsLeft[i].vPoint, vScreenLeft[i]))
+		if (m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsRight[i].vPoint, vScreenRight[i]) &&
+			m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsLeft[i].vPoint, vScreenLeft[i]) &&
+			m_pApp->Gui()->WorldToScreen(origin, originScreen))
 		{
-			if (EdgeAntiAimPointsRight[i].bIsHidden)
+			switch (EdgeAntiAimPointsRight[i].iIsHidden)
 			{
-				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
-			}
-			else
-			{
+			case EDGEANTIAIMPOINT_HIGHESTDAMAGE:
 				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
+				break;
+			case EDGEANTIAIMPOINT_HIGHERDAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 255, 69, 0);
+				break;
+			case EDGEANTIAIMPOINT_LESSDAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 255, 165, 0);
+				break;
+			case EDGEANTIAIMPOINT_NODAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
+				break;
+			default:
+				m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
+				break;
 			}
-			m_pApp->Surface()->DrawOutlinedCircle(vScreenRight[i].x, vScreenRight[i].y, 5, 16);
+			if(m_bDrawEdgeAntiAimPoints)
+				m_pApp->Surface()->DrawOutlinedCircle(vScreenRight[i].x, vScreenRight[i].y, 5, 16);
+			if(m_bDrawEdgeAntiAimLines)
+				m_pApp->Surface()->DrawLine(vScreenRight[i].x, vScreenRight[i].y, originScreen.x, originScreen.y);
 
-			if (EdgeAntiAimPointsLeft[i].bIsHidden)
+			switch (EdgeAntiAimPointsLeft[i].iIsHidden)
 			{
-				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
-			}
-			else
-			{
+			case EDGEANTIAIMPOINT_HIGHESTDAMAGE:
 				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
+				break;
+			case EDGEANTIAIMPOINT_HIGHERDAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 255, 69, 0);
+				break;
+			case EDGEANTIAIMPOINT_LESSDAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 255, 165, 0);
+				break;
+			case EDGEANTIAIMPOINT_NODAMAGE:
+				m_pApp->Surface()->DrawSetColor(255, 0, 255, 0);
+				break;
+			default:
+				m_pApp->Surface()->DrawSetColor(255, 255, 255, 255);
+				break;
 			}
-			m_pApp->Surface()->DrawOutlinedCircle(vScreenLeft[i].x, vScreenLeft[i].y, 5, 16);
+			if (m_bDrawEdgeAntiAimPoints)
+				m_pApp->Surface()->DrawOutlinedCircle(vScreenLeft[i].x, vScreenLeft[i].y, 5, 16);
+			if (m_bDrawEdgeAntiAimLines)
+				m_pApp->Surface()->DrawLine(vScreenLeft[i].x, vScreenLeft[i].y, originScreen.x, originScreen.y);
 		}
 	}
 }
@@ -173,9 +215,9 @@ void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection
 	if (iHideDirection == HIDEDIRECTION_INVALID)
 		return;
 
-	if (m_bEdgeAntiAimFakeSwitch)
+	if (m_bEdgeAntiAimFakeSwitch && IsFakeYaw())
 	{
-		// real
+		// fake
 		if (iHideDirection == HIDEDIRECTION_LEFT)
 		{
 			pUserCmd->viewangles[1] = qAimAngle.y - 90.0f;
@@ -187,7 +229,7 @@ void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection
 	}
 	else
 	{
-		// fake
+		// real
 		if (iHideDirection == HIDEDIRECTION_LEFT)
 		{
 			pUserCmd->viewangles[1] = qAimAngle.y + 90.0f;
@@ -199,52 +241,132 @@ void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection
 	}
 }
 
-int CAntiAim::CheckHeadPoint(Vector vEnemyHeadPos, EdgeAntiAimPoint* vRight, EdgeAntiAimPoint* vLeft)
+int CAntiAim::CheckHeadPoint(IClientEntity* pEnemy, int iIndex)
 {
-	//todo: use autowall instead of traceray
+	EdgeAntiAimPoint* vRight = &EdgeAntiAimPointsRight[iIndex];
+	EdgeAntiAimPoint* vLeft = &EdgeAntiAimPointsLeft[iIndex];
 
 	Ray_t rayRight, rayLeft;
 	trace_t traceRight, traceLeft;
 	CTraceFilterWorldAndPropsOnly filter;
+
+	Vector vEnemyHeadPos = *pEnemy->GetOrigin() + *pEnemy->GetEyeOffset();
 
 	rayRight.Init(vEnemyHeadPos, vRight->vPoint);
 	m_pApp->EngineTrace()->TraceRay(rayRight, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceRight);
 	rayLeft.Init(vEnemyHeadPos, vLeft->vPoint);
 	m_pApp->EngineTrace()->TraceRay(rayLeft, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceLeft);
 
-	if (traceRight.fraction < 1.0f)
-	{
-		vRight->bIsHidden = true;
-	}
-	else
-	{
-		vRight->bIsHidden = false;
-	}
-
-	if (traceLeft.fraction < 1.0f)
-	{
-		vLeft->bIsHidden = true;
-	}
-	else
-	{
-		vLeft->bIsHidden = false;
-	}
+	float damageRight, damageLeft;
+	Autowall::CanHit(vEnemyHeadPos, &damageRight, &vRight->vPoint, pEnemy);
+	Autowall::CanHit(vEnemyHeadPos, &damageLeft, &vLeft->vPoint, pEnemy);
 
 	if (traceRight.fraction == 1.0f && traceLeft.fraction == 1.0)
 	{
+		// Stands in opening
+		vRight->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+		vLeft->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
 		return HIDEDIRECTION_INVALID;
 	}
 	else if (traceRight.fraction < 1.0f && traceLeft.fraction == 1.0f)
 	{
+		// Right is wall, left is open
+		if (iIndex >= 1)
+		{
+			vRight->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+			vLeft->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+		}
+		else
+		{
+			if (damageRight <= 0.0f)
+			{
+				vRight->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+			}
+			else
+			{
+				vRight->iIsHidden = EDGEANTIAIMPOINT_LESSDAMAGE;
+			}
+			vLeft->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+		}
 		return HIDEDIRECTION_RIGHT;
 	}
 	else if (traceRight.fraction == 1.0f && traceLeft.fraction < 1.0f)
 	{
+		// Left is wall, right is open
+		if (iIndex >= 1)
+		{
+			vRight->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+			vLeft->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+		}
+		else
+		{
+			vRight->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+			if (damageLeft <= 0.0f)
+			{
+				vLeft->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+			}
+			else
+			{
+				vLeft->iIsHidden = EDGEANTIAIMPOINT_LESSDAMAGE;
+			}
+		}
 		return HIDEDIRECTION_LEFT;
 	}
 	else
 	{
-		return HIDEDIRECTION_NEXT;
+		//if (iIndex < 1)
+		//{
+			// behind wall check dmg
+			if (damageRight <= 0.0f && damageLeft <= 0.0f)
+			{
+				// No penetration
+				vRight->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+				vLeft->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+				return HIDEDIRECTION_NEXT;
+			}
+			else if (damageRight + EDGEANTIAIM_DAMAGEOFFSET < damageLeft)
+			{
+				// hide right cause less dmg
+				if (damageRight > 0.0f)
+				{
+					vRight->iIsHidden = EDGEANTIAIMPOINT_LESSDAMAGE;
+				}
+				else
+				{
+					vRight->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+				}
+				vLeft->iIsHidden = EDGEANTIAIMPOINT_HIGHERDAMAGE;
+				return HIDEDIRECTION_RIGHT;
+			}
+			else if (damageRight > damageLeft + EDGEANTIAIM_DAMAGEOFFSET)
+			{
+				// hide left cause less dmg
+				vRight->iIsHidden = EDGEANTIAIMPOINT_HIGHERDAMAGE;
+				if (damageLeft > 0.0f)
+				{
+					vLeft->iIsHidden = EDGEANTIAIMPOINT_LESSDAMAGE;
+				}
+				else
+				{
+					vLeft->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+				}
+				return HIDEDIRECTION_LEFT;
+			}
+			else
+			{
+				// same dmg
+				vRight->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+				vLeft->iIsHidden = EDGEANTIAIMPOINT_HIGHESTDAMAGE;
+				return HIDEDIRECTION_INVALID;
+			}
+		//}
+		//else
+		//{
+		//	// Invalid head position so no dmg check needed
+		//	vRight->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+		//	vLeft->iIsHidden = EDGEANTIAIMPOINT_NODAMAGE;
+		//	return HIDEDIRECTION_INVALID;
+		//}
 	}
 }
 
@@ -281,18 +403,17 @@ bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
 		EdgeAntiAimPointsLeft[i].vPoint = vLocalHeadpos - (right * (15 + (i * 10)));
 	}
 
-	Vector vEnemyHeadPos = *pEnemyEntity->GetOrigin() + *pEnemyEntity->GetEyeOffset();
-
 	bool bWasInvalid = false;
 	// Check if edge antiaim
 	for (int i = 0; i < EDGEANTIAIM_RANGE; i++)
 	{
-		int iHideDirection = CheckHeadPoint(vEnemyHeadPos, &EdgeAntiAimPointsRight[i], &EdgeAntiAimPointsLeft[i]);
+		int iHideDirection = CheckHeadPoint(pEnemyEntity, i);
 		if (iHideDirection == HIDEDIRECTION_INVALID)
 			bWasInvalid = true;
 
 		if (iHideDirection != HIDEDIRECTION_NEXT && iHideDirection != HIDEDIRECTION_INVALID)
 		{
+			// invalidCount < 2 weil wenn hintereinander invali waren dann nicht (peekhilfe) todo: testen!
 			if (!bDoesEdgeAntiAim && !bWasInvalid)
 			{
 				HideHead(pUserCmd, qAimAngle, iHideDirection);
@@ -304,6 +425,14 @@ bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
 	// No edge antiaim so no need to break/fake
 	if (!bDoesEdgeAntiAim)
 		return false;
+
+	if (!IsFakeYaw())
+	{
+		m_bEdgeAntiAimFakeSwitch = true;
+		return bDoesEdgeAntiAim;
+	}
+
+	// todo: sync with fakelag
 
 	Vector vTempYaw = Vector(0.0f, pUserCmd->viewangles[1] + 180.0f, 0.0f);
 	vTempYaw.NormalizeAngles();
@@ -609,5 +738,6 @@ void CAntiAim::DrawLBYIndicator()
 
 bool CAntiAim::IsFakeYaw()
 {
-	return (m_bIsMoving ? m_iYawFakeSettingMoving != FAKEYAWANTIAIM_NONE : m_iYawFakeSettingStanding != FAKEYAWANTIAIM_NONE) || (m_bIsEdgeAntiAim && !m_bEdgeAntiAimFakeSwitch) && m_bIsEnabled;
+	bool bIsFakeActive = (m_bIsMoving ? m_iYawFakeSettingMoving != FAKEYAWANTIAIM_NONE : m_iYawFakeSettingStanding != FAKEYAWANTIAIM_NONE);
+	return (bIsFakeActive || (m_bIsEdgeAntiAim && !m_bEdgeAntiAimFakeSwitch && bIsFakeActive)) && m_bIsEnabled;
 }
