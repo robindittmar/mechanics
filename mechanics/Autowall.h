@@ -31,14 +31,12 @@ namespace Autowall
 	inline bool DidHitWorld(IClientEntity* m_pEnt);
 	inline bool DidHitNonWorldEntity(IClientEntity* m_pEnt);
 	void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage);
-	void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, int collisionGroup, trace_t *tr);
+	void TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity *ignore, trace_t *tr);
 	void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr);
 	bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &data);
 	bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* trace);
 	bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data);
-	inline vec_t VectorLength(const Vector& v);
 	inline vec_t VectorNormalize(Vector& v);
-	QAngle ACalcAngle(Vector& vStartPos, Vector& vEndPos);
 }
 
 #endif // __AUTOWALL_H__

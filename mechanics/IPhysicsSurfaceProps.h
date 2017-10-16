@@ -22,34 +22,16 @@ struct surfaceaudioparams_t
 
 struct surfacesoundnames_t
 {
-	unsigned short walkStepLeft;
-	unsigned short walkStepRight;
-	unsigned short runStepLeft;
-	unsigned short runStepRight;
-	unsigned short impactSoft;
-	unsigned short impactHard;
-	unsigned short scrapeSmooth;
-	unsigned short scrapeRough;
-	unsigned short bulletImpact;
-	unsigned short rolling;
-	unsigned short breakSound;
-	unsigned short strainSound;
-};
-
-struct surfacesoundhandles_t
-{
-	short walkStepLeft;
-	short walkStepRight;
-	short runStepLeft;
-	short runStepRight;
-	short impactSoft;
-	short impactHard;
-	short scrapeSmooth;
-	short scrapeRough;
-	short bulletImpact;
-	short rolling;
-	short breakSound;
-	short strainSound;
+	unsigned short    stepleft;
+	unsigned short    stepright;
+	unsigned short    impactSoft;
+	unsigned short    impactHard;
+	unsigned short    scrapeSmooth;
+	unsigned short    scrapeRough;
+	unsigned short    bulletImpact;
+	unsigned short    rolling;
+	unsigned short    breakSound;
+	unsigned short    strainSound;
 };
 
 struct surfacegameprops_t
@@ -70,7 +52,6 @@ struct surfacedata_t
 	surfaceaudioparams_t audio;
 	surfacesoundnames_t sounds;
 	surfacegameprops_t game;
-	surfacesoundhandles_t soundhandles;
 };
 
 class IPhysicsSurfaceProps

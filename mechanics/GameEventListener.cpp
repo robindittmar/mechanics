@@ -156,6 +156,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	if (pApp->Visuals()->GetHitmarker())
 	{
 		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
+
 		bool sayTaunt = false; // TODO
 
 		if (dmg_health > 100 && hitgroup == 1)

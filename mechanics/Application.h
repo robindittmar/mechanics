@@ -69,13 +69,15 @@
 #include "IEngineSound.h"
 #include "checksum_md5.h"
 
-#define OFFSET_GLOBALS 0x1B
+#define OFFSET_GLOBALS					0x1B
+#define OFFSET_LASTOCCLUSIONCHECK		0xA30
+#define OFFSET_OCCLUSIONFLAGS			0xA28
 
-#define RECOIL_TRACKING 0.4499999f
+#define RECOIL_TRACKING					0.4499999f
 
-#define CLIENTDLL_SIZE			0x50E5000
-#define ENGINEDLL_SIZE			0x8C7000
-#define MATERIALSYSTEMDLL_SIZE	0x10C000
+#define CLIENTDLL_SIZE					0x50E5000
+#define ENGINEDLL_SIZE					0x8C7000
+#define MATERIALSYSTEMDLL_SIZE			0x10C000
 
 typedef void(_cdecl* RandomSeed_t)(int);
 typedef int(_cdecl* RandomInt_t)(int, int);

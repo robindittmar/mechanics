@@ -1,5 +1,6 @@
 #include "Autowall.h"
 #include "Application.h"
+#include "Utils.h"
 
 namespace Autowall
 {
@@ -15,7 +16,7 @@ namespace Autowall
 
 		FireBulletData data(headPos, local);
 
-		Vector angles = ACalcAngle(data.src, point);
+		Vector angles = Utils::CalcAngle(data.src, point);
 		AngleVectors(angles, &data.direction);
 		VectorNormalize(data.direction);
 
@@ -28,6 +29,17 @@ namespace Autowall
 		return false;
 	}
 
+	bool IsBreakableEntity(IClientEntity* pEntity)
+	{
+		typedef bool(__thiscall *isBreakbaleEntityFn)(IClientEntity*);
+		static isBreakbaleEntityFn IsBreakableEntity;
+
+		if (!IsBreakableEntity)
+			IsBreakableEntity = (isBreakbaleEntityFn)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x51\x56\x8B\xF1\x85\xF6\x74\x68", "krngpthxzek");
+
+		return IsBreakableEntity(pEntity);
+	}
+
 	inline bool DidHitWorld(IClientEntity* m_pEnt)
 	{
 		return m_pEnt->EntIndex() == 0;
@@ -38,71 +50,77 @@ namespace Autowall
 		return m_pEnt != NULL && !DidHitWorld(m_pEnt);
 	}
 
-	float GetHitgroupDamageMult(int iHitGroup)
+	bool IsArmored(IClientEntity* Entity, int ArmorValue, int Hitgroup)
 	{
-		switch (iHitGroup)
+		bool result = false;
+
+		if (ArmorValue > 0)
+		{
+			switch (Hitgroup)
+			{
+			case HITGROUP_GENERIC:
+			case HITGROUP_CHEST:
+			case HITGROUP_STOMACH:
+			case HITGROUP_LEFTARM:
+			case HITGROUP_RIGHTARM:
+				result = true;
+				break;
+			case HITGROUP_HEAD:
+				result = Entity->HasHelmet();
+				break;
+			}
+		}
+
+		return result;
+	}
+
+	void ScaleDamage(int hitgroup, IClientEntity* enemy, float weapon_armor_ratio, float &current_damage)
+	{
+		bool bHeavArmor = false; // DT_CSPlayer -> m_bHasHeavyArmor todo
+		auto iArmorValue = enemy->GetArmor();
+
+		switch (hitgroup)
 		{
 		case HITGROUP_HEAD:
-			return 2.0f;
+			if (bHeavArmor)
+				current_damage = (current_damage * 4.f) * 0.5f;
+			else
+				current_damage *= 4.f;
+			break;
 		case HITGROUP_STOMACH:
-			return 0.75f;
-		case HITGROUP_GENERIC:
-		case HITGROUP_CHEST:
-		case HITGROUP_LEFTARM:
-		case HITGROUP_RIGHTARM:
-		case HITGROUP_GEAR:
-			return 0.5f;
+			current_damage *= 1.25f;
+			break;
 		case HITGROUP_LEFTLEG:
 		case HITGROUP_RIGHTLEG:
-			return 0.375f;
-		default:
-			return 1.0f;
-
+			current_damage *= 0.75f;
+			break;
 		}
 
-		return 1.0f;
-	}
-
-	void ScaleDamage(int hitgroup, IClientEntity *enemy, float weapon_armor_ratio, float &current_damage)
-	{
-		current_damage *= GetHitgroupDamageMult(hitgroup);
-
-		if (enemy->GetArmor() > 0)
+		if (IsArmored(enemy, iArmorValue, hitgroup))
 		{
-			if (hitgroup == HITGROUP_HEAD)
+			float v47 = 1.f, ArmorBonusRatio = 0.5f, ArmorRatio = weapon_armor_ratio * 0.5f;
+
+			if (bHeavArmor)
 			{
-				if (enemy->HasHelmet())
-					current_damage *= (weapon_armor_ratio);
+				ArmorBonusRatio = 0.33f;
+				ArmorRatio = (weapon_armor_ratio * 0.5f) * 0.5f;
+				v47 = 0.33f;
 			}
-			else
-			{
-				current_damage *= (weapon_armor_ratio);
-			}
+
+			float NewDamage = current_damage * ArmorRatio;
+
+			if (bHeavArmor)
+				NewDamage *= 0.85f;
+
+			if (((current_damage - (current_damage * ArmorRatio)) * (v47 * ArmorBonusRatio)) > iArmorValue)
+				NewDamage = current_damage - (iArmorValue / ArmorBonusRatio);
+
+			current_damage = NewDamage;
 		}
 	}
 
-	void UTIL_TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity* ignore, int collisionGroup, trace_t* tr)
+	void TraceLine(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, const IClientEntity* ignore, trace_t* tr)
 	{
-		//typedef int(__fastcall* UTIL_TraceLine_t)(const Vector&, const Vector&, unsigned int, const IClientEntity*, int, trace_t*);
-		//static UTIL_TraceLine_t TraceLine = (UTIL_TraceLine_t)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xE4\xF0\x83\xEC\x7C\x56\x52", "xxxxxxxxxxx");
-		////TraceLine(vecAbsStart, vecAbsEnd, mask, ignore, collisionGroup, ptr);
-
-		//__asm
-		//{
-		//	mov eax, tr;
-		//	push eax;
-		//	mov ecx, collisionGroup;
-		//	push ecx;
-		//	mov edx, ignore;
-		//	push edx;
-		//	mov eax, mask;
-		//	push eax;
-		//	mov edx, vecAbsEnd;
-		//	mov ecx, vecAbsStart;
-		//	call TraceLine;
-		//	add esp, 0x10;
-		//}
-
 		Ray_t ray;
 		CTraceFilterSkipEntity filter((IClientEntity*)ignore);
 
@@ -110,32 +128,100 @@ namespace Autowall
 		CApplication::Instance()->EngineTrace()->TraceRay(ray, mask, &filter, tr);
 	}
 
+	float DistanceToRay(const Vector& pos, const Vector& rayStart, const Vector& rayEnd, float* along = nullptr, Vector* pointOnRay = nullptr)
+	{
+		Vector to = pos - rayStart;
+		Vector dir = rayEnd - rayStart;
+		float length = dir.NormalizeInPlace();
+
+		float rangeAlong = (dir.x * to.x + dir.y * to.y + dir.z * to.z);//g_Math.DotProduct(dir, to);
+		if (along)
+		{
+			*along = rangeAlong;
+		}
+
+		float range;
+
+		if (rangeAlong < 0.0f)
+		{
+			// off start point
+			range = -(pos - rayStart).Length();
+
+			if (pointOnRay)
+			{
+				*pointOnRay = rayStart;
+			}
+		}
+		else if (rangeAlong > length)
+		{
+			// off end point
+			range = -(pos - rayEnd).Length();
+
+			if (pointOnRay)
+			{
+				*pointOnRay = rayEnd;
+			}
+		}
+		else // within ray bounds
+		{
+			Vector onRay = rayStart + (dir.operator*(rangeAlong));
+			range = (pos - onRay).Length();
+
+			if (pointOnRay)
+			{
+				*pointOnRay = onRay;
+			}
+		}
+
+		return range;
+	}
 	void UTIL_ClipTraceToPlayers(const Vector& vecAbsStart, const Vector& vecAbsEnd, unsigned int mask, ITraceFilter* filter, trace_t* tr)
 	{
-		static DWORD dwAddress = (DWORD)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x53\x8B\xDC\x83\xEC\x08\x83\xE4\xF0\x83\xC4\x04\x55\x8B\x6B\x04\x89\x6C\x24\x04\x8B\xEC\x81\xEC\x00\x00\x00\x00\x8B\x43\x10", "xxxxxxxxxxxxxxxxxxxxxxxx----xxx");
+		trace_t playerTrace;
+		Ray_t ray;
+		float smallestFraction = tr->fraction;
+		const float maxRange = 60.0f;
 
-		if (!dwAddress)
-			return;
+		ray.Init(vecAbsStart, vecAbsEnd);
 
-		_asm
+		CApplication* pApp = CApplication::Instance();
+
+		for (int k = 1; k <= pApp->GlobalVars()->maxClients; ++k)
 		{
-			MOV		EAX, filter
-			LEA		ECX, tr
-			PUSH	ECX
-			PUSH	EAX
-			PUSH	mask
-			LEA		EDX, vecAbsEnd
-			LEA		ECX, vecAbsStart
-			CALL	dwAddress
-			ADD		ESP, 0xC
+			IClientEntity* player = pApp->EntityList()->GetClientEntity(k);
+
+			if (!player || !player->IsAlive())
+				continue;
+
+			if (player->IsDormant())
+				continue;
+
+			if (filter && filter->ShouldHitEntity(player, mask) == false)
+				continue;
+
+			Vector Max = ((CWeapon*)player)->GetVecMax() + *player->GetOrigin();
+			Vector Min = ((CWeapon*)player)->GetVecMin() + *player->GetOrigin();
+			Vector Size = Max - Min;
+			Size /= 2;
+			Size += Min;
+
+			float range = DistanceToRay(Size, vecAbsStart, vecAbsEnd);
+			if (range < 0.0f || range > maxRange)
+				continue;
+
+			pApp->EngineTrace()->ClipRayToEntity(ray, mask | CONTENTS_HITBOX, player, &playerTrace);
+			if (playerTrace.fraction < smallestFraction)
+			{
+				// we shortened the ray - save off the trace
+				tr = &playerTrace;
+				smallestFraction = playerTrace.fraction;
+			}
 		}
 	}
 
-
-
 	bool SimulateFireBullet(IClientEntity *local, CWeapon *weapon, FireBulletData &data)
 	{
-		data.penetrate_count = 4;
+		data.penetrate_count = 8;
 		data.trace_length = 0.0f;
 		CWeaponInfo* wpn_data = weapon->GetWeaponInfo();
 		data.current_damage = (float)wpn_data->iDamage;
@@ -145,8 +231,8 @@ namespace Autowall
 			data.trace_length_remaining = wpn_data->flRange - data.trace_length;
 			Vector End_Point = data.src + data.direction * data.trace_length_remaining;
 
-			UTIL_TraceLine(data.src, End_Point, 0x4600400B, local, 0, &data.enter_trace);
-			UTIL_ClipTraceToPlayers(data.src, End_Point * 40.f, 0x4600400B, &data.filter, &data.enter_trace);
+			TraceLine(data.src, End_Point, MASK_SHOT, local, &data.enter_trace);
+			UTIL_ClipTraceToPlayers(data.src, End_Point * 40.f, MASK_SHOT, &data.filter, &data.enter_trace);
 
 			if (data.enter_trace.fraction == 1.0f)
 				break;
@@ -165,39 +251,66 @@ namespace Autowall
 		return false;
 	}
 
-	bool TraceToExit(Vector& end, trace_t& tr, Vector start, Vector vEnd, trace_t* trace)
+	bool TraceToExit(Vector& end, trace_t& enter_trace, Vector vStart, Vector vEnd, trace_t* exit_trace)
 	{
-		typedef bool(__fastcall* TraceToExitFn)(Vector&, trace_t&, float, float, float, float, float, float, trace_t*);
-		static TraceToExitFn TraceToExit = (TraceToExitFn)CPattern::FindPattern((BYTE*)CApplication::Instance()->ClientDll(), 0x50E5000, (BYTE*)"\x55\x8B\xEC\x83\xEC\x30\xF3\x0F\x10\x75", "atehunpyqx");
+		CApplication* pApp = CApplication::Instance();
+		float distance = 0.0f;
 
-		if (!TraceToExit)
-			return false;
-
-		int bRet;
-		__asm
+		while (distance <= 90.0f)
 		{
-			mov eax, trace;
-			push eax;
-			push vEnd.z;
-			push vEnd.y;
-			push vEnd.x;
-			push start.z;
-			push start.y;
-			push start.x;
-			mov edx, tr;
-			mov ecx, end;
-			call TraceToExit;
-			add esp, 0x1C;
+			distance += 4.0f;
+			end = vStart + vEnd * distance;
 
-			mov bRet, eax;
+			auto point_contents = pApp->EngineTrace()->GetPointContents(end, MASK_SHOT_HULL | CONTENTS_HITBOX, nullptr);
+			if (point_contents & MASK_SHOT_HULL && (!(point_contents & CONTENTS_HITBOX)))
+				continue;
+
+			auto new_end = end - (vEnd * 4.0f);
+
+			TraceLine(end, new_end, (MASK_SHOT | CONTENTS_GRATE), nullptr, exit_trace);
+
+			if (exit_trace->hit_entity == nullptr)
+				return false;
+
+			if (exit_trace->startsolid && exit_trace->surface.flags & SURF_HITBOX)
+			{
+				TraceLine(end, vStart, 0x600400B, (IClientEntity*)exit_trace->hit_entity, exit_trace);
+
+				if ((exit_trace->fraction < 1.0f || exit_trace->allsolid) && !exit_trace->startsolid)
+				{
+					end = exit_trace->endpos;
+					return true;
+				}
+				continue;
+			}
+
+			if (!(exit_trace->fraction < 1.0 || exit_trace->allsolid || exit_trace->startsolid) || exit_trace->startsolid)
+			{
+				if (exit_trace->hit_entity)
+				{
+					if (DidHitNonWorldEntity && IsBreakableEntity((IClientEntity*)enter_trace.hit_entity))
+						return true;
+				}
+				continue;
+			}
+
+			if (((exit_trace->surface.flags >> 7) & 1) && !((enter_trace.surface.flags >> 7) & 1))
+				continue;
+
+			if (exit_trace->plane.normal.Dot(vEnd) <= 1.0f)
+			{
+				float fraction = exit_trace->fraction * 4.0f;
+				end = end - (vEnd * fraction);
+
+				return true;
+			}
 		}
-
-		return (bool)bRet;
+		return false;
 	}
 
 	bool HandleBulletPenetration(CWeaponInfo *wpn_data, FireBulletData &data)
 	{
-		surfacedata_t *enter_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(data.enter_trace.surface.surfaceProps);
+		surfacedata_t* enter_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(data.enter_trace.surface.surfaceProps);
 		int enter_material = enter_surface_data->game.material;
 		float enter_surf_penetration_mod = enter_surface_data->game.flPenetrationModifier;
 
@@ -216,7 +329,7 @@ namespace Autowall
 		if (!TraceToExit(dummy, data.enter_trace, data.enter_trace.endpos, data.direction, &trace_exit))
 			return false;
 
-		surfacedata_t *exit_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(trace_exit.surface.surfaceProps);
+		surfacedata_t* exit_surface_data = CApplication::Instance()->PhysicsSurfaceProps()->GetSurfaceData(trace_exit.surface.surfaceProps);
 		int exit_material = exit_surface_data->game.material;
 		float exit_surf_penetration_mod = exit_surface_data->game.flPenetrationModifier;
 		float final_damage_modifier = 0.16f;
@@ -224,7 +337,8 @@ namespace Autowall
 
 		if (((data.enter_trace.contents & CONTENTS_GRATE) != 0) || (enter_material == 89) || (enter_material == 71))
 		{
-			combined_penetration_modifier = 3.0f; final_damage_modifier = 0.05f;
+			combined_penetration_modifier = 3.0f;
+			final_damage_modifier = 0.05f;
 		}
 		else
 		{
@@ -241,7 +355,7 @@ namespace Autowall
 
 		float v34 = fmaxf(0.f, 1.0f / combined_penetration_modifier);
 		float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.f, (3.0f / wpn_data->flPenetration) * 1.25f);
-		float thickness = VectorLength(trace_exit.endpos - data.enter_trace.endpos);
+		float thickness = (trace_exit.endpos - data.enter_trace.endpos).Length();
 		thickness *= thickness;
 		thickness *= v34;
 		thickness /= 24.0f;
@@ -262,11 +376,6 @@ namespace Autowall
 		return true;
 	}
 
-	inline vec_t VectorLength(const Vector& v)
-	{
-		return (vec_t)sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-	}
-
 	inline vec_t VectorNormalize(Vector& v)
 	{
 		vec_t l = v.Length();
@@ -281,17 +390,5 @@ namespace Autowall
 		}
 
 		return l;
-	}
-
-	QAngle ACalcAngle(Vector& vStartPos, Vector& vEndPos)
-	{
-		Vector vRelativeDist = vEndPos - vStartPos;
-		QAngle qAngle(
-			RAD2DEG(-asinf(vRelativeDist.z / vRelativeDist.Length())),
-			RAD2DEG(atan2f(vRelativeDist.y, vRelativeDist.x)),
-			0.0f
-		);
-
-		return qAngle;
 	}
 }

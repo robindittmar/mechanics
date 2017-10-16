@@ -272,7 +272,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				pCurEntity,
 				fViewangleDist,
 				fOriginDist,
-				iBacktracked
+				iBacktracked,
+				fHighestDamage
 			);
 		}
 
@@ -286,7 +287,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				pCurEntity,
 				fViewangleDist,
 				fOriginDist,
-				iBacktracked
+				iBacktracked,
+				fHighestDamage
 			);
 		}
 
@@ -300,7 +302,8 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 				pCurEntity,
 				fViewangleDist,
 				fOriginDist,
-				iBacktracked
+				iBacktracked,
+				fHighestDamage
 			);
 		}
 	}

@@ -9,7 +9,7 @@ CTarget::~CTarget()
 {
 }
 
-void CTarget::SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity, float fViewAngleDist, float fOriginDist, int bIsBacktracked)
+void CTarget::SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pEntity, float fViewAngleDist, float fOriginDist, int bIsBacktracked, float fDamage)
 {
 	m_vAimPoint = vAimPoint;
 	m_qAimAngles = qAimAngles;
@@ -18,6 +18,7 @@ void CTarget::SetTarget(Vector& vAimPoint, QAngle& qAimAngles, IClientEntity* pE
 	m_fViewAngleDist = fViewAngleDist;
 	m_fOriginDist = fOriginDist;
 	m_iIsBacktracked = bIsBacktracked;
+	m_fDamage = fDamage;
 }
 
 void CTarget::Invalidate()

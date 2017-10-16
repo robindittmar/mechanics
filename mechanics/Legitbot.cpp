@@ -1,6 +1,8 @@
 #include "Legitbot.h"
 #include "Application.h"
 
+//todo: LineGoesThroughSmoke Sig: 55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0
+
 CLegitbot::CLegitbot()
 {
 }

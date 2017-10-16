@@ -201,6 +201,8 @@ void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection
 
 int CAntiAim::CheckHeadPoint(Vector vEnemyHeadPos, EdgeAntiAimPoint* vRight, EdgeAntiAimPoint* vLeft)
 {
+	//todo: use autowall instead of traceray
+
 	Ray_t rayRight, rayLeft;
 	trace_t traceRight, traceLeft;
 	CTraceFilterWorldAndPropsOnly filter;

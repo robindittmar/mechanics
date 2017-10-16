@@ -359,7 +359,8 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				pApp->m_bLbyUpdate ||
 				!pApp->AntiAim()->GetEnabled() ||
 				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
-				!bIsSniper && pUserCmd->buttons & IN_ATTACK2)
+				!bIsSniper && pUserCmd->buttons & IN_ATTACK2 ||
+				pUserCmd->buttons & IN_USE)
 			{
 				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
 				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
@@ -423,6 +424,18 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 			if (pLocalEntity->IsAlive())
 			{
 				pApp->Visuals()->ThirdpersonAntiAim();
+			}
+
+			// PVS Fix
+			for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
+			{
+				IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
+
+				if (!pCurEntity)
+					continue;
+
+				*(int*)((DWORD)pCurEntity + OFFSET_LASTOCCLUSIONCHECK) = pApp->GlobalVars()->framecount;
+				*(int*)((DWORD)pCurEntity + OFFSET_OCCLUSIONFLAGS) = 0;
 			}
 		}
 
