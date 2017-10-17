@@ -1140,6 +1140,7 @@ void CApplication::Setup()
 
 	// Edge AA
 	this->m_antiAim.SetDoEdgeAntiAim(true);
+	this->m_antiAim.SetEdgeAntiAimCheckPointsAmount(4);
 	this->m_antiAim.SetDrawEdgeAntiAimPoints(true);
 	this->m_antiAim.SetDrawEdgeAntiAimLines(true);
 
