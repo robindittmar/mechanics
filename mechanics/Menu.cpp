@@ -988,8 +988,12 @@ void CMenu::CreateConfigTab()
 
 	m_pTextbox = new CTextbox(16, 128, 120, 20);
 
+	m_pForceFullUpdate = new CButton(150, 64, 120, 45, "Force Full Update");
+	m_pForceFullUpdate->SetEventHandler(std::bind(&CSkinChanger::SetForceFullUpdate, m_pApp->SkinChanger(), true));
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pClrPicker);
 	m_pConfigTab->AddChild(m_pTextbox);
+	m_pConfigTab->AddChild(m_pForceFullUpdate);
 }

@@ -264,6 +264,7 @@ private:
 	CButton* m_pDetachBtn;
 	CColorPicker* m_pClrPicker;
 	CTextbox* m_pTextbox;
+	CButton* m_pForceFullUpdate;
 	//
 
 	CApplication* m_pApp;
