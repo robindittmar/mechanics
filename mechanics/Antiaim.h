@@ -33,7 +33,6 @@ class CApplication;
 #define HIDEDIRECTION_RIGHT						1
 #define HIDEDIRECTION_LEFT						2
 
-#define EDGEANTIAIM_RANGE						4
 #define EDGEANTIAIM_DAMAGEOFFSET				10
 #define TARGETCRITERIA_COUNT					3
 
@@ -99,7 +98,7 @@ public:
 	void SetDoEdgeAntiAim(bool bDoEdgeAntiAim) { m_bDoEdgeAntiAim = bDoEdgeAntiAim; }
 	bool GetDoEdgeAntiAim() { return m_bDoEdgeAntiAim; }
 
-	void SetEdgeAntiAimCheckPointsAmount(int iEdgeAntiAimCheckPointAmount) { m_iEdgeAntiAimCheckPointAmount = iEdgeAntiAimCheckPointAmount; }
+	void SetEdgeAntiAimCheckPointsAmount(int iEdgeAntiAimCheckPointAmount);
 	int GetEdgeAntiAimCheckPointsAmount() { return m_iEdgeAntiAimCheckPointAmount; }
 
 	void SetDrawEdgeAntiAimPoints(bool bDrawEdgeAntiAimPoints) { m_bDrawEdgeAntiAimPoints = bDrawEdgeAntiAimPoints; }
@@ -158,8 +157,8 @@ private:
 	CTarget m_pTargets[TARGETCRITERIA_COUNT];
 
 	//todo: dynamic
-	EdgeAntiAimPoint EdgeAntiAimPointsRight[EDGEANTIAIM_RANGE];
-	EdgeAntiAimPoint EdgeAntiAimPointsLeft[EDGEANTIAIM_RANGE];
+	EdgeAntiAimPoint* EdgeAntiAimPointsRight;
+	EdgeAntiAimPoint* EdgeAntiAimPointsLeft;
 
 	void HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection);
 	int CheckHeadPoint(IClientEntity* pEnemy, int iIndex);
