@@ -45,6 +45,9 @@ void CAntiAim::DrawEdgeAntiAimPoints()
 	if (!m_bIsEnabled)
 		return;
 
+	if (!m_bDoEdgeAntiAim)
+		return;
+
 	if (!m_pApp->GetLocalPlayer()->IsAlive())
 		return;
 
@@ -618,9 +621,11 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 		fRealYawAngle += 180.0f;
 		break;
 	case YAWANTIAIM_STATICJITTERBACKWARDS:
-		trigger += 15.0f;
-		fRealYawAngle -= trigger > 50.0f ? -145.0f : 145.0f;
+		//fRealYawAngle += 180.0f;
 
+		trigger += 15.0f;
+		//fRealYawAngle -= trigger > 50.0f ? -35.0f : 35.0f;
+		fRealYawAngle = trigger > 50.0f ? -135 : 135;
 		if (trigger > 100.0f)
 		{
 			trigger = 0.0f;
@@ -661,8 +666,12 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		break;
 	}
 
-	m_fCurRealYaw = angles->y + fRealYaw;
-	m_fCurFakeYaw = angles->y + fFakeYaw;
+	Vector tempo = Vector(0, fRealYaw, 0);
+	tempo.NormalizeAngles();
+	m_fCurRealYaw = tempo.y;
+	tempo = Vector(0, fFakeYaw, 0);
+	tempo.NormalizeAngles();
+	m_fCurFakeYaw = tempo.y;
 
 	if (IsFakeYaw())
 	{

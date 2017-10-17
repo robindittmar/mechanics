@@ -156,7 +156,6 @@ private:
 	bool m_bHasTargets;
 	CTarget m_pTargets[TARGETCRITERIA_COUNT];
 
-	//todo: dynamic
 	EdgeAntiAimPoint* EdgeAntiAimPointsRight;
 	EdgeAntiAimPoint* EdgeAntiAimPointsLeft;
 
