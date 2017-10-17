@@ -255,7 +255,13 @@ private:
 	void Setup();
 	void Hook();
 
+	// Own DLL
 	void GetModuleInfo();
+
+	// Engine stuff
+	void GetLibrarys();
+	void GetInterfaces();
+	void GetNetVars();
 
 	HMODULE m_hModule;
 	
