@@ -188,7 +188,8 @@ void CEsp::Update(void* pParameters)
 
 			DrawBoundingBox(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, color);
 			DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
-			DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
+			if(m_bDrawSkeleton)
+				DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
 			DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			DrawAmmoBar(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
@@ -366,9 +367,6 @@ void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, i
 
 void CEsp::DrawSkeleton(ISurface* pSurface, IClientEntity* pEntity, matrix3x4_t* pBoneMatrix, int alpha)
 {
-	if (!m_bDrawSkeleton)
-		return;
-
 	studiohdr_t* pStudioHdr = m_pApp->ModelInfo()->GetStudiomodel(pEntity->GetModel());
 	if (!pStudioHdr)
 		return;

@@ -639,8 +639,6 @@ void __fastcall CApplication::hk_RenderSmokeOverlay(void* ecx, void* edx, bool b
 {
 	CApplication* pApp = CApplication::Instance();
 
-	// Idk what this is used for,
-	// more or less pasta from AimTux :D
 	if (pApp->Visuals()->GetNoSmoke())
 		return;
 
