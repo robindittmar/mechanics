@@ -162,6 +162,7 @@
     <ClCompile Include="LagCompensationPlayerList.cpp" />
     <ClCompile Include="Legitbot.cpp" />
     <ClCompile Include="ConVar.cpp" />
+    <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mirror.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -237,6 +238,7 @@
     <ClInclude Include="FireEventClientSide.h" />
     <ClInclude Include="FrameStageNotify.h" />
     <ClInclude Include="GetViewModelFov.h" />
+    <ClInclude Include="IClientMode.h" />
     <ClInclude Include="IEngineSound.h" />
     <ClInclude Include="ITexture.h" />
     <ClInclude Include="IViewRender.h" />
@@ -246,6 +248,7 @@
     <ClInclude Include="Legitbot.h" />
     <ClInclude Include="ConVar.h" />
     <ClInclude Include="ICVar.h" />
+    <ClInclude Include="lodepng.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mirror.h" />
     <ClInclude Include="OverrideView.h" />

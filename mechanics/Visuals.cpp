@@ -21,7 +21,7 @@ void CVisuals::Setup()
 
 	m_iViewmodelFovValue = 70;
 
-	sprintf(m_pHitmarkerSound, "%s%s", m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
+	sprintf(m_pHitmarkerSound, "%smedia\\%s", m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
 }
 
 void CVisuals::Update(void* pParameters)

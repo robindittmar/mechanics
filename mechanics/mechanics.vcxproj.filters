@@ -258,6 +258,9 @@
     <ClCompile Include="Textbox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
+    <ClCompile Include="lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -586,6 +589,12 @@
     </ClInclude>
     <ClInclude Include="Textbox.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IClientMode.h">
+      <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

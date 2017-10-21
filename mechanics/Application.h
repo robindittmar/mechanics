@@ -68,6 +68,7 @@
 #include "IViewRender.h"
 #include "IEngineSound.h"
 #include "checksum_md5.h"
+#include "IClientMode.h"
 
 #define OFFSET_GLOBALS					0x1B
 #define OFFSET_LASTOCCLUSIONCHECK		0xA30
@@ -177,6 +178,7 @@ public:
 	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
+	IClientMode* ClientMode() { return m_pClientMode; }
 	IClientState* ClientState() { return m_pClientState; }
 	ICVar* CVar() { return m_pCVar; }
 	IViewRender* ViewRender() { return m_pViewRender; }
@@ -326,6 +328,7 @@ private:
 	CGlobalVars* m_pGlobalVars;
 	IGameEventManager2* m_pGameEventManager;
 	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
+	IClientMode* m_pClientMode;
 	IClientState* m_pClientState;
 	ICVar* m_pCVar;
 	IViewRender* m_pViewRender;

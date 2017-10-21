@@ -124,6 +124,12 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	if (!m_bRenderFakeAngle)
 		return;
 
+	if (!m_pApp->Visuals()->GetThirdperson())
+		return;
+
+	if (pInfo.entity_index < 0 || pInfo.entity_index > m_pApp->GlobalVars()->maxClients)
+		return;
+
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	IClientEntity* pRenderEntity = m_pApp->EntityList()->GetClientEntity(pInfo.entity_index);
 
@@ -133,8 +139,8 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	if (pLocalEntity != pRenderEntity)
 		return;
 
-	if (!m_pApp->Visuals()->GetThirdperson())
-		return;
+	/*if (!m_pApp->Visuals()->GetThirdperson())
+		return;*/
 
 	if (!m_pApp->AntiAim()->IsFakeYaw())
 		return;

@@ -34,6 +34,7 @@ public:
 
 	void SetClientPosition(int x, int y);
 	void GetClientPosition(int* x, int* y);
+	void GetClientSize(int* w, int* h);
 
 	void SetFocus(IControl* pFocus) { m_pFocus = pFocus; }
 	IControl* GetFocus() { return m_pFocus; }

@@ -1,4 +1,5 @@
 #include "TabContainer.h"
+#include "Window.h"
 
 CTabContainer::CTabContainer() : IControl(0, 0, 0, 0)
 {
@@ -105,6 +106,7 @@ void CTabContainer::OnMouseUp(int mx, int my)
 
 void CTabContainer::AddChild(IControl* pControl)
 {
+	pControl->SetVisible(false);
 	IControl::AddChild(pControl);
 
 	m_vLabels.push_back(
@@ -129,9 +131,8 @@ void CTabContainer::Draw(ISurface* pSurface)
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);
 
-	IControl* pParentWindow = this->GetParentWindow();
-	m_iWidth = pParentWindow->Width();
-	m_iHeight = pParentWindow->Height();
+	CWindow* pParentWindow = (CWindow*)this->GetParentWindow();
+	pParentWindow->GetClientSize(&m_iWidth, &m_iHeight);
 
 	pSurface->DrawSetColor(g_clrTab);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + TABCONTAINER_TABHEIGHT);
@@ -172,6 +173,14 @@ void CTabContainer::Draw(ISurface* pSurface)
 	pSurface->DrawLine(x, y - 1, x, y + TABCONTAINER_TABHEIGHT);
 	pSurface->DrawLine(x, y + TABCONTAINER_TABHEIGHT - 1, x + m_iWidth - 1, y + TABCONTAINER_TABHEIGHT - 1);
 	pSurface->DrawLine(x + m_iWidth - 1, y - 1, x + m_iWidth - 1, y + TABCONTAINER_TABHEIGHT);
+
+	// Draw Background image if no tab is selected
+	if (m_iSelectedTab == -1)
+	{
+		pSurface->DrawSetColor(255, 255, 255, 255);
+		pSurface->DrawSetTexture(g_pResourceManager->GetTexture(RM_TEXTURE_BACKGROUND));
+		pSurface->DrawTexturedRect(x, y + TABCONTAINER_TABHEIGHT, x + m_iWidth, y + m_iHeight);
+	}
 
 	IControl::Draw(pSurface);
 }

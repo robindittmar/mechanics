@@ -3,25 +3,14 @@
 
 CConfig::CConfig()
 {
-	m_iCurSection = CONFIG_SECTION_NONE;
-
-	m_mapSections[0x46d432d8] = CONFIG_SECTION_RAGEBOT;
-	m_mapSections[0x7f16f4fb] = CONFIG_SECTION_ANTIAIM;
-	m_mapSections[0xd44b1ec3] = CONFIG_SECTION_RESOLVER;
-	m_mapSections[0x6afa6af7] = CONFIG_SECTION_LEGITBOT;
-	m_mapSections[0x5d54d281] = CONFIG_SECTION_TRIGGERBOT;
-	m_mapSections[0x77ff3728] = CONFIG_SECTION_ESP;
-	m_mapSections[0x5eb8e60e] = CONFIG_SECTION_WEAPONESP;
-	m_mapSections[0xe8592cfe] = CONFIG_SECTION_SOUNDESP;
-	m_mapSections[0x89cd7231] = CONFIG_SECTION_CHAMS;
-	m_mapSections[0x883cc607] = CONFIG_SECTION_EFFECTS;
-	m_mapSections[0x2ce5a7d7] = CONFIG_SECTION_VISUALSOTHER;
-	m_mapSections[0xa58f59a7] = CONFIG_SECTION_FOV;
-	m_mapSections[0x8bad1a17] = CONFIG_SECTION_MISC;
+	m_pCurSection = NULL;
 }
 
 CConfig::~CConfig()
 {
+	if (m_pCurSection)
+		delete[] m_pCurSection;
+
 	this->DeleteValues();
 }
 
@@ -32,6 +21,10 @@ void CConfig::Init(CApplication* pApp)
 
 bool CConfig::LoadFile(const char* pFilename)
 {
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Loading config '%s'\n", pFilename);
+#endif // _DEBUG
+
 	this->DeleteValues();
 
 	char pFullpath[MAX_PATH];
@@ -39,8 +32,15 @@ bool CConfig::LoadFile(const char* pFilename)
 
 	FILE* pFile = fopen(pFullpath, "r");
 	if (!pFile)
-		return false;
+	{
+#ifdef _DEBUG
+		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n", pFullpath);
+#endif // _DEBUG
 
+		return false;
+	}
+
+	char pKeyBuffer[512];
 	const char* pKey;
 	const char* pValue;
 
@@ -57,6 +57,7 @@ bool CConfig::LoadFile(const char* pFilename)
 			if (pBuffer[i] == '\n')
 			{
 				pBuffer[i] = '\0';
+				iLen = i;
 				break;
 			}
 		}
@@ -64,7 +65,13 @@ bool CConfig::LoadFile(const char* pFilename)
 		// New section
 		if (pBuffer[0] == '[')
 		{
-			m_iCurSection = m_mapSections[murmurhash(pBuffer, strlen(pBuffer), 0xB16B00B5)];
+			if (m_pCurSection)
+				delete[] m_pCurSection;
+
+			// -1 because of []
+			m_pCurSection = new char[iLen - 1];
+			memcpy(m_pCurSection, pBuffer + 1, iLen - 2);
+			m_pCurSection[iLen - 2] = '\0';
 			continue;
 		}
 		else
@@ -72,21 +79,31 @@ bool CConfig::LoadFile(const char* pFilename)
 			pKey = strtok(pBuffer, "=");
 			pValue = strtok(NULL, "=");
 
-			uint32_t iHash = murmurhash(pKey, strlen(pKey), 0xB16B00B5);
+			int iLenKey = sprintf(pKeyBuffer, "%s_%s", m_pCurSection, pKey);
+			uint32_t iHash = murmurhash(pKeyBuffer, iLenKey, 0xB16B00B5);
 
-			int iLenValue = strlen(pValue);
-			char* pVal = new char[iLenValue + 1];
-			strncpy(pVal, pValue, iLenValue);
+			iLenKey++;
+			char* pKeyCopy = new char[iLenKey];
+			memcpy(pKeyCopy, pKeyBuffer, iLenKey);
 
-			m_mapValues[iHash] = pVal;
+			int iLenValue = strlen(pValue) + 1;
+			char* pValueCopy = new char[iLenValue];
+			memcpy(pValueCopy, pValue, iLenValue);
 
-			// TODO:
-			// Wie persitieren wir die Section in der map?
-			// => Wer und wie wird die config in die IFeature's übertragen?
+			m_mapKeys[iHash] = pKeyCopy;
+			m_mapValues[iHash] = pValueCopy;
+
+#ifdef _DEBUG
+			g_pConsole->Write(LOGLEVEL_INFO, "%s\t=\t%s\n", pKeyBuffer, pValueCopy);
+#endif // _DEBUG
 		}
 	}
 
 	fclose(pFile);
+
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Done loading config\n");
+#endif // _DEBUG
 	return true;
 }
 
@@ -95,12 +112,78 @@ bool CConfig::SaveFile(const char* pFilename)
 	return false;
 }
 
+bool CConfig::GetBool(const char* pSection, const char* pKey, bool* pOut)
+{
+	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
+	bool bValue = m_mapValues[iHash][0] == '1';
+
+	if (pOut)
+		*pOut = bValue;
+
+	return bValue;
+}
+
+int CConfig::GetInt(const char* pSection, const char* pKey, int* pOut)
+{
+	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
+	int iValue = atoi(m_mapValues[iHash]);
+
+	if (pOut)
+		*pOut = iValue;
+
+	return iValue;
+}
+
+float CConfig::GetFloat(const char* pSection, const char* pKey, float* pOut)
+{
+	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
+	float fValue = atof(m_mapValues[iHash]);
+
+	if (pOut)
+		*pOut = fValue;
+
+	return fValue;
+}
+
+const char* CConfig::GetString(const char* pSection, const char* pKey, char* pOut, int iMaxLen)
+{
+	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
+	const char* pValue = m_mapValues[iHash];
+
+	if (pOut)
+		strncpy(pOut, pValue, iMaxLen);
+
+	return pValue;
+}
+
+uint32_t CConfig::BuildSectionKeyHash(const char* pSection, const char* pKey)
+{
+	char pSectionKey[512];
+	sprintf(pSectionKey, "%s_%s", pSection, pKey);
+
+	return murmurhash(pSectionKey, strlen(pSectionKey), 0xB16B00B5);
+}
+
 void CConfig::DeleteValues()
 {
-	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.begin(); it != m_mapValues.end(); it++)
+	const char* ptr;
+
+	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKeys.begin(); it != m_mapKeys.end(); it++)
 	{
-		delete[] it->second;
+		ptr = it->second;
+		
+		if (ptr)
+			delete[] ptr;
 	}
 
+	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.begin(); it != m_mapValues.end(); it++)
+	{
+		ptr = it->second;
+
+		if (ptr)
+			delete[] ptr;
+	}
+
+	m_mapKeys.clear();
 	m_mapValues.clear();
 }

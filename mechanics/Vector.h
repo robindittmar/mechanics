@@ -34,7 +34,11 @@ public:
 	}
 
 	// Initialization
-	void Init(vec_t ix = 0.0f, vec_t iy = 0.0f, vec_t iz = 0.0f);
+	void Init(vec_t ix = 0.0f, vec_t iy = 0.0f, vec_t iz = 0.0f) {
+		this->x = ix;
+		this->x = iy;
+		this->z = iz;
+	}
 	// TODO (Ilya): Should there be an init that takes a single float for consistency?
 
 	// Got any nasty NAN's?
@@ -292,6 +296,7 @@ public:
 	inline VectorAligned(void) {};
 	inline VectorAligned(vec_t X, vec_t Y, vec_t Z) {
 		Init(X, Y, Z);
+		w = 0.0f;
 	}
 
 public:

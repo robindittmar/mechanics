@@ -49,7 +49,7 @@ void CMenu::CreateMenu()
 	m_pMainContainer->AddChild(m_pMiscTab);
 	m_pMainContainer->AddChild(m_pSkinChangerTab);
 	m_pMainContainer->AddChild(m_pConfigTab);
-	m_pMainContainer->SelectTab(0);
+	//m_pMainContainer->SelectTab(0);
 
 	m_pWindow = new CWindow(30, 30, 1020, 550, ".mechanics");
 	m_pWindow->AddChild(m_pMainContainer);

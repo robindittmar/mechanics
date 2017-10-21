@@ -1037,10 +1037,7 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
-	// IClientMode
-	DWORD dwClientMode = (DWORD)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x05));
-
-	m_pClientModeHook = new VTableHook((DWORD*)dwClientMode);
+	m_pClientModeHook = new VTableHook((DWORD*)m_pClientMode);
 	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
 	m_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
@@ -1169,7 +1166,10 @@ void CApplication::GetInterfaces()
 	// CInput
 	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x01);
 
-	// ClientState
+	// IClientMode
+	m_pClientMode = (IClientMode*)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x05));
+
+	// IClientState
 	this->m_pClientState = **(IClientState***)(CPattern::FindPattern(
 		(BYTE*)this->EngineDll(),
 		ENGINEDLL_SIZE,
@@ -1229,6 +1229,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "CInput\t\t\t=>\t0x%08X\n", m_pInput);
+	g_pConsole->Write(LOGLEVEL_INFO, "IClientMode\t\t=>\t0x%08X\n", m_pClientMode);
 	g_pConsole->Write(LOGLEVEL_INFO, "IClientState\t\t=>\t0x%08X\n", m_pClientState);
 	g_pConsole->Write(LOGLEVEL_INFO, "IViewRender\t\t=>\t0x%08X\n", m_pViewRender);
 	g_pConsole->WritePlain("\n");

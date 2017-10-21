@@ -111,3 +111,9 @@ void CWindow::GetClientPosition(int* x, int* y)
 	*x = m_iX;
 	*y = m_iY + TITLEBAR_HEIGHT;
 }
+
+void CWindow::GetClientSize(int* w, int* h)
+{
+	*w = m_iWidth;
+	*h = m_iHeight - TITLEBAR_HEIGHT;
+}
