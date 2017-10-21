@@ -68,6 +68,7 @@
 #include "IViewRender.h"
 #include "IEngineSound.h"
 #include "checksum_md5.h"
+#include "IClientMode.h"
 #include "IMDLCache.h"
 
 #define OFFSET_GLOBALS					0x1B
@@ -179,6 +180,7 @@ public:
 	CGlobalVars* GlobalVars() { return m_pGlobalVars; }
 	IGameEventManager2* GameEventManager() { return m_pGameEventManager; }
 	IPhysicsSurfaceProps* PhysicsSurfaceProps() { return m_pPhysicsSurfaceProps; }
+	IClientMode* ClientMode() { return m_pClientMode; }
 	IClientState* ClientState() { return m_pClientState; }
 	ICVar* CVar() { return m_pCVar; }
 	IViewRender* ViewRender() { return m_pViewRender; }
@@ -260,7 +262,13 @@ private:
 	void Setup();
 	void Hook();
 
+	// Own DLL
 	void GetModuleInfo();
+
+	// Engine stuff
+	void GetLibrarys();
+	void GetInterfaces();
+	void GetNetVars();
 
 	HMODULE m_hModule;
 	
@@ -327,6 +335,7 @@ private:
 	CGlobalVars* m_pGlobalVars;
 	IGameEventManager2* m_pGameEventManager;
 	IPhysicsSurfaceProps* m_pPhysicsSurfaceProps;
+	IClientMode* m_pClientMode;
 	IClientState* m_pClientState;
 	ICVar* m_pCVar;
 	IViewRender* m_pViewRender;

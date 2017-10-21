@@ -69,10 +69,10 @@ bool CInjector::Detach(const char* pProcess, CLibrary* pLibrary)
 {
 	return false;
 }
-
+#include <cstdio>
 DWORD CInjector::GetProcessId(const char* pProcess)
 {
-	PROCESSENTRY32 pe;
+	PROCESSENTRY32 pe = { sizeof(PROCESSENTRY32) };
 	HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 
 	if (Process32First(hSnapshot, &pe))

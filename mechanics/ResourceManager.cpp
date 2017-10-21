@@ -98,8 +98,10 @@ void CResourceManager::CreateTextures()
 	int textureCursor = pSurface->CreateNewTextureID(true);
 	int textureColorFade = pSurface->CreateNewTextureID(true);
 
+	// Cursor texture
 	unsigned char pTexCursor[] = { 255, 90, 0, 255 };
 
+	// Color palette
 	int curR, curG, curB;
 	unsigned char pTexColorFade[360 * 4];
 	for(int y = 0; y < 360 * 4; y += 4)
@@ -117,6 +119,7 @@ void CResourceManager::CreateTextures()
 
 	m_mapTextures[RM_TEXTURE_CURSOR] = textureCursor;
 	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
+	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");
 }
 
 int CResourceManager::GetTexture(int textureId)
@@ -146,6 +149,43 @@ void CResourceManager::CreateFonts()
 unsigned int CResourceManager::GetFont(int fontId)
 {
 	return m_mapFonts[fontId];
+}
+
+int CResourceManager::LoadPngToTexture(ISurface* pSurface, const char* pFilename)
+{
+	// PNG Data
+	std::vector<unsigned char> vRawImage; //the raw pixels
+	unsigned iWidth, iHeight;
+	char pPath[MAX_PATH];
+
+	// Make full path
+	sprintf(pPath, "%smedia\\%s", m_pApp->GetWorkingDirectory(), pFilename);
+
+	// Decode PNG
+	unsigned int iErr = lodepng::decode(vRawImage, iWidth, iHeight, pPath);
+	if (iErr)
+	{
+#ifdef _DEBUG
+		g_pConsole->Write(LOGLEVEL_ERROR, "Loading png '%s': %s\n", pFilename, lodepng_error_text(iErr));
+#endif // _DEBUG
+
+		return -1;
+	}
+
+
+	// TODO: Maybe improve performance somehow ^-^
+	unsigned int dim = iWidth * iHeight * 4;
+	unsigned char* pImgData = new unsigned char[dim];
+	for (unsigned int i = 0; i < dim; i++)
+	{
+		pImgData[i] = vRawImage[i];
+	}
+
+	int textureId = pSurface->CreateNewTextureID(true);
+	pSurface->DrawSetTextureRGBA(textureId, pImgData, iWidth, iHeight);
+
+	delete[] pImgData;
+	return textureId;
 }
 
 void CResourceManager::HslToRgb(int h, float s, float l, int& r, int &g, int& b)

@@ -1,6 +1,6 @@
 #include "Console.h"
 
-CConsole* g_pConsole;
+CConsole* g_pConsole = NULL;
 
 CConsole::CConsole()
 {

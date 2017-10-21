@@ -1,16 +1,23 @@
 #ifndef __RESOURCEMANAGER_H__
 #define __RESOURCEMANAGER_H__
 
+// Std Lib
 #include <unordered_map>
 
-#include "XorString.h"
-
+// Source SDK
 #include "IMaterialSystem.h"
 #include "ISurface.h"
 #include "KeyValues.h"
 
+// Libs
+#include "lodepng.h"
+
+// Custom
+#include "XorString.h"
+
 #define RM_TEXTURE_CURSOR		0
 #define RM_TEXTURE_COLORFADE	1
+#define RM_TEXTURE_BACKGROUND	2
 
 #define RM_FONT_NORMAL			0
 #define RM_FONT_HEADER			1
@@ -37,6 +44,7 @@ public:
 	void CreateFonts();
 	unsigned int GetFont(int fontId);
 private:
+	int LoadPngToTexture(ISurface* pSurface, const char* pFilename);
 	void HslToRgb(int h, float s, float l, int& r, int &g, int& b);
 
 	int m_iMaterialCount;
@@ -52,6 +60,8 @@ private:
 
 	CApplication* m_pApp;
 };
+
+void decodeOneStep(const char* filename);
 
 extern CResourceManager* g_pResourceManager;
 
