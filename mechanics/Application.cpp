@@ -12,6 +12,7 @@ RenderView_t CApplication::m_pRenderViewFn;
 RenderSmokeOverlay_t CApplication::m_pRenderSmokeOverlay;
 EmitSound1_t CApplication::m_pEmitSound1;
 EmitSound2_t CApplication::m_pEmitSound2;
+FindMDL_t CApplication::m_pFindMdl;
 
 RecvVarProxy_t CApplication::m_pSequenceProxy;
 RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
@@ -199,6 +200,7 @@ void CApplication::Unhook()
 	this->m_pClientHook->Restore();
 	this->m_pModelRenderHook->Restore();
 	this->m_pClientModeHook->Restore();
+	this->m_pMdlHook->Restore();
 
 	this->m_bIsHooked = false;
 }
@@ -213,6 +215,7 @@ void CApplication::Rehook()
 	this->m_pGameEventManagerHook->Rehook();
 	this->m_pViewRenderHook->Rehook();
 	this->m_pEngineSoundHook->Rehook();
+	this->m_pMdlHook->Rehook();
 
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
@@ -227,6 +230,11 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 		pEntity = pEntity->GetObserverTarget();
 
 	return pEntity;
+}
+
+MDLHandle_t __fastcall CApplication::hk_FindMDL(void* ecx, void* edx, char* filePath)
+{
+	return m_pFindMdl(ecx, filePath);
 }
 
 
@@ -1065,6 +1073,9 @@ void CApplication::Hook()
 	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
 	m_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
+	m_pMdlHook = new VTableHook((DWORD*)m_pMdlCache);
+	m_pFindMdl = (FindMDL_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
+
 	// Proxy functions
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
@@ -1116,6 +1127,7 @@ void CApplication::GetLibrarys()
 	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("alð«zjñ±byã£tn«¦{g").ToCharArray());
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{í»dbæ±9oé®").ToCharArray());
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé").ToCharArray());
+	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjñ£tjæªr%á®{").ToCharArray());
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "client.dll\t\t=>\t0x%08X\n", m_dwClientDll);
@@ -1125,6 +1137,7 @@ void CApplication::GetLibrarys()
 	g_pConsole->Write(LOGLEVEL_INFO, "vguimatsurface.dll\t=>\t0x%08X\n", m_dwVGuiSurfaceDll);
 	g_pConsole->Write(LOGLEVEL_INFO, "vphysics.dll\t\t=>\t0x%08X\n", m_dwVPhysicsDll);
 	g_pConsole->Write(LOGLEVEL_INFO, "vstdlib.dll\t\t=>\t0x%08X\n", m_dwVStdLibDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "datacache.dll\t\t=>\t0x%08X\n", m_dwDatacacheDll);
 	g_pConsole->WritePlain("\n");
 #endif // _DEBUG
 }
@@ -1141,6 +1154,7 @@ void CApplication::GetInterfaces()
 	CreateInterfaceFn VGuiSurfaceFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn VPhysicsFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn VStdLibFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn DatacacheFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwDatacacheDll, xorCreateInterface.ToCharArray());
 
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("Ejë¦xfÖ§ro").ToCharArray());
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("Ejë¦xfÌ¬c").ToCharArray());
@@ -1160,7 +1174,8 @@ void CApplication::GetInterfaces()
 	m_pGameEventManager = (IGameEventManager2*)EngineFactory(/*GAMEEVENTSMANAGER002*/CXorString("PJÈ‡R]ÀŒCXÈƒYJÂ‡E;µð").ToCharArray(), NULL);
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[í»dbæ±D~÷¤vhà’edõ±';´").ToCharArray(), NULL);
 	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^Në¥~eà‘x~ë¦Tgì§yµò$").ToCharArray(), NULL);
-																																	
+	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("ZOÉvhí§';±").ToCharArray(), NULL);
+
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
 	// CInput
@@ -1223,6 +1238,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->Write(LOGLEVEL_INFO, "GAMEEVENTSMANAGER002\t=>\t0x%08X\n", m_pGameEventManager);
 	g_pConsole->Write(LOGLEVEL_INFO, "VPhysicsSurfaceProps001\t=>\t0x%08X\n", m_pPhysicsSurfaceProps);
 	g_pConsole->Write(LOGLEVEL_INFO, "IEngineSoundClient003\t=>\t0x%08X\n", m_pEngineSound);
+	g_pConsole->Write(LOGLEVEL_INFO, "MDLCache004\t=>\t0x%08X\n", m_pMdlCache);
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "CGlobalVars\t\t=>\t0x%08X\n", m_pGlobalVars);

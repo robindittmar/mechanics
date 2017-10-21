@@ -1,3 +1,6 @@
+#ifndef __ICVAR_H__
+#define __ICVAR_H__
+
 #include "ConVar.h"
 
 class IAppSystem
@@ -28,3 +31,5 @@ public:
 	virtual void func15() = 0;
 	virtual ConVar* FindVar(const char* var_name) = 0;
 };
+
+#endif // __ICVAR_H__

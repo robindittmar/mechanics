@@ -44,7 +44,7 @@ void CResolver::Update(void* pParameters)
 		if (!(pCurEntity->GetFlags() & FL_CLIENT))
 			continue;
 
-		if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) // same team dont need to resolve
+		if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) //same team dont need to resolve
 			continue;
 
 		bool bIsMoving = pCurEntity->GetVelocity()->Length() > 0.1f;

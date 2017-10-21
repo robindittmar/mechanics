@@ -596,6 +596,9 @@
     <ClInclude Include="IClientMode.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
+    <ClInclude Include="IMDLCache.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

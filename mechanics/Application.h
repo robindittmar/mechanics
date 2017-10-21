@@ -69,6 +69,7 @@
 #include "IEngineSound.h"
 #include "checksum_md5.h"
 #include "IClientMode.h"
+#include "IMDLCache.h"
 
 #define OFFSET_GLOBALS					0x1B
 #define OFFSET_LASTOCCLUSIONCHECK		0xA30
@@ -99,6 +100,7 @@ typedef int(__thiscall *EmitSound2_t)(void*, IRecipientFilter&, int, int, const 
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
+typedef MDLHandle_t(__thiscall *FindMDL_t)(void*, char*);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
@@ -182,6 +184,7 @@ public:
 	IClientState* ClientState() { return m_pClientState; }
 	ICVar* CVar() { return m_pCVar; }
 	IViewRender* ViewRender() { return m_pViewRender; }
+	IMDLCache* MDLCache() { return m_pMdlCache; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
@@ -190,6 +193,7 @@ public:
 	DWORD VGui2Dll() { return m_dwVGui2Dll; }
 	DWORD VGuiSurfaceDll() { return m_dwVGuiSurfaceDll; }
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
+	DWORD DataCacheDll() { return m_dwDatacacheDll; }
 
 	// Target selector (Feature?)
 	CPlayerList* PlayerList() { return &m_playerList; }
@@ -253,6 +257,7 @@ public:
 		bool bUpdatePositions = true, float soundtime = 0.0f, int speakerentity = -1);
 	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 	static void __cdecl hk_SetLowerBodyYawTarget(const CRecvProxyData* ecx, void* pStruct, void* pOut);
+	static MDLHandle_t __fastcall hk_FindMDL(void* ecx, void* edx, char* FilePath);
 private:
 	void Setup();
 	void Hook();
@@ -289,6 +294,7 @@ private:
 	VTableHook* m_pGameEventManagerHook;
 	VTableHook* m_pViewRenderHook;
 	VTableHook* m_pEngineSoundHook;
+	VTableHook* m_pMdlHook;
 
 	static CreateMove_t m_pCreateMove;
 	static FrameStageNotify_t m_pFrameStageNotify;
@@ -302,6 +308,7 @@ private:
 	static RenderSmokeOverlay_t m_pRenderSmokeOverlay;
 	static EmitSound1_t m_pEmitSound1;
 	static EmitSound2_t m_pEmitSound2;
+	static FindMDL_t m_pFindMdl;
 
 	static RecvVarProxy_t m_pSequenceProxy;
 	static RecvVarProxy_t m_pLowerBodyYawProxy;
@@ -333,6 +340,7 @@ private:
 	ICVar* m_pCVar;
 	IViewRender* m_pViewRender;
 	IEngineSound* m_pEngineSound;
+	IMDLCache* m_pMdlCache;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
@@ -341,6 +349,7 @@ private:
 	DWORD m_dwVGuiSurfaceDll;
 	DWORD m_dwVPhysicsDll;
 	DWORD m_dwVStdLibDll;
+	DWORD m_dwDatacacheDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;
