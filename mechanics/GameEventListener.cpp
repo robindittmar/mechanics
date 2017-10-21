@@ -76,6 +76,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	CApplication* pApp = CApplication::Instance();
 
 	pApp->Gui()->Setup();
+	pApp->LoadSkinChangerConfig();
 	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
 	pApp->Chams()->ReloadMaterials();

@@ -587,6 +587,9 @@
     <ClInclude Include="Textbox.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="IMDLCache.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

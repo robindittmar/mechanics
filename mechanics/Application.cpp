@@ -12,6 +12,7 @@ RenderView_t CApplication::m_pRenderViewFn;
 RenderSmokeOverlay_t CApplication::m_pRenderSmokeOverlay;
 EmitSound1_t CApplication::m_pEmitSound1;
 EmitSound2_t CApplication::m_pEmitSound2;
+FindMDL_t CApplication::m_pFindMdl;
 
 RecvVarProxy_t CApplication::m_pSequenceProxy;
 RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
@@ -199,6 +200,7 @@ void CApplication::Unhook()
 	this->m_pClientHook->Restore();
 	this->m_pModelRenderHook->Restore();
 	this->m_pClientModeHook->Restore();
+	this->m_pMdlHook->Restore();
 
 	this->m_bIsHooked = false;
 }
@@ -213,6 +215,7 @@ void CApplication::Rehook()
 	this->m_pGameEventManagerHook->Rehook();
 	this->m_pViewRenderHook->Rehook();
 	this->m_pEngineSoundHook->Rehook();
+	this->m_pMdlHook->Rehook();
 
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
 	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
@@ -227,6 +230,11 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 		pEntity = pEntity->GetObserverTarget();
 
 	return pEntity;
+}
+
+MDLHandle_t __fastcall CApplication::hk_FindMDL(void* ecx, void* edx, char* filePath)
+{
+	return m_pFindMdl(ecx, filePath);
 }
 
 
@@ -805,6 +813,7 @@ void CApplication::Setup()
 	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("alð«zjñ±byã£tn«¦{g").ToCharArray());
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{í»dbæ±9oé®").ToCharArray());
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé").ToCharArray());
+	this->m_dwDatacacheDll = (DWORD)GetModuleHandle("datacache.dll");
 	CreateInterfaceFn ClientFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn EngineFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn MaterialSystemFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwMaterialSystemDll, xorCreateInterface.ToCharArray());
@@ -812,6 +821,7 @@ void CApplication::Setup()
 	CreateInterfaceFn VGuiSurfaceFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVGuiSurfaceDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn VPhysicsFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn VStdLibFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn DatacacheFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwDatacacheDll, xorCreateInterface.ToCharArray());
 
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("Ejë¦xfÖ§ro").ToCharArray());
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("Ejë¦xfÌ¬c").ToCharArray());
@@ -831,6 +841,7 @@ void CApplication::Setup()
 	m_pGameEventManager = (IGameEventManager2*)EngineFactory(/*GAMEEVENTSMANAGER002*/CXorString("PJÈ‡R]ÀŒCXÈƒYJÂ‡E;µð").ToCharArray(), NULL);
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[í»dbæ±D~÷¤vhà’edõ±';´").ToCharArray(), NULL);
 	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^Në¥~eà‘x~ë¦Tgì§yµò$").ToCharArray(), NULL); // TODO
+	m_pMdlCache = (IMDLCache*)DatacacheFactory("MDLCache004", NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS);
 
@@ -1339,6 +1350,9 @@ void CApplication::Hook()
 	m_pEngineSoundHook = new VTableHook((DWORD*)m_pEngineSound);
 	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
 	m_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
+
+	m_pMdlHook = new VTableHook((DWORD*)m_pMdlCache);
+	m_pFindMdl = (FindMDL_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
 
 	// Proxy functions
 	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);

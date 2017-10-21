@@ -238,6 +238,7 @@
     <ClInclude Include="FrameStageNotify.h" />
     <ClInclude Include="GetViewModelFov.h" />
     <ClInclude Include="IEngineSound.h" />
+    <ClInclude Include="IMDLCache.h" />
     <ClInclude Include="ITexture.h" />
     <ClInclude Include="IViewRender.h" />
     <ClInclude Include="LagCompensation.h" />

@@ -1,5 +1,5 @@
-#ifndef __ICVAR_H__
-#define __ICVAR_H__
+#ifndef __CONVAR_H_
+#define __CONVAR_H_
 
 class ConVar
 {
@@ -15,4 +15,4 @@ public:
 	int callback;
 };
 
-#endif // __ICVAR_H__
+#endif // __CONVAR_H_
