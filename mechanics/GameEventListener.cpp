@@ -75,10 +75,12 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
+	static CXorString xorRecoilCompensation("`nä²xeÚ°rhê«{Tö¡vgà");
+
 	pApp->Gui()->Setup();
 	pApp->LoadSkinChangerConfig();
 	pApp->SkinChanger()->SetForceFullUpdate();
-	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
+	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(xorRecoilCompensation.ToCharArray())->value));
 	pApp->Chams()->ReloadMaterials();
 	pApp->Esp()->ResetHeadBones();
 	pApp->Visuals()->NoSmoke(pApp->Visuals()->GetNoSmoke());
