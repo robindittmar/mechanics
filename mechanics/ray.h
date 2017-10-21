@@ -5,13 +5,19 @@
 
 struct Ray_t
 {
-	__declspec(align(16)) Vector  m_Start;
-	__declspec(align(16)) Vector  m_Delta;
-	__declspec(align(16)) Vector  m_StartOffset;
-	__declspec(align(16)) Vector  m_Extents;
-	//without your matrix3x4
+	VectorAligned  m_Start;
+	VectorAligned  m_Delta;
+	VectorAligned  m_StartOffset;
+	VectorAligned  m_Extents;
+	
+	const matrix3x4_t* pMatrix;
+
 	bool	m_IsRay;
 	bool	m_IsSwept;
+
+	Ray_t() : pMatrix(NULL)
+	{
+	}
 
 	void Init(Vector const& start, Vector const& end)
 	{

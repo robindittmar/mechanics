@@ -69,7 +69,7 @@ bool CInjector::Detach(const char* pProcess, CLibrary* pLibrary)
 {
 	return false;
 }
-#include <cstdio>
+
 DWORD CInjector::GetProcessId(const char* pProcess)
 {
 	PROCESSENTRY32 pe = { sizeof(PROCESSENTRY32) };
