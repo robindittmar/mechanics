@@ -69,8 +69,8 @@ void CMenu::ApplySettings()
 	m_pAimbotNoSpreadEnabled->SetChecked(m_pApp->Ragebot()->GetNoSpread());
 	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
 	m_pAimbotHitchanceSlider->SetValue(m_pApp->Ragebot()->GetHitchance());
-	m_pAimbotTargetCriteria->SetSelectionByValue(m_pApp->Ragebot()->GetTargetCriteria());
-	m_pAimbotVisibleMode->SetSelectionByValue(m_pApp->TargetSelector()->GetVisibleMode());
+	m_pAimbotTargetCriteria->SetValue(m_pApp->Ragebot()->GetTargetCriteria());
+	m_pAimbotVisibleMode->SetValue(m_pApp->TargetSelector()->GetVisibleMode());
 
 	m_pHitboxHead->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
 	m_pHitboxChest->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
@@ -83,18 +83,18 @@ void CMenu::ApplySettings()
 	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
 	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
 	m_pRageOthersLagCompensationEnabled->SetChecked(m_pApp->LagCompensation()->GetRageLagCompensationEnabled());
-	m_pRageOthersResolverType->SetSelectionByValue(m_pApp->Resolver()->GetResolverType());
+	m_pRageOthersResolverType->SetValue(m_pApp->Resolver()->GetResolverType());
 
 	m_pAntiaimEnabled->SetChecked(m_pApp->AntiAim()->GetEnabled());
 	// Standing
-	m_pAntiaimStandingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingStanding());
-	m_pAntiaimStandingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingStanding());
+	m_pAntiaimStandingPitch->SetValue(m_pApp->AntiAim()->GetPitchSettingStanding());
+	m_pAntiaimStandingYaw->SetValue(m_pApp->AntiAim()->GetYawSettingStanding());
 	m_pAntiaimStandingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetStanding());
 	m_pAntiaimStandingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingStanding());
 	m_pAntiaimYawStandingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetStanding());
 	// Moving
-	m_pAntiaimMovingPitch->SetSelectionByValue(m_pApp->AntiAim()->GetPitchSettingMoving());
-	m_pAntiaimMovingYaw->SetSelectionByValue(m_pApp->AntiAim()->GetYawSettingMoving());
+	m_pAntiaimMovingPitch->SetValue(m_pApp->AntiAim()->GetPitchSettingMoving());
+	m_pAntiaimMovingYaw->SetValue(m_pApp->AntiAim()->GetYawSettingMoving());
 	m_pAntiaimMovingYawOffset->SetValue(m_pApp->AntiAim()->GetYawOffsetMoving());
 	m_pAntiaimMovingYawFake->SetSelection(m_pApp->AntiAim()->GetYawFakeSettingMoving());
 	m_pAntiaimYawMovingFakeOffset->SetValue(m_pApp->AntiAim()->GetYawFakeOffsetMoving());
@@ -175,7 +175,7 @@ void CMenu::ApplySettings()
 	m_pEffectsNoFlash->SetChecked(m_pApp->Visuals()->GetNoFlash());
 	m_pEffectsNoFlashValue->SetValue(m_pApp->Visuals()->GetFlashPercentage());
 
-	m_pVisualsOthersHandsDrawStyle->SetSelectionByValue(m_pApp->Visuals()->GetHandsDrawStyle());
+	m_pVisualsOthersHandsDrawStyle->SetValue(m_pApp->Visuals()->GetHandsDrawStyle());
 	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->Visuals()->GetHitmarker());
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
@@ -208,6 +208,8 @@ void CMenu::ApplySettings()
 
 	// SkinChanger
 	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
+	m_pSkinChangerWeapon->SetSelection(0);
+	m_pSkinChangerSkin->SetSelection(0); // TODO
 }
 
 void CMenu::HandleInput()
@@ -1017,9 +1019,17 @@ void CMenu::CreateSkinChangerTab()
 
 	m_pSkinChangerSkin = new CSelectbox(140, 4, 128, 16, "Skin");
 	m_pSkinChangerSkin->AddOption(0, "None");
+	m_pSkinChangerSkin->SetEventHandler(std::bind(&CMenu::ApplySkin, this, std::placeholders::_1));
 
 	m_pSkinChangerWeapon = new CSelectbox(4, 4, 128, 16, "Weapon");
 	m_pSkinChangerWeapon->AddOption(0, "None");
+	int iLen = strlen("weapon_"); // TODO
+	std::unordered_map<uint32_t, WeaponMetadata_t>* m_mapWeaponIds = m_pApp->SkinChanger()->GetWeaponsMap();
+	for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator it = m_mapWeaponIds->begin(); it != m_mapWeaponIds->end(); it++)
+	{
+		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.name);
+	}
+	m_pSkinChangerWeapon->SetEventHandler(std::bind(&CMenu::FillSkinIds, this, std::placeholders::_1));
 
 	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 1008, 300, "Skins");
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeapon);
@@ -1052,4 +1062,50 @@ void CMenu::CreateConfigTab()
 	m_pConfigTab->AddChild(m_pClrPicker);
 	m_pConfigTab->AddChild(m_pTextbox);
 	m_pConfigTab->AddChild(m_pForceFullUpdate);
+}
+
+void CMenu::FillSkinIds(int iWeaponId)
+{
+	if (iWeaponId == 0)
+		return;
+
+	m_pSkinChangerSkin->ClearOptions();
+	m_pSkinChangerSkin->AddOption(0, "None");
+
+	std::unordered_map<int, std::unordered_map<int, const char*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
+	for (std::unordered_map<int, std::unordered_map<int, const char*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
+	{
+		if (itWeaps->first != iWeaponId)
+			continue;
+
+		for (std::unordered_map<int, const char*>::iterator itPaintKits = itWeaps->second.begin(); itPaintKits != itWeaps->second.end(); itPaintKits++)
+		{
+			m_pSkinChangerSkin->AddOption(itPaintKits->first, itPaintKits->second);
+		}
+
+		break;
+	}
+}
+
+void CMenu::ApplySkin(int iSkinId)
+{
+	if (iSkinId == 0)
+		return;
+
+	int iWeaponId = m_pSkinChangerWeapon->GetValue();
+
+	m_pApp->SkinChanger()->AddSkinReplacement(
+		iWeaponId,
+		new CSkinMetadata(
+			iWeaponId,
+			iSkinId,
+			0,
+			-1,
+			0,
+			NULL,
+			0.0f
+		)
+	);
+
+	m_pApp->SkinChanger()->SetForceFullUpdate();
 }

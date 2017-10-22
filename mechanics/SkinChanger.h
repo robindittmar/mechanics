@@ -55,6 +55,18 @@
 
 class CApplication;
 
+struct WeaponMetadata_t
+{
+	WeaponMetadata_t(int iId = 0, const char* pName = NULL)
+	{
+		id = iId;
+		name = pName;
+	}
+
+	int id;
+	const char* name;
+};
+
 // Hint: also changes models :D
 class CSkinChanger : public IFeature
 {
@@ -62,8 +74,13 @@ public:
 	CSkinChanger();
 	~CSkinChanger();
 
+	std::unordered_map<uint32_t, WeaponMetadata_t>* GetWeaponsMap() { return &m_mapWeapons; }
+	std::unordered_map<int, std::unordered_map<int, const char*>>* GetSkinsMap() { return &m_mapSkins; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
+
+	void ParseSkinFile();
 
 	void SetForceFullUpdate(bool bForceFullUpdate = true) { m_bForceFullUpdate = bForceFullUpdate; }
 
@@ -93,10 +110,16 @@ private:
 
 	int m_iDesiredKnifeModelIndex;
 	std::unordered_map<int, const char*> m_mapKnives;
+	std::unordered_map<uint32_t, WeaponMetadata_t> m_mapWeapons;
 
 	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
 	std::unordered_map<int, const char*> m_mapModelMetadata;
 	std::unordered_map<uint32_t, const char*> m_mapKillIcon;
+
+	std::unordered_map<uint32_t, int> m_mapPaintKits;
+	std::unordered_map<uint32_t, const char*> m_mapPaintKitDescription;
+	std::unordered_map<uint32_t, int> m_mapWeaponSkins;
+	std::unordered_map<int, std::unordered_map<int, const char*>> m_mapSkins;
 };
 
 #endif // __SKINCHANGER_H__

@@ -153,7 +153,7 @@ void CSelectbox::SetSelection(int iSelection)
 	}
 }
 
-void CSelectbox::SetSelectionByValue(int iValue)
+void CSelectbox::SetValue(int iValue)
 {
 	if (iValue >= 0 && iValue < m_iCountOptions)
 	{

@@ -22,6 +22,10 @@ public:
 
 	CWindow* GetMainWindow() { return m_pWindow; }
 	CWindow* GetMirrorWindow() { return m_pWindowMirror; }
+
+	// TODO
+	void FillSkinIds(int iWeaponId);
+	void ApplySkin(int iSkinId);
 private:
 	void CreateRageTab();
 	void CreateLegitTab();

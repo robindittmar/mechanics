@@ -156,6 +156,9 @@ void CSelectboxPopup::ClearOptions()
 	}
 
 	m_vOptionLabels.clear();
+
+	m_iLenLargestOptionString = -1;
+	m_iLargestOptionStringIndex = -1;
 }
 
 void CSelectboxPopup::AddOption(int curIdx, const char* text, int len)

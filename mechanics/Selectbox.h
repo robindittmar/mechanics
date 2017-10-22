@@ -39,7 +39,8 @@ public:
 	void SetSelection(int iSelection);
 	int GetSelection() { return m_iSelection; }
 
-	void SetSelectionByValue(int iValue);
+	void SetValue(int iValue);
+	int GetValue() { return m_vOptions[m_iSelection]->GetId(); }
 
 	void SetEventHandler(std::function<void(int)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
