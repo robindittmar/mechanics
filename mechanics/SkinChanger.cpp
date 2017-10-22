@@ -4,6 +4,7 @@
 CSkinChanger::CSkinChanger()
 {
 	m_bForceFullUpdate = true;
+	m_iDesiredKnifeModelIndex = 0;
 }
 
 CSkinChanger::~CSkinChanger()
@@ -15,43 +16,31 @@ void CSkinChanger::Setup()
 {
 	m_pApp = CApplication::Instance();
 
-	/*
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{"
-	this->m_mapModelCfg[WEAPON_KNIFE] = "models/weapons/v_knife_default_ct.mdl";
+	static CXorString xorKnifeCT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{");
+	static CXorString xorKnifeT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®");
+	static CXorString xorKnifeBayonet("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg");
+	static CXorString xorKnifeButterfly("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®");
+	static CXorString xorKnifeFalchion("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®");
+	static CXorString xorKnifeFlip("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤{bõìzoé");
+	static CXorString xorKnifeGut("zdá§{xªµrjõ­yxª´H`ë«qnÚ¥b«¯sg");
+	static CXorString xorKnifeM9Bayonet("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{");
+	static CXorString xorKnifeKarambit("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®");
+	static CXorString xorKnifePush("zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé");
+	static CXorString xorKnifeSurvivalBowie("zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{");
+	static CXorString xorKnifeTactical("zdá§{xªµrjõ­yxª´H`ë«qnÚ¶vhñ«tjéìzoé");
 
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®"
-	this->m_mapModelCfg[WEAPON_KNIFE_T] = "models/weapons/v_knife_default_t.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg"
-	this->m_mapModelCfg[WEAPON_KNIFE_BAYONET] = "models/weapons/v_knife_bayonet.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®"
-	this->m_mapModelCfg[WEAPON_KNIFE_BUTTERFLY] = "models/weapons/v_knife_butterfly.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®"
-	this->m_mapModelCfg[WEAPON_KNIFE_FALCHION] = "models/weapons/v_knife_falchion_advanced.mdl";
-	
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¤{bõìzoé"
-	this->m_mapModelCfg[WEAPON_KNIFE_FLIP] = "models/weapons/v_knife_flip.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¥b«¯sg"
-	this->m_mapModelCfg[WEAPON_KNIFE_GUT] = "models/weapons/v_knife_gut.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{"
-	this->m_mapModelCfg[WEAPON_KNIFE_M9_BAYONET] = "models/weapons/v_knife_m9_bay.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®"
-	this->m_mapModelCfg[WEAPON_KNIFE_KARAMBIT] = "models/weapons/v_knife_karam.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé"
-	this->m_mapModelCfg[WEAPON_KNIFE_PUSH] = "models/weapons/v_knife_push.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{"
-	this->m_mapModelCfg[WEAPON_KNIFE_SURVIVAL_BOWIE] = "models/weapons/v_knife_survival_bowie.mdl";
-
-	Xord "zdá§{xªµrjõ­yxª´H`ë«qnÚ¶vhñ«tjéìzoé"
-	this->m_mapModelCfg[WEAPON_KNIFE_TACTICAL] = "models/weapons/v_knife_tactical.mdl";
-	*/
+	this->m_mapKnives[WEAPON_KNIFE] = xorKnifeCT.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_T] = xorKnifeT.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_BAYONET] = xorKnifeBayonet.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_BUTTERFLY] = xorKnifeButterfly.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_FALCHION] = xorKnifeFalchion.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_FLIP] = xorKnifeFlip.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_GUT] = xorKnifeGut.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_M9_BAYONET] = xorKnifeM9Bayonet.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_KARAMBIT] = xorKnifeKarambit.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_PUSH] = xorKnifePush.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_SURVIVAL_BOWIE] = xorKnifeSurvivalBowie.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_TACTICAL] = xorKnifeTactical.ToCharArray();
 }
 
 void CSkinChanger::Update(void* pParameters)
@@ -223,6 +212,45 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 	return true;
 }
 
+void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
+{
+	if (m_iDesiredKnifeModelIndex == iDesiredKnifeModelIndex)
+		return;
+
+	m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex;
+
+	this->DeleteModelNames();
+	this->DeleteKillIcons();
+	if (iDesiredKnifeModelIndex == 0)
+	{
+		m_pApp->ClientState()->ForceFullUpdate();
+		return;
+	}
+
+
+	const char* pDesiredKnife = this->m_mapKnives[iDesiredKnifeModelIndex];
+
+	for (std::unordered_map<int, const char*>::iterator it = m_mapKnives.begin(); it != m_mapKnives.end(); it++)
+	{
+		if (it->first == m_iDesiredKnifeModelIndex)
+			continue;
+
+		AddModelReplacement(
+			it->second,
+			pDesiredKnife
+		);
+
+		// todo: also skin!!
+		/*AddKillIconReplacement(
+			CXorString("|eì¤rTèûHiä»xeà¶").ToCharArray(),
+			CXorString("ujü­ynñ").ToCharArray()
+		);*/
+	}
+
+
+	m_bForceFullUpdate = true;
+}
+
 void CSkinChanger::DeleteModelNames()
 {
 	// Clean up Model names
@@ -234,6 +262,8 @@ void CSkinChanger::DeleteModelNames()
 		if (pCurrent)
 			delete[] pCurrent;
 	}
+
+	m_mapModelMetadata.clear();
 }
 
 void CSkinChanger::DeleteSkinMetadata()
@@ -247,16 +277,20 @@ void CSkinChanger::DeleteSkinMetadata()
 		if (pCurrent)
 			delete pCurrent;
 	}
+
+	m_mapSkinMetadata.clear();
 }
 
 void CSkinChanger::DeleteKillIcons()
 {
 	const char* pCurrent;
-	for(std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIcon.begin(); it != m_mapKillIcon.end(); it++)
+	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIcon.begin(); it != m_mapKillIcon.end(); it++)
 	{
 		pCurrent = it->second;
 
 		if (pCurrent)
 			delete[] pCurrent;
 	}
+
+	m_mapKillIcon.clear();
 }

@@ -14,6 +14,14 @@
 #include "SkinMetadata.h"
 #include "murmurhash.h"
 
+#define GLOVE_NONE				0
+#define GLOVE_BLOODHOUND		1
+#define GLOVE_DRIVER			2
+#define GLOVE_HANDWRAPS			3
+#define GLOVE_MOTO				4
+#define GLOVE_SPECIALIST		5
+#define GLOVE_SPORT				6
+
 #define SEQUENCE_DEFAULT_DRAW 0
 #define SEQUENCE_DEFAULT_IDLE1 1
 #define SEQUENCE_DEFAULT_IDLE2 2
@@ -61,6 +69,9 @@ public:
 
 	void ClearReplacements();
 
+	void SetDesiredKnifeModelIndex(int iDesiredKnifeModelIndex) { m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex; }
+	int GetDesiredKnifeModelIndex() { return m_iDesiredKnifeModelIndex; }
+
 	// pNew won't be affected
 	void AddModelReplacement(const char* pOld, const char* pNew);
 	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
@@ -71,6 +82,7 @@ public:
 	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
 	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
 	bool ApplyCustomKillIcon(IGameEvent* pEvent);
+	void ApplyDesiredKnife(int iDesiredKnifeModelIndex);
 private:
 	// Delete's all items of the maps
 	void DeleteModelNames();
@@ -79,8 +91,12 @@ private:
 
 	bool m_bForceFullUpdate;
 
+	int m_iDesiredKnifeModelIndex;
+	std::unordered_map<int, const char*> m_mapKnives;
+
 	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
 	std::unordered_map<int, const char*> m_mapModelMetadata;
-	std::unordered_map<uint32_t, const char*> m_mapKillIcon;};
+	std::unordered_map<uint32_t, const char*> m_mapKillIcon;
+};
 
 #endif // __SKINCHANGER_H__

@@ -52,7 +52,7 @@ void CChams::Update(void* pParameters)
 {
 }
 
-void CChams::SetFlatModels(int iPlayerChamsStyle)
+void CChams::SetModelStyle(int iPlayerChamsStyle)
 {
 	m_iPlayerChamsStyle = iPlayerChamsStyle;
 
@@ -165,7 +165,7 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 		m_pLitFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
 
 		// Force Chams to actually "load" into the pointers
-		this->SetFlatModels(m_iPlayerChamsStyle);
+		this->SetModelStyle(m_iPlayerChamsStyle);
 
 		m_bFakeAngleMaterialsInitialized = true;
 	}
@@ -255,7 +255,7 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 		m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
 
 		// Force Chams to actually "load" into the pointers
-		this->SetFlatModels(m_iPlayerChamsStyle);
+		this->SetModelStyle(m_iPlayerChamsStyle);
 
 		// Don't do this again :)
 		m_bMaterialsInitialized = true;

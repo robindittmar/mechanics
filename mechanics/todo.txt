@@ -29,3 +29,6 @@ Priority Low
 
 => Zoom Sensitivity
 => Hitmarker on game_newmap
+
+
+=> public configs & ähm general stäts in klammern nochmal irgendwie kills oder so perfekt

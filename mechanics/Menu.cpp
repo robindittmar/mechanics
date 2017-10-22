@@ -205,6 +205,9 @@ void CMenu::ApplySettings()
 	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Misc()->GetAutoStrafeMode());
 	m_pMiscBhopCircleStrafeEnabled->SetChecked(m_pApp->Misc()->GetCircleStrafe());
 	m_pMiscBhopCircleStrafeDirection->SetSelection(m_pApp->Misc()->GetCircleStrafeStartDirection());
+
+	// SkinChanger
+	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 }
 
 void CMenu::HandleInput()
@@ -681,7 +684,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_NONE, "None");
 	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_LIT, "Lit");
 	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_FLAT, "Flat");
-	m_pChamsStyle->SetEventHandler(std::bind(&CChams::SetFlatModels, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsStyle->SetEventHandler(std::bind(&CChams::SetModelStyle, m_pApp->Chams(), std::placeholders::_1));
 
 	m_pChamsDrawOwnTeam = new CCheckbox(4, 56, 128, 16, "Own Team");
 	m_pChamsDrawOwnTeam->SetEventHandler(std::bind(&CChams::SetRenderTeam, m_pApp->Chams(), std::placeholders::_1));
@@ -974,9 +977,62 @@ void CMenu::CreateMiscTab()
 
 void CMenu::CreateSkinChangerTab()
 {
-	// Sieht fertig aus oder? :D
+	// Glove
+	m_pSkinChangerGlove = new CSelectbox(4, 0, 100, 16, "");
+	m_pSkinChangerGlove->AddOption(GLOVE_NONE, "None");
+	m_pSkinChangerGlove->AddOption(GLOVE_BLOODHOUND, "Bloodhound");
+	m_pSkinChangerGlove->AddOption(GLOVE_DRIVER, "Driver");
+	m_pSkinChangerGlove->AddOption(GLOVE_HANDWRAPS, "Hand Wraps");
+	m_pSkinChangerGlove->AddOption(GLOVE_MOTO, "Moto");
+	m_pSkinChangerGlove->AddOption(GLOVE_SPECIALIST, "Specialist");
+	m_pSkinChangerGlove->AddOption(GLOVE_SPORT, "Sport");
+
+	m_pSkinChangerGloveChangeGroup = new CGroupbox(138, 326, 117, 32, "Glove");
+	m_pSkinChangerGloveChangeGroup->AddChild(m_pSkinChangerGlove);
+
+	// Knife
+	m_pSkinChangerKnife = new CSelectbox(4, 0, 100, 16, "");
+	m_pSkinChangerKnife->AddOption(0, "No Change");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE, "Default-CT");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_T, "Default-T");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_BAYONET, "Bayonet");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_SURVIVAL_BOWIE, "Bowie");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_BUTTERFLY, "Butterfly");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_FALCHION, "Falchion");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_FLIP, "Flip");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_GUT, "Gut");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_TACTICAL, "Huntsman");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_KARAMBIT, "Karambit");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_M9_BAYONET, "M9 Bayonet");
+	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_PUSH, "Shadow Dagger");
+	m_pSkinChangerKnife->SetEventHandler(std::bind(&CSkinChanger::ApplyDesiredKnife, m_pApp->SkinChanger(), std::placeholders::_1));
+
+	m_pSkinChangerKnifeChangeGroup = new CGroupbox(4, 326, 117, 32, "Knife");
+	m_pSkinChangerKnifeChangeGroup->AddChild(m_pSkinChangerKnife);
+
+	// Skins
+	m_pSkinChangerApplyT = new CButton(132, 24, 60, 20, "T");
+	m_pSkinChangerApplyCt = new CButton(68, 24, 60, 20, "CT");
+	m_pSkinChangerApplyBoth = new CButton(4, 24, 60, 20, "Both");
+
+	m_pSkinChangerSkin = new CSelectbox(140, 4, 128, 16, "Skin");
+	m_pSkinChangerSkin->AddOption(0, "None");
+
+	m_pSkinChangerWeapon = new CSelectbox(4, 4, 128, 16, "Weapon");
+	m_pSkinChangerWeapon->AddOption(0, "None");
+
+	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 1008, 300, "Skins");
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeapon);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerSkin);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyBoth);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyCt);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyT);
+
 
 	m_pSkinChangerTab = new CTabPage("Skin Changer");
+	m_pSkinChangerTab->AddChild(m_pSkinChangerSkinsGroup);
+	m_pSkinChangerTab->AddChild(m_pSkinChangerKnifeChangeGroup);
+	m_pSkinChangerTab->AddChild(m_pSkinChangerGloveChangeGroup);
 }
 
 void CMenu::CreateConfigTab()

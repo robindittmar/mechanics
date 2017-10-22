@@ -258,6 +258,20 @@ private:
 	//
 	// SkinChanger tab
 	CTabPage* m_pSkinChangerTab;
+	CGroupbox* m_pSkinChangerSkinsGroup;
+	CSelectbox* m_pSkinChangerWeapon;
+	CSelectbox* m_pSkinChangerSkin;
+	CButton* m_pSkinChangerApplyBoth;
+	CButton* m_pSkinChangerApplyCt;
+	CButton* m_pSkinChangerApplyT;
+
+
+	CGroupbox* m_pSkinChangerKnifeChangeGroup;
+	CSelectbox* m_pSkinChangerKnife;
+
+	CGroupbox* m_pSkinChangerGloveChangeGroup;
+	CSelectbox* m_pSkinChangerGlove;
+
 	//
 	// Config tab
 	CTabPage* m_pConfigTab;

@@ -43,9 +43,6 @@ void CVisuals::ResetHitmarker()
 
 void CVisuals::DrawCrosshair()
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bCrosshair)
 		return;
 
@@ -114,9 +111,6 @@ void CVisuals::DrawSpreadCone()
 
 void CVisuals::DrawHitmarker(ISurface* pSurface)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bHitmarker)
 		return;
 
@@ -143,9 +137,6 @@ void CVisuals::DrawHitmarker(ISurface* pSurface)
 
 void CVisuals::NoFlash(float fFlashPercentage)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_pApp->EngineClient()->IsInGame())
 		return;
 
@@ -170,9 +161,6 @@ void CVisuals::NoFlash(float fFlashPercentage)
 
 void CVisuals::NoSmoke(bool bNoSmoke)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	static CXorString smoke_materials[] = {
 		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"),
 		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú±zdî§pyà¬voà"),
@@ -190,6 +178,8 @@ void CVisuals::NoSmoke(bool bNoSmoke)
 	for (int i = 0; i < sizeof(smoke_materials) / sizeof(*smoke_materials); i++)
 	{
 		IMaterial* pMat = this->m_pApp->MaterialSystem()->FindMaterial(smoke_materials[i].ToCharArray(), pOtherTextures.ToCharArray());
+		if (!pMat)
+			continue;
 
 		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, bNoSmokeDisabled);
 	}
@@ -198,9 +188,6 @@ void CVisuals::NoSmoke(bool bNoSmoke)
 
 IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
 {
-	if (!m_bIsEnabled)
-		return NULL;
-
 	if (m_iHandsDrawStyle == HANDSDRAWSTYLE_NONE)
 		return NULL;
 
@@ -236,9 +223,6 @@ IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRen
 
 void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bNoVisualRecoil)
 		return;
 
@@ -256,7 +240,7 @@ void CVisuals::Thirdperson()
 	static Vector vecAngles;
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 	bool localIsAlive = pLocalEntity->IsAlive();
-	if (!m_bThirdperson || !m_bIsEnabled || !localIsAlive)
+	if (!m_bThirdperson || !localIsAlive)
 	{
 		if (m_pApp->Input()->m_fCameraInThirdPerson || !localIsAlive)
 		{
@@ -309,9 +293,6 @@ void CVisuals::Thirdperson()
 
 void CVisuals::ThirdpersonAntiAim()
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bThirdperson)
 		return;
 
@@ -324,9 +305,6 @@ void CVisuals::ThirdpersonAntiAim()
 
 void CVisuals::FovChange(CViewSetup* pViewSetup)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bFovChange)
 		return;
 
@@ -366,9 +344,6 @@ void CVisuals::DisablePostProcessing(bool bDisablePostProcessing)
 
 void CVisuals::DrawNoScope()
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bNoScope)
 		return;
 
@@ -388,9 +363,6 @@ void CVisuals::DrawNoScope()
 
 bool CVisuals::NoScope(unsigned int vguiPanel)
 {
-	if (!m_bIsEnabled)
-		return false;
-
 	if (!m_bNoScope)
 		return false;
 

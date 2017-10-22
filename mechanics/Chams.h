@@ -40,7 +40,7 @@ public:
 	void SetOnlyVisible(bool bOnlyVisible) { m_bOnlyVisible = bOnlyVisible; }
 	bool GetOnlyVisible() { return m_bOnlyVisible; }
 
-	void SetFlatModels(int iPlayerChamsStyle);
+	void SetModelStyle(int iPlayerChamsStyle);
 	int GetFlatModels() { return m_iPlayerChamsStyle; }
 
 	void SetRenderFakeAngle(bool bRenderFakeAngle) { m_bRenderFakeAngle = bRenderFakeAngle; }

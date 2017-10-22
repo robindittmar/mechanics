@@ -27,8 +27,7 @@ void CMisc::Update(void* pParameters)
 
 void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
-	if (!m_bIsEnabled ||
-		!m_bNoRecoil ||
+	if (!m_bNoRecoil ||
 		m_pApp->Ragebot()->DidNoRecoil() ||
 		!(pUserCmd->buttons & IN_ATTACK))
 	{
@@ -77,9 +76,6 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 //todo: check if works properly and not to many packets choked
 void CMisc::Fakelag(CUserCmd* pUserCmd)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bFakelag)
 		return;
 
@@ -112,9 +108,6 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 
 void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (m_iAutoStrafeMode == 0)
 		return;
 
@@ -167,9 +160,6 @@ float GetTraceFractionWorldProps(Vector start, Vector end)
 
 void CMisc::CircleStrafe(IClientEntity * pLocalEntity, CUserCmd * pUserCmd)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bCircleStrafe)
 		return;
 
@@ -214,9 +204,6 @@ void CMisc::CircleStrafe(IClientEntity * pLocalEntity, CUserCmd * pUserCmd)
 
 void CMisc::AutoPistol(CUserCmd* pUserCmd)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bAutoPistol)
 		return;
 
@@ -246,9 +233,6 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 // TODO ÜBERARBEITEN!!!!
 void CMisc::SpectatorList()
 {
-	if (!m_bIsEnabled)
-		return;
-
 	if (!m_bSpectators)
 		return;
 
