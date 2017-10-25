@@ -18,20 +18,25 @@ struct surfaceaudioparams_t
 	float roughThreshold;
 	float hardThreshold;
 	float hardVelocityThreshold;
+	float highPitchOcclusion;
+	float midPitchOcclusion;
+	float lowPitchOcclusion;
 };
 
 struct surfacesoundnames_t
 {
-	unsigned short    stepleft;
-	unsigned short    stepright;
-	unsigned short    impactSoft;
-	unsigned short    impactHard;
-	unsigned short    scrapeSmooth;
-	unsigned short    scrapeRough;
-	unsigned short    bulletImpact;
-	unsigned short    rolling;
-	unsigned short    breakSound;
-	unsigned short    strainSound;
+	unsigned short walkStepLeft;
+	unsigned short walkStepRight;
+	unsigned short runStepLeft;
+	unsigned short runStepRight;
+	unsigned short impactSoft;
+	unsigned short impactHard;
+	unsigned short scrapeSmooth;
+	unsigned short scrapeRough;
+	unsigned short bulletImpact;
+	unsigned short rolling;
+	unsigned short breakSound;
+	unsigned short strainSound;
 };
 
 struct surfacegameprops_t
@@ -43,6 +48,7 @@ public:
 	float flPenetrationModifier;
 	float flDamageModifier;
 	unsigned short material;
+	byte climbable;
 	char pad01[0x3];
 };
 
