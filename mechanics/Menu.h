@@ -202,6 +202,12 @@ private:
 
 	CTabPage* m_pOtherVisualsTab;
 
+	// Bullet Tracer
+	CGroupbox* m_pBulletTracer;
+	CCheckbox* m_pBulletTracerEnabled;
+	CCheckbox* m_pBulletTracerSelf;
+	CCheckbox* m_pBulletTracerTeam;
+
 	// FOV Changer
 	CGroupbox* m_pFovChangerGroup;
 	CCheckbox* m_pFovChangerFovEnabled;

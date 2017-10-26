@@ -387,8 +387,6 @@ void CSkinChanger::ParseSkinFile()
 	// if iconpath contains paintkit NAME add to list only once!!
 	for (std::vector<const char*>::iterator it = iconpaths.begin(); it != iconpaths.end(); it++)
 	{
-		g_pConsole->Write(LOGLEVEL_INFO, "%s\n", it);
-
 		delete[] *it;
 	}
 	

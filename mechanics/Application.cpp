@@ -17,6 +17,8 @@ FindMDL_t CApplication::m_pFindMdl;
 RecvVarProxy_t CApplication::m_pSequenceProxy;
 RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
 
+std::vector<BulletTracerEntry> CApplication::m_pBulletTracer;
+
 CApplication* CApplication::Instance()
 {
 	static CApplication inst;
@@ -481,7 +483,7 @@ void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRend
 	CApplication* pApp = CApplication::Instance();
 
 	IMaterial* pHands = NULL;
-	if (pInfo.pModel)
+	if (pInfo.pModel && pApp->EngineClient()->IsInGame())
 	{
 		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
 
@@ -639,6 +641,8 @@ void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSet
 {
 	CApplication* pApp = CApplication::Instance();
 	pApp->m_mirror.OnRenderView(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
+
+	pApp->m_visuals.DrawBulletTracer();
 
 	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
 }
@@ -1024,6 +1028,10 @@ void CApplication::Setup()
 	this->m_visuals.SetViewmodelFov(config.GetBool("visuals", "viewmodelfovenabled"));
 	this->m_visuals.SetViewmodelFovValue(config.GetInt("visuals", "viewmodelfov"));
 
+	this->m_visuals.SetBulletTracer(config.GetBool("visuals", "bullettracerenabled"));
+	this->m_visuals.SetBulletTracerSelf(config.GetBool("visuals", "bullettracerself"));
+	this->m_visuals.SetBulletTracerTeam(config.GetBool("visuals", "bullettracerteam"));
+
 	// Mirror
 	this->m_mirror.SetEnabled(config.GetBool("visuals", "mirror"));
 
@@ -1045,6 +1053,7 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("`nä²xeÚ¤~yà").ToCharArray(), false); // weapon_fire
+	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("u~é®rÚ«z{ä¡c").ToCharArray(), false); // bullet_impact
 
 	// CGui initialization
 	m_pGui = CGui::Instance();
@@ -1231,6 +1240,14 @@ void CApplication::GetInterfaces()
 		"abcdefghijjjjjjjq"
 	);
 	m_pLoadFromBuffer = (LoadFromBuffer_t)dwLoadFromBufferTemp;
+
+	// IViewRenderBeams
+	m_pViewRenderBeams = *(IViewRenderBeams**)(CPattern::FindPattern(
+		(BYTE*)this->m_dwClientDll,
+		CLIENTDLL_SIZE,
+		(BYTE*)"\xB9\x00\x00\x00\x00\xA1\x00\x00\x00\x00\xFF\x10\xA1\x00\x00\x00\x00\xB9",
+		"a----l----htg----f"
+	) + 1);
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "RandomSeed\t=>\t0x%08X\n", m_pRandomSeed);

@@ -599,6 +599,9 @@
     <ClInclude Include="IMDLCache.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
+    <ClInclude Include="IViewRenderBeams.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

@@ -60,6 +60,7 @@
 #include "IPhysicsSurfaceProps.h"
 #include "CViewSetup.h"
 #include "CGlobalVars.h"
+#include "IViewRenderBeams.h"
 #include "IVModelRender.h"
 #include "IVRenderView.h"
 #include "KeyValues.h"
@@ -107,6 +108,14 @@ void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
 
 DWORD ThreadFreeLibrary(void* pParam);
+
+class BulletTracerEntry
+{
+public:
+	QAngle qAngles;
+	Vector vStart;
+	Vector vEnd;
+};
 
 // Singleton
 class CApplication
@@ -184,6 +193,7 @@ public:
 	IClientState* ClientState() { return m_pClientState; }
 	ICVar* CVar() { return m_pCVar; }
 	IViewRender* ViewRender() { return m_pViewRender; }
+	IViewRenderBeams* ViewRenderBeams() { return m_pViewRenderBeams; }
 	IMDLCache* MDLCache() { return m_pMdlCache; }
 
 	// DLL Addresses
@@ -258,6 +268,8 @@ public:
 	static void __cdecl hk_SetViewModelSequence(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 	static void __cdecl hk_SetLowerBodyYawTarget(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 	static MDLHandle_t __fastcall hk_FindMDL(void* ecx, void* edx, char* FilePath);
+
+	static std::vector<BulletTracerEntry> m_pBulletTracer;
 private:
 	void Setup();
 	void Hook();
@@ -339,6 +351,7 @@ private:
 	IClientState* m_pClientState;
 	ICVar* m_pCVar;
 	IViewRender* m_pViewRender;
+	IViewRenderBeams* m_pViewRenderBeams;
 	IEngineSound* m_pEngineSound;
 	IMDLCache* m_pMdlCache;
 

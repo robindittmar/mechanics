@@ -243,6 +243,7 @@
     <ClInclude Include="IMDLCache.h" />
     <ClInclude Include="ITexture.h" />
     <ClInclude Include="IViewRender.h" />
+    <ClInclude Include="IViewRenderBeams.h" />
     <ClInclude Include="LagCompensation.h" />
     <ClInclude Include="LagCompensationPlayerEntry.h" />
     <ClInclude Include="LagCompensationPlayerList.h" />

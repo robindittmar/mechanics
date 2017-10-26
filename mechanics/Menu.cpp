@@ -191,6 +191,10 @@ void CMenu::ApplySettings()
 	m_pFovChangerViewmodelFovEnabled->SetChecked(m_pApp->Visuals()->GetViewmodelFov());
 	m_pFovChangerViewmodelFovValue->SetValue(m_pApp->Visuals()->GetViewmodelFovValue());
 
+	m_pBulletTracerEnabled->SetChecked(m_pApp->Visuals()->GetBulletTracer());
+	m_pBulletTracerSelf->SetChecked(m_pApp->Visuals()->GetBulletTracerSelf());
+	m_pBulletTracerTeam->SetChecked(m_pApp->Visuals()->GetBulletTracerTeam());
+
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
 	m_pFakelagChokeAmount->SetValue(m_pApp->Misc()->GetFakelagChokeAmount());
@@ -832,6 +836,15 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersMirror = new CCheckbox(4, 232, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
+	// Bullet Tracer
+	m_pBulletTracerEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pBulletTracerEnabled->SetEventHandler(std::bind(&CVisuals::SetBulletTracer, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pBulletTracerSelf = new CCheckbox(4, 20, 128, 16, "Show mine");
+	m_pBulletTracerSelf->SetEventHandler(std::bind(&CVisuals::SetBulletTracerSelf, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pBulletTracerTeam = new CCheckbox(4, 40, 128, 16, "Own Team");
+	m_pBulletTracerTeam->SetEventHandler(std::bind(&CVisuals::SetBulletTracerTeam, m_pApp->Visuals(), std::placeholders::_1));
 
 	// FovChangerGroup
 	m_pFovChangerFovEnabled = new CCheckbox(4, 0, 128, 16, "FOV");
@@ -885,11 +898,16 @@ void CMenu::CreateVisualsTab()
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovLabel);
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovValue);
 
+	m_pBulletTracer = new CGroupbox(520, 16, 152, 308, "Bullet Tracer");
+	m_pBulletTracer->AddChild(m_pBulletTracerEnabled);
+	m_pBulletTracer->AddChild(m_pBulletTracerSelf);
+	m_pBulletTracer->AddChild(m_pBulletTracerTeam);
 
 	m_pOtherVisualsTab = new CTabPage("Other Visuals");
 	m_pOtherVisualsTab->AddChild(m_pEffectsGroup);
 	m_pOtherVisualsTab->AddChild(m_pVisualsOthersGroup);
 	m_pOtherVisualsTab->AddChild(m_pFovChangerGroup);
+	m_pOtherVisualsTab->AddChild(m_pBulletTracer);
 
 	m_pVisualsTabContainer = new CTabContainer();
 	m_pVisualsTabContainer->AddChild(m_pPlayerVisualsTab);

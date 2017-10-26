@@ -60,6 +60,9 @@ void CGameEventListener::FireGameEvent(IGameEvent *pEvent)
 		case 0x3b27ece4: // weapon_fire
 			this->weapon_fire(pEvent);
 			break;
+		case 0xe856481f: // bullet_impact
+			this->bullet_impact(pEvent);
+			break;
 		default:
 			break;
 		}
@@ -192,7 +195,7 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	int iLocalPlayerIndex = pApp->EngineClient()->GetLocalPlayer();
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 	int attacker = pEvent->GetInt(m_xorAttacker.ToCharArray());
-	
+
 	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pApp->EngineClient()->GetPlayerForUserID(userid));
 	if (pResolverPlayer)
 	{
@@ -203,7 +206,7 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	// Set here instead of player_spawned because of IsAlive check
 	if (pApp->EngineClient()->GetPlayerForUserID(userid) == iLocalPlayerIndex)
 		pApp->SkinChanger()->SetForceFullUpdate();
-	
+
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != iLocalPlayerIndex)
 		return;
 
@@ -260,8 +263,7 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 		{
 			// Check for valid weapon
 			CWeapon* pActive = pCurEnt->GetActiveWeapon();
-			if (pActive &&
-				(!pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4()))
+			if (pActive && !pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4())
 			{
 				// Check if target exists
 				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
@@ -288,5 +290,34 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 			}
 		}
 	}
-	//todo: bullet tracer ;)
+}
+
+void CGameEventListener::bullet_impact(IGameEvent * pEvent)
+{
+	CApplication* pApp = CApplication::Instance();
+	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
+
+	IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetPlayerForUserID(userid));
+	if (pCurEnt)
+	{
+		// Check for valid weapon
+		CWeapon* pActiveWeapon = pCurEnt->GetActiveWeapon();
+		if (pActiveWeapon && !pActiveWeapon->IsKnife() && !pActiveWeapon->IsNade() && !pActiveWeapon->IsC4())
+		{
+			if (pApp->Visuals()->GetBulletTracer())
+			{
+				int iLocalTeam = pApp->GetLocalPlayer()->GetTeamNum();
+
+				if ((iLocalTeam != pCurEnt->GetTeamNum() || pApp->Visuals()->GetBulletTracerTeam()) ||
+					(pApp->Visuals()->GetBulletTracerSelf() && pApp->GetLocalPlayer()->EntIndex() == pCurEnt->EntIndex()))
+				{
+					BulletTracerEntry btEntry;
+					btEntry.qAngles = *pCurEnt->GetAngEyeAngles();
+					btEntry.vStart = (*pCurEnt->GetOrigin() + *pCurEnt->GetEyeOffset());
+					btEntry.vEnd = Vector(pEvent->GetFloat("x"), pEvent->GetFloat("y"), pEvent->GetFloat("z"));
+					pApp->m_pBulletTracer.push_back(btEntry);
+				}
+			}
+		}
+	}
 }

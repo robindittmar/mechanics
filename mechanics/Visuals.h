@@ -82,17 +82,27 @@ public:
 
 	float GetZoomSensitivity() { return m_flZoomSensitivity; }
 
-	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; };
-	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; };
+	void SetDisablePostProcessing(bool bDisablePostProcessing) { m_bDisablePostProcessing = bDisablePostProcessing; }
+	bool GetDisablePostProcessing() { return m_bDisablePostProcessing; }
 
-	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; };
-	bool GetNoScope() { return m_bNoScope; };
+	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; }
+	bool GetNoScope() { return m_bNoScope; }
 
-	void SetNightmode(bool bNightmode) { m_bNightmode = bNightmode; };
-	bool GetNightmode() { return m_bNightmode; };
+	void SetNightmode(bool bNightmode) { m_bNightmode = bNightmode; }
+	bool GetNightmode() { return m_bNightmode; }
 
-	void SetNightmodePerfomed(bool bNightmodePerfomed) { m_bNightmodePerfomed = bNightmodePerfomed; };
-	void SetNightmodeMapChanged(bool bNightmodeMapChange) { m_bNightmodeMapChange = bNightmodeMapChange; };
+	void SetNightmodePerfomed(bool bNightmodePerfomed) { m_bNightmodePerfomed = bNightmodePerfomed; }
+	void SetNightmodeMapChanged(bool bNightmodeMapChange) { m_bNightmodeMapChange = bNightmodeMapChange; }
+
+	void SetBulletTracer(bool bBulletTracer) { m_bBulletTracer = bBulletTracer; }
+	bool GetBulletTracer() { return m_bBulletTracer; }
+
+	void SetBulletTracerSelf(bool bBulletTracerSelf) { m_bBulletTracerSelf = bBulletTracerSelf; }
+	bool GetBulletTracerSelf() { return m_bBulletTracerSelf; }
+
+	void SetBulletTracerTeam(bool bBulletTracerTeam) { m_bBulletTracerTeam = bBulletTracerTeam; };
+	bool GetBulletTracerTeam() { return m_bBulletTracerTeam; }
+
 
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
@@ -114,6 +124,7 @@ public:
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
 	void Nightmode();
+	void DrawBulletTracer();
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
@@ -154,6 +165,10 @@ private:
 	bool m_bNightmode;
 	bool m_bNightmodePerfomed;
 	bool m_bNightmodeMapChange;
+
+	bool m_bBulletTracer;
+	bool m_bBulletTracerSelf;
+	bool m_bBulletTracerTeam;
 };
 
 #endif // __VISUALS_H__
