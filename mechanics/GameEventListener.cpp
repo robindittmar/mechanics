@@ -81,6 +81,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	static CXorString xorRecoilCompensation("`nä²xeÚ°rhê«{Tö¡vgà");
 
 	pApp->Gui()->Setup();
+	pApp->SkinChanger()->SetNewMap();
 	pApp->SkinChanger()->ApplyDesiredKnife(pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(xorRecoilCompensation.ToCharArray())->value));

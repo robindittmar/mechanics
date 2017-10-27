@@ -89,6 +89,8 @@ public:
 	void SetDesiredKnifeModelIndex(int iDesiredKnifeModelIndex) { m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex; }
 	int GetDesiredKnifeModelIndex() { return m_iDesiredKnifeModelIndex; }
 
+	void SetNewMap(bool bNewMap = true) { m_bNewMap = bNewMap; }
+
 	// pNew won't be affected
 	void AddModelReplacement(const char* pOld, const char* pNew);
 	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
@@ -107,6 +109,7 @@ private:
 	void DeleteKillIcons();
 
 	bool m_bForceFullUpdate;
+	bool m_bNewMap;
 
 	int m_iDesiredKnifeModelIndex;
 	std::unordered_map<int, const char*> m_mapKnives;

@@ -537,7 +537,7 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 
 void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
 {
-	if (m_iDesiredKnifeModelIndex == iDesiredKnifeModelIndex)
+	if (m_iDesiredKnifeModelIndex == iDesiredKnifeModelIndex && !m_bNewMap)
 		return;
 
 	m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex;
@@ -570,8 +570,8 @@ void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
 		);*/
 	}
 
-
 	m_bForceFullUpdate = true;
+	m_bNewMap = false;
 }
 
 void CSkinChanger::DeleteModelNames()
