@@ -19,9 +19,6 @@ void CLagCompensation::Setup()
 
 void CLagCompensation::Update(void* pParameters)
 {
-	if (!m_bIsEnabled)
-		return;
-
 	IClientEntity* pLocalEnt = m_pApp->GetLocalPlayer();
 	if (!pLocalEnt)
 		return;
@@ -122,7 +119,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 	if (m_iDrawStyle == LC_DRAWSTYLE_NONE)
 		return;
 
-	if (!m_bRageLagCompensationEnabled && !m_bLegitLagCompensationEnabled)
+	if ((!m_pApp->Ragebot()->GetEnabled() || !m_bRageLagCompensationEnabled) && !m_bLegitLagCompensationEnabled)
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
@@ -168,7 +165,7 @@ void CLagCompensation::DrawLagCompensationEntries()
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
 				break;
 
-			if (*pCurEnt->GetOrigin() == lcCurList.m_pPlayerEntries[x].m_vOrigin)
+			if (*pCurEnt->GetOrigin() == lcCurList.m_pPlayerEntries[x].m_vOrigin && pCurEnt->GetFlags() == lcCurList.m_pPlayerEntries[x].m_fFlags)
 				continue;
 
 			if (m_bDrawOnlyVisible)

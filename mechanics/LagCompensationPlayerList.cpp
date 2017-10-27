@@ -61,7 +61,7 @@ void CLagCompensationPlayerList::RemoveInvalidPlayerEntries()
 void CLagCompensationPlayerList::AddPlayerEntry(IClientEntity* pCurEnt, int tickcount)
 {
 	CApplication* pApp = CApplication::Instance();
-	if (!pApp->LagCompensation()->GetRageLagCompensationEnabled() && !pApp->LagCompensation()->GetLegitLagCompensationEnabled())
+	if ((!pApp->Ragebot()->GetEnabled() || !pApp->LagCompensation()->GetRageLagCompensationEnabled()) && !pApp->LagCompensation()->GetLegitLagCompensationEnabled())
 		return;
 
 	static CXorString pHeadZero("nä¦H;");

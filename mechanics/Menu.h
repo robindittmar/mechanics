@@ -112,6 +112,12 @@ private:
 	CSlider* m_pTriggerbotDelayValue;
 	CLabel* m_pTriggerbotDelayJitterLabel;
 	CSlider* m_pTriggerbotDelayJitterValue;
+
+	CGroupbox* m_pLegitLagCompensationGroup;
+	CCheckbox* m_pLegitLagCompensationEnabled;
+	CLabel* m_pLegitLagCompensationDurationLabel;
+	CSlider* m_pLegitLagCompensationDuration;
+
 	//
 	// Visuals tab
 	CTabPage* m_pVisualsTab;

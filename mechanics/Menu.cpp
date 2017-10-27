@@ -112,6 +112,10 @@ void CMenu::ApplySettings()
 	m_pTriggerbotDelayValue->SetValue(m_pApp->Triggerbot()->GetShootDelay());
 	m_pTriggerbotDelayJitterValue->SetValue(m_pApp->Triggerbot()->GetShootDelayJitter());
 
+	// Legit Lag Compensation
+	m_pLegitLagCompensationEnabled->SetChecked(m_pApp->LagCompensation()->GetLegitLagCompensationEnabled());
+	m_pLegitLagCompensationDuration->SetValue(m_pApp->LagCompensation()->GetLegitLagCompensationDuration());
+
 	// Esp
 	m_pEspEnabled->SetChecked(m_pApp->Esp()->GetEnabled());
 	m_pEspDrawBoundingBox->SetSelection(m_pApp->Esp()->GetDrawBoundingBox());
@@ -524,8 +528,23 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterLabel);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterValue);
 
+
+	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pLegitLagCompensationDurationLabel = new CLabel(4, 20, 128, 16, "Duration", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f);
+	m_pLegitLagCompensationDuration->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationDuration, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pLegitLagCompensationGroup = new CGroupbox(184, 16, 152, 308, "Lag Compensation");
+	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationEnabled);
+	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDurationLabel);
+	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDuration);
+
 	m_pLegitTab = new CTabPage("Legit");
 	m_pLegitTab->AddChild(m_pTriggerbotGroup);
+	m_pLegitTab->AddChild(m_pLegitLagCompensationGroup);
 }
 
 void CMenu::CreateVisualsTab()

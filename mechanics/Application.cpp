@@ -882,6 +882,9 @@ void CApplication::Setup()
 	this->m_triggerbot.SetShootDelay(config.GetInt("triggerbot", "shootdelay"));
 	this->m_triggerbot.SetShootDelayJitter(config.GetInt("triggerbot", "shootdelayjitter"));
 
+	// Legit Lag Compensation
+
+
 	// Antiaim
 	this->m_antiAim.SetEnabled(config.GetBool("antiaim", "enabled"));
 	this->m_antiAim.SetDrawLbyIndicator(config.GetBool("antiaim", "lbyindicator"));
@@ -1038,7 +1041,7 @@ void CApplication::Setup()
 	// LagCompensation
 	this->m_lagcompensation.SetRageLagCompensationEnabled(config.GetBool("lagcompensation", "rageenabled"));
 	this->m_lagcompensation.SetLegitLagCompensationEnabled(config.GetBool("lagcompensation", "legitenabled"));
-	this->m_lagcompensation.SetLegitLagCompensationDuration(config.GetBool("lagcompensation", "legitduration"));
+	this->m_lagcompensation.SetLegitLagCompensationDuration(config.GetInt("lagcompensation", "legitduration"));
 	this->m_lagcompensation.SetDrawStyle(config.GetInt("lagcompensation", "drawstyle"));
 	this->m_lagcompensation.SetDrawFrequency(config.GetInt("lagcompensation", "drawfrequency"));
 	this->m_lagcompensation.SetDrawOnlyVisible(config.GetBool("lagcompensation", "drawonlyvisible"));
