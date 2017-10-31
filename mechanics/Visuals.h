@@ -49,6 +49,12 @@ public:
 	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
 	bool GetHitmarker() { return m_bHitmarker; }
 
+	void SetHitmarkerSound(bool bHitmarkerSound) { m_bHitmarkerSound = bHitmarkerSound; }
+	bool GetHitmarkerSound() { return m_bHitmarkerSound; }
+
+	void SetHitmarkerHitpoint(bool bHitmarkerHitpoint) { m_bHitmarkerHitpoint = bHitmarkerHitpoint; }
+	bool GetHitmarkerHitpoint() { return m_bHitmarkerHitpoint; }
+
 	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
 	void SetFlashPercentage(float fFlashPercentage) { m_fFlashPercentage = fFlashPercentage; }
@@ -113,6 +119,7 @@ public:
 	void DrawCrosshair();
 	void DrawSpreadCone();
 	void DrawHitmarker(ISurface* pSurface);
+	void DrawHitmarkerHitpoint(ISurface* pSurface);
 	void NoFlash(float fFlashPercentage);
 	void NoSmoke(bool bNoSmoke);
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
@@ -135,6 +142,8 @@ private:
 	bool m_bSpreadCone;
 
 	bool m_bHitmarker;
+	bool m_bHitmarkerSound;
+	bool m_bHitmarkerHitpoint;
 	float m_fDrawHitmarkerStartTime;
 	char m_pHitmarkerSound[MAX_PATH];
 

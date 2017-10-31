@@ -18,6 +18,7 @@ RecvVarProxy_t CApplication::m_pSequenceProxy;
 RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
 
 std::vector<BulletTracerEntry> CApplication::m_pBulletTracer;
+std::vector<HitmarkerEntry> CApplication::m_pHitmarker;
 
 CApplication* CApplication::Instance()
 {
@@ -522,7 +523,6 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 		if (vguiMatSystemTopPanel == vguiPanel)
 		{
-
 			pApp->Gui()->GetWorldToScreenMatrix();
 
 			// Draw NoScope
@@ -545,6 +545,7 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker(pSurface);
+			pApp->Visuals()->DrawHitmarkerHitpoint(pSurface);
 
 			// Draw SpreadCone
 			pApp->Visuals()->DrawSpreadCone();
@@ -559,7 +560,6 @@ void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned in
 			// LC Draw
 			pApp->LagCompensation()->DrawLagCompensationEntries();
 			pApp->LagCompensation()->DrawLagCompensationIndicator();
-
 
 			// ****TEST*****
 			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
@@ -834,6 +834,7 @@ void CApplication::Setup()
 	// Target Selector
 	this->m_targetSelector.Setup(this);
 	this->m_targetSelector.SetMultipoint(config.GetBool("targetselector", "multipoint"));
+	this->m_targetSelector.SetMultipointScale(config.GetFloat("targetselector", "multipointscale"));
 	this->m_targetSelector.SetVisibleMode(config.GetInt("targetselector", "visiblemode"));
 	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_HEAD, config.GetBool("targetselector", "checkhead"));
 	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_CHEST, config.GetBool("targetselector", "checkchest"));
@@ -1010,6 +1011,8 @@ void CApplication::Setup()
 	this->m_visuals.SetCrosshairShowRecoil(config.GetBool("visuals", "recoilcrosshair"));
 	this->m_visuals.SetSpreadCone(config.GetBool("visuals", "spreadcone"));
 	this->m_visuals.SetHitmarker(config.GetBool("visuals", "hitmarker"));
+	this->m_visuals.SetHitmarkerSound(config.GetBool("visuals", "hitmarkersound"));
+	this->m_visuals.SetHitmarkerHitpoint(config.GetBool("visuals", "hitmarkerhitpoint"));
 	this->m_visuals.NoSmoke(config.GetBool("visuals", "nosmoke"));
 
 	this->m_visuals.SetNoFlash(config.GetBool("visuals", "noflash"));

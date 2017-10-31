@@ -67,6 +67,9 @@ public:
 
 	void SetMultipoint(bool bMultipoint) { m_bMultipoint = bMultipoint; }
 	bool GetMultipoint() { return m_bMultipoint; }
+
+	void SetMultipointScale(float fMultipointScale) { m_fMultipointScale = fMultipointScale; }
+	float GetMultipointScale() { return m_fMultipointScale; }
 private:
 	void GetHitBoxCenter(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector& hitBoxVector);
 	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors);
@@ -83,6 +86,7 @@ private:
 
 	int m_iVisibleMode;
 	bool m_bMultipoint;
+	float m_fMultipointScale;
 	CTarget m_pTargets[TARGETCRITERIA_COUNT];
 
 	CApplication* m_pApp;

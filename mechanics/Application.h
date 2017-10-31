@@ -109,12 +109,20 @@ void ClampMovement(CUserCmd* pUserCmd);
 
 DWORD ThreadFreeLibrary(void* pParam);
 
+// TODO
 class BulletTracerEntry
 {
 public:
 	QAngle qAngles;
 	Vector vStart;
 	Vector vEnd;
+};
+
+class HitmarkerEntry
+{
+public:
+	Vector vHit;
+	float fStarttime;
 };
 
 // Singleton
@@ -269,7 +277,9 @@ public:
 	static void __cdecl hk_SetLowerBodyYawTarget(const CRecvProxyData* ecx, void* pStruct, void* pOut);
 	static MDLHandle_t __fastcall hk_FindMDL(void* ecx, void* edx, char* FilePath);
 
+	// TODO!!
 	static std::vector<BulletTracerEntry> m_pBulletTracer;
+	static std::vector<HitmarkerEntry> m_pHitmarker;
 private:
 	void Setup();
 	void Hook();

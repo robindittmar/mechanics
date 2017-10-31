@@ -33,7 +33,10 @@ void CVisuals::Update(void* pParameters)
 void CVisuals::TriggerHitmarker()
 {
 	m_fDrawHitmarkerStartTime = m_pApp->GlobalVars()->curtime;
-	PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
+	if (m_bHitmarkerSound)
+	{
+		PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
+	}
 }
 
 void CVisuals::ResetHitmarker()
@@ -133,6 +136,30 @@ void CVisuals::DrawHitmarker(ISurface* pSurface)
 	pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY + hitmarker_gap); // Bottom left
 	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY - hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size)); // Top right
 	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY + hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size)); // Bottom right
+}
+
+void CVisuals::DrawHitmarkerHitpoint(ISurface* pSurface)
+{
+	float fCurtime = m_pApp->GlobalVars()->curtime;
+	for (std::vector<HitmarkerEntry>::iterator it = m_pApp->m_pHitmarker.begin(); it != m_pApp->m_pHitmarker.end();)
+	{
+		Vector vScreen;
+		if (m_pApp->Gui()->WorldToScreen(it->vHit, vScreen))
+		{
+			pSurface->DrawSetColor(255, 255, 255, 255);
+			pSurface->DrawLine(vScreen.x - 4, vScreen.y - 4, vScreen.x + 4, vScreen.y + 4);
+			pSurface->DrawLine(vScreen.x - 4, vScreen.y + 4, vScreen.x + 4, vScreen.y - 4);
+		}
+
+		if (it->fStarttime + 1.0 < fCurtime)
+		{
+			it = m_pApp->m_pHitmarker.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
 }
 
 void CVisuals::NoFlash(float fFlashPercentage)

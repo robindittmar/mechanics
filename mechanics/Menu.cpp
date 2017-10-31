@@ -66,6 +66,7 @@ void CMenu::ApplySettings()
 	m_pAimbotAutoscope->SetChecked(m_pApp->Ragebot()->GetAutoscope());
 	m_pAimbotAutoReload->SetChecked(m_pApp->Ragebot()->GetAutoReload());
 	m_pAimbotMultipoint->SetChecked(m_pApp->TargetSelector()->GetMultipoint());
+	m_pAimbotMultipointScale->SetValue(m_pApp->TargetSelector()->GetMultipointScale());
 	m_pAimbotNoSpreadEnabled->SetChecked(m_pApp->Ragebot()->GetNoSpread());
 	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
 	m_pAimbotHitchanceSlider->SetValue(m_pApp->Ragebot()->GetHitchance());
@@ -181,6 +182,8 @@ void CMenu::ApplySettings()
 
 	m_pVisualsOthersHandsDrawStyle->SetValue(m_pApp->Visuals()->GetHandsDrawStyle());
 	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->Visuals()->GetHitmarker());
+	m_pVisualsOthersHitmarkerSoundEnabled->SetChecked(m_pApp->Visuals()->GetHitmarkerSound());
+	m_pVisualsOthersHitmarkerHitpointEnabled->SetChecked(m_pApp->Visuals()->GetHitmarkerHitpoint());
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
 	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->Visuals()->GetSpreadCone());
@@ -292,22 +295,25 @@ void CMenu::CreateRageTab()
 	m_pAimbotMultipoint = new CCheckbox(4, 100, 128, 16, "Multipoint");
 	m_pAimbotMultipoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, m_pApp->TargetSelector(), std::placeholders::_1));
 
-	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 120, 128, 16, "Remove Spread (if possible)");
+	m_pAimbotMultipointScale = new CSlider(4, 122, 128, 16, 0.01f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f);
+	m_pAimbotMultipointScale->SetEventHandler(std::bind(&CTargetSelector::SetMultipointScale, m_pApp->TargetSelector(), std::placeholders::_1));
+
+	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 142, 128, 16, "Remove Spread (if possible)");
 	m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotHitchanceEnabled = new CCheckbox(4, 140, 128, 16, "Hitchance");
+	m_pAimbotHitchanceEnabled = new CCheckbox(4, 162, 128, 16, "Hitchance");
 	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotHitchanceSlider = new CSlider(4, 162, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pAimbotHitchanceSlider = new CSlider(4, 184, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pAimbotHitchanceSlider->SetEventHandler(std::bind(&CRagebot::SetHitchance, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotTargetCriteria = new CSelectbox(4, 192, 128, 20, "Target criteria");
+	m_pAimbotTargetCriteria = new CSelectbox(4, 214, 128, 20, "Target criteria");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_UNSPECIFIED, "First found");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
 	m_pAimbotTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, m_pApp->Ragebot(), std::placeholders::_1));
 
-	m_pAimbotVisibleMode = new CSelectbox(4, 228, 128, 20, "Visible mode");
+	m_pAimbotVisibleMode = new CSelectbox(4, 252, 128, 20, "Visible mode");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
@@ -319,6 +325,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoscope);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoReload);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotMultipoint);
+	m_pAimbotEnabled->EnableOnChecked(m_pAimbotMultipointScale);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotNoSpreadEnabled);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceEnabled);
 	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
@@ -338,6 +345,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotGroup->AddChild(m_pAimbotAutoscope);
 	m_pAimbotGroup->AddChild(m_pAimbotAutoReload);
 	m_pAimbotGroup->AddChild(m_pAimbotMultipoint);
+	m_pAimbotGroup->AddChild(m_pAimbotMultipointScale);
 	m_pAimbotGroup->AddChild(m_pAimbotNoSpreadEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotHitchanceEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotHitchanceSlider);
@@ -832,27 +840,33 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersHitmarkerEnabled = new CCheckbox(4, 40, 128, 16, "Hitmarker");
 	m_pVisualsOthersHitmarkerEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarker, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersCrosshairEnabled = new CCheckbox(4, 68, 128, 16, "Custom Crosshair");
+	m_pVisualsOthersHitmarkerSoundEnabled = new CCheckbox(4, 60, 128, 16, "Hitmarker Sound");
+	m_pVisualsOthersHitmarkerSoundEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarkerSound, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pVisualsOthersHitmarkerHitpointEnabled = new CCheckbox(4, 80, 128, 16, "Hitmarker Hitpoint");
+	m_pVisualsOthersHitmarkerHitpointEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarkerHitpoint, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pVisualsOthersCrosshairEnabled = new CCheckbox(4, 108, 128, 16, "Custom Crosshair");
 	m_pVisualsOthersCrosshairEnabled->SetEventHandler(std::bind(&CVisuals::SetCrosshair, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersRecoilCrosshairEnabled = new CCheckbox(4, 88, 128, 16, "Show Recoil Crosshair");
+	m_pVisualsOthersRecoilCrosshairEnabled = new CCheckbox(4, 128, 128, 16, "Show Recoil Crosshair");
 	m_pVisualsOthersRecoilCrosshairEnabled->SetEventHandler(std::bind(&CVisuals::SetCrosshairShowRecoil, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 116, 128, 16, "Show Spread Cone");
+	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 156, 128, 16, "Show Spread Cone");
 	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CVisuals::SetSpreadCone, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersNightmodeEnabled = new CCheckbox(4, 144, 128, 16, "Nightmode");
+	m_pVisualsOthersNightmodeEnabled = new CCheckbox(4, 184, 128, 16, "Nightmode");
 	m_pVisualsOthersNightmodeEnabled->SetEventHandler(std::bind(&CVisuals::SetNightmode, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdperson = new CCheckbox(4, 172, 128, 16, "Thirdperson");
+	m_pVisualsOthersThirdperson = new CCheckbox(4, 216, 128, 16, "Thirdperson");
 	m_pVisualsOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 186, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 226, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 208, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
+	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 248, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersMirror = new CCheckbox(4, 232, 128, 16, "Mirror");
+	m_pVisualsOthersMirror = new CCheckbox(4, 272, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
 	// Bullet Tracer
@@ -899,6 +913,8 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersGroup = new CGroupbox(184, 16, 152, 308, "Others");
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHandsDrawStyle);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerSoundEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerHitpointEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);

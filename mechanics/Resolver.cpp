@@ -16,10 +16,10 @@ void CResolver::Setup()
 
 void CResolver::Update(void* pParameters)
 {
-	if (!m_bIsEnabled)
+	if (m_iResolverType == RESOLVERTYPE_NONE)
 		return;
 
-	if (m_iResolverType == RESOLVERTYPE_NONE)
+	if (!m_pApp->Ragebot()->GetEnabled())
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();

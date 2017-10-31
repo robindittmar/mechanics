@@ -11,7 +11,7 @@ enum eClientClassId
 {
 	CAI_BaseNPC = 0,
 	CAK47 = 1,
-	CBaseAnimating = 2,
+	CBaseAnimatingClassId = 2,
 	CBaseAnimatingOverlay = 3,
 	CBaseAttributableItemClientClass = 4,
 	CBaseButton = 5,

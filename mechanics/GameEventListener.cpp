@@ -133,6 +133,10 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 	}
 }
 
+bool bWeaponFired = false;
+bool bGotImpact = false;
+Vector vHit;
+
 void CGameEventListener::player_hurt(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -157,6 +161,17 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	if (pResolverPlayer && hitgroup == 1)
 	{
 		pResolverPlayer->SetShotHit(pResolverPlayer->GetShotsFired() - 1);
+	}
+
+	if (pApp->Visuals()->GetHitmarkerHitpoint() && bWeaponFired && bGotImpact)
+	{
+		HitmarkerEntry hitmarkerentry;
+		hitmarkerentry.vHit = vHit;
+		hitmarkerentry.fStarttime = pApp->GlobalVars()->curtime;
+		pApp->m_pHitmarker.push_back(hitmarkerentry);
+
+		bWeaponFired = false;
+		bGotImpact = false;
 	}
 
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
@@ -266,6 +281,9 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 			CWeapon* pActive = pCurEnt->GetActiveWeapon();
 			if (pActive && !pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4())
 			{
+				bWeaponFired = true;
+				bGotImpact = false;
+
 				// Check if target exists
 				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
 				if (pTarget)
@@ -305,6 +323,12 @@ void CGameEventListener::bullet_impact(IGameEvent * pEvent)
 		CWeapon* pActiveWeapon = pCurEnt->GetActiveWeapon();
 		if (pActiveWeapon && !pActiveWeapon->IsKnife() && !pActiveWeapon->IsNade() && !pActiveWeapon->IsC4())
 		{
+			if (bWeaponFired && !bGotImpact)
+			{
+				vHit = Vector(pEvent->GetFloat("x"), pEvent->GetFloat("y"), pEvent->GetFloat("z"));
+				bGotImpact = true;
+			}
+
 			if (pApp->Visuals()->GetBulletTracer())
 			{
 				int iLocalTeam = pApp->GetLocalPlayer()->GetTeamNum();

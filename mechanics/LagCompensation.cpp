@@ -29,6 +29,8 @@ void CLagCompensation::Update(void* pParameters)
 		if (!pCurEnt)
 			continue;
 
+		m_pPlayerList[i].RemoveInvalidPlayerEntries();
+
 		if (pCurEnt == pLocalEnt)
 			continue;
 
@@ -44,7 +46,6 @@ void CLagCompensation::Update(void* pParameters)
 		if (pCurEnt->GetTeamNum() == pLocalEnt->GetTeamNum())
 			continue;
 
-		m_pPlayerList[i].RemoveInvalidPlayerEntries();
 		m_pPlayerList[i].AddPlayerEntry(pCurEnt, (int)pParameters);
 	}
 }

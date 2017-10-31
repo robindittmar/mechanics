@@ -10,6 +10,8 @@ CTargetSelector::CTargetSelector()
 	m_bCheckHitbox[4] = false; m_iHitboxes[4] = HITBOX_LEFT_FOREARM;
 	m_bCheckHitbox[5] = false; m_iHitboxes[5] = HITBOX_RIGHT_CALF;
 	m_bCheckHitbox[6] = false; m_iHitboxes[6] = HITBOX_LEFT_CALF;
+
+	m_fMultipointScale = 0.65;
 }
 
 CTargetSelector::~CTargetSelector()
@@ -329,8 +331,8 @@ void CTargetSelector::GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneM
 
 	// TODO: Try FixHitbox instead (trace from edge points to center and use trace.endpos as new edge)
 	float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
-	bbmin = (hitBox->m_vecBBMin - fMod) * 0.65f;
-	bbmax = (hitBox->m_vecBBMax + fMod) * 0.65f;
+	bbmin = (hitBox->m_vecBBMin - fMod) * m_fMultipointScale;
+	bbmax = (hitBox->m_vecBBMax + fMod) * m_fMultipointScale;
 
 	Vector vPoints[] = {
 		(bbmin + bbmax) * 0.5f,

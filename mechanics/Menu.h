@@ -53,6 +53,7 @@ private:
 	CCheckbox* m_pAimbotAutoscope;
 	CCheckbox* m_pAimbotAutoReload;
 	CCheckbox* m_pAimbotMultipoint;
+	CSlider* m_pAimbotMultipointScale;
 
 	CCheckbox* m_pAimbotNoSpreadEnabled;
 
@@ -238,6 +239,8 @@ private:
 	CGroupbox* m_pVisualsOthersGroup;
 	CSelectbox* m_pVisualsOthersHandsDrawStyle;
 	CCheckbox* m_pVisualsOthersHitmarkerEnabled;
+	CCheckbox* m_pVisualsOthersHitmarkerSoundEnabled;
+	CCheckbox* m_pVisualsOthersHitmarkerHitpointEnabled;
 	CCheckbox* m_pVisualsOthersCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersSpreadConeEnabled;
