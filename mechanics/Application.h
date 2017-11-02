@@ -72,6 +72,7 @@
 #include "checksum_md5.h"
 #include "IClientMode.h"
 #include "IMDLCache.h"
+#include "ILocalize.h"
 
 #define OFFSET_GLOBALS					0x1B
 #define OFFSET_LASTOCCLUSIONCHECK		0xA30
@@ -204,6 +205,7 @@ public:
 	IViewRender* ViewRender() { return m_pViewRender; }
 	IViewRenderBeams* ViewRenderBeams() { return m_pViewRenderBeams; }
 	IMDLCache* MDLCache() { return m_pMdlCache; }
+	ILocalize* Localize() { return m_pLocalize; }
 
 	// DLL Addresses
 	DWORD ClientDll() { return m_dwClientDll; }
@@ -213,6 +215,7 @@ public:
 	DWORD VGuiSurfaceDll() { return m_dwVGuiSurfaceDll; }
 	DWORD VPhysicsDll() { return m_dwVPhysicsDll; }
 	DWORD DataCacheDll() { return m_dwDatacacheDll; }
+	DWORD LocalizeDll() { return m_dwLocalizeDll; }
 
 	// Target selector (Feature?)
 	CPlayerList* PlayerList() { return &m_playerList; }
@@ -365,6 +368,7 @@ private:
 	IViewRenderBeams* m_pViewRenderBeams;
 	IEngineSound* m_pEngineSound;
 	IMDLCache* m_pMdlCache;
+	ILocalize* m_pLocalize;
 
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
@@ -374,6 +378,7 @@ private:
 	DWORD m_dwVPhysicsDll;
 	DWORD m_dwVStdLibDll;
 	DWORD m_dwDatacacheDll;
+	DWORD m_dwLocalizeDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;

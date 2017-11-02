@@ -286,9 +286,11 @@ void CSkinChanger::ParseSkinFile()
 					}
 					else if (!strcmp(pKey, "description_tag"))
 					{
-						int iLen = strlen(pValue);
+						wchar_t* pTranslation = m_pApp->Localize()->Find(pValue + 1);
+
+						int iLen = wcslen(pTranslation) + 1;
 						char* p = new char[iLen];
-						memcpy(p, pValue + 1, iLen);
+						wcstombs(p, pTranslation, iLen);
 
 						m_mapPaintKitDescription[iHash] = p;
 					}

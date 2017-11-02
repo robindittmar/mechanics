@@ -850,6 +850,8 @@ void CApplication::Setup()
 	config.LoadFile("rage.cfg");
 	ConfigHelper::ConfigToFeatures(&config);
 
+	this->m_skinchanger.SetEnabled(true);
+
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("txÚ¥vfàsbö¡xeë§tà¦").ToCharArray(), false); // cs_game_disconnected
@@ -958,6 +960,7 @@ void CApplication::GetLibrarys()
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{í»dbæ±9oé®").ToCharArray());
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé").ToCharArray());
 	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjñ£tjæªr%á®{").ToCharArray());
+	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/"localize.dll");
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "client.dll\t\t=>\t0x%08X\n", m_dwClientDll);
@@ -968,6 +971,7 @@ void CApplication::GetLibrarys()
 	g_pConsole->Write(LOGLEVEL_INFO, "vphysics.dll\t\t=>\t0x%08X\n", m_dwVPhysicsDll);
 	g_pConsole->Write(LOGLEVEL_INFO, "vstdlib.dll\t\t=>\t0x%08X\n", m_dwVStdLibDll);
 	g_pConsole->Write(LOGLEVEL_INFO, "datacache.dll\t\t=>\t0x%08X\n", m_dwDatacacheDll);
+	g_pConsole->Write(LOGLEVEL_INFO, "localize.dll\t\t=>\t0x%08X\n", m_dwLocalizeDll);
 	g_pConsole->WritePlain("\n");
 #endif // _DEBUG
 }
@@ -985,6 +989,7 @@ void CApplication::GetInterfaces()
 	CreateInterfaceFn VPhysicsFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVPhysicsDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn VStdLibFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn DatacacheFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwDatacacheDll, xorCreateInterface.ToCharArray());
+	CreateInterfaceFn LocalizeFacory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwLocalizeDll, xorCreateInterface.ToCharArray());
 
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("Ejë¦xfÖ§ro").ToCharArray());
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("Ejë¦xfÌ¬c").ToCharArray());
@@ -1005,6 +1010,7 @@ void CApplication::GetInterfaces()
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[í»dbæ±D~÷¤vhà’edõ±';´").ToCharArray(), NULL);
 	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^Në¥~eà‘x~ë¦Tgì§yµò$").ToCharArray(), NULL);
 	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("ZOÉvhí§';±").ToCharArray(), NULL);
+	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/"Localize_001", NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
@@ -1077,6 +1083,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->Write(LOGLEVEL_INFO, "VPhysicsSurfaceProps001\t=>\t0x%08X\n", m_pPhysicsSurfaceProps);
 	g_pConsole->Write(LOGLEVEL_INFO, "IEngineSoundClient003\t=>\t0x%08X\n", m_pEngineSound);
 	g_pConsole->Write(LOGLEVEL_INFO, "MDLCache004\t\t=>\t0x%08X\n", m_pMdlCache);
+	g_pConsole->Write(LOGLEVEL_INFO, "Localize_001\t\t=>\t0x%08X\n", m_pLocalize);
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "CGlobalVars\t\t=>\t0x%08X\n", m_pGlobalVars);
