@@ -73,7 +73,6 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 }
 
-//todo: check if works properly and not to many packets choked
 void CMisc::Fakelag(CUserCmd* pUserCmd)
 {
 	if (!m_bFakelag)
@@ -93,6 +92,9 @@ void CMisc::Fakelag(CUserCmd* pUserCmd)
 		*m_pApp->m_bSendPackets = true;
 		return;
 	}
+
+	if (m_bFakelagOnlyInAir && ((pLocalEntity->GetFlags() & FL_ONGROUND) || (pLocalEntity->GetFlags() & FL_INWATER)))
+		return;
 
 	if (m_iFakelagChokedAmount >= m_iFakelagChokeAmount)
 	{

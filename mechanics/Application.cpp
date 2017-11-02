@@ -313,6 +313,50 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 			pApp->Bhop()->Update(pUserCmd);
 
 			// Update AntiAim
+			/*if (GetAsyncKeyState(VK_MENU))
+			{
+				static int iChoked = 0;
+				static bool send = false;
+				static int firststop = 0;
+
+				if (!send)
+				{
+					if (firststop < 1)
+					{
+						pUserCmd->buttons &= ~IN_ATTACK;
+						*pApp->m_bSendPackets = false;
+						if (iChoked > 3 || iChoked == 0)
+						{
+							pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
+						}
+
+						if (pLocalEntity->GetVelocity()->Length2D() == 0.0f && iChoked > 1)
+						{
+							firststop++;
+						}
+					}
+					else
+					{
+						pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
+						send = true;
+					}
+
+					pUserCmd->viewangles[1] += 90.0f;
+					iChoked++;
+				}
+				else
+				{
+					*pApp->m_bSendPackets = true;
+					send = false;
+					firststop = 0;
+					iChoked = 0;
+
+					pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
+
+					pUserCmd->viewangles[1] += -90.0f;
+				}
+			}
+			else*/
 			pApp->AntiAim()->Update(pUserCmd);
 
 			// Miscs

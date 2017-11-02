@@ -32,6 +32,11 @@ float IClientEntity::GetSimulationTime()
 	return *(float*)((DWORD)this + Offsets::m_flSimulationTime);
 }
 
+float IClientEntity::GetOldSimulationTime()
+{
+	return *(float*)((DWORD)this + Offsets::m_flSimulationTime + 0x4);
+}
+
 unsigned long IClientEntity::GetFlags()
 {
 	return *(unsigned long*)((DWORD)this + Offsets::m_fFlags);
@@ -192,6 +197,12 @@ float IClientEntity::GetPoseParameter(int index)
 float IClientEntity::GetCycle()
 {
 	return *(float*)((DWORD)this + Offsets::m_flCycle);
+}
+
+void IClientEntity::UpdateClientSiteAnimation()
+{
+	typedef void(__thiscall *UpdateClientSiteAnimation_t)(void*);
+	((UpdateClientSiteAnimation_t)(*(void***)this)[218])(this);
 }
 
 int IClientEntity::GetBoneByName(const char* pBoneName)

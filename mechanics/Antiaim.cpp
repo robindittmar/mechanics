@@ -147,7 +147,7 @@ float GetOutgoingLatency()
 	}
 }
 
-bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer)
+bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer, bool bIsFakeWalking)
 {
 	CApplication* pApp = CApplication::Instance();
 	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
@@ -159,7 +159,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 		pApp->m_bLbyUpdate = false;
 
 	bool bPlayerMoving = pLocalEntity->GetVelocity()->Length2D() > 0.1f;
-	if (bPlayerMoving)
+	if (bPlayerMoving && !bIsFakeWalking)
 		return false;
 
 	float value = abs(pResolverPlayer->GetLbyUpdateTime() - pResolverPlayer->GetPredLbyUpdateTime() - GetOutgoingLatency());
@@ -673,9 +673,12 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 	tempo.NormalizeAngles();
 	m_fCurFakeYaw = tempo.y;
 
+	IClientEntity* pLocal = m_pApp->GetLocalPlayer();
 	if (IsFakeYaw())
 	{
-		if (m_pApp->Misc()->GetFakelag() && m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
+		if (m_pApp->Misc()->GetFakelag() && (!m_pApp->Misc()->GetFakelagOnlyInAir() ||
+			m_pApp->Misc()->GetFakelagOnlyInAir() && (!(pLocal->GetFlags() & FL_ONGROUND) && !(pLocal->GetFlags() & FL_INWATER))) &&
+			m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
 			!bFakeAngleSwitch)
 		{
 			angles->y += fRealYaw;

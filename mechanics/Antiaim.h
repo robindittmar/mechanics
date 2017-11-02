@@ -108,7 +108,7 @@ public:
 	bool GetDrawEdgeAntiAimLines() { return m_bDrawEdgeAntiAimLines; }
 
 	bool IsFakeYaw();
-	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false);
+	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false, bool bIsFakeWalking = false);
 
 	void DrawLBYIndicator();
 	bool m_bNextLbyUpdate;
