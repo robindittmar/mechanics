@@ -6,6 +6,12 @@
 #include <cstdio>
 #include <unordered_map>
 
+// Source SDK
+#include "ISurface.h"
+
+// Custom
+#include "WritableSection.h"
+
 #define CONFIG_FOLDER	"cfg\\"
 
 class CApplication;
@@ -24,9 +30,17 @@ public:
 	bool GetBool(const char* pSection, const char* pKey, bool* pOut = NULL);
 	int GetInt(const char* pSection, const char* pKey, int* pOut = NULL);
 	float GetFloat(const char* pSection, const char* pKey, float* pOut = NULL);
+	Color GetColor(const char* pSection, const char* pKey, Color* pOut = NULL);
 	const char* GetString(const char* pSection, const char* pKey, char* pOut = NULL, int iMaxLen = 256);
+
+	void SetBool(const char* pSection, const char* pKey, bool bValue);
+	void SetInt(const char* pSection, const char* pKey, int iValue);
+	void SetFloat(const char* pSection, const char* pKey, float fValue);
+	void SetColor(const char* pSection, const char* pKey, Color cValue);
+	void SetString(const char* pSection, const char* pKey, const char* pValue);
 private:
 	uint32_t BuildSectionKeyHash(const char* pSection, const char* pKey);
+	uint32_t BuildAndStoreSectionKeyHash(const char* pSection, const char* pKey);
 	void DeleteValues();
 
 	char* m_pCurSection;

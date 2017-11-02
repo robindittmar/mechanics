@@ -7,6 +7,7 @@
 // Custom
 #include "Console.h"
 #include "Config.h"
+#include "ConfigHelper.h"
 #include "Pattern.h"
 #include "XorString.h"
 #include "VTableHook.h"

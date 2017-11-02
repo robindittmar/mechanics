@@ -109,6 +109,59 @@ bool CConfig::LoadFile(const char* pFilename)
 
 bool CConfig::SaveFile(const char* pFilename)
 {
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Saving config '%s'\n", pFilename);
+#endif // _DEBUG
+
+	uint32_t iHash;
+	const char* pKey;
+	std::unordered_map<uint32_t, CWritableSection> m_mapSections;
+	char pBuffer[512];
+	char pLine[512];
+
+	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKeys.begin(); it != m_mapKeys.end(); it++)
+	{
+		iHash = it->first;
+
+		int iLen = strlen(it->second) + 1;
+		memcpy(pBuffer, it->second, iLen);
+
+		char* pSection = strtok(pBuffer, "_");
+		char* pKey = strtok(NULL, "\0");
+		sprintf(pLine, "%s=%s", pKey, m_mapValues[iHash]);
+
+		uint32_t iSectionHash = murmurhash(pSection, strlen(pSection), 0xB16B00B5);
+		if (m_mapSections.find(iSectionHash) == m_mapSections.end())
+		{
+			m_mapSections[iSectionHash] = CWritableSection(pSection);
+		}
+
+		m_mapSections[iSectionHash].AddLine(pLine);
+	}
+
+	char pFullpath[MAX_PATH];
+	sprintf(pFullpath, "%s%s%s", m_pApp->GetWorkingDirectory(), CONFIG_FOLDER, pFilename);
+
+	FILE* pFile = fopen(pFullpath, "w");
+	if (!pFile)
+	{
+#ifdef _DEBUG
+		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n", pFullpath);
+#endif // _DEBUG
+
+		return false;
+	}
+
+	for (std::unordered_map<uint32_t, CWritableSection>::iterator it = m_mapSections.begin(); it != m_mapSections.end(); it++)
+	{
+		it->second.WriteToFile(pFile);
+	}
+
+	fclose(pFile);
+
+#ifdef _DEBUG
+	g_pConsole->Write(LOGLEVEL_INFO, "Done saving config\n");
+#endif // _DEBUG
 	return false;
 }
 
@@ -145,6 +198,17 @@ float CConfig::GetFloat(const char* pSection, const char* pKey, float* pOut)
 	return fValue;
 }
 
+Color CConfig::GetColor(const char* pSection, const char* pKey, Color* pOut)
+{
+	Color cValue;
+	cValue.SetRawColor(this->GetInt(pSection, pKey));
+
+	if (pOut)
+		*pOut = cValue;
+
+	return cValue;
+}
+
 const char* CConfig::GetString(const char* pSection, const char* pKey, char* pOut, int iMaxLen)
 {
 	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
@@ -156,12 +220,82 @@ const char* CConfig::GetString(const char* pSection, const char* pKey, char* pOu
 	return pValue;
 }
 
+void CConfig::SetBool(const char* pSection, const char* pKey, bool bValue)
+{
+	uint32_t iHash = this->BuildAndStoreSectionKeyHash(pSection, pKey);
+
+	char* pValue = new char[2];
+	pValue[0] = bValue ? '1' : '0';
+	pValue[1] = '\0';
+
+	m_mapValues[iHash] = pValue;
+}
+
+void CConfig::SetInt(const char* pSection, const char* pKey, int iValue)
+{
+	uint32_t iHash = this->BuildAndStoreSectionKeyHash(pSection, pKey);
+	
+	char pValueBuffer[64];
+	int iLen = sprintf(pValueBuffer, "%d", iValue) + 1;
+	
+	char* pValue = new char[iLen];
+	memcpy(pValue, pValueBuffer, iLen);
+
+	m_mapValues[iHash] = pValue;
+}
+
+void CConfig::SetFloat(const char* pSection, const char* pKey, float fValue)
+{
+	uint32_t iHash = this->BuildAndStoreSectionKeyHash(pSection, pKey);
+
+	char pValueBuffer[64];
+	int iLen = sprintf(pValueBuffer, "%f", fValue) + 1;
+
+	char* pValue = new char[iLen];
+	memcpy(pValue, pValueBuffer, iLen);
+
+	m_mapValues[iHash] = pValue;
+}
+
+void CConfig::SetColor(const char* pSection, const char* pKey, Color cValue)
+{
+	this->SetInt(pSection, pKey, cValue.GetRawColor());
+}
+
+void CConfig::SetString(const char* pSection, const char* pKey, const char* pValue)
+{
+	uint32_t iHash = this->BuildAndStoreSectionKeyHash(pSection, pKey);
+
+	int iLen = strlen(pValue) + 1;
+	char* pValueFinal = new char[iLen];
+	memcpy(pValueFinal, pValue, iLen);
+
+	m_mapValues[iHash] = pValueFinal;
+}
+
 uint32_t CConfig::BuildSectionKeyHash(const char* pSection, const char* pKey)
 {
 	char pSectionKey[512];
 	sprintf(pSectionKey, "%s_%s", pSection, pKey);
 
 	return murmurhash(pSectionKey, strlen(pSectionKey), 0xB16B00B5);
+}
+
+uint32_t CConfig::BuildAndStoreSectionKeyHash(const char* pSection, const char* pKey)
+{
+	char pSectionKey[512];
+	int iLen = sprintf(pSectionKey, "%s_%s", pSection, pKey) + 1;
+
+	uint32_t iHash = murmurhash(pSectionKey, strlen(pSectionKey), 0xB16B00B5);
+	if (m_mapKeys.find(iHash) == m_mapKeys.end())
+	{
+		char* pSectionKeyFinal = new char[iLen];
+		memcpy(pSectionKeyFinal, pSectionKey, iLen);
+
+		m_mapKeys[iHash] = pSectionKeyFinal;
+	}
+
+	return iHash;
 }
 
 void CConfig::DeleteValues()
