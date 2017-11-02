@@ -154,6 +154,7 @@
     <ClCompile Include="ClientClass.cpp" />
     <ClCompile Include="ColorPickerPopup.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />
@@ -223,6 +224,7 @@
     <ClCompile Include="Visuals.cpp" />
     <ClCompile Include="WeaponEsp.cpp" />
     <ClCompile Include="Window.cpp" />
+    <ClCompile Include="WritableSection.cpp" />
     <ClCompile Include="XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -230,6 +232,7 @@
     <ClInclude Include="checksum_md5.h" />
     <ClInclude Include="ColorPickerPopup.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="CreateMove.h" />
     <ClInclude Include="CUtlVector.h" />
     <ClInclude Include="DrawModelExecute.h" />
@@ -338,6 +341,7 @@
     <ClInclude Include="Visuals.h" />
     <ClInclude Include="WeaponEsp.h" />
     <ClInclude Include="Window.h" />
+    <ClInclude Include="WritableSection.h" />
     <ClInclude Include="XorString.h" />
   </ItemGroup>
   <ItemGroup>

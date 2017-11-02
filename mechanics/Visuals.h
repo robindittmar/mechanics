@@ -74,6 +74,7 @@ public:
 	void SetThirdpersonDistance(int iThirdpersonValue) { m_iThirdpersonDistance = iThirdpersonValue; }
 	int GetThirdpersonDistance() { return m_iThirdpersonDistance; }
 
+	// TODO: Wäre SetFovEnabled nicht aussagekräftiger?
 	void SetFovChange(bool bFovChange) { m_bFovChange = bFovChange; }
 	bool GetFovChange() { return m_bFovChange; }
 	void SetFovChangeScoped(bool bFovChangeScoped) { m_bFovChangeScoped = bFovChangeScoped; }

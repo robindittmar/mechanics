@@ -41,7 +41,7 @@ public:
 	bool GetOnlyVisible() { return m_bOnlyVisible; }
 
 	void SetModelStyle(int iPlayerChamsStyle);
-	int GetFlatModels() { return m_iPlayerChamsStyle; }
+	int GetModelStyle() { return m_iPlayerChamsStyle; }
 
 	void SetRenderFakeAngle(bool bRenderFakeAngle) { m_bRenderFakeAngle = bRenderFakeAngle; }
 	bool GetRenderFakeAngle() { return m_bRenderFakeAngle; }

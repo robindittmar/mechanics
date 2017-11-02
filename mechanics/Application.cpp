@@ -871,24 +871,8 @@ void CApplication::Setup()
 	// Load Netvars
 	this->GetNetVars();
 
-	CConfig config;
-	config.Init(this);
-	config.LoadFile("rage.cfg");
-
-	// Target Selector
-	this->m_targetSelector.Setup(this);
-	this->m_targetSelector.SetMultipoint(config.GetBool("targetselector", "multipoint"));
-	this->m_targetSelector.SetMultipointScale(config.GetFloat("targetselector", "multipointscale"));
-	this->m_targetSelector.SetVisibleMode(config.GetInt("targetselector", "visiblemode"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_HEAD, config.GetBool("targetselector", "checkhead"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_CHEST, config.GetBool("targetselector", "checkchest"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_PELVIS, config.GetBool("targetselector", "checkpelvis"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM, config.GetBool("targetselector", "checkrightforearm"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, config.GetBool("targetselector", "checkleftforearm"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, config.GetBool("targetselector", "checkrightcalf"));
-	this->m_targetSelector.SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, config.GetBool("targetselector", "checkleftcalf"));
-
 	// Setups
+	this->m_targetSelector.Setup(this);
 	this->m_ragebot.Setup();
 	this->m_legitbot.Setup();
 	this->m_triggerbot.Setup();
@@ -905,194 +889,10 @@ void CApplication::Setup()
 	this->m_mirror.Setup();
 	this->m_lagcompensation.Setup();
 
-	// Ragebot
-	this->m_ragebot.SetEnabled(config.GetBool("ragebot", "enabled"));
-	this->m_ragebot.SetAutoshoot(config.GetBool("ragebot", "autoshoot"));
-	this->m_ragebot.SetAutoscope(config.GetBool("ragebot", "autoscope"));
-	this->m_ragebot.SetSilentAim(config.GetBool("ragebot", "silentaim"));
-	this->m_ragebot.SetAutoReload(config.GetBool("ragebot", "autoreload"));
-	this->m_ragebot.SetAutoZeus(config.GetBool("ragebot", "autozeus"));
-	this->m_ragebot.SetTargetCriteria(config.GetInt("ragebot", "targetcriteria"));
-	this->m_ragebot.SetCalculateHitchance(config.GetBool("ragebot", "hitchanceenabled"));
-	this->m_ragebot.SetHitchance(config.GetFloat("ragebot", "hitchance"));
-	this->m_ragebot.SetNoSpread(config.GetBool("ragebot", "nospread"));
-	this->m_ragebot.SetAutoRevolver(config.GetBool("ragebot", "autorevolver"));
-
-	// Legitbot
-	this->m_legitbot.SetEnabled(config.GetBool("legitbot", "enabled"));
-	this->m_legitbot.SetTimeToAim(config.GetFloat("legitbot", "aimtime"));
-
-	// Triggerbot
-	this->m_triggerbot.SetEnabled(config.GetBool("triggerbot", "enabled"));
-	this->m_triggerbot.SetShootDelay(config.GetInt("triggerbot", "shootdelay"));
-	this->m_triggerbot.SetShootDelayJitter(config.GetInt("triggerbot", "shootdelayjitter"));
-
-	// Legit Lag Compensation
-
-
-	// Antiaim
-	this->m_antiAim.SetEnabled(config.GetBool("antiaim", "enabled"));
-	this->m_antiAim.SetDrawLbyIndicator(config.GetBool("antiaim", "lbyindicator"));
-	this->m_antiAim.SetLbyBreaker(config.GetBool("antiaim", "lbybreaker"));
-
-	// Standing
-	this->m_antiAim.SetPitchSettingStanding(config.GetInt("antiaim", "standingpitch"));
-	this->m_antiAim.SetYawSettingStanding(config.GetInt("antiaim", "standingyaw"));
-	this->m_antiAim.SetYawOffsetStanding(config.GetInt("antiaim", "standingyawoffset"));
-	this->m_antiAim.SetYawFakeSettingStanding(config.GetInt("antiaim", "standingfakeyaw"));
-	this->m_antiAim.SetYawFakeOffsetStanding(config.GetInt("antiaim", "standingfakeyawoffset"));
-	// Moving
-	this->m_antiAim.SetPitchSettingMoving(config.GetInt("antiaim", "movingpitch"));
-	this->m_antiAim.SetYawSettingMoving(config.GetInt("antiaim", "movingyaw"));
-	this->m_antiAim.SetYawOffsetMoving(config.GetInt("antiaim", "movingyawoffset"));
-	this->m_antiAim.SetYawFakeSettingMoving(config.GetInt("antiaim", "movingfakeyaw"));
-	this->m_antiAim.SetYawFakeOffsetMoving(config.GetInt("antiaim", "movingfakeyawoffset"));
-
-	// Edge AA
-	this->m_antiAim.SetDoEdgeAntiAim(config.GetBool("antiaim", "edgeantiaim"));
-	this->m_antiAim.SetEdgeAntiAimCheckPointsAmount(config.GetInt("antiaim", "edgeantiaimcheckpoints"));
-	this->m_antiAim.SetDrawEdgeAntiAimPoints(config.GetBool("antiaim", "edgeantiaimdrawpoints"));
-	this->m_antiAim.SetDrawEdgeAntiAimLines(config.GetBool("antiaim", "edgeantiaimdrawlines"));
-
-	// Resolver
-	this->m_resolver.SetEnabled(config.GetBool("resolver", "enabled"));
-	this->m_resolver.SetResolverType(config.GetInt("resolver", "type"));
-
-	// Bhop
-	this->m_bhop.SetEnabled(config.GetBool("bhop", "enabled"));
-
-	// Esp
-	this->m_esp.SetEnabled(config.GetBool("esp", "enabled"));
-	this->m_esp.SetDrawBoundingBox(config.GetInt("esp", "boundingbox"));
-	this->m_esp.SetFillBoundingBox(config.GetBool("esp", "fillboundingbox"));
-	this->m_esp.SetDrawOutline(config.GetBool("esp", "outlineboundingbox"));
-	this->m_esp.SetDrawSkeleton(config.GetBool("esp", "skeleton"));
-	this->m_esp.SetDrawNames(config.GetBool("esp", "names"));
-	this->m_esp.SetDrawHealthBar(config.GetBool("esp", "healthbar"));
-	this->m_esp.SetDrawHealthNumber(config.GetBool("esp", "healtnumber"));
-	this->m_esp.SetDrawArmorBar(config.GetBool("esp", "armorbar"));
-	this->m_esp.SetDrawActiveWeapon(config.GetBool("esp", "activeweapon"));
-	this->m_esp.SetDrawAmmoBar(config.GetBool("esp", "ammobar"));
-	this->m_esp.SetDrawAmmoNumber(config.GetBool("esp", "ammonumber"));
-	this->m_esp.SetDrawOwnTeam(config.GetBool("esp", "team"));
-	this->m_esp.SetDrawOwnModel(config.GetBool("esp", "self"));
-	this->m_esp.SetDrawOnlyVisible(config.GetBool("esp", "onlyvisible"));
-	this->m_esp.SetDrawOnlySpotted(config.GetBool("esp", "onlyspotted"));
-	this->m_esp.SetDrawViewangles(config.GetBool("esp", "viewangles"));
-	this->m_esp.SetViewanglesLength(config.GetInt("esp", "viewanglelength"));
-	this->m_esp.SetFadeoutEnabled(config.GetBool("esp", "fadeout"));
-	this->m_esp.SetFadeoutTime(config.GetFloat("esp", "fadeouttime"));
-	Color ctColor;
-	ctColor.SetRawColor(config.GetInt("esp", "colorct"));
-	this->m_esp.SetColorCT(ctColor);
-	Color tColor;
-	tColor.SetRawColor(config.GetInt("esp", "colort"));
-	this->m_esp.SetColorT(tColor);
-	Color spottedColor;
-	spottedColor.SetRawColor(config.GetInt("esp", "colorspotted"));
-	this->m_esp.SetColorSpotted(spottedColor);
-
-	// WeaponEsp
-	this->m_weaponesp.SetEnabled(config.GetBool("weaponesp", "enabled"));
-	this->m_weaponesp.SetDrawWeaponName(config.GetBool("weaponesp", "weaponname"));
-	this->m_weaponesp.SetDrawWeaponBoundingBox(config.GetBool("weaponesp", "weaponboundingbox"));
-	this->m_weaponesp.SetDrawGrenadeName(config.GetBool("weaponesp", "grenadename"));
-	this->m_weaponesp.SetDrawGrenadeBoundingBox(config.GetBool("weaponesp", "grenadeboundingbox"));
-	this->m_weaponesp.SetDrawBombName(config.GetBool("weaponesp", "bombname"));
-	this->m_weaponesp.SetDrawBombBoundingBox(config.GetBool("weaponesp", "bombboundingbox"));
-	this->m_weaponesp.SetDrawBombTimer(config.GetBool("weaponesp", "bombtimer"));
-	this->m_weaponesp.SetDrawBombDefuseTimer(config.GetBool("weaponesp", "bombdefusetimer"));
-	this->m_weaponesp.SetDrawBombDamageIndicator(config.GetBool("weaponesp", "bombdamageindicator"));
-
-	// Sound Esp
-	this->m_soundEsp.SetEnabled(config.GetBool("soundesp", "enabled"));
-	this->m_soundEsp.SetShowTime(config.GetFloat("soundesp", "showtime"));
-	this->m_soundEsp.SetFadeoutEnabled(config.GetBool("soundesp", "fadeout"));
-	this->m_soundEsp.SetFadeTime(config.GetFloat("soundesp", "fadeouttime"));
-	this->m_soundEsp.SetDrawOwnTeam(config.GetBool("soundesp", "team"));
-	this->m_soundEsp.SetDrawVisible(config.GetBool("soundesp", "visible"));
-
-	// Chams
-	this->m_chams.SetEnabled(config.GetBool("chams", "enabled"));
-	this->m_chams.SetRenderTeam(config.GetBool("chams", "team"));
-	this->m_chams.SetRenderLocalplayer(config.GetBool("chams", "self"));
-	this->m_chams.SetOnlyVisible(config.GetBool("chams", "onlyvisible"));
-	this->m_chams.SetModelStyle(config.GetInt("chams", "playerstyle"));
-	this->m_chams.SetRenderFakeAngle(config.GetBool("chams", "fake"));
-	Color color;
-	color.SetRawColor(config.GetInt("chams", "hiddenct"));
-	this->m_chams.SetColorHiddenCT(color);
-	color.SetRawColor(config.GetInt("chams", "visiblect"));
-	this->m_chams.SetColorVisibleCT(color);
-	color.SetRawColor(config.GetInt("chams", "hiddent"));
-	this->m_chams.SetColorHiddenT(color);
-	color.SetRawColor(config.GetInt("chams", "visiblet"));
-	this->m_chams.SetColorVisibleT(color);
-	this->m_chams.SetWeaponChamsStyle(config.GetInt("chams", "weaponstyle"));
-
-	// Misc
-	this->m_misc.SetNoRecoil(config.GetBool("misc", "norecoil"));
-	this->m_misc.SetFakelag(config.GetBool("misc", "fakelag"));
-	this->m_misc.SetFakelagOnlyInAir(config.GetBool("misc", "fakelagonlyinair"));
-	this->m_misc.SetFakelagChokeAmount(config.GetInt("misc", "fakelagamount"));
-	this->m_misc.SetAutoStrafeMode(config.GetInt("misc", "autostrafe"));
-	this->m_misc.SetCircleStrafe(config.GetBool("misc", "circlestrafe"));
-	this->m_misc.SetAutoPistol(config.GetBool("misc", "autopistol"));
-	this->m_misc.SetShowSpectators(config.GetBool("misc", "spectators"));
-	this->m_misc.SetShowOnlyMySpectators(config.GetBool("misc", "onlymyspectators"));
-	this->m_misc.SetShowOnlyMyTeamSpectators(config.GetBool("misc", "onlymyteamspectators"));
-	this->m_misc.SetJumpScout(config.GetBool("misc", "jumpscout"));
-	this->m_misc.SetNoName(config.GetBool("misc", "noname"));
-	this->m_misc.SetAutoAccept(config.GetBool("misc", "autoaccept"));
-	this->m_misc.SetSpamName(config.GetBool("misc", "spamname"));
-
-	// SkinChanger
-	this->m_skinchanger.SetEnabled(true);
-	// TODO: Config und sowas
-	this->LoadSkinChangerConfig();
-
-	// Visuals
-	this->m_visuals.SetCrosshair(config.GetBool("visuals", "crosshair"));
-	this->m_visuals.SetCrosshairShowRecoil(config.GetBool("visuals", "recoilcrosshair"));
-	this->m_visuals.SetSpreadCone(config.GetBool("visuals", "spreadcone"));
-	this->m_visuals.SetHitmarker(config.GetBool("visuals", "hitmarker"));
-	this->m_visuals.SetHitmarkerSound(config.GetBool("visuals", "hitmarkersound"));
-	this->m_visuals.SetHitmarkerHitpoint(config.GetBool("visuals", "hitmarkerhitpoint"));
-	this->m_visuals.NoSmoke(config.GetBool("visuals", "nosmoke"));
-
-	this->m_visuals.SetNoFlash(config.GetBool("visuals", "noflash"));
-	this->m_visuals.SetFlashPercentage(config.GetFloat("visuals", "flashpercentage"));
-
-	this->m_visuals.SetHandsDrawStyle(config.GetInt("visuals", "handsstyle"));
-	this->m_visuals.SetNoVisualRecoil(config.GetBool("visuals", "novisualrecoil"));
-	this->m_visuals.DisablePostProcessing(config.GetBool("visuals", "disablepostprocessing"));
-	this->m_visuals.SetNoScope(config.GetBool("visuals", "noscope"));
-	this->m_visuals.SetNightmode(config.GetBool("visuals", "nightmode"));
-
-	this->m_visuals.SetThirdperson(config.GetBool("visuals", "thirdperson"));
-	this->m_visuals.SetThirdpersonDistance(config.GetInt("visuals", "thirdpersondistance"));
-
-	this->m_visuals.SetFovChange(config.GetBool("visuals", "fovenabled"));
-	this->m_visuals.SetFovValue(config.GetInt("visuals", "fov"));
-	this->m_visuals.SetFovChangeScoped(config.GetBool("visuals", "scopedfov"));
-
-	this->m_visuals.SetViewmodelFov(config.GetBool("visuals", "viewmodelfovenabled"));
-	this->m_visuals.SetViewmodelFovValue(config.GetInt("visuals", "viewmodelfov"));
-
-	this->m_visuals.SetBulletTracer(config.GetBool("visuals", "bullettracerenabled"));
-	this->m_visuals.SetBulletTracerSelf(config.GetBool("visuals", "bullettracerself"));
-	this->m_visuals.SetBulletTracerTeam(config.GetBool("visuals", "bullettracerteam"));
-
-	// Mirror
-	this->m_mirror.SetEnabled(config.GetBool("visuals", "mirror"));
-
-	// LagCompensation
-	this->m_lagcompensation.SetRageLagCompensationEnabled(config.GetBool("lagcompensation", "rageenabled"));
-	this->m_lagcompensation.SetLegitLagCompensationEnabled(config.GetBool("lagcompensation", "legitenabled"));
-	this->m_lagcompensation.SetLegitLagCompensationDuration(config.GetInt("lagcompensation", "legitduration"));
-	this->m_lagcompensation.SetDrawStyle(config.GetInt("lagcompensation", "drawstyle"));
-	this->m_lagcompensation.SetDrawFrequency(config.GetInt("lagcompensation", "drawfrequency"));
-	this->m_lagcompensation.SetDrawOnlyVisible(config.GetBool("lagcompensation", "drawonlyvisible"));
+	CConfig config;
+	config.Init(this);
+	config.LoadFile("rage.cfg");
+	ConfigHelper::ConfigToFeatures(&config);
 
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
@@ -1301,9 +1101,9 @@ void CApplication::GetInterfaces()
 	) + 1);
 
 #ifdef _DEBUG
-	g_pConsole->Write(LOGLEVEL_INFO, "RandomSeed\t=>\t0x%08X\n", m_pRandomSeed);
-	g_pConsole->Write(LOGLEVEL_INFO, "RandomInt\t=>\t0x%08X\n", m_pRandomInt);
-	g_pConsole->Write(LOGLEVEL_INFO, "RandomFloat\t=>\t0x%08X\n", m_pRandomFloat);
+	g_pConsole->Write(LOGLEVEL_INFO, "RandomSeed\t\t=>\t0x%08X\n", m_pRandomSeed);
+	g_pConsole->Write(LOGLEVEL_INFO, "RandomInt\t\t=>\t0x%08X\n", m_pRandomInt);
+	g_pConsole->Write(LOGLEVEL_INFO, "RandomFloat\t\t=>\t0x%08X\n", m_pRandomFloat);
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "VEngineClient014\t\t=>\t0x%08X\n", m_pEngineClient);
@@ -1320,7 +1120,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->Write(LOGLEVEL_INFO, "GAMEEVENTSMANAGER002\t=>\t0x%08X\n", m_pGameEventManager);
 	g_pConsole->Write(LOGLEVEL_INFO, "VPhysicsSurfaceProps001\t=>\t0x%08X\n", m_pPhysicsSurfaceProps);
 	g_pConsole->Write(LOGLEVEL_INFO, "IEngineSoundClient003\t=>\t0x%08X\n", m_pEngineSound);
-	g_pConsole->Write(LOGLEVEL_INFO, "MDLCache004\t=>\t0x%08X\n", m_pMdlCache);
+	g_pConsole->Write(LOGLEVEL_INFO, "MDLCache004\t\t=>\t0x%08X\n", m_pMdlCache);
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "CGlobalVars\t\t=>\t0x%08X\n", m_pGlobalVars);

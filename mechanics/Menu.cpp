@@ -153,7 +153,7 @@ void CMenu::ApplySettings()
 
 	// Chams
 	m_pChamsEnabled->SetChecked(m_pApp->Chams()->GetEnabled());
-	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetFlatModels());
+	m_pChamsStyle->SetSelection(m_pApp->Chams()->GetModelStyle());
 	m_pChamsDrawOwnTeam->SetChecked(m_pApp->Chams()->GetRenderTeam());
 	m_pChamsDrawOwnModel->SetChecked(m_pApp->Chams()->GetRenderLocalplayer());
 	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
@@ -1115,11 +1115,15 @@ void CMenu::CreateConfigTab()
 	m_pForceFullUpdate = new CButton(150, 64, 120, 45, "Force Full Update");
 	m_pForceFullUpdate->SetEventHandler(std::bind(&IClientState::ForceFullUpdate, m_pApp->ClientState()));
 
+	m_pSaveConfig = new CButton(300, 64, 120, 45, "Save Config");
+	m_pSaveConfig->SetEventHandler(std::bind(&SaveConfig));
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pClrPicker);
 	m_pConfigTab->AddChild(m_pTextbox);
 	m_pConfigTab->AddChild(m_pForceFullUpdate);
+	m_pConfigTab->AddChild(m_pSaveConfig);
 }
 
 void CMenu::FillSkinIds(int iWeaponId)
@@ -1129,6 +1133,7 @@ void CMenu::FillSkinIds(int iWeaponId)
 
 	m_pSkinChangerSkin->ClearOptions();
 	m_pSkinChangerSkin->AddOption(0, "None");
+	m_pSkinChangerSkin->SetSelection(0);
 
 	std::unordered_map<int, std::unordered_map<int, const char*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
 	for (std::unordered_map<int, std::unordered_map<int, const char*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
@@ -1166,4 +1171,13 @@ void CMenu::ApplySkin(int iSkinId)
 	);
 
 	m_pApp->SkinChanger()->SetForceFullUpdate();
+}
+
+void SaveConfig()
+{
+	CConfig newConfig;
+	newConfig.Init(CApplication::Instance());
+	ConfigHelper::FeaturesToConfig(&newConfig);
+	
+	newConfig.SaveFile("generated.cfg");
 }

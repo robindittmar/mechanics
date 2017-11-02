@@ -299,6 +299,7 @@ private:
 	CColorPicker* m_pClrPicker;
 	CTextbox* m_pTextbox;
 	CButton* m_pForceFullUpdate;
+	CButton* m_pSaveConfig;
 	//
 
 	CApplication* m_pApp;
@@ -310,5 +311,7 @@ private:
 
 	void operator=(CMenu const&) {}
 };
+
+void SaveConfig();
 
 #endif // __MENU_H__
