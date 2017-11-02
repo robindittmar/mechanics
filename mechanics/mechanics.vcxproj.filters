@@ -614,6 +614,12 @@
     <ClInclude Include="ConfigHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ILocalize.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="IAppSystem.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

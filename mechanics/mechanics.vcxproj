@@ -241,8 +241,10 @@
     <ClInclude Include="FireEventClientSide.h" />
     <ClInclude Include="FrameStageNotify.h" />
     <ClInclude Include="GetViewModelFov.h" />
+    <ClInclude Include="IAppSystem.h" />
     <ClInclude Include="IClientMode.h" />
     <ClInclude Include="IEngineSound.h" />
+    <ClInclude Include="ILocalize.h" />
     <ClInclude Include="IMDLCache.h" />
     <ClInclude Include="ITexture.h" />
     <ClInclude Include="IViewRender.h" />
