@@ -1004,7 +1004,7 @@ void CApplication::GetLibrarys()
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{ÌªdbÊ±9oÈÆ").ToCharArray());
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axÒ¶{bÁÏsgÈ").ToCharArray());
 	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjÒ£tjÊ™r%·Æ{").ToCharArray());
-	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/"localize.dll");
+	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("{dÊ£{bˇß9oÈÆ").ToCharArray());
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "client.dll\t\t=>\t0x%08X\n", m_dwClientDll);
@@ -1054,7 +1054,7 @@ void CApplication::GetInterfaces()
 	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[ÌªdbÊ±D~˜§vh‡íedı±';¥").ToCharArray(), NULL);
 	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^NÎ•~e‡ëx~Î¶TgÏßyµÚ$").ToCharArray(), NULL);
 	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("ZO…ÅvhÌß';±").ToCharArray(), NULL);
-	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/"Localize_001", NULL);
+	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/CXorString("[dÊ£{bˇßH;µÛ").ToCharArray(), NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
@@ -1310,6 +1310,7 @@ CApplication::CApplication()
 	m_pGameEventManagerHook = NULL;
 	m_pViewRenderHook = NULL;
 	m_pEngineSoundHook = NULL;
+	m_pMdlHook = NULL;
 
 	m_bGotSendPackets = false;
 
@@ -1323,6 +1324,9 @@ CApplication::CApplication(CApplication const&)
 
 CApplication::~CApplication()
 {
+	if (m_pMdlHook)
+		delete m_pMdlHook;
+
 	if (m_pEngineSoundHook)
 		delete m_pEngineSoundHook;
 
