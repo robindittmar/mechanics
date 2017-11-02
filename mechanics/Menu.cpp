@@ -204,6 +204,7 @@ void CMenu::ApplySettings()
 
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
+	m_pFakelagOnlyInAir->SetChecked(m_pApp->Misc()->GetFakelagOnlyInAir());
 	m_pFakelagChokeAmount->SetValue(m_pApp->Misc()->GetFakelagChokeAmount());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
@@ -837,7 +838,7 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersHandsDrawStyle->AddOption(HANDSDRAWSTYLE_WIREFRAME, "Wireframe");
 	m_pVisualsOthersHandsDrawStyle->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersHitmarkerEnabled = new CCheckbox(4, 40, 128, 16, "Hitmarker");
+	m_pVisualsOthersHitmarkerEnabled = new CCheckbox(4, 40, 128, 16, "Hitmarker Crosshair");
 	m_pVisualsOthersHitmarkerEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarker, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pVisualsOthersHitmarkerSoundEnabled = new CCheckbox(4, 60, 128, 16, "Hitmarker Sound");
@@ -971,11 +972,14 @@ void CMenu::CreateMiscTab()
 	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoName, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1));
+	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1)); 
 
-	m_pFakelagLabel = new CLabel(4, 20, 128, 16, "Packets choking", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFakelagOnlyInAir = new CCheckbox(4, 20, 128, 16, "Only In Air");
+	m_pFakelagOnlyInAir->SetEventHandler(std::bind(&CMisc::SetFakelagOnlyInAir, m_pApp->Misc(), std::placeholders::_1));
 
-	m_pFakelagChokeAmount = new CSlider(4, 42, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
+	m_pFakelagLabel = new CLabel(4, 40, 128, 16, "Packets choking", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pFakelagChokeAmount = new CSlider(4, 62, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
 	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CMisc::SetFakelagChokeAmount, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pMiscOthersGroup = new CGroupbox(16, 16, 152, 308, "Others");
@@ -996,6 +1000,7 @@ void CMenu::CreateMiscTab()
 
 	m_pFakelagGroup = new CGroupbox(184, 16, 152, 308, "Fakelag");
 	m_pFakelagGroup->AddChild(m_pFakelagEnabled);
+	m_pFakelagGroup->AddChild(m_pFakelagOnlyInAir);
 	m_pFakelagGroup->AddChild(m_pFakelagLabel);
 	m_pFakelagGroup->AddChild(m_pFakelagChokeAmount);
 

@@ -11,7 +11,6 @@ DECLARE_POINTER_HANDLE(StudioDecalHandle_t);
 // forward declarations
 //-----------------------------------------------------------------------------
 struct mstudioanimdesc_t;
-struct mstudioseqdesc_t;
 struct model_t;
 class IClientRenderable;
 class Vector;

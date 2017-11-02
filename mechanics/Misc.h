@@ -44,6 +44,9 @@ public:
 	void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; }
 	bool GetFakelag() { return m_bFakelag; }
 
+	void SetFakelagOnlyInAir(bool bFakelagOnlyInAir) { m_bFakelagOnlyInAir = bFakelagOnlyInAir; }
+	bool GetFakelagOnlyInAir() { return m_bFakelagOnlyInAir; }
+
 	void SetFakelagChokedAmount(int iFakelagChokedAmount) { m_iFakelagChokedAmount = iFakelagChokedAmount; }
 	int GetFakelagChokedAmount() { return m_iFakelagChokedAmount; }
 
@@ -107,6 +110,7 @@ private:
 	bool m_bNoRecoil;
 
 	bool m_bFakelag;
+	bool m_bFakelagOnlyInAir;
 	int m_iFakelagChokeAmount;
 	int m_iFakelagChokedAmount;
 

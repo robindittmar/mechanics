@@ -255,6 +255,7 @@ private:
 	CTabPage* m_pMiscTab;
 	CGroupbox* m_pFakelagGroup;
 	CCheckbox* m_pFakelagEnabled;
+	CCheckbox* m_pFakelagOnlyInAir;
 	CLabel* m_pFakelagLabel;
 	CSlider* m_pFakelagChokeAmount;
 

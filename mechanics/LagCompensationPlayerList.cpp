@@ -110,8 +110,8 @@ void CLagCompensationPlayerList::RestorePlayerEntry(IClientEntity* pCurEnt, int 
 	*(Vector*)((DWORD)pCurEnt + Offsets::m_vecVelocity) = pEntry.m_vVelocity;
 	*(float*)((DWORD)pCurEnt + Offsets::m_flSimulationTime) = pEntry.m_fSimulationTime;
 	*(QAngle*)((DWORD)pCurEnt + Offsets::m_angEyeAngles) = pEntry.m_angEyeAngles;
-	*(float*)((DWORD)pCurEnt + Offsets::m_flCycle) = pEntry.m_fCycle;
-	*(int*)((DWORD)pCurEnt + Offsets::m_nSequence) = pEntry.m_iSequenceNumber;
+	//*(float*)((DWORD)pCurEnt + Offsets::m_flCycle) = pEntry.m_fCycle;
+	//*(int*)((DWORD)pCurEnt + Offsets::m_nSequence) = pEntry.m_iSequenceNumber;
 	*(DWORD*)((DWORD)pCurEnt + Offsets::m_fFlags) = pEntry.m_fFlags;
 	*(float*)((DWORD)pCurEnt + Offsets::m_flLowerBodyYawTarget) = pEntry.m_fLowerBodyYaw;
 
@@ -119,4 +119,6 @@ void CLagCompensationPlayerList::RestorePlayerEntry(IClientEntity* pCurEnt, int 
 	{
 		*(float*)((DWORD)pCurEnt + Offsets::m_flPoseParameter + sizeof(float) * i) = pEntry.m_fPoseParameters[i];
 	}
+
+	pCurEnt->UpdateClientSiteAnimation();
 }

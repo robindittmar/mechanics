@@ -252,6 +252,7 @@ public:
 	int GetHealth();
 	int GetTeamNum();
 	float GetSimulationTime();
+	float GetOldSimulationTime();
 	unsigned long GetFlags();
 	Vector* GetOrigin();
 	Vector* GetEyeOffset();
@@ -284,6 +285,7 @@ public:
 	float* GetPoseParameter();
 	float GetPoseParameter(int index);
 	float GetCycle();
+	void UpdateClientSiteAnimation();
 
 	int GetBoneByName(const char* pBoneName);
 };
