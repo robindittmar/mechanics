@@ -240,7 +240,7 @@ MDLHandle_t __fastcall CApplication::hk_FindMDL(void* ecx, void* edx, char* file
 	return m_pFindMdl(ecx, filePath);
 }
 
-
+// TODO: !!!!
 int tickcount = 0;
 bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
 {

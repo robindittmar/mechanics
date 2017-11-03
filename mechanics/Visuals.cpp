@@ -442,12 +442,12 @@ void CVisuals::Nightmode()
 				if (bLastSetting)
 				{
 					sv_skyname->SetValue(xorSkyNight.ToCharArray());
-					pMaterial->ColorModulate(0.25, 0.25, 0.25);
+					pMaterial->ColorModulate(0.25f, 0.25f, 0.25f);
 				}
 				else
 				{
 					sv_skyname->SetValue(oldSkyname);
-					pMaterial->ColorModulate(1.00, 1.00, 1.00);
+					pMaterial->ColorModulate(1.0f, 1.0f, 1.0f);
 				}
 			}
 		}
@@ -457,6 +457,25 @@ void CVisuals::Nightmode()
 			oldSkyname[0] = '\0';
 		}
 		m_bNightmodePerfomed = true;
+	}
+}
+
+void CVisuals::AsusWalls()
+{
+	static CXorString xorWorld("@d÷®s");
+	//static bool bLastSetting = m_bAsusWalls;
+
+	for (auto i = m_pApp->MaterialSystem()->FirstMaterial(); i != m_pApp->MaterialSystem()->InvalidMaterial(); i = m_pApp->MaterialSystem()->NextMaterial(i))
+	{
+		IMaterial* pMaterial = m_pApp->MaterialSystem()->GetMaterial(i);
+
+		if (!pMaterial || pMaterial->IsErrorMaterial())
+			continue;
+
+		if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()))
+		{
+			pMaterial->AlphaModulate(0.5f);
+		}
 	}
 }
 

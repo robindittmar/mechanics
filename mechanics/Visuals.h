@@ -132,6 +132,7 @@ public:
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
 	void Nightmode();
+	void AsusWalls();
 	void DrawBulletTracer();
 private:
 	int m_iSurfaceWidth;
@@ -175,6 +176,11 @@ private:
 	bool m_bNightmode;
 	bool m_bNightmodePerfomed;
 	bool m_bNightmodeMapChange;
+
+	// TODO: Use
+	bool m_bAsusWalls;
+	bool m_bAsusWallsPerformed;
+	bool m_bAsusWallsMapChange;
 
 	bool m_bBulletTracer;
 	bool m_bBulletTracerSelf;
