@@ -1,6 +1,10 @@
 #ifndef __MENU_H__
 #define __MENU_H__
 
+// Std Lib
+#include <windows.h>
+
+// Custom
 #include "InputEvent.h"
 #include "InputHandler.h"
 #include "Controls.h"
@@ -26,6 +30,9 @@ public:
 	// TODO
 	void FillSkinIds(int iWeaponId);
 	void ApplySkin(int iSkinId);
+	void FillLoadableConfigs();
+	void LoadConfig();
+	void SaveConfig();
 private:
 	void CreateRageTab();
 	void CreateLegitTab();
@@ -296,10 +303,14 @@ private:
 	// Config tab
 	CTabPage* m_pConfigTab;
 	CButton* m_pDetachBtn;
-	CColorPicker* m_pClrPicker;
-	CTextbox* m_pTextbox;
 	CButton* m_pForceFullUpdate;
-	CButton* m_pSaveConfig;
+
+	CGroupbox* m_pConfigGroup;
+	CSelectbox* m_pConfigLoadables;
+	CButton* m_pConfigLoadConfigButton;
+	CButton* m_pConfigReloadLoadables;
+	CTextbox* m_pConfigSaveConfigName;
+	CButton* m_pConfigSaveConfigButton;
 	//
 
 	CApplication* m_pApp;
@@ -311,7 +322,5 @@ private:
 
 	void operator=(CMenu const&) {}
 };
-
-void SaveConfig();
 
 #endif // __MENU_H__

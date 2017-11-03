@@ -25,6 +25,8 @@ public:
 
 	void OnTextInput(char c);
 
+	const char* GetValue() { return m_pContentLabel->GetContentText(); }
+
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 

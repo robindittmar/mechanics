@@ -42,6 +42,8 @@ public:
 	void SetValue(int iValue);
 	int GetValue() { return m_vOptions[m_iSelection]->GetId(); }
 
+	const char* GetSelectedText() { return m_vOptions[m_iSelection]->GetContentText(); }
+
 	void SetEventHandler(std::function<void(int)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	bool m_bPopupInitialized;

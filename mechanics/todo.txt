@@ -32,3 +32,5 @@ Priority Low
 
 
 => public configs & ähm general stäts in klammern nochmal irgendwie kills oder so perfekt
+
+=> Hitmarker Hitpoint save last 2 use second !!

@@ -972,7 +972,7 @@ void CMenu::CreateMiscTab()
 	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoName, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1)); 
+	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagOnlyInAir = new CCheckbox(4, 20, 128, 16, "Only In Air");
 	m_pFakelagOnlyInAir->SetEventHandler(std::bind(&CMisc::SetFakelagOnlyInAir, m_pApp->Misc(), std::placeholders::_1));
@@ -1105,25 +1105,37 @@ void CMenu::CreateSkinChangerTab()
 
 void CMenu::CreateConfigTab()
 {
-	m_pDetachBtn = new CButton(16, 64, 120, 45, "Detach");
+	m_pConfigLoadables = new CSelectbox(4, 10, 100, 16, "Loadable Configs");
+	FillLoadableConfigs();
+
+	m_pConfigLoadConfigButton = new CButton(4, 32, 128, 16, "Load Config");
+	m_pConfigLoadConfigButton->SetEventHandler(std::bind(&CMenu::LoadConfig, this));
+
+	m_pConfigReloadLoadables = new CButton(4, 52, 128, 16, "Reload Configs");
+	m_pConfigReloadLoadables->SetEventHandler(std::bind(&CMenu::FillLoadableConfigs, this));
+
+	m_pConfigSaveConfigName = new CTextbox(4, 87, 128, 16, "Configname");
+
+	m_pConfigSaveConfigButton = new CButton(4, 107, 128, 16, "Save Config");
+	m_pConfigSaveConfigButton->SetEventHandler(std::bind(&CMenu::SaveConfig, this));
+
+	m_pConfigGroup = new CGroupbox(4, 4, 152, 308, "Configs");
+	m_pConfigGroup->AddChild(m_pConfigLoadables);
+	m_pConfigGroup->AddChild(m_pConfigLoadConfigButton);
+	m_pConfigGroup->AddChild(m_pConfigReloadLoadables);
+	m_pConfigGroup->AddChild(m_pConfigSaveConfigName);
+	m_pConfigGroup->AddChild(m_pConfigSaveConfigButton);
+
+	m_pDetachBtn = new CButton(170, 32, 120, 45, "Detach");
 	m_pDetachBtn->SetEventHandler(std::bind(&CApplication::Detach, m_pApp));
 
-	m_pClrPicker = new CColorPicker(16, 16, 20, 20);
-
-	m_pTextbox = new CTextbox(16, 128, 120, 20);
-
-	m_pForceFullUpdate = new CButton(150, 64, 120, 45, "Force Full Update");
+	m_pForceFullUpdate = new CButton(170, 90, 120, 45, "Force Full Update");
 	m_pForceFullUpdate->SetEventHandler(std::bind(&IClientState::ForceFullUpdate, m_pApp->ClientState()));
 
-	m_pSaveConfig = new CButton(300, 64, 120, 45, "Save Config");
-	m_pSaveConfig->SetEventHandler(std::bind(&SaveConfig));
-
 	m_pConfigTab = new CTabPage("Config");
+	m_pConfigTab->AddChild(m_pConfigGroup);
 	m_pConfigTab->AddChild(m_pDetachBtn);
-	m_pConfigTab->AddChild(m_pClrPicker);
-	m_pConfigTab->AddChild(m_pTextbox);
 	m_pConfigTab->AddChild(m_pForceFullUpdate);
-	m_pConfigTab->AddChild(m_pSaveConfig);
 }
 
 void CMenu::FillSkinIds(int iWeaponId)
@@ -1173,11 +1185,57 @@ void CMenu::ApplySkin(int iSkinId)
 	m_pApp->SkinChanger()->SetForceFullUpdate();
 }
 
-void SaveConfig()
+void CMenu::FillLoadableConfigs()
 {
-	CConfig newConfig;
-	newConfig.Init(CApplication::Instance());
-	ConfigHelper::FeaturesToConfig(&newConfig);
-	
-	newConfig.SaveFile("generated.cfg");
+	m_pConfigLoadables->ClearOptions();
+
+	int iCount = 0;
+	WIN32_FIND_DATA ffd;
+	char pPath[MAX_PATH];
+	HANDLE hFind = INVALID_HANDLE_VALUE;
+
+	sprintf(pPath, "%s%s*", m_pApp->GetWorkingDirectory(), CONFIG_FOLDER);
+
+	hFind = FindFirstFile(pPath, &ffd);
+	if (hFind == INVALID_HANDLE_VALUE)
+	{
+		return;
+	}
+
+	do
+	{
+		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+		{
+			m_pConfigLoadables->AddOption(iCount++, ffd.cFileName);
+		}
+	} while (FindNextFile(hFind, &ffd) != 0);
+}
+
+void CMenu::LoadConfig()
+{
+	const char* pConfigName = m_pConfigLoadables->GetSelectedText();
+	if (!pConfigName)
+		return;
+
+	CConfig loadConfig;
+	loadConfig.Init(CApplication::Instance());
+	loadConfig.LoadFile(pConfigName);
+	ConfigHelper::ConfigToFeatures(&loadConfig);
+
+	this->ApplySettings();
+}
+
+void CMenu::SaveConfig()
+{
+	const char* pConfigName = m_pConfigSaveConfigName->GetValue();
+	if (!pConfigName)
+		return;
+
+	CConfig saveConfig;
+	saveConfig.Init(CApplication::Instance());
+	ConfigHelper::FeaturesToConfig(&saveConfig);
+
+	saveConfig.SaveFile(pConfigName);
+
+	this->FillLoadableConfigs();
 }
