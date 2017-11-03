@@ -135,9 +135,10 @@ namespace ConfigHelper
 
 		// Misc	
 		pApp->Misc()->SetNoRecoil(pConfig->GetBool("misc", "norecoil"));
-		pApp->Misc()->SetFakelag(pConfig->GetBool("misc", "fakelag"));
-		pApp->Misc()->SetFakelagOnlyInAir(pConfig->GetBool("misc", "fakelagonlyinair"));
-		pApp->Misc()->SetFakelagChokeAmount(pConfig->GetInt("misc", "fakelagamount"));
+		pApp->Fakelag()->SetEnabled(pConfig->GetBool("misc", "fakelag"));
+		pApp->Fakelag()->SetOnlyInAir(pConfig->GetBool("misc", "fakelagonlyinair"));
+		pApp->Fakelag()->SetChokeAmount(pConfig->GetInt("misc", "fakelagamount"));
+		pApp->Fakelag()->SetLagType(pConfig->GetInt("misc", "fakelagtype"));
 		pApp->Misc()->SetAutoStrafeMode(pConfig->GetInt("misc", "autostrafe"));
 		pApp->Misc()->SetCircleStrafe(pConfig->GetBool("misc", "circlestrafe"));
 		pApp->Misc()->SetAutoPistol(pConfig->GetBool("misc", "autopistol"));
@@ -329,9 +330,10 @@ namespace ConfigHelper
 
 		// Misc
 		pConfig->SetBool("misc", "norecoil", pApp->Misc()->GetNoRecoil());
-		pConfig->SetBool("misc", "fakelag", pApp->Misc()->GetFakelag());
-		pConfig->SetBool("misc", "fakelagonlyinair", pApp->Misc()->GetFakelagOnlyInAir());
-		pConfig->SetInt("misc", "fakelagamount", pApp->Misc()->GetFakelagChokeAmount());
+		pConfig->SetBool("misc", "fakelag", pApp->Fakelag()->GetEnabled());
+		pConfig->SetBool("misc", "fakelagonlyinair", pApp->Fakelag()->GetOnlyInAir());
+		pConfig->SetInt("misc", "fakelagamount", pApp->Fakelag()->GetChokeAmount());
+		pConfig->SetInt("misc", "fakelagtype", pApp->Fakelag()->GetLagType());
 		pConfig->SetInt("misc", "autostrafe", pApp->Misc()->GetAutoStrafeMode());
 		pConfig->SetBool("misc", "circlestrafe", pApp->Misc()->GetCircleStrafe());
 		// TODO: CircleStrafeDirection

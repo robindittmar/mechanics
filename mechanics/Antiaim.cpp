@@ -676,9 +676,9 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 	IClientEntity* pLocal = m_pApp->GetLocalPlayer();
 	if (IsFakeYaw())
 	{
-		if (m_pApp->Misc()->GetFakelag() && (!m_pApp->Misc()->GetFakelagOnlyInAir() ||
-			m_pApp->Misc()->GetFakelagOnlyInAir() && (!(pLocal->GetFlags() & FL_ONGROUND) && !(pLocal->GetFlags() & FL_INWATER))) &&
-			m_pApp->Misc()->GetFakelagChokedAmount() + 1 <= m_pApp->Misc()->GetFakelagChokeAmount() && m_bIsMoving ||
+		if (m_pApp->Fakelag()->GetEnabled() && (!m_pApp->Fakelag()->GetOnlyInAir() ||
+			m_pApp->Fakelag()->GetOnlyInAir() && (!(pLocal->GetFlags() & FL_ONGROUND) && !(pLocal->GetFlags() & FL_INWATER))) &&
+			m_pApp->Fakelag()->AmountPacketsChoked() + 1 <= m_pApp->Fakelag()->GetChokeAmount() && m_bIsMoving ||
 			!bFakeAngleSwitch)
 		{
 			angles->y += fRealYaw;

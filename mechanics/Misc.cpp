@@ -2,6 +2,7 @@
 #include "Application.h"
 
 CMisc::CMisc()
+	: m_xorName("yjè§")
 {
 	m_bIsCustomClanTag = false;
 }
@@ -14,11 +15,6 @@ void CMisc::Setup()
 {
 	m_pApp = CApplication::Instance();
 	m_pSetClanTag = (SetClanTag_t)CPattern::FindPattern((BYTE*)m_pApp->EngineDll(), 0x8C7000, (BYTE*)"\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15", "adhgezvel");
-
-	m_xorName.String("yjè§");
-	m_xorName.Xor();
-
-	m_iFakelagChokeAmount = MAXPACKETSCHOKED;
 }
 
 void CMisc::Update(void* pParameters)
@@ -73,40 +69,40 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 	}
 }
 
-void CMisc::Fakelag(CUserCmd* pUserCmd)
-{
-	if (!m_bFakelag)
-		return;
-
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (pLocalEntity->GetVelocity()->Length() <= 0.1f)
-	{
-		m_iFakelagChokedAmount = 0;
-		return;
-	}
-
-	if (pUserCmd->buttons == IN_ATTACK ||
-		pUserCmd->buttons == IN_ATTACK2 ||
-		pUserCmd->buttons == IN_USE)
-	{
-		*m_pApp->m_bSendPackets = true;
-		return;
-	}
-
-	if (m_bFakelagOnlyInAir && ((pLocalEntity->GetFlags() & FL_ONGROUND) || (pLocalEntity->GetFlags() & FL_INWATER)))
-		return;
-
-	if (m_iFakelagChokedAmount >= m_iFakelagChokeAmount)
-	{
-		*m_pApp->m_bSendPackets = true;
-		m_iFakelagChokedAmount = 0;
-	}
-	else
-	{
-		m_iFakelagChokedAmount++;
-		*m_pApp->m_bSendPackets = false;
-	}
-}
+//void CMisc::Fakelag(CUserCmd* pUserCmd)
+//{
+//	if (!m_bFakelag)
+//		return;
+//
+//	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
+//	if (pLocalEntity->GetVelocity()->Length() <= 0.1f)
+//	{
+//		m_iFakelagChokedAmount = 0;
+//		return;
+//	}
+//
+//	if (pUserCmd->buttons == IN_ATTACK ||
+//		pUserCmd->buttons == IN_ATTACK2 ||
+//		pUserCmd->buttons == IN_USE)
+//	{
+//		*m_pApp->m_bSendPackets = true;
+//		return;
+//	}
+//
+//	if (m_bFakelagOnlyInAir && ((pLocalEntity->GetFlags() & FL_ONGROUND) || (pLocalEntity->GetFlags() & FL_INWATER)))
+//		return;
+//
+//	if (m_iFakelagChokedAmount >= m_iFakelagChokeAmount)
+//	{
+//		*m_pApp->m_bSendPackets = true;
+//		m_iFakelagChokedAmount = 0;
+//	}
+//	else
+//	{
+//		m_iFakelagChokedAmount++;
+//		*m_pApp->m_bSendPackets = false;
+//	}
+//}
 
 void CMisc::AutoStrafe(CUserCmd* pUserCmd)
 {

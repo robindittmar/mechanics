@@ -265,6 +265,7 @@ private:
 	CCheckbox* m_pFakelagOnlyInAir;
 	CLabel* m_pFakelagLabel;
 	CSlider* m_pFakelagChokeAmount;
+	CSelectbox* m_pFakelagType;
 
 	CGroupbox* m_pMiscOthersGroup;
 	CCheckbox* m_pMiscOthersNoRecoilEnabled;

@@ -267,6 +267,9 @@
     <ClCompile Include="ConfigHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Fakelag.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -619,6 +622,9 @@
     </ClInclude>
     <ClInclude Include="IAppSystem.h">
       <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="Fakelag.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

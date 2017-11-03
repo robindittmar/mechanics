@@ -2,8 +2,8 @@
 #include "Application.h"
 
 IFeature::IFeature()
+	: m_bIsEnabled(false)
 {
-	m_bIsEnabled = false;
 }
 
 IFeature::~IFeature()

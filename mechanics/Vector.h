@@ -207,9 +207,11 @@ public:
 
 	// 2d
 	vec_t	Length2D(void) const {
-		return sqrt(x * x + y * y);
+		return sqrt(Length2DSqr());
 	}
-	vec_t	Length2DSqr(void) const;
+	vec_t	Length2DSqr(void) const {
+		return x * x + y * y;
+	}
 
 	/// get the component of this vector parallel to some other given vector
 	Vector  ProjectOnto(const Vector& onto);

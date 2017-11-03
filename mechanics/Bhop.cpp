@@ -33,7 +33,7 @@ void CBhop::Update(void* pParameters)
 	if (m_pApp->Gui()->IsMouseEnabled() &&
 		pUserCmd->buttons & IN_JUMP)
 	{
-		if (!(flags & FL_ONGROUND) && !(flags & FL_INWATER) && moveType != MOVETYPE_LADDER)
+		if (!(flags & FL_ONGROUND) && !(flags & FL_SWIM) && moveType != MOVETYPE_LADDER)
 		{
 			pUserCmd->buttons &= ~IN_JUMP;
 		}
