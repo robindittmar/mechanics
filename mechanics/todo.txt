@@ -33,4 +33,5 @@ Priority Low
 
 => public configs & ähm general stäts in klammern nochmal irgendwie kills oder so perfekt
 
+=> Config Crash if key is missing
 => Hitmarker Hitpoint save last 2 use second !!
