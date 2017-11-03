@@ -5,8 +5,6 @@
 #include "XorString.h"
 #include "ClientEntity.h"
 
-#define MAXPACKETSCHOKED				16
-
 #define AUTOSTRAFEMODE_NONE				0
 #define AUTOSTRAFEMODE_LEGIT			1
 #define AUTOSTRAFEMODE_RAGE				2
@@ -41,7 +39,7 @@ public:
 	void SetNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; }
 	bool GetNoRecoil() { return m_bNoRecoil; }
 
-	void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; }
+	/*void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; }
 	bool GetFakelag() { return m_bFakelag; }
 
 	void SetFakelagOnlyInAir(bool bFakelagOnlyInAir) { m_bFakelagOnlyInAir = bFakelagOnlyInAir; }
@@ -51,7 +49,7 @@ public:
 	int GetFakelagChokedAmount() { return m_iFakelagChokedAmount; }
 
 	void SetFakelagChokeAmount(int iFakelagChokeAmount) { m_iFakelagChokeAmount = iFakelagChokeAmount; }
-	int GetFakelagChokeAmount() { return m_iFakelagChokeAmount; }
+	int GetFakelagChokeAmount() { return m_iFakelagChokeAmount; }*/
 
 	void SetAutoStrafeMode(int iAutoStrafeMode) { m_iAutoStrafeMode = iAutoStrafeMode; }
 	int GetAutoStrafeMode() { return m_iAutoStrafeMode; }
@@ -95,7 +93,7 @@ public:
 	virtual void Update(void* pParameters);
 
 	void NoRecoil(CUserCmd* pUserCmd);
-	void Fakelag(CUserCmd* pUserCmd);
+	/*void Fakelag(CUserCmd* pUserCmd);*/
 	void AutoStrafe(CUserCmd* pUserCmd);
 	void CircleStrafe(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
 	void AutoPistol(CUserCmd* pUserCmd);
@@ -109,10 +107,10 @@ public:
 private:
 	bool m_bNoRecoil;
 
-	bool m_bFakelag;
+	/*bool m_bFakelag;
 	bool m_bFakelagOnlyInAir;
 	int m_iFakelagChokeAmount;
-	int m_iFakelagChokedAmount;
+	int m_iFakelagChokedAmount;*/
 
 	int m_iAutoStrafeMode;
 

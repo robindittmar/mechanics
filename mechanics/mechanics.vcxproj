@@ -157,6 +157,7 @@
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
+    <ClCompile Include="Fakelag.cpp" />
     <ClCompile Include="IBaseClientDLL.cpp" />
     <ClCompile Include="LagCompensation.cpp" />
     <ClCompile Include="LagCompensationPlayerEntry.cpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="DrawModelExecute.h" />
     <ClInclude Include="Esp.h" />
     <ClInclude Include="EspPlayer.h" />
+    <ClInclude Include="Fakelag.h" />
     <ClInclude Include="FireEventClientSide.h" />
     <ClInclude Include="FrameStageNotify.h" />
     <ClInclude Include="GetViewModelFov.h" />

@@ -203,9 +203,10 @@ void CMenu::ApplySettings()
 	m_pBulletTracerTeam->SetChecked(m_pApp->Visuals()->GetBulletTracerTeam());
 
 	// Misc
-	m_pFakelagEnabled->SetChecked(m_pApp->Misc()->GetFakelag());
-	m_pFakelagOnlyInAir->SetChecked(m_pApp->Misc()->GetFakelagOnlyInAir());
-	m_pFakelagChokeAmount->SetValue(m_pApp->Misc()->GetFakelagChokeAmount());
+	m_pFakelagEnabled->SetChecked(m_pApp->Fakelag()->GetEnabled());
+	m_pFakelagOnlyInAir->SetChecked(m_pApp->Fakelag()->GetOnlyInAir());
+	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmount());
+	m_pFakelagType->SetValue(m_pApp->Fakelag()->GetLagType());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
 	m_pMiscOthersAutoPistolEnabled->SetChecked(m_pApp->Misc()->GetAutoPistol());
@@ -972,15 +973,20 @@ void CMenu::CreateMiscTab()
 	m_pMiscOthersNoNameEnabled->SetEventHandler(std::bind(&CMisc::SetNoName, m_pApp->Misc(), std::placeholders::_1));
 
 	m_pFakelagEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pFakelagEnabled->SetEventHandler(std::bind(&CMisc::SetFakelag, m_pApp->Misc(), std::placeholders::_1));
+	m_pFakelagEnabled->SetEventHandler(std::bind(&CFakelag::SetEnabled, m_pApp->Fakelag(), std::placeholders::_1));
 
 	m_pFakelagOnlyInAir = new CCheckbox(4, 20, 128, 16, "Only In Air");
-	m_pFakelagOnlyInAir->SetEventHandler(std::bind(&CMisc::SetFakelagOnlyInAir, m_pApp->Misc(), std::placeholders::_1));
+	m_pFakelagOnlyInAir->SetEventHandler(std::bind(&CFakelag::SetOnlyInAir, m_pApp->Fakelag(), std::placeholders::_1));
 
 	m_pFakelagLabel = new CLabel(4, 40, 128, 16, "Packets choking", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pFakelagChokeAmount = new CSlider(4, 62, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 16.0f);
-	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CMisc::SetFakelagChokeAmount, m_pApp->Misc(), std::placeholders::_1));
+	m_pFakelagChokeAmount = new CSlider(4, 62, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, (float)MAX_CHOKE_PACKETS);
+	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CFakelag::SetChokeAmount, m_pApp->Fakelag(), std::placeholders::_1));
+
+	m_pFakelagType = new CSelectbox(4, 86, 128, 16, "Lag Type");
+	m_pFakelagType->AddOption(FAKELAG_TYPE_FACTOR, "Factor");
+	m_pFakelagType->AddOption(FAKELAG_TYPE_ADAPTIVE, "Adaptive");
+	m_pFakelagType->SetEventHandler(std::bind(&CFakelag::SetLagType, m_pApp->Fakelag(), std::placeholders::_1));
 
 	m_pMiscOthersGroup = new CGroupbox(16, 16, 152, 308, "Others");
 	m_pMiscOthersGroup->AddChild(m_pMiscOthersNoRecoilEnabled);
@@ -1003,6 +1009,7 @@ void CMenu::CreateMiscTab()
 	m_pFakelagGroup->AddChild(m_pFakelagOnlyInAir);
 	m_pFakelagGroup->AddChild(m_pFakelagLabel);
 	m_pFakelagGroup->AddChild(m_pFakelagChokeAmount);
+	m_pFakelagGroup->AddChild(m_pFakelagType);
 
 	m_pMiscBhopCircleStrafeEnabled = new CCheckbox(4, 0, 128, 16, "Circle Strafe");
 	m_pMiscBhopCircleStrafeEnabled->SetEventHandler(std::bind(&CMisc::SetCircleStrafe, m_pApp->Misc(), std::placeholders::_1));

@@ -357,12 +357,13 @@ bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSa
 				}
 			}
 			else*/
+			pApp->Fakelag()->CalcAdaptiveChokeAmount();
 			pApp->AntiAim()->Update(pUserCmd);
 
 			// Miscs
 			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
-			pApp->Misc()->Fakelag(pUserCmd);
+			pApp->Fakelag()->Update((void*)pUserCmd);
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
@@ -876,6 +877,7 @@ void CApplication::Setup()
 	this->m_ragebot.Setup();
 	this->m_legitbot.Setup();
 	this->m_triggerbot.Setup();
+	this->m_resolver.Setup();
 	this->m_antiAim.Setup();
 	this->m_bhop.Setup();
 	this->m_esp.Setup();
@@ -883,7 +885,7 @@ void CApplication::Setup()
 	this->m_soundEsp.Setup();
 	this->m_chams.Setup();
 	this->m_misc.Setup();
-	this->m_resolver.Setup();
+	this->m_fakelag.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
 	this->m_mirror.Setup();
