@@ -67,7 +67,6 @@ public:
 	void RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 private:
 	IVModelRender* m_pModelRender;
-	DrawModelExecute_t m_pDrawModelExecute;
 
 	bool m_bRenderTeam;
 	bool m_bRenderLocalplayer;

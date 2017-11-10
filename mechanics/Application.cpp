@@ -1,24 +1,62 @@
 #include "Application.h"
 
-CreateMove_t CApplication::m_pCreateMove;
-FrameStageNotify_t CApplication::m_pFrameStageNotify;
-OverrideView_t CApplication::m_pOverrideView;
-DrawModelExecute_t CApplication::m_pDrawModelExecute;
-PaintTraverse_t CApplication::m_pPaintTraverse;
-PlaySound_t CApplication::m_pPlaySound;
-GetViewModelFov_t CApplication::m_pGetViewModelFov;
-FireEventClientSide_t CApplication::m_pFireEventClientSide;
-RenderView_t CApplication::m_pRenderViewFn;
-RenderSmokeOverlay_t CApplication::m_pRenderSmokeOverlay;
-EmitSound1_t CApplication::m_pEmitSound1;
-EmitSound2_t CApplication::m_pEmitSound2;
-FindMDL_t CApplication::m_pFindMdl;
-
-RecvVarProxy_t CApplication::m_pSequenceProxy;
-RecvVarProxy_t CApplication::m_pLowerBodyYawProxy;
-
 std::vector<BulletTracerEntry> CApplication::m_pBulletTracer;
 std::vector<HitmarkerEntry> CApplication::m_pHitmarker;
+
+CApplication::CApplication()
+{
+	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
+	//		 alle ptr != NULL löschen
+	m_pNetVarMgr = NULL;
+
+	m_pClientModeHook = NULL;
+	m_pModelRenderHook = NULL;
+	m_pClientHook = NULL;
+	m_pPanelHook = NULL;
+	m_pSurfaceHook = NULL;
+	m_pGameEventManagerHook = NULL;
+	m_pViewRenderHook = NULL;
+	m_pEngineSoundHook = NULL;
+	m_pMdlHook = NULL;
+
+	m_bGotSendPackets = false;
+
+	m_bInitialHookDone = false;
+	m_bIsHooked = false;
+}
+
+CApplication::~CApplication()
+{
+	if (m_pMdlHook)
+		delete m_pMdlHook;
+
+	if (m_pEngineSoundHook)
+		delete m_pEngineSoundHook;
+
+	if (m_pViewRenderHook)
+		delete m_pViewRenderHook;
+
+	if (m_pGameEventManagerHook)
+		delete m_pGameEventManagerHook;
+
+	if (m_pSurfaceHook)
+		delete m_pSurfaceHook;
+
+	if (m_pPanelHook)
+		delete m_pPanelHook;
+
+	if (m_pClientHook)
+		delete m_pClientHook;
+
+	if (m_pModelRenderHook)
+		delete m_pModelRenderHook;
+
+	if (m_pClientModeHook)
+		delete m_pClientModeHook;
+
+	if (m_pNetVarMgr)
+		delete m_pNetVarMgr;
+}
 
 CApplication* CApplication::Instance()
 {
@@ -220,8 +258,8 @@ void CApplication::Rehook()
 	this->m_pEngineSoundHook->Rehook();
 	this->m_pMdlHook->Rehook();
 
-	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
-	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
+	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
+	g_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(hk_SetLowerBodyYawTarget);
 
 	this->m_bIsHooked = true;
 }
@@ -233,611 +271,6 @@ IClientEntity* CApplication::GetLocalPlayer(bool bGetTargetIfLocalDead)
 		pEntity = pEntity->GetObserverTarget();
 
 	return pEntity;
-}
-
-MDLHandle_t __fastcall CApplication::hk_FindMDL(void* ecx, void* edx, char* filePath)
-{
-	return m_pFindMdl(ecx, filePath);
-}
-
-// TODO: !!!!
-int tickcount = 0;
-bool __fastcall CApplication::hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUserCmd* pUserCmd)
-{
-	bool rtn = m_pCreateMove(ecx, fInputSampleTime, pUserCmd);
-
-	CApplication* pApp = CApplication::Instance();
-	tickcount = pUserCmd->tick_count;
-
-	// Instantly return
-	if (!pUserCmd || !pUserCmd->command_number)
-		return false;
-
-	int iOldSeed = pUserCmd->random_seed;
-	pUserCmd->random_seed = MD5_PseudoRandom(pUserCmd->command_number) & 0x7FFFFFFF;
-
-	if (!pApp->m_bGotSendPackets)
-	{
-		uintptr_t* fp;
-		__asm mov fp, ebp;
-		pApp->m_bSendPackets = (bool*)(*fp - 0x1C);
-		pApp->m_bGotSendPackets = true;
-	}
-
-	if (pApp->EngineClient()->IsInGame())
-	{
-		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-
-		if (pLocalEntity->IsAlive())
-		{
-			//todo: ghetto !
-			static int bNoFlashTriggered = 0;
-			if (bNoFlashTriggered < 2)
-			{
-				if (bNoFlashTriggered == 0 ||
-					*(float*)((DWORD)pLocalEntity + Offsets::m_flFlashMaxAlpha) != (255.0f - (255.0f * (1.0f - (pApp->Visuals()->GetFlashPercentage() / 100.0f)))))
-				{
-					pApp->Visuals()->NoFlash(pApp->Visuals()->GetFlashPercentage());
-					bNoFlashTriggered++;
-				}
-			}
-
-			// Setting every lby update prediction
-			for (int i = 0; i < MAX_PLAYERS; i++)
-			{
-				CResolverPlayer* pCurResolverPlayer = pApp->Resolver()->GetResolverPlayer(i);
-				pCurResolverPlayer->SetPredLbyUpdateTime(pApp->GlobalVars()->curtime + 1.1f);
-			}
-
-			// Save Viewangles before doing stuff
-			pApp->EngineClient()->GetViewAngles(pApp->GetClientViewAngles());
-			QAngle qOldAngles = pApp->GetClientViewAngles();
-
-			// Create instance of CreateMoveParam
-			CreateMoveParam createMoveParam = { fInputSampleTime, pUserCmd };
-
-			// New tick, so we didn't get any targets yet
-			pApp->m_targetSelector.SetHasTargets(false);
-
-			// Update Aimbot & AutoRevolver
-			pApp->Ragebot()->Update((void*)&createMoveParam);
-			pApp->Ragebot()->AutoRevolver(pUserCmd);
-
-			// Update Legitbot
-			pApp->Legitbot()->Update((void*)&createMoveParam);
-
-			// Update Triggerbot
-			pApp->Triggerbot()->Update((void*)&createMoveParam);
-
-			// Update Bunnyhop
-			pApp->Bhop()->Update(pUserCmd);
-
-			// Update AntiAim
-			/*if (GetAsyncKeyState(VK_MENU))
-			{
-				static int iChoked = 0;
-				static bool send = false;
-				static int firststop = 0;
-
-				if (!send)
-				{
-					if (firststop < 1)
-					{
-						pUserCmd->buttons &= ~IN_ATTACK;
-						*pApp->m_bSendPackets = false;
-						if (iChoked > 3 || iChoked == 0)
-						{
-							pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
-						}
-
-						if (pLocalEntity->GetVelocity()->Length2D() == 0.0f && iChoked > 1)
-						{
-							firststop++;
-						}
-					}
-					else
-					{
-						pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
-						send = true;
-					}
-
-					pUserCmd->viewangles[1] += 90.0f;
-					iChoked++;
-				}
-				else
-				{
-					*pApp->m_bSendPackets = true;
-					send = false;
-					firststop = 0;
-					iChoked = 0;
-
-					pUserCmd->forwardmove = pUserCmd->sidemove = 0.0f;
-
-					pUserCmd->viewangles[1] += -90.0f;
-				}
-			}
-			else*/
-			pApp->Fakelag()->CalcAdaptiveChokeAmount();
-			pApp->AntiAim()->Update(pUserCmd);
-
-			// Miscs
-			pApp->Misc()->AutoPistol(pUserCmd);
-			pApp->Misc()->NoRecoil(pUserCmd);
-			pApp->Fakelag()->Update((void*)pUserCmd);
-			pApp->Misc()->AutoStrafe(pUserCmd);
-			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
-			pApp->Misc()->JumpScout(pUserCmd);
-
-			// Visuals
-			pApp->Visuals()->Nightmode();
-
-			if (pUserCmd->buttons & IN_ATTACK)
-			{
-				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
-				if (pTarget)
-				{
-					int iIsBacktracked = pTarget->GetIsBacktracked();
-					if (iIsBacktracked != -1)
-					{
-						IClientEntity* pTargetEntity = pTarget->GetEntity();
-						if (pTargetEntity)
-						{
-							//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
-							pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex())->m_pPlayerEntries[iIsBacktracked].m_iTickCount + 1;
-						}
-					}
-
-				}
-
-				int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
-				if (iTick != -1)
-				{
-					pUserCmd->tick_count = iTick + 1;
-				}
-			}
-
-			// Correct movement & angles
-			CorrectMovement(pUserCmd, qOldAngles);
-			NormalizeAngles(pUserCmd);
-
-			// Set ViewAngles we prepared for display
-			pApp->EngineClient()->SetViewAngles(pApp->GetClientViewAngles());
-
-			bool bIsSniper = false;
-			CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
-			if (pActiveWeapon)
-			{
-				bIsSniper = pActiveWeapon->IsSniper();
-			}
-
-			if (!*pApp->m_bSendPackets && pApp->AntiAim()->IsFakeYaw() ||
-				*pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
-				pApp->m_bLbyUpdate ||
-				!pApp->AntiAim()->GetEnabled() ||
-				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
-				!bIsSniper && pUserCmd->buttons & IN_ATTACK2 ||
-				pUserCmd->buttons & IN_USE)
-			{
-				pApp->m_qLastTickAngles.x = pUserCmd->viewangles[0];
-				pApp->m_qLastTickAngles.y = pUserCmd->viewangles[1];
-				pApp->m_qLastTickAngles.z = pUserCmd->viewangles[2];
-			}
-		}
-		else
-		{
-			pApp->m_bLBY = false;
-		}
-	}
-
-	// Restore old value, just incase Valve decides to check it one day
-	pUserCmd->random_seed = iOldSeed;
-	return false;
-}
-
-void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
-{
-	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-
-	if (curStage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
-	{
-		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
-		{
-			if (pApp->Resolver()->GetResolverType() != RESOLVERTYPE_NONE)
-			{
-				// Setting LowerBodyYaw
-				for (int i = 1; i < pApp->EngineClient()->GetMaxClients(); i++)
-				{
-					IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
-
-					if (!pCurEntity)
-						continue;
-
-					if (pCurEntity->IsDormant())
-						continue;
-
-					if (!(pCurEntity->GetFlags() & FL_CLIENT))
-						continue;
-
-					if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) // same team dont need to resolve
-						continue;
-
-					pCurEntity->GetAngEyeAngles()->y = pCurEntity->GetLowerBodyYaw();
-				}
-			}
-
-			pApp->LagCompensation()->Update((void*)tickcount);
-
-			pApp->Resolver()->Update();
-
-			pApp->SkinChanger()->Update(pLocalEntity);
-		}
-	}
-	else if (curStage == FRAME_RENDER_START)
-	{
-		if (pApp->EngineClient()->IsInGame())
-		{
-			if (pLocalEntity->IsAlive())
-			{
-				pApp->Visuals()->ThirdpersonAntiAim();
-			}
-
-			// PVS Fix, only needed while Rage and Mirror
-			if (pApp->Ragebot()->GetEnabled() || pApp->Mirror()->GetEnabled())
-			{
-				for (int i = 0; i < pApp->EngineClient()->GetMaxClients(); i++)
-				{
-					IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
-
-					if (!pCurEntity)
-						continue;
-
-					*(int*)((DWORD)pCurEntity + OFFSET_LASTOCCLUSIONCHECK) = pApp->GlobalVars()->framecount;
-					*(int*)((DWORD)pCurEntity + OFFSET_OCCLUSIONFLAGS) = 0;
-				}
-			}
-		}
-
-		// Menu input handling
-		pApp->m_pMenu->HandleInput();
-	}
-
-	m_pFrameStageNotify(ecx, curStage);
-}
-
-void __fastcall CApplication::hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup)
-{
-	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity;
-
-	if (pApp->EngineClient()->IsInGame())
-	{
-		pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-
-		if (pLocalEntity->IsAlive())
-		{
-			pApp->Visuals()->FovChange(pViewSetup);
-			pApp->Visuals()->NoVisualRecoil(pViewSetup);
-		}
-		pApp->Visuals()->Thirdperson();
-	}
-	return m_pOverrideView(ecx, pViewSetup);
-}
-
-void __fastcall CApplication::hk_DrawModelExecute(void* ecx, void* edx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	IMaterial* pHands = NULL;
-	if (pInfo.pModel && pApp->EngineClient()->IsInGame())
-	{
-		const char* pszModelName = pApp->ModelInfo()->GetModelName(pInfo.pModel);
-
-		pApp->Chams()->DrawFakeAngle(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pApp->Chams()->RenderPlayerChams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pApp->Chams()->RenderWeaponChams(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-		pHands = pApp->Visuals()->HandsDrawStyle(pszModelName, ecx, ctx, state, pInfo, pCustomBoneToWorld);
-	}
-
-	// Call original func
-	m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
-	// This is necessary for stuff to work properly
-	pApp->ModelRender()->ForcedMaterialOverride(NULL);
-}
-
-void __fastcall CApplication::hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, bool forceRepaint, bool allowForce)
-{
-	CApplication* pApp = CApplication::Instance();
-	ISurface* pSurface = pApp->Surface();
-
-	static unsigned int vguiMatSystemTopPanel;
-	if (vguiMatSystemTopPanel == NULL)
-	{
-		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
-		const char* szName = pApp->Panel()->GetName(vguiPanel);
-		if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
-		{
-			vguiMatSystemTopPanel = vguiPanel;
-		}
-	}
-
-	if (pApp->EngineClient()->IsInGame())
-	{
-		if (pApp->Visuals()->NoScope(vguiPanel))
-			return;
-
-		if (vguiMatSystemTopPanel == vguiPanel)
-		{
-			pApp->Gui()->GetWorldToScreenMatrix();
-
-			// Draw NoScope
-			pApp->Visuals()->DrawNoScope();
-
-			// Draw SpecList
-			pApp->Misc()->SpectatorList();
-
-			// Draw Esp
-			pApp->Esp()->Update((void*)pSurface);
-
-			// Draw Weapon Esp
-			pApp->WeaponEsp()->Update();
-
-			// Draw Sound Esp
-			pApp->SoundEsp()->Update();
-
-			// Draw rear mirror
-			pApp->Mirror()->Render(pSurface, pApp->Menu()->GetMirrorWindow());
-
-			// Draw Hitmarker
-			pApp->Visuals()->DrawHitmarker(pSurface);
-			pApp->Visuals()->DrawHitmarkerHitpoint(pSurface);
-
-			// Draw SpreadCone
-			pApp->Visuals()->DrawSpreadCone();
-
-			// Draw Crosshair last (but not least)
-			pApp->Visuals()->DrawCrosshair();
-
-			// LBY Indicator
-			pApp->AntiAim()->DrawLBYIndicator();
-			pApp->AntiAim()->DrawEdgeAntiAimPoints();
-
-			// LC Draw
-			pApp->LagCompensation()->DrawLagCompensationEntries();
-			pApp->LagCompensation()->DrawLagCompensationIndicator();
-
-			// ****TEST*****
-			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
-			pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
-			IClientEntity* pLocal = pApp->GetLocalPlayer();
-			for (int i = 0; i < MAX_PLAYERS; i++)
-			{
-				IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(i);
-				CResolverPlayer* pCurRes = pApp->Resolver()->GetResolverPlayer(i);
-
-				if (!pCurEnt)
-					continue;
-
-				if (pCurEnt->IsDormant())
-					continue;
-
-				if (!pCurEnt->IsAlive())
-					continue;
-
-				if (!pCurRes)
-					continue;
-
-				Vector screen, origin = *pCurEnt->GetOrigin();
-				if (pApp->Gui()->WorldToScreen(origin, screen))
-				{
-					if (pCurRes->m_bHasFakeActive)
-					{
-						pApp->Surface()->DrawSetTextPos(screen.x - 3, screen.y + 10);
-						pApp->Surface()->DrawPrintText(L"FAKE", lstrlenW(L"FAKE"));
-					}
-
-					if (pCurRes->m_bStartPredLbyBreaks)
-					{
-						pApp->Surface()->DrawSetTextPos(screen.x - 8, screen.y + 25);
-						pApp->Surface()->DrawPrintText(L"LBY-Breaker", lstrlenW(L"LBY-Breaker"));
-					}
-				}
-			}*/
-		}
-	}
-
-	if (vguiMatSystemTopPanel == vguiPanel)
-	{
-		// Draw Menu least ;)
-		pApp->Menu()->Draw(pSurface);
-	}
-
-	m_pPaintTraverse(ecx, vguiPanel, forceRepaint, allowForce);
-}
-
-void __fastcall CApplication::hk_PlaySound(void* ecx, void* edx, const char* fileName)
-{
-	CApplication* pApp = CApplication::Instance();
-	pApp->Misc()->AutoAccept(fileName);
-
-	pApp->m_pPlaySound(ecx, fileName);
-}
-
-float __fastcall CApplication::hk_GetViewModelFov(void* ecx, void* edx)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	if (pApp->Visuals()->GetViewmodelFov())
-	{
-		return pApp->Visuals()->GetViewmodelFovValue();
-	}
-	return m_pGetViewModelFov(ecx);
-}
-
-bool __fastcall CApplication::hk_FireEventClientSide(void* ecx, void* edx, IGameEvent* pEvent)
-{
-	CApplication* pApp = CApplication::Instance();
-	pApp->m_skinchanger.ApplyCustomKillIcon(pEvent);
-
-	return m_pFireEventClientSide(ecx, pEvent);
-}
-
-void __fastcall CApplication::hk_RenderView(void* ecx, void* edx, const CViewSetup& view, CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw)
-{
-	CApplication* pApp = CApplication::Instance();
-	pApp->m_mirror.OnRenderView(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
-
-	pApp->m_visuals.DrawBulletTracer();
-
-	m_pRenderViewFn(ecx, view, hudViewSetup, nClearFlags, whatToDraw);
-}
-
-void __fastcall CApplication::hk_RenderSmokeOverlay(void* ecx, void* edx, bool bUnknown)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	if (pApp->Visuals()->GetNoSmoke())
-		return;
-
-	pApp->m_pRenderSmokeOverlay(ecx, bUnknown);
-}
-
-int __fastcall CApplication::hk_EmitSound1(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
-	float flVolume, soundlevel_t iSoundlevel, int nSeed, int iFlags, int iPitch, const Vector *pOrigin, const Vector *pDirection, CUtlVector<Vector>* pUtlVecOrigins,
-	bool bUpdatePositions, float soundtime, int speakerentity)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	if (pOrigin)
-		pApp->SoundEsp()->AddSound(new CSoundInfo(iEntIndex, *pOrigin, pSample));
-
-	return pApp->m_pEmitSound1(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, iSoundlevel, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
-}
-
-int __fastcall CApplication::hk_EmitSound2(void* ecx, void* edx, IRecipientFilter& filter, int iEntIndex, int iChannel, const char *pSoundEntry, unsigned int nSoundEntryHash, const char *pSample,
-	float flVolume, float flAttenuation, int nSeed, int iFlags, int iPitch, const Vector *pOrigin, const Vector *pDirection, CUtlVector<Vector>* pUtlVecOrigins,
-	bool bUpdatePositions, float soundtime, int speakerentity)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	if (pOrigin)
-		pApp->SoundEsp()->AddSound(new CSoundInfo(iEntIndex, *pOrigin, pSample));
-
-	return pApp->m_pEmitSound2(ecx, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, flAttenuation, nSeed, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity);
-}
-
-void __cdecl CApplication::hk_SetViewModelSequence(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	// Make the incoming data editable.
-	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
-
-	// Confirm that we are replacing our view model and not someone elses.
-	CBaseViewModel* pViewModel = (CBaseViewModel*)pStruct;
-
-	if (pViewModel) {
-		IClientEntity* pOwner = pApp->EntityList()->GetClientEntityFromHandle(pViewModel->GetOwner());
-
-		// Compare the owner entity of this view model to the local player entity.
-		if (pOwner && pOwner->EntIndex() == pApp->EngineClient()->GetLocalPlayer()) {
-			// Get the filename of the current view model.
-			const model_t* pModel = pApp->ModelInfo()->GetModel(pViewModel->GetModelIndex());
-			const char* szModel = pApp->ModelInfo()->GetModelName(pModel);
-
-			// Store the current sequence.
-			int m_nSequence = pData->m_Value.m_Int;
-
-			if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®").ToCharArray())) {
-				// Fix animations for the Butterfly Knife.
-				switch (m_nSequence) {
-				case SEQUENCE_DEFAULT_DRAW:
-					m_nSequence = RandomIntDef(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2); break;
-				case SEQUENCE_DEFAULT_LOOKAT01:
-					m_nSequence = RandomIntDef(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03); break;
-				default:
-					m_nSequence++;
-				}
-			}
-			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®").ToCharArray())) {
-				// Fix animations for the Falchion Knife.
-				switch (m_nSequence) {
-				case SEQUENCE_DEFAULT_IDLE2:
-					m_nSequence = SEQUENCE_FALCHION_IDLE1; break;
-				case SEQUENCE_DEFAULT_HEAVY_MISS1:
-					m_nSequence = RandomIntDef(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP); break;
-				case SEQUENCE_DEFAULT_LOOKAT01:
-					m_nSequence = RandomIntDef(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02); break;
-				case SEQUENCE_DEFAULT_DRAW:
-				case SEQUENCE_DEFAULT_IDLE1:
-					break;
-				default:
-					m_nSequence--;
-				}
-			}
-			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé").ToCharArray())) {
-				// Fix animations for the Shadow Daggers.
-				switch (m_nSequence) {
-				case SEQUENCE_DEFAULT_IDLE2:
-					m_nSequence = SEQUENCE_DAGGERS_IDLE1; break;
-				case SEQUENCE_DEFAULT_LIGHT_MISS1:
-				case SEQUENCE_DEFAULT_LIGHT_MISS2:
-					m_nSequence = RandomIntDef(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5); break;
-				case SEQUENCE_DEFAULT_HEAVY_MISS1:
-					m_nSequence = RandomIntDef(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1); break;
-				case SEQUENCE_DEFAULT_HEAVY_HIT1:
-				case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
-				case SEQUENCE_DEFAULT_LOOKAT01:
-					m_nSequence += 3; break;
-				case SEQUENCE_DEFAULT_DRAW:
-				case SEQUENCE_DEFAULT_IDLE1:
-					break;
-				default:
-					m_nSequence += 2;
-				}
-			}
-			else if (!strcmp(szModel, CXorString("zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{").ToCharArray())) {
-				// Fix animations for the Bowie Knife.
-				switch (m_nSequence) {
-				case SEQUENCE_DEFAULT_DRAW:
-				case SEQUENCE_DEFAULT_IDLE1:
-					break;
-				case SEQUENCE_DEFAULT_IDLE2:
-					m_nSequence = SEQUENCE_BOWIE_IDLE1; break;
-				default:
-					m_nSequence--;
-				}
-			}
-
-			// Set the fixed sequence.
-			pData->m_Value.m_Int = m_nSequence;
-		}
-	}
-
-	// Call original function with the modified data.
-	pApp->m_pSequenceProxy(pData, pStruct, pOut);
-}
-
-void __cdecl CApplication::hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataConst, void* pStruct, void* pOut)
-{
-	CApplication* pApp = CApplication::Instance();
-
-	CRecvProxyData* pData = (CRecvProxyData*)pDataConst;
-	IClientEntity* pEntity = (IClientEntity*)pStruct;
-	IClientEntity* pLocal = pApp->GetLocalPlayer();
-	if (pData && pEntity && pLocal)
-	{
-		CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pEntity->EntIndex());
-
-		if (fabsf(pResolverPlayer->GetLbyProxyLastValue() - pData->m_Value.m_Float) >= 30.0f)
-		{
-			pResolverPlayer->SetLbyProxyLastValue(pData->m_Value.m_Float);
-			pResolverPlayer->SetLbyUpdateTime(pApp->GlobalVars()->curtime);
-			pResolverPlayer->SetLbyProxyUpdatedTime(pApp->GlobalVars()->curtime);
-		}
-	}
-
-	pApp->m_pLowerBodyYawProxy(pDataConst, pStruct, pOut);
 }
 
 void CApplication::Setup()
@@ -924,39 +357,39 @@ void CApplication::Setup()
 void CApplication::Hook()
 {
 	m_pClientModeHook = new VTableHook((DWORD*)m_pClientMode);
-	m_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
-	m_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
-	m_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
+	g_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
+	g_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
+	g_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
 
 	m_pModelRenderHook = new VTableHook((DWORD*)this->m_pModelRender);
-	m_pDrawModelExecute = (DrawModelExecute_t)m_pModelRenderHook->Hook(21, (DWORD*)hk_DrawModelExecute);
+	g_pDrawModelExecute = (DrawModelExecute_t)m_pModelRenderHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
 	m_pClientHook = new VTableHook((DWORD*)this->m_pClient);
-	m_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
+	g_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
 
 	m_pPanelHook = new VTableHook((DWORD*)this->m_pPanel);
-	m_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
+	g_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
 	m_pSurfaceHook = new VTableHook((DWORD*)this->m_pSurface);
-	m_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
+	g_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
 
 	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager);
-	m_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
+	g_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
 
 	m_pViewRenderHook = new VTableHook((DWORD*)m_pViewRender);
-	m_pRenderViewFn = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
-	m_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(40, (DWORD*)hk_RenderSmokeOverlay);
+	g_pRenderView = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
+	g_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(40, (DWORD*)hk_RenderSmokeOverlay);
 
 	m_pEngineSoundHook = new VTableHook((DWORD*)m_pEngineSound);
-	m_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
-	m_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
+	g_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
+	g_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
 	m_pMdlHook = new VTableHook((DWORD*)m_pMdlCache);
-	m_pFindMdl = (FindMDL_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
+	g_pFindMdl = (FindMdl_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
 
 	// Proxy functions
-	m_pSequenceProxy = m_pNetVarSequence->HookProxy(CApplication::hk_SetViewModelSequence);
-	m_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(CApplication::hk_SetLowerBodyYawTarget);
+	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
+	g_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(hk_SetLowerBodyYawTarget);
 
 	//this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 
@@ -1295,66 +728,6 @@ void CApplication::GetNetVars()
 		(BYTE*)"\x55\x8B\xEC\x83\xE4\xF8\x83\xEC\x08\x56\x8B\x35\x00\x00\x00\x00\x57\x83\xBE",
 		"ghdrtzuigkog----trg"
 	)));
-}
-
-// Singleton
-CApplication::CApplication()
-{
-	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
-	//		 alle ptr != NULL löschen
-	m_pNetVarMgr = NULL;
-
-	m_pClientModeHook = NULL;
-	m_pModelRenderHook = NULL;
-	m_pClientHook = NULL;
-	m_pPanelHook = NULL;
-	m_pSurfaceHook = NULL;
-	m_pGameEventManagerHook = NULL;
-	m_pViewRenderHook = NULL;
-	m_pEngineSoundHook = NULL;
-	m_pMdlHook = NULL;
-
-	m_bGotSendPackets = false;
-
-	m_bInitialHookDone = false;
-	m_bIsHooked = false;
-}
-
-CApplication::CApplication(CApplication const&)
-{
-}
-
-CApplication::~CApplication()
-{
-	if (m_pMdlHook)
-		delete m_pMdlHook;
-
-	if (m_pEngineSoundHook)
-		delete m_pEngineSoundHook;
-
-	if (m_pViewRenderHook)
-		delete m_pViewRenderHook;
-
-	if (m_pGameEventManagerHook)
-		delete m_pGameEventManagerHook;
-
-	if (m_pSurfaceHook)
-		delete m_pSurfaceHook;
-
-	if (m_pPanelHook)
-		delete m_pPanelHook;
-
-	if (m_pClientHook)
-		delete m_pClientHook;
-
-	if (m_pModelRenderHook)
-		delete m_pModelRenderHook;
-
-	if (m_pClientModeHook)
-		delete m_pClientModeHook;
-
-	if (m_pNetVarMgr)
-		delete m_pNetVarMgr;
 }
 
 void CorrectMovement(CUserCmd* pCmd, QAngle& qOrigAngles)

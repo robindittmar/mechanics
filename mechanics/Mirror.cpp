@@ -44,7 +44,7 @@ void CMirror::OnRenderView(void* pThis, const CViewSetup& view, const CViewSetup
 		ITexture* pOldTarget = pRenderContext->GetRenderTarget();
 		pRenderContext->SetRenderTarget(pMirrorTexture);
 
-		m_pApp->RenderViewFn()(
+		g_pRenderView(
 			pThis,
 			myView,
 			hudViewSetup,

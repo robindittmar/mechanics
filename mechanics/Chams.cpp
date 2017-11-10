@@ -4,7 +4,6 @@
 CChams::CChams()
 {
 	m_pModelRender = NULL;
-	m_pDrawModelExecute = NULL;
 
 	m_bMaterialsInitialized = false;
 	m_bFakeAngleMaterialsInitialized = false;
@@ -152,7 +151,6 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	{
 		// Grab references
 		m_pModelRender = m_pApp->ModelRender();
-		m_pDrawModelExecute = m_pApp->DrawModelExecute();
 
 		// Create materials
 		m_pFlatFakeAngle = m_pApp->ResourceManager()->CreateMaterial(false, true);
@@ -210,7 +208,7 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	}
 
 	m_pModelRender->ForcedMaterialOverride(m_pFakeAngle);
-	m_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMatrix);
+	g_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMatrix);
 	m_pModelRender->ForcedMaterialOverride(NULL);
 }
 
@@ -230,7 +228,6 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 	{
 		// Grab references
 		m_pModelRender = m_pApp->ModelRender();
-		m_pDrawModelExecute = m_pApp->DrawModelExecute();
 
 		// Create materials
 		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
@@ -288,7 +285,7 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 			if (!m_bOnlyVisible)
 			{
 				m_pModelRender->ForcedMaterialOverride(m_pHiddenT);
-				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+				g_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 			}
 			m_pModelRender->ForcedMaterialOverride(m_pVisibleT);
 		}
@@ -297,7 +294,7 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 			if (!m_bOnlyVisible)
 			{
 				m_pModelRender->ForcedMaterialOverride(m_pHiddenCT);
-				m_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+				g_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 			}
 			m_pModelRender->ForcedMaterialOverride(m_pVisibleCT);
 		}
@@ -347,7 +344,7 @@ void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderCo
 		if (pMat)
 		{
 			m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
-			m_pApp->DrawModelExecute()(ecx, ctx, state, pInfo, pCustomBoneToWorld);
+			g_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		}
 	}
 }
