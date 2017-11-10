@@ -228,11 +228,14 @@ void CApplication::LoadSkinChangerConfig()
 
 void CApplication::Unhook()
 {
-	// Proxy functiions
+	// Proxy functions
+	m_pNetVarEyeAngles1->UnhookProxy();
+	m_pNetVarEyeAngles0->UnhookProxy();
 	m_pNetVarLowerBodyYaw->UnhookProxy();
 	m_pNetVarSequence->UnhookProxy();
 
 	// Reverse order, in case of any dependencies
+	this->m_pMdlHook->Restore();
 	this->m_pEngineSoundHook->Restore();
 	this->m_pViewRenderHook->Restore();
 	this->m_pGameEventManagerHook->Restore();
@@ -241,8 +244,7 @@ void CApplication::Unhook()
 	this->m_pClientHook->Restore();
 	this->m_pModelRenderHook->Restore();
 	this->m_pClientModeHook->Restore();
-	this->m_pMdlHook->Restore();
-
+	
 	this->m_bIsHooked = false;
 }
 
@@ -260,6 +262,8 @@ void CApplication::Rehook()
 
 	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
 	g_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(hk_SetLowerBodyYawTarget);
+	g_pEyeAnglesProxy0 = m_pNetVarEyeAngles0->HookProxy(hk_SetEyeAnglesProxy0);
+	g_pEyeAnglesProxy1 = m_pNetVarEyeAngles1->HookProxy(hk_SetEyeAnglesProxy1);
 
 	this->m_bIsHooked = true;
 }
@@ -390,6 +394,8 @@ void CApplication::Hook()
 	// Proxy functions
 	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
 	g_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(hk_SetLowerBodyYawTarget);
+	g_pEyeAnglesProxy0 = m_pNetVarEyeAngles0->HookProxy(hk_SetEyeAnglesProxy0);
+	g_pEyeAnglesProxy1 = m_pNetVarEyeAngles1->HookProxy(hk_SetEyeAnglesProxy1);
 
 	//this->m_misc.SetClanTag(".mechanics"); //todo: dynamic!!
 
@@ -632,6 +638,10 @@ void CApplication::GetNetVars()
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_vecOrigin*/CXorString("zTó§tD÷«pbë").ToCharArray());
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer.ToCharArray(), xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ™'V").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx").ToCharArray());
+
+	m_pNetVarEyeAngles0 = m_pNetVarMgr->GetNetVar(xorCSPlayer.ToCharArray(), /*m_angEyeAngles[0]*/CXorString("zTä¬pNü§Veâ®rxÞòJ").ToCharArray());
+	m_pNetVarEyeAngles1 = m_pNetVarMgr->GetNetVar(xorCSPlayer.ToCharArray(), /*m_angEyeAngles[1]*/CXorString("zTä¬pNü§Veâ®rxÞóJ").ToCharArray());
+
 	Offsets::m_bHasHeavyArmor = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bHasHeavyArmor*/CXorString("zTçŠvxÍ§v}üƒefê°").ToCharArray());
 	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer.ToCharArray(), /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r").ToCharArray());
 	Offsets::m_flLowerBodyYawTarget = m_pNetVarLowerBodyYaw->GetOffset();

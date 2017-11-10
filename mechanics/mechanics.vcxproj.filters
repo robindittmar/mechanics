@@ -321,6 +321,9 @@
     <ClCompile Include="LowerBodyYawProxy.cpp">
       <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
+    <ClCompile Include="EyeAnglesProxy.cpp">
+      <Filter>Source Files\Hooks\Proxies</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -696,6 +699,9 @@
       <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
     <ClInclude Include="LowerBodyYawProxy.h">
+      <Filter>Header Files\Hooks\Proxies</Filter>
+    </ClInclude>
+    <ClInclude Include="EyeAnglesProxy.h">
       <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
   </ItemGroup>

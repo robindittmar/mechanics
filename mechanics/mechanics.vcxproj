@@ -160,6 +160,7 @@
     <ClCompile Include="EmitSound.cpp" />
     <ClCompile Include="Esp.cpp" />
     <ClCompile Include="EspPlayer.cpp" />
+    <ClCompile Include="EyeAnglesProxy.cpp" />
     <ClCompile Include="Fakelag.cpp" />
     <ClCompile Include="FindMdl.cpp" />
     <ClCompile Include="FireEventClientSide.cpp" />
@@ -254,6 +255,7 @@
     <ClInclude Include="EmitSound.h" />
     <ClInclude Include="Esp.h" />
     <ClInclude Include="EspPlayer.h" />
+    <ClInclude Include="EyeAnglesProxy.h" />
     <ClInclude Include="Fakelag.h" />
     <ClInclude Include="FindMdl.h" />
     <ClInclude Include="FireEventClientSide.h" />

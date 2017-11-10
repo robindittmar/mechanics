@@ -40,6 +40,7 @@
 // Proxies
 #include "SequenceProxy.h"
 #include "LowerBodyYawProxy.h"
+#include "EyeAnglesProxy.h"
 
 // Features
 #include "Ragebot.h"
@@ -306,6 +307,8 @@ private:
 	CNetVarManager* m_pNetVarMgr;
 	CNetVar* m_pNetVarSequence;
 	CNetVar* m_pNetVarLowerBodyYaw;
+	CNetVar* m_pNetVarEyeAngles0;
+	CNetVar* m_pNetVarEyeAngles1;
 
 	IVEngineClient* m_pEngineClient;
 	IBaseClientDLL* m_pClient;
