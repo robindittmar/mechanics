@@ -54,6 +54,12 @@ void CResolver::Update(void* pParameters)
 		if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) //same team dont need to resolve
 			continue;
 
+		if (m_iResolverType == RESOLVERTYPE_LBY)
+		{
+			pCurEntity->GetAngEyeAngles()->y = pCurEntity->GetLowerBodyYaw();
+			continue;
+		}
+
 		float fLastLbyProxyUpdate = pCurResolverPlayer->GetLbyProxyUpdatedTime();
 		float fCurtime = m_pApp->GlobalVars()->curtime;
 		float fLowerBodyYaw = pCurEntity->GetLowerBodyYaw();
