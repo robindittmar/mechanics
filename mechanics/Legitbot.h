@@ -19,16 +19,15 @@ public:
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
 private:
+	QAngle QuadraticBezier(QAngle& p0, QAngle& p1, QAngle& p2, float t);
+
 	float m_fTimeToAim;
 
 	bool m_bHasTarget;
-	bool m_bDidShoot;
-	QAngle m_qTargetAngles;
-	int m_iMaxStepsRequired;
-	int m_iStepsRequired;
-	QAngle m_qAngleStep;
-
-	QAngle m_qPathAngles;
+	int m_iTarget;
+	
+	QAngle m_qStart;
+	QAngle m_qEnd;
 };
 
 #endif // __LEGITBOT_H__

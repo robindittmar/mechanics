@@ -49,36 +49,21 @@ void CLegitbot::Update(void* pParameters)
 
 	if (m_bHasTarget)
 	{
-		float addPitch = 5.0f * -sinf((1.0f - (m_iStepsRequired / (float)m_iMaxStepsRequired)) * (2*PI_F));
-
-		m_qPathAngles += m_qAngleStep;
-		qLocalAngles = m_qPathAngles;
-		qLocalAngles.x += addPitch;
-		m_pApp->SetClientViewAngles(qLocalAngles);
-
-		m_iStepsRequired--;
-		if (m_iStepsRequired < 0)
-		{
-			if (m_bDidShoot)
-			{
-				m_bHasTarget = false;
-			}
-			else
-			{
-				m_bHasTarget = false;
-				//pParam->pUserCmd->buttons |= IN_ATTACK;
-				//m_iStepsRequired += m_iMaxStepsRequired * 0.2f;
-				//m_bDidShoot = true;
-			}
-		}
+		
 	}
 	else
 	{
+		//
+		// If we have no target yet, we get a target
+		// (only to get a starting point & an end point)
+		//
+
+		// TODO
 		if (!(GetAsyncKeyState(VK_MBUTTON) & 0x8000))
 			return;
 
 		int iTarget = -1;
-		QAngle qDist;
+		QAngle qEnd;
 		float fViewangleDist = 99999.9f;
 		Vector vHitbox[9];
 
@@ -134,6 +119,7 @@ void CLegitbot::Update(void* pParameters)
 			if (!pHitbox)
 				continue;
 
+			// TODO: PointScale
 			Utils::GetHitBoxVectors(pHitbox, pBoneMatrix, vHitbox);
 
 			bool bIsVisible = false;
@@ -156,27 +142,36 @@ void CLegitbot::Update(void* pParameters)
 			QAngle qCurDist = (qTargetAng - qLocalAngles);
 			qCurDist.NormalizeAngles();
 
-			PlayerInfo pi;
-			pCurEntity->GetPlayerInfo(&pi);
+			//PlayerInfo pi;
+			//pCurEntity->GetPlayerInfo(&pi);
 
 			float fCurDist = qCurDist.Length();
 			if (fCurDist < fViewangleDist)
 			{
-				qDist = qCurDist;
 				fViewangleDist = fCurDist;
+				
 				iTarget = i;
+				qEnd = qTargetAng;
 			}
 		}
 
 		if (iTarget != -1)
 		{
-			m_iMaxStepsRequired = m_fTimeToAim / m_pApp->GlobalVars()->interval_per_tick;
-			m_iStepsRequired = m_iMaxStepsRequired;
-			m_qPathAngles = qLocalAngles;
-
-			m_qAngleStep = qDist / m_iStepsRequired;
 			m_bHasTarget = true;
-			m_bDidShoot = false;
+			m_iTarget = iTarget;
+
+			m_qStart = m_pApp->GetClientViewAngles();
+			m_qEnd = qEnd;
 		}
 	}
+}
+
+QAngle CLegitbot::QuadraticBezier(QAngle& p0, QAngle& p1, QAngle& p2, float t)
+{
+	QAngle qResult;
+
+	qResult.x = ((1 - t) * (1 - t)) * p0.x + 2 * (1 - t) * t * p1.x + (t * t) * p2.x;
+	qResult.y = ((1 - t) * (1 - t)) * p0.y + 2 * (1 - t) * t * p1.y + (t * t) * p2.y;
+
+	return qResult;
 }
