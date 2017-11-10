@@ -10,7 +10,8 @@
 class CApplication;
 
 #define RESOLVERTYPE_NONE						0
-#define RESOLVERTYPE_AUTOMATIC					1
+#define RESOLVERTYPE_LBY						1
+#define RESOLVERTYPE_AUTOMATIC					2
 
 class CResolver : public IFeature
 {

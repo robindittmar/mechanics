@@ -10,6 +10,7 @@ CFakelag::~CFakelag()
 {
 }
 
+// TODO: andere funktion für menü
 int CFakelag::GetChokeAmount()
 {
 	if (m_iLagType == FAKELAG_TYPE_ADAPTIVE)

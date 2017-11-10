@@ -205,7 +205,7 @@ void CMenu::ApplySettings()
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Fakelag()->GetEnabled());
 	m_pFakelagOnlyInAir->SetChecked(m_pApp->Fakelag()->GetOnlyInAir());
-	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmount());
+	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmountMenu());
 	m_pFakelagType->SetValue(m_pApp->Fakelag()->GetLagType());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
@@ -396,6 +396,7 @@ void CMenu::CreateRageTab()
 
 	m_pRageOthersResolverType = new CSelectbox(4, 70, 128, 20, "Resolver Type");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NONE, "None");
+	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_LBY, "LBY");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_AUTOMATIC, "Automatic");
 	m_pRageOthersResolverType->SetEventHandler(std::bind(&CResolver::SetResolverType, m_pApp->Resolver(), std::placeholders::_1));
 
