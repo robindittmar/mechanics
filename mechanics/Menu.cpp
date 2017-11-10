@@ -205,7 +205,7 @@ void CMenu::ApplySettings()
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Fakelag()->GetEnabled());
 	m_pFakelagOnlyInAir->SetChecked(m_pApp->Fakelag()->GetOnlyInAir());
-	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmount());
+	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmountMenu());
 	m_pFakelagType->SetValue(m_pApp->Fakelag()->GetLagType());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());

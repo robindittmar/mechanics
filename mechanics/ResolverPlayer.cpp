@@ -1,6 +1,7 @@
 #include "ResolverPlayer.h"
 
-CResolverPlayer::CResolverPlayer()
+CResolverPlayer::CResolverPlayer() :
+	m_fBalanceAdjustStart(-1)
 {
 	m_iShotsFired = 0;
 	m_iShotHit = -1;

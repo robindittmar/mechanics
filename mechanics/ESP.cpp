@@ -188,7 +188,7 @@ void CEsp::Update(void* pParameters)
 
 			DrawBoundingBox(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, color);
 			DrawName(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, height, width, alpha);
-			if(m_bDrawSkeleton)
+			if (m_bDrawSkeleton)
 				DrawSkeleton(pSurface, pCurEntity, pBoneMatrix, alpha);
 			DrawHealthBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
 			DrawHealthNumber(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, iHealth, alpha);
@@ -196,6 +196,28 @@ void CEsp::Update(void* pParameters)
 			DrawAmmoNumber(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
 			DrawActiveWeapon(pSurface, pCurEntity, vScreenOrigin.x, vScreenOrigin.y, alpha);
 			DrawArmorBar(pSurface, vScreenOrigin.x, vScreenOrigin.y, height, width, armor, alpha);
+
+			CResolverPlayer* pResolverPlayer = m_pApp->Resolver()->GetResolverPlayer(pCurEntity->EntIndex());
+			if (pResolverPlayer)
+			{
+				pSurface->DrawSetTextColor(alpha, 255, 255, 255);
+				pSurface->DrawSetTextFont(m_iFont);
+
+				int w = 0, h = 0;
+				if (pResolverPlayer->m_bFakeActive)
+				{
+					pSurface->GetTextSize(m_iFont, L"FAKE", w, h);
+
+					pSurface->DrawSetTextPos(vScreenOrigin.x + width / 2 + 5, vScreenOrigin.y - height);
+					pSurface->DrawPrintText(L"FAKE", strlen("FAKE"));
+				}
+
+				if (pResolverPlayer->m_bBreakingLby)
+				{
+					pSurface->DrawSetTextPos(vScreenOrigin.x + width / 2 + 5, vScreenOrigin.y - height + h);
+					pSurface->DrawPrintText(L"BREAKING", strlen("BREAKING"));
+				}
+			}
 
 			if (false && hasHelmet) //todo: check if hasHelmet
 			{

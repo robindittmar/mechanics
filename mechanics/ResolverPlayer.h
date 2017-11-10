@@ -18,7 +18,6 @@ public:
 	void SetOriginalYaw(float fOriginalYaw) { m_fOriginalYaw = fOriginalYaw; }
 	float GetOriginalYaw() { return m_fOriginalYaw; }
 
-
 	void SetLastMovingTime(float fLastMovingTime) { m_fLastMovingTime = fLastMovingTime; }
 	float GetLastMovingTime() { return m_fLastMovingTime; }
 
@@ -44,7 +43,15 @@ public:
 	float m_fPossibleLbyBreakerFake;
 	float m_fPossibleLbyBreakerStart;
 
-	bool m_bHasFakeActive;
+
+	float m_fBalanceAdjustStart;
+
+	int m_iFakeCount;
+	bool m_bAdjustedWithFake;
+	bool m_bWasInAir;
+	bool m_bHadFakeActive;
+	bool m_bFakeActive;
+	bool m_bBreakingLby;
 	bool m_bStartPredLbyBreaks;
 private:
 	int m_iShotsFired;
@@ -59,6 +66,7 @@ private:
 	float m_fLbyProxyLastValue;
 	float m_fLbyProxyUpdatedTime;
 	float m_fPredLbyUpdateTime;
+
 
 	QAngle m_qAngles;
 };

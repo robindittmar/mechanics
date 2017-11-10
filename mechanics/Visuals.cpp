@@ -463,18 +463,27 @@ void CVisuals::Nightmode()
 void CVisuals::AsusWalls()
 {
 	static CXorString xorWorld("@d÷®s");
-	//static bool bLastSetting = m_bAsusWalls;
+	static bool bLastSetting = m_bAsusWalls;
 
-	for (auto i = m_pApp->MaterialSystem()->FirstMaterial(); i != m_pApp->MaterialSystem()->InvalidMaterial(); i = m_pApp->MaterialSystem()->NextMaterial(i))
+	if (bLastSetting != m_bAsusWalls)
 	{
-		IMaterial* pMaterial = m_pApp->MaterialSystem()->GetMaterial(i);
+		bLastSetting = m_bAsusWalls;
+		m_bAsusWallsPerformed = false;
+	}
 
-		if (!pMaterial || pMaterial->IsErrorMaterial())
-			continue;
-
-		if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()))
+	if (!m_bAsusWallsPerformed)
+	{
+		for (auto i = m_pApp->MaterialSystem()->FirstMaterial(); i != m_pApp->MaterialSystem()->InvalidMaterial(); i = m_pApp->MaterialSystem()->NextMaterial(i))
 		{
-			pMaterial->AlphaModulate(0.5f);
+			IMaterial* pMaterial = m_pApp->MaterialSystem()->GetMaterial(i);
+
+			if (!pMaterial || pMaterial->IsErrorMaterial())
+				continue;
+
+			if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()))
+			{
+				pMaterial->AlphaModulate(0.5f);
+			}
 		}
 	}
 }

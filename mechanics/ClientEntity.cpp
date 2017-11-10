@@ -6,9 +6,33 @@ void IClientEntity::SetModelIndex(int idx)
 	*(int*)((DWORD)this + Offsets::m_nModelIndex) = idx;
 }
 
+CAnimationLayer& IClientEntity::GetAnimationLayer(int iIndex)
+{
+	return (*(CAnimationLayer**)((DWORD)this + 0x2970))[iIndex];
+}
+
+int IClientEntity::GetSequenceActivity(int nSequence)
+{
+	studiohdr_t* hdr = CApplication::Instance()->ModelInfo()->GetStudiomodel(this->GetModel());
+
+	if (!hdr)
+		return -1;
+
+	// c_csplayer vfunc 242, follow calls to find the function.
+	static auto GetSequenceActivity = reinterpret_cast<int(__fastcall*)(void*, studiohdr_t*, int)>((CPattern::FindPattern(
+		(BYTE*)CApplication::Instance()->ClientDll(),
+		CLIENTDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\x83\x7D\x08\xFF\x56\x8B\xF1\x74\x3D",
+		"fgkhlrecgnef"
+		/*(BYTE*)"\x55\x8B\xEC\x57\x8B\xF9\x8B\x97\x00\x00\x00\x00\x85\xD2",
+		"fgtujher----ft"*/
+	)));
+
+	return GetSequenceActivity(this, hdr, nSequence);
+}
+
 bool IClientEntity::IsAlive()
 {
-	//return (this->GetHealth() > 0);
 	return (this->GetLifestate() == LIFE_ALIVE);
 }
 

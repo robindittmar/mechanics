@@ -443,29 +443,6 @@ void __fastcall CApplication::hk_FrameStageNotify(void* ecx, void* edx, ClientFr
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
-			if (pApp->Resolver()->GetResolverType() != RESOLVERTYPE_NONE)
-			{
-				// Setting LowerBodyYaw
-				for (int i = 1; i < pApp->EngineClient()->GetMaxClients(); i++)
-				{
-					IClientEntity* pCurEntity = pApp->EntityList()->GetClientEntity(i);
-
-					if (!pCurEntity)
-						continue;
-
-					if (pCurEntity->IsDormant())
-						continue;
-
-					if (!(pCurEntity->GetFlags() & FL_CLIENT))
-						continue;
-
-					if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) // same team dont need to resolve
-						continue;
-
-					pCurEntity->GetAngEyeAngles()->y = pCurEntity->GetLowerBodyYaw();
-				}
-			}
-
 			pApp->LagCompensation()->Update((void*)tickcount);
 
 			pApp->Resolver()->Update();

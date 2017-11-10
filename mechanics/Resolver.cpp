@@ -16,12 +16,6 @@ void CResolver::Setup()
 
 void CResolver::Update(void* pParameters)
 {
-	if (m_iResolverType == RESOLVERTYPE_NONE)
-		return;
-
-	if (!m_pApp->Ragebot()->GetEnabled())
-		return;
-
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return;
@@ -30,16 +24,29 @@ void CResolver::Update(void* pParameters)
 	{
 		IClientEntity* pCurEntity = m_pApp->EntityList()->GetClientEntity(i);
 		CResolverPlayer* pCurResolverPlayer = this->GetResolverPlayer(i);
-		int iShotsFired = pCurResolverPlayer->GetShotsFired();
 
-		pCurResolverPlayer->m_bHasFakeActive = false;
+		pCurResolverPlayer->m_bHadFakeActive = pCurResolverPlayer->m_bFakeActive;
+		pCurResolverPlayer->m_bFakeActive = false;
+		pCurResolverPlayer->m_bBreakingLby = false;
 		pCurResolverPlayer->m_bStartPredLbyBreaks = false;
+
+		if (m_iResolverType == RESOLVERTYPE_NONE)
+			continue;
+
+		if (!m_pApp->Ragebot()->GetEnabled())
+			continue;
 
 		if (!pCurEntity)
 			continue;
 
 		if (pCurEntity->IsDormant())
+		{
+			// could be everything so reset!!
+			pCurResolverPlayer->m_fBalanceAdjustStart = -1;
+			pCurResolverPlayer->m_bAdjustedWithFake = false;
+			pCurResolverPlayer->m_iFakeCount = 0;
 			continue;
+		}
 
 		if (!(pCurEntity->GetFlags() & FL_CLIENT))
 			continue;
@@ -47,7 +54,124 @@ void CResolver::Update(void* pParameters)
 		if (pCurEntity->GetTeamNum() == pLocalEntity->GetTeamNum()) //same team dont need to resolve
 			continue;
 
-		bool bIsMoving = pCurEntity->GetVelocity()->Length() > 0.1f;
+		float fLastLbyProxyUpdate = pCurResolverPlayer->GetLbyProxyUpdatedTime();
+		float fCurtime = m_pApp->GlobalVars()->curtime;
+		float fLowerBodyYaw = pCurEntity->GetLowerBodyYaw();
+		QAngle* qAngles = pCurEntity->GetAngEyeAngles();
+		qAngles->NormalizeAngles();
+
+		bool bIsMoving = (pCurEntity->GetVelocity()->Length() > 0.1f);
+		bool bOnGround = (pCurEntity->GetFlags() & FL_ONGROUND);
+		if (bIsMoving)
+		{
+			// Only check if on ground because lby won't update in air
+			if (bOnGround)
+			{
+				// Check if was in air because lby wont update everytime landing!!
+				if (!pCurResolverPlayer->m_bWasInAir)
+				{
+					// Time check maybe 0.2200001f
+					pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles->y - fLowerBodyYaw) > 35.0f);
+				}
+			}
+			else
+			{
+				// Setting old value because if fake was active it should be still active
+				pCurResolverPlayer->m_bFakeActive = pCurResolverPlayer->m_bHadFakeActive;
+			}
+		}
+		else
+		{
+			// Check if was in air because lby wont update everytime landing!!
+			if (!pCurResolverPlayer->m_bWasInAir)
+			{
+				pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles->y - fLowerBodyYaw) > 35.0f && fCurtime - fLastLbyProxyUpdate > 1.1f);
+			}
+
+			//if (pCurResolverPlayer->m_bFakeActive)
+				//g_pConsole->Write(LOGLEVEL_ERROR, "fake...\n");
+
+			// Setting start of balanceadjust
+			int iActivity = pCurEntity->GetSequenceActivity(pCurEntity->GetAnimationLayer(3).m_nSequence);
+			if (pCurResolverPlayer->m_fBalanceAdjustStart == -1)
+			{
+				if (iActivity == ACT_CSGO_IDLE_TURN_BALANCEADJUST)
+				{
+					pCurResolverPlayer->m_fBalanceAdjustStart = fCurtime;
+				}
+			}
+
+			// Resetting start of balanceadjust
+			if (pCurResolverPlayer->m_fBalanceAdjustStart != -1 && iActivity != ACT_CSGO_IDLE_TURN_BALANCEADJUST)
+			{
+				pCurResolverPlayer->m_fBalanceAdjustStart = -1;
+			}
+
+			if (!pCurResolverPlayer->m_bFakeActive)
+			{
+				if (pCurResolverPlayer->m_bAdjustedWithFake)
+				{
+					//g_pConsole->Write(LOGLEVEL_INFO, "setting fake to adjustedwithfake..\n");
+
+					pCurResolverPlayer->m_bFakeActive = pCurResolverPlayer->m_bAdjustedWithFake;
+				}
+				else
+				{
+					pCurResolverPlayer->m_iFakeCount = 0;
+				}
+			}
+			else
+			{
+				pCurResolverPlayer->m_iFakeCount++;
+			}
+
+			// Has or had fake active
+			if (pCurResolverPlayer->m_bFakeActive || pCurResolverPlayer->m_bHadFakeActive)
+			{
+				// is balance adjusting
+				if (pCurResolverPlayer->m_fBalanceAdjustStart != -1 && pCurResolverPlayer->m_iFakeCount > 10)
+				{
+					pCurResolverPlayer->m_bAdjustedWithFake = true;
+					pCurResolverPlayer->m_bBreakingLby = true;
+					//g_pConsole->Write(LOGLEVEL_ERROR, "adjusting with fake...\n");
+				}
+				else
+				{
+					pCurResolverPlayer->m_bAdjustedWithFake = false;
+				}
+			}
+			else
+			{
+				if (pCurResolverPlayer->m_fBalanceAdjustStart != -1)
+				{
+					// check if balanceadjust and should lby updated
+					if (fCurtime + 1.1f > pCurResolverPlayer->m_fBalanceAdjustStart)
+					{
+						// Check if last lby update is older than balanceadjust
+						if (fLastLbyProxyUpdate != 0 && fLastLbyProxyUpdate < pCurResolverPlayer->m_fBalanceAdjustStart)
+						{
+							// probably breaking lby
+							//g_pConsole->Write(LOGLEVEL_INFO, "hack adjust..\n");
+							pCurResolverPlayer->m_bBreakingLby = true;
+						}
+						else
+						{
+							//g_pConsole->Write(LOGLEVEL_INFO, "legit adjust..\n");
+						}
+					}
+				}
+			}
+		}
+		pCurResolverPlayer->m_bWasInAir = !bOnGround;
+
+		// onground nicht weil kp was wir dann machen sollen :D
+		if (bIsMoving /*&& bOnGround*/ ||
+			pCurResolverPlayer->m_bFakeActive ||
+			pCurResolverPlayer->m_bBreakingLby)
+		{
+			// Setting lby because moving and onground
+			qAngles->y = fLowerBodyYaw;
+		}
 
 		switch (m_iResolverType) //todo: check if cur player got other resolver option
 		{
@@ -74,7 +198,7 @@ void CResolver::Update(void* pParameters)
 bool CResolver::PredictLbyBreak(CResolverPlayer * pCurResolverPlayer, IClientEntity* pCurEntity)
 {
 	// No Fake = No LBY Breaker = No LbyBreak = No Pred needed
-	if (!pCurResolverPlayer->m_bHasFakeActive)
+	if (!pCurResolverPlayer->m_bFakeActive)
 		return false;
 
 	float fCurLby = pCurEntity->GetLowerBodyYaw();
