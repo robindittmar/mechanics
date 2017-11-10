@@ -46,7 +46,7 @@ void CLagCompensation::Update(void* pParameters)
 		if (pCurEnt->GetTeamNum() == pLocalEnt->GetTeamNum())
 			continue;
 
-		m_pPlayerList[i].AddPlayerEntry(pCurEnt, (int)pParameters);
+		m_pPlayerList[i].AddPlayerEntry(pCurEnt, m_iTickcount);
 	}
 }
 

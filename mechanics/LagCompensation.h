@@ -24,6 +24,9 @@ public:
 	CLagCompensation();
 	~CLagCompensation();
 
+	void SetTickcount(int iTickcount) { m_iTickcount = iTickcount; }
+	int GetTickcount() { return m_iTickcount; }
+
 	void SetDrawStyle(int iDrawStyle) { m_iDrawStyle = iDrawStyle; }
 	int GetDrawStyle() { return m_iDrawStyle; }
 
@@ -51,6 +54,8 @@ public:
 	void DrawLagCompensationIndicator();
 	CLagCompensationPlayerList* GetLCList(int index);
 private:
+	int m_iTickcount;
+
 	int m_iDrawStyle;
 	int m_iDrawFrequency;
 

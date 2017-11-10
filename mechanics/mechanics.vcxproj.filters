@@ -34,6 +34,15 @@
     <Filter Include="Header Files\Hooks">
       <UniqueIdentifier>{e71b9285-36fb-42ea-b2ae-34aab3ce76f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Hooks">
+      <UniqueIdentifier>{a1d581dc-0baf-48bf-88eb-c6bc72b49c43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Hooks\Proxies">
+      <UniqueIdentifier>{99668fea-4ad9-4f7a-a654-a5183a5ab165}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hooks\Proxies">
+      <UniqueIdentifier>{277ad7ae-a786-49a6-87d5-dbbd0c949d65}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DllMain.cpp">
@@ -269,6 +278,48 @@
     </ClCompile>
     <ClCompile Include="Fakelag.cpp">
       <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateMove.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameStageNotify.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="OverrideView.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawModelExecute.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="PaintTraverse.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="PlaySound.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="GetViewModelFov.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="FireEventClientSide.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderView.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderSmokeOverlay.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="EmitSound.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="FindMdl.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="SequenceProxy.cpp">
+      <Filter>Source Files\Hooks\Proxies</Filter>
+    </ClCompile>
+    <ClCompile Include="LowerBodyYawProxy.cpp">
+      <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,6 +676,27 @@
     </ClInclude>
     <ClInclude Include="Fakelag.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="PlaySound.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderView.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderSmokeOverlay.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="EmitSound.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="FindMdl.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="SequenceProxy.h">
+      <Filter>Header Files\Hooks\Proxies</Filter>
+    </ClInclude>
+    <ClInclude Include="LowerBodyYawProxy.h">
+      <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
