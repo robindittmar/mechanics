@@ -323,6 +323,7 @@ void CApplication::Setup()
 	this->m_chams.Setup();
 	this->m_misc.Setup();
 	this->m_fakelag.Setup();
+	this->m_fakewalk.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
 	this->m_mirror.Setup();

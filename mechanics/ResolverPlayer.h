@@ -33,7 +33,8 @@ public:
 	void SetPredLbyUpdateTime(float fPredictedLbyUpdateTime) { m_fPredLbyUpdateTime = fPredictedLbyUpdateTime; }
 	float GetPredLbyUpdateTime() { return m_fPredLbyUpdateTime; }
 
-	void SetAngles(QAngle qAngles) { m_qAngles = qAngles; }
+	void SetPitchAngle(float fPitchAngle) { m_qAngles.x = fPitchAngle; m_qAngles.NormalizeAngles(); }
+	void SetYawAngle(float fYawAngle) { m_qAngles.y = fYawAngle; m_qAngles.NormalizeAngles(); }
 	QAngle GetAngles() { return m_qAngles; }
 
 	bool m_bDidSet = false;

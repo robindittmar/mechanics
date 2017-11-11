@@ -324,6 +324,9 @@
     <ClCompile Include="EyeAnglesProxy.cpp">
       <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
+    <ClCompile Include="Fakewalk.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -703,6 +706,9 @@
     </ClInclude>
     <ClInclude Include="EyeAnglesProxy.h">
       <Filter>Header Files\Hooks\Proxies</Filter>
+    </ClInclude>
+    <ClInclude Include="Fakewalk.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

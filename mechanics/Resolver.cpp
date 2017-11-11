@@ -63,8 +63,7 @@ void CResolver::Update(void* pParameters)
 		float fLastLbyProxyUpdate = pCurResolverPlayer->GetLbyProxyUpdatedTime();
 		float fCurtime = m_pApp->GlobalVars()->curtime;
 		float fLowerBodyYaw = pCurEntity->GetLowerBodyYaw();
-		QAngle* qAngles = pCurEntity->GetAngEyeAngles();
-		qAngles->NormalizeAngles();
+		QAngle qAngles = pCurResolverPlayer->GetAngles();
 
 		bool bIsMoving = (pCurEntity->GetVelocity()->Length() > 0.1f);
 		bool bOnGround = (pCurEntity->GetFlags() & FL_ONGROUND);
@@ -77,7 +76,7 @@ void CResolver::Update(void* pParameters)
 				if (!pCurResolverPlayer->m_bWasInAir)
 				{
 					// Time check maybe 0.2200001f
-					pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles->y - fLowerBodyYaw) > 35.0f);
+					pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles.y - fLowerBodyYaw) > 35.0f);
 				}
 			}
 			else
@@ -91,7 +90,7 @@ void CResolver::Update(void* pParameters)
 			// Check if was in air because lby wont update everytime landing!!
 			if (!pCurResolverPlayer->m_bWasInAir)
 			{
-				pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles->y - fLowerBodyYaw) > 35.0f && fCurtime - fLastLbyProxyUpdate > 1.1f);
+				pCurResolverPlayer->m_bFakeActive = (fabsf(qAngles.y - fLowerBodyYaw) > 35.0f && fCurtime - fLastLbyProxyUpdate > 1.1f);
 			}
 
 			//if (pCurResolverPlayer->m_bFakeActive)
@@ -170,13 +169,17 @@ void CResolver::Update(void* pParameters)
 		}
 		pCurResolverPlayer->m_bWasInAir = !bOnGround;
 
-		// onground nicht weil kp was wir dann machen sollen :D
-		if (bIsMoving /*&& bOnGround*/ ||
-			pCurResolverPlayer->m_bFakeActive ||
-			pCurResolverPlayer->m_bBreakingLby)
+		if (pCurResolverPlayer->m_bBreakingLby)
+		{
+			//TODO bruteforce oder son kack
+
+			pCurEntity->GetAngEyeAngles()->y = fLowerBodyYaw; //TODO only temp!
+		}
+		else if (bIsMoving /*&& bOnGround*/ || // onground nicht weil kp was wir dann inair machen sollen :D
+			pCurResolverPlayer->m_bFakeActive)
 		{
 			// Setting lby because moving and onground
-			qAngles->y = fLowerBodyYaw;
+			pCurEntity->GetAngEyeAngles()->y = fLowerBodyYaw;
 		}
 
 		switch (m_iResolverType) //todo: check if cur player got other resolver option

@@ -162,6 +162,7 @@
     <ClCompile Include="EspPlayer.cpp" />
     <ClCompile Include="EyeAnglesProxy.cpp" />
     <ClCompile Include="Fakelag.cpp" />
+    <ClCompile Include="Fakewalk.cpp" />
     <ClCompile Include="FindMdl.cpp" />
     <ClCompile Include="FireEventClientSide.cpp" />
     <ClCompile Include="FrameStageNotify.cpp" />
@@ -257,6 +258,7 @@
     <ClInclude Include="EspPlayer.h" />
     <ClInclude Include="EyeAnglesProxy.h" />
     <ClInclude Include="Fakelag.h" />
+    <ClInclude Include="Fakewalk.h" />
     <ClInclude Include="FindMdl.h" />
     <ClInclude Include="FireEventClientSide.h" />
     <ClInclude Include="FrameStageNotify.h" />

@@ -59,6 +59,7 @@
 #include "Mirror.h"
 #include "LagCompensation.h"
 #include "Fakelag.h"
+#include "Fakewalk.h"
 
 // Source SDK
 #include "CreateInterface.h"
@@ -226,6 +227,7 @@ public:
 	CChams*				Chams()				{ return &m_chams; }
 	CMisc*				Misc()				{ return &m_misc; }
 	CFakelag*			Fakelag()			{ return &m_fakelag; }
+	CFakewalk*			Fakewalk()			{ return &m_fakewalk; }
 	CResolver*			Resolver()			{ return &m_resolver; }
 	CSkinChanger*		SkinChanger()		{ return &m_skinchanger; }
 	CVisuals*			Visuals()			{ return &m_visuals; }
@@ -362,6 +364,7 @@ private:
 	CChams m_chams;
 	CMisc m_misc;
 	CFakelag m_fakelag;
+	CFakewalk m_fakewalk;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
 	CMirror m_mirror;
