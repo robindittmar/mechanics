@@ -704,6 +704,9 @@
     <ClInclude Include="EyeAnglesProxy.h">
       <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
+    <ClInclude Include="IInputSystem.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="todo.txt" />

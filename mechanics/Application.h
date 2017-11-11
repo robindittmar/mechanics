@@ -168,7 +168,7 @@ public:
 	VTableHook* PanelHook()				{ return m_pPanelHook; }
 	VTableHook* GameEventManagerHook()	{ return m_pGameEventManagerHook; }
 	VTableHook* ViewRenderHook()		{ return m_pViewRenderHook; }
-	VTableHook* EngineSound()			{ return m_pEngineSoundHook; }
+	VTableHook* EngineSoundHook()		{ return m_pEngineSoundHook; }
 
 	RandomSeed_t	RandomSeed()	{ return m_pRandomSeed; }
 	RandomInt_t		RandomInt()		{ return m_pRandomInt; }

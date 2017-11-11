@@ -1,9 +1,12 @@
 #ifndef __GUI_H__
 #define __GUI_H__
 
+// Std Lib
 #include <Windows.h>
-#include "ISurface.h"
+
+// Source SDK
 #include "Vector.h"
+#include "ISurface.h"
 #include "ConVar.h"
 
 class CApplication;
@@ -14,12 +17,16 @@ public:
 	static CGui* Instance();
 
 	void Setup();
+	void Cleanup();
+
 	void GetWorldToScreenMatrix();
 
 	int GetScreenWidth() { return m_iScreenWidth; }
 	int GetScreenHeight() { return m_iScreenHeight; }
 
-	void SetEnableMouse(bool bEnableMouse);
+	void SetEnableGameInput(bool bEnableGameInput);
+	bool IsMouseEnabled();
+	bool IsMouseInRect(int x, int y, int w, int h);
 
 	bool GetMousePos();
 	int MouseX() { return m_iMouseX; }
@@ -30,16 +37,19 @@ public:
 
 	void DrawMouse(ISurface* pSurface);
 
-	bool IsMouseInRect(int x, int y, int w, int h);
-
 	bool WorldToScreen(const Vector &origin, Vector &screen);
-
-	bool IsMouseEnabled();
 private:
 	bool ScreenTransform(const Vector& point, Vector& screen);
 
+	friend LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam);
+
 	const VMatrix* m_pWorldToScreenMatrix;
 	int m_iScreenWidth, m_iScreenHeight;
+
+	bool m_bHookedWindowProc;
+	HWND m_hGameWindow;
+	WNDPROC m_wndProc;
+	bool m_bEnableGameInput;
 
 	int m_iMouseX, m_iMouseY;
 	bool m_bDrawMouse;
@@ -49,7 +59,7 @@ private:
 
 	// Singleton
 	CGui();
-	CGui(CGui const&);
+	CGui(const CGui&) = delete;
 	~CGui();
 
 	void operator=(CGui const&) {}

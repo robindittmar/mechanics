@@ -22,7 +22,7 @@ void __cdecl hk_SetEyeAnglesProxy0(const CRecvProxyData* pDataConst, void* pStru
 			pResolverPlayer->SetLbyProxyUpdatedTime(pApp->GlobalVars()->curtime);
 		}*/
 		// TODO
-		g_pConsole->Write(LOGLEVEL_WARNING, "%d: %f\n", pEntity->EntIndex(), pData->m_Value.m_Float);
+		//g_pConsole->Write(LOGLEVEL_WARNING, "%d: %f\n", pEntity->EntIndex(), pData->m_Value.m_Float);
 	}
 
 	g_pEyeAnglesProxy0(pDataConst, pStruct, pOut);
@@ -46,7 +46,7 @@ void __cdecl hk_SetEyeAnglesProxy1(const CRecvProxyData* pDataConst, void* pStru
 		pResolverPlayer->SetLbyProxyUpdatedTime(pApp->GlobalVars()->curtime);
 		}*/
 		// TODO
-		g_pConsole->Write(LOGLEVEL_WARNING, "%d: %f\n", pEntity->EntIndex(), pData->m_Value.m_Float);
+		//g_pConsole->Write(LOGLEVEL_WARNING, "%d: %f\n", pEntity->EntIndex(), pData->m_Value.m_Float);
 	}
 
 	g_pEyeAnglesProxy1(pDataConst, pStruct, pOut);

@@ -264,6 +264,7 @@
     <ClInclude Include="IAppSystem.h" />
     <ClInclude Include="IClientMode.h" />
     <ClInclude Include="IEngineSound.h" />
+    <ClInclude Include="IInputSystem.h" />
     <ClInclude Include="ILocalize.h" />
     <ClInclude Include="IMDLCache.h" />
     <ClInclude Include="ITexture.h" />

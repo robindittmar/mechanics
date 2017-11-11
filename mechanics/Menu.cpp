@@ -238,8 +238,8 @@ void CMenu::HandleInput()
 			bool bVis = !m_pWindow->GetVisible();
 			m_pWindow->SetVisible(bVis);
 
-			// Mouse stuff
-			m_pApp->Gui()->SetEnableMouse(!bVis);
+			// Input & mouse stuff
+			m_pApp->Gui()->SetEnableGameInput(!bVis);
 			m_pApp->Gui()->SetDrawMouse(bVis);
 		}
 		else if (m_inputEvent.buttons & EVENT_BTN_DETACH &&

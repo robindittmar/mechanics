@@ -79,7 +79,8 @@ void CApplication::Detach()
 #endif
 
 	// Enable mouse again
-	this->m_pGui->SetEnableMouse(true);
+	this->m_pGui->SetEnableGameInput(true);
+	this->m_pGui->Cleanup();
 
 	// Unregister listener
 	this->m_pGameEventManager->RemoveListener(&this->m_gameEventListener);
@@ -97,6 +98,7 @@ void CApplication::Detach()
 	g_pConsole = NULL;
 #endif
 
+	// TODO: Stimmt, das andere ist ja nicht von uns.. Cleanups *M‹SSEN* immer andersrum passieren als das initialisieren
 	// ----------- Our stuff -----------
 
 	// Thirdperson
@@ -446,6 +448,7 @@ void CApplication::GetLibrarys()
 	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axÒ¶{bÁÏsgÈ").ToCharArray());
 	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjÒ£tjÊ™r%·Æ{").ToCharArray());
 	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("{dÊ£{bˇß9oÈÆ").ToCharArray());
+	//this->m_dwInputSystemDll = (DWORD)GetModuleHandle(/*inputsystem.dll*/"inputsystem.dll");
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "client.dll\t\t=>\t0x%08X\n", m_dwClientDll);
@@ -475,6 +478,7 @@ void CApplication::GetInterfaces()
 	CreateInterfaceFn VStdLibFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwVStdLibDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn DatacacheFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwDatacacheDll, xorCreateInterface.ToCharArray());
 	CreateInterfaceFn LocalizeFacory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwLocalizeDll, xorCreateInterface.ToCharArray());
+	//CreateInterfaceFn InputSystemFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwInputSystemDll, xorCreateInterface.ToCharArray());
 
 	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("EjÎ¶xf÷ßro").ToCharArray());
 	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("EjÎ¶xfÃ¨c").ToCharArray());
@@ -496,6 +500,7 @@ void CApplication::GetInterfaces()
 	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^NÎ•~e‡ëx~Î¶TgÏßyµÚ$").ToCharArray(), NULL);
 	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("ZO…ÅvhÌß';±").ToCharArray(), NULL);
 	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/CXorString("[dÊ£{bˇßH;µÛ").ToCharArray(), NULL);
+	//m_pInputSystem = (IInputSystem*)InputSystemFactory(/*InputSystemVersion001*/"InputSystemVersion001", NULL);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
