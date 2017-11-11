@@ -2,9 +2,8 @@
 #include "Application.h"
 
 CGui::CGui()
+	: m_pWorldToScreenMatrix(NULL), m_bDrawMouse(false), m_bEnableGameInput(true)
 {
-	m_pWorldToScreenMatrix = NULL;
-	m_bDrawMouse = false;
 }
 
 CGui::~CGui()
@@ -28,6 +27,31 @@ void CGui::Setup()
 
 	// cl_mouseenable
 	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
+
+	// Game Window
+	m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+	while (!m_hGameWindow)
+	{
+		Sleep(1000);
+		m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+	}
+	
+	if (!m_bHookedWindowProc)
+	{
+		// Install window procedure hook
+		m_wndProc = (WNDPROC)SetWindowLongPtr(m_hGameWindow, GWL_WNDPROC, (LONG)(LONG_PTR)hk_WndProc);
+		m_bHookedWindowProc = true;
+	}
+}
+
+void CGui::Cleanup()
+{
+	// Unhook window procedure
+	if (m_hGameWindow && m_wndProc && m_bHookedWindowProc)
+	{
+		SetWindowLongPtr(m_hGameWindow, GWL_WNDPROC, (LONG_PTR)m_wndProc);
+		m_bHookedWindowProc = false;
+	}
 }
 
 void CGui::GetWorldToScreenMatrix()
@@ -36,10 +60,26 @@ void CGui::GetWorldToScreenMatrix()
 	m_pWorldToScreenMatrix = &m_pApp->EngineClient()->WorldToScreenMatrix();
 }
 
-
-void CGui::SetEnableMouse(bool bEnableMouse)
+void CGui::SetEnableGameInput(bool bEnableGameInput)
 {
-	m_pMouseEnable->SetValue((int)bEnableMouse);
+	m_bEnableGameInput = bEnableGameInput;
+	m_pMouseEnable->SetValue((int)m_bEnableGameInput);
+}
+
+bool CGui::IsMouseEnabled()
+{
+	return (m_pMouseEnable->value[0] != '0');
+}
+
+bool CGui::IsMouseInRect(int x, int y, int w, int h)
+{
+	if (m_iMouseX >= x && m_iMouseX <= (x + w) &&
+		m_iMouseY >= y && m_iMouseY <= (y + h))
+	{
+		return true;
+	}
+
+	return false;
 }
 
 bool CGui::GetMousePos()
@@ -47,12 +87,10 @@ bool CGui::GetMousePos()
 	POINT p;
 	if(GetCursorPos(&p))
 	{
-		// TODO: Xor or remove ghetto fix for actual implementation :D
 		// Gh3tt0 f!x
-		static HWND hWnd = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
-		if (hWnd)
+		if (m_hGameWindow)
 		{
-			ScreenToClient(hWnd, &p);
+			ScreenToClient(m_hGameWindow, &p);
 		}
 		
 		m_iMouseX = p.x;
@@ -83,17 +121,6 @@ void CGui::DrawMouse(ISurface* pSurface)
 		pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX + 10, m_iMouseY);
 		pSurface->DrawLine(m_iMouseX + 10, m_iMouseY, m_iMouseX, m_iMouseY + 10);*/
 	}
-}
-
-bool CGui::IsMouseInRect(int x, int y, int w, int h)
-{
-	if(	m_iMouseX >= x && m_iMouseX <= (x + w) &&
-		m_iMouseY >= y && m_iMouseY <= (y + h))
-	{
-		return true;
-	}
-
-	return false;
 }
 
 bool CGui::WorldToScreen(const Vector &origin, Vector &screen)
@@ -129,7 +156,24 @@ bool CGui::ScreenTransform(const Vector& point, Vector& screen)
 	return false;
 }
 
-bool CGui::IsMouseEnabled()
+LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 {
-	return (m_pMouseEnable->value[0] != '0');
+	CGui* pGui = CGui::Instance();
+	if (!pGui->m_bEnableGameInput)
+	{
+		switch (nCode)
+		{
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_MOUSEMOVE:
+		case WM_LBUTTONDBLCLK:
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+			return 1L;
+		}
+	}
+
+	return CallWindowProc(pGui->m_wndProc, hWnd, nCode, wParam, lParam);
 }

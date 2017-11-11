@@ -4,6 +4,7 @@
 //todo: LineGoesThroughSmoke Sig: 55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0
 
 CLegitbot::CLegitbot()
+	: m_bHasTarget(false), m_fStepSize(0.005f), m_bDrawTarget(true)
 {
 }
 
@@ -49,7 +50,23 @@ void CLegitbot::Update(void* pParameters)
 
 	if (m_bHasTarget)
 	{
-		
+		pCurEntity = m_pApp->EntityList()->GetClientEntity(m_iTarget);
+
+		if (pCurEntity && !pCurEntity->IsDormant())
+		{
+			// Re-grab m_qEnd via hitbox of target
+		}
+
+		m_fAimProgress += m_fStepSize;
+		QAngle qNewAngles = this->QuadraticBezier(m_qStart, m_qIntermediate, m_qEnd, m_fAimProgress);
+
+		m_pApp->SetClientViewAngles(qNewAngles);
+
+		if (m_fAimProgress >= 1.0f)
+		{
+			m_bHasTarget = false;
+			m_fAimProgress = 0.0f;
+		}
 	}
 	else
 	{
@@ -59,7 +76,9 @@ void CLegitbot::Update(void* pParameters)
 		//
 
 		// TODO
-		if (!(GetAsyncKeyState(VK_MBUTTON) & 0x8000))
+		bool bKeyDown = GetAsyncKeyState(VK_XBUTTON1) & 0x8000;
+
+		if (!bKeyDown && !m_bDrawTarget)
 			return;
 
 		int iTarget = -1;
@@ -157,11 +176,63 @@ void CLegitbot::Update(void* pParameters)
 
 		if (iTarget != -1)
 		{
-			m_bHasTarget = true;
+			if (bKeyDown)
+				m_bHasTarget = true;
+
+			m_bHasDrawTarget = true;
 			m_iTarget = iTarget;
+			m_fAimProgress = 0.0f;
 
 			m_qStart = m_pApp->GetClientViewAngles();
+			m_qIntermediate.x = m_qStart.x;
+			m_qIntermediate.y = qEnd.y;
 			m_qEnd = qEnd;
+		}
+		else
+		{
+			m_bHasDrawTarget = false;
+		}
+	}
+}
+
+void CLegitbot::DrawTarget(ISurface* pSurface)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bDrawTarget)
+		return;
+
+	if (!m_bHasDrawTarget)
+		return;
+
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
+		return;
+
+	QAngle qCurAngles;
+	Vector vLocalPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
+	Vector vCurForward;
+	Vector vCurScreen, vLastScreen;
+
+	float fProgressPlusOne = m_fAimProgress + m_fStepSize;
+
+	pSurface->DrawSetColor(255, 0, 255, 0);
+	for (float fProgress = m_fAimProgress; fProgress <= 1.0f; fProgress += m_fStepSize)
+	{
+		qCurAngles = this->QuadraticBezier(m_qStart, m_qIntermediate, m_qEnd, fProgress);
+		AngleVectors(qCurAngles, &vCurForward);
+
+		vCurForward *= 8192.0f;
+		vCurForward += vLocalPos;
+		if (m_pApp->Gui()->WorldToScreen(vCurForward, vCurScreen))
+		{
+			if (vLastScreen.x != 0.0f && vLastScreen.y != 0.0f)
+			{
+				pSurface->DrawLine(vLastScreen.x, vLastScreen.y, vCurScreen.x, vCurScreen.y);
+			}
+
+			vLastScreen = vCurScreen;
 		}
 	}
 }

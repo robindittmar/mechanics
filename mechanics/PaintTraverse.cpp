@@ -46,6 +46,9 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 			// Draw rear mirror
 			pApp->Mirror()->Render(pSurface, pApp->Menu()->GetMirrorWindow());
 
+			// Draw Legitbot Target
+			pApp->Legitbot()->DrawTarget(pSurface);
+
 			// Draw Hitmarker
 			pApp->Visuals()->DrawHitmarker(pSurface);
 			pApp->Visuals()->DrawHitmarkerHitpoint(pSurface);

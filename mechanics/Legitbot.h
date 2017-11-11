@@ -3,6 +3,7 @@
 
 // Source SDK
 #include "Vector.h"
+#include "ISurface.h"
 
 // Custom
 #include "IFeature.h"
@@ -16,17 +17,28 @@ public:
 	void SetTimeToAim(float fTimeToAim) { m_fTimeToAim = fTimeToAim; }
 	float GetTimeToAim() { return m_fTimeToAim; }
 
+	void SetDrawTarget(bool bDrawTarget) { m_bDrawTarget = bDrawTarget; }
+	bool GetDrawTarget() { return m_bDrawTarget; }
+
 	virtual void Setup();
 	virtual void Update(void* pParameters = 0);
+	void DrawTarget(ISurface* pSurface);
 private:
 	QAngle QuadraticBezier(QAngle& p0, QAngle& p1, QAngle& p2, float t);
 
 	float m_fTimeToAim;
 
+	float m_fStepSize;
+
 	bool m_bHasTarget;
 	int m_iTarget;
-	
+	float m_fAimProgress;
+
+	bool m_bDrawTarget;
+	bool m_bHasDrawTarget;
+
 	QAngle m_qStart;
+	QAngle m_qIntermediate;
 	QAngle m_qEnd;
 };
 

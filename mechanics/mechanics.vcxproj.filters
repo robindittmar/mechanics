@@ -707,6 +707,9 @@
     <ClInclude Include="EyeAnglesProxy.h">
       <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
+    <ClInclude Include="IInputSystem.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
     <ClInclude Include="Fakewalk.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
