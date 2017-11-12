@@ -12,8 +12,7 @@ public:
 	CFakewalk();
 	~CFakewalk();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 private:
 };
 

@@ -311,6 +311,10 @@ void CApplication::Setup()
 	// Load Netvars
 	this->GetNetVars();
 
+	// CGui initialization
+	m_pGui = CGui::Instance();
+	m_pGui->Setup();
+
 	// Setups
 	this->m_targetSelector.Setup(this);
 	this->m_ragebot.Setup();
@@ -328,6 +332,7 @@ void CApplication::Setup()
 	this->m_fakewalk.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
+	this->m_gunHud.Setup();
 	this->m_mirror.Setup();
 	this->m_lagcompensation.Setup();
 
@@ -349,10 +354,6 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("`nä²xeÚ¤~yà").ToCharArray(), false); // weapon_fire
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("u~é®rÚ«z{ä¡c").ToCharArray(), false); // bullet_impact
-
-	// CGui initialization
-	m_pGui = CGui::Instance();
-	m_pGui->Setup();
 
 	// Initialize menu
 	m_pMenu = CMenu::Instance();

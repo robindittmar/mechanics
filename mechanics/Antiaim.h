@@ -117,8 +117,7 @@ public:
 
 	void DrawEdgeAntiAimPoints();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 private:
 	// Standing
 	int m_iPitchSettingStanding;

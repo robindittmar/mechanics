@@ -127,12 +127,6 @@ void CAntiAim::DrawEdgeAntiAimPoints()
 	delete[] vScreenLeft;
 }
 
-void CAntiAim::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
-
 float GetOutgoingLatency()
 {
 	INetChannelInfo *nci = CApplication::Instance()->EngineClient()->GetNetChannelInfo();

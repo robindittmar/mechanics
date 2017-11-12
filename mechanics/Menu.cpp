@@ -181,12 +181,13 @@ void CMenu::ApplySettings()
 	m_pEffectsNoFlashValue->SetValue(m_pApp->Visuals()->GetFlashPercentage());
 
 	m_pVisualsOthersHandsDrawStyle->SetValue(m_pApp->Visuals()->GetHandsDrawStyle());
-	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->Visuals()->GetHitmarker());
-	m_pVisualsOthersHitmarkerSoundEnabled->SetChecked(m_pApp->Visuals()->GetHitmarkerSound());
-	m_pVisualsOthersHitmarkerHitpointEnabled->SetChecked(m_pApp->Visuals()->GetHitmarkerHitpoint());
-	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshair());
-	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->Visuals()->GetCrosshairShowRecoil());
-	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->Visuals()->GetSpreadCone());
+	m_pVisualsOthersHitmarkerEnabled->SetChecked(m_pApp->GunHud()->GetHitmarker());
+	m_pVisualsOthersHitmarkerSoundEnabled->SetChecked(m_pApp->GunHud()->GetHitmarkerSound());
+	m_pVisualsOthersHitmarkerHitpointEnabled->SetChecked(m_pApp->GunHud()->GetHitmarkerHitpoint());
+	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->GunHud()->GetCrosshair());
+	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->GunHud()->GetCrosshairShowRecoil());
+	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->GunHud()->GetSpreadCone());
+	// TODO: SpreadConeShowRecoil & SpreadConeColor
 	m_pVisualsOthersNightmodeEnabled->SetChecked(m_pApp->Visuals()->GetNightmode());
 	m_pVisualsOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
 	m_pVisualsOthersThirdpersonDistance->SetValue(m_pApp->Visuals()->GetThirdpersonDistance());
@@ -841,22 +842,22 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersHandsDrawStyle->SetEventHandler(std::bind(&CVisuals::SetHandsDrawStyle, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pVisualsOthersHitmarkerEnabled = new CCheckbox(4, 40, 128, 16, "Hitmarker Crosshair");
-	m_pVisualsOthersHitmarkerEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarker, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersHitmarkerEnabled->SetEventHandler(std::bind(&CGunHud::SetHitmarker, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersHitmarkerSoundEnabled = new CCheckbox(4, 60, 128, 16, "Hitmarker Sound");
-	m_pVisualsOthersHitmarkerSoundEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarkerSound, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersHitmarkerSoundEnabled->SetEventHandler(std::bind(&CGunHud::SetHitmarkerSound, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersHitmarkerHitpointEnabled = new CCheckbox(4, 80, 128, 16, "Hitmarker Hitpoint");
-	m_pVisualsOthersHitmarkerHitpointEnabled->SetEventHandler(std::bind(&CVisuals::SetHitmarkerHitpoint, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersHitmarkerHitpointEnabled->SetEventHandler(std::bind(&CGunHud::SetHitmarkerHitpoint, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersCrosshairEnabled = new CCheckbox(4, 108, 128, 16, "Custom Crosshair");
-	m_pVisualsOthersCrosshairEnabled->SetEventHandler(std::bind(&CVisuals::SetCrosshair, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersCrosshairEnabled->SetEventHandler(std::bind(&CGunHud::SetCrosshair, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersRecoilCrosshairEnabled = new CCheckbox(4, 128, 128, 16, "Show Recoil Crosshair");
-	m_pVisualsOthersRecoilCrosshairEnabled->SetEventHandler(std::bind(&CVisuals::SetCrosshairShowRecoil, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersRecoilCrosshairEnabled->SetEventHandler(std::bind(&CGunHud::SetCrosshairShowRecoil, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 156, 128, 16, "Show Spread Cone");
-	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CVisuals::SetSpreadCone, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CGunHud::SetSpreadCone, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pVisualsOthersNightmodeEnabled = new CCheckbox(4, 184, 128, 16, "Nightmode");
 	m_pVisualsOthersNightmodeEnabled->SetEventHandler(std::bind(&CVisuals::SetNightmode, m_pApp->Visuals(), std::placeholders::_1));

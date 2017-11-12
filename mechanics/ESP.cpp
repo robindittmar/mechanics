@@ -26,9 +26,9 @@ void CEsp::ResetHeadBones()
 
 void CEsp::Setup()
 {
-	m_pApp = CApplication::Instance();
-	m_pGui = CGui::Instance();
+	IFeature::Setup();
 
+	m_pGui = CGui::Instance();
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 

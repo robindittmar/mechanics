@@ -18,8 +18,8 @@ public:
 	CMirror();
 	~CMirror();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 
 	void OnRenderView(void* pThis, const CViewSetup& view, const CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw);
 	void Render(ISurface* pSurface, CWindow* pTargetWindow);

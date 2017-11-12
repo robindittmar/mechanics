@@ -41,8 +41,8 @@ public:
 	void SetDrawBombDamageIndicator(bool bDrawBombDamageIndicator) { m_bDrawBombDamageIndicator = bDrawBombDamageIndicator; }
 	bool GetDrawBombDamageIndicator() { return m_bDrawBombDamageIndicator; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 private:
 	void GrenadeEsp(IClientEntity* pCurEntity);
 	void WeaponEsp(IClientEntity* pCurEntity);

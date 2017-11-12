@@ -9,11 +9,6 @@ CBhop::~CBhop()
 {
 }
 
-void CBhop::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CBhop::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)

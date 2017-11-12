@@ -20,7 +20,7 @@ CRagebot::~CRagebot()
 
 void CRagebot::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
 
 	m_pTargetSelector = m_pApp->TargetSelector();
 	m_pEngineClient = m_pApp->EngineClient();

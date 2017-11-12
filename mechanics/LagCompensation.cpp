@@ -12,11 +12,6 @@ CLagCompensation::~CLagCompensation()
 {
 }
 
-void CLagCompensation::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CLagCompensation::Update(void* pParameters)
 {
 	IClientEntity* pLocalEnt = m_pApp->GetLocalPlayer();

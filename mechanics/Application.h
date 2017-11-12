@@ -56,6 +56,7 @@
 #include "Resolver.h"
 #include "Skinchanger.h"
 #include "Visuals.h"
+#include "GunHud.h"
 #include "Mirror.h"
 #include "LagCompensation.h"
 #include "Fakelag.h"
@@ -139,6 +140,7 @@ class CApplication
 {
 public:
 	static CApplication* Instance();
+
 	void Run(HMODULE hModule);
 	void Detach();
 
@@ -231,6 +233,7 @@ public:
 	CResolver*			Resolver()			{ return &m_resolver; }
 	CSkinChanger*		SkinChanger()		{ return &m_skinchanger; }
 	CVisuals*			Visuals()			{ return &m_visuals; }
+	CGunHud*			GunHud()			{ return &m_gunHud; }
 	CMirror*			Mirror()			{ return &m_mirror; }
 	CLagCompensation*	LagCompensation()	{ return &m_lagcompensation; }
 
@@ -367,6 +370,7 @@ private:
 	CFakewalk m_fakewalk;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
+	CGunHud m_gunHud;
 	CMirror m_mirror;
 	CLagCompensation m_lagcompensation;
 

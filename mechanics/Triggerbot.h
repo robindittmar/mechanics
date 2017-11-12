@@ -32,8 +32,8 @@ public:
 	void SetShootDelayJitter(int iShootDelayJitter) { m_iShootDelayJitter = iShootDelayJitter; }
 	int GetShootDelayJitter() { return m_iShootDelayJitter; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 private:
 	ULONGLONG m_llTimestampTargetAquired;
 	IClientEntity* m_pCurTarget;

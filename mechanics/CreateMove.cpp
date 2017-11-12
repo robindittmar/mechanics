@@ -27,8 +27,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 
 	if (pApp->EngineClient()->IsInGame())
 	{
-		IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
-
+		IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
 		if (pLocalEntity->IsAlive())
 		{
 			//todo: ghetto !
@@ -95,6 +94,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->Misc()->JumpScout(pUserCmd);
 
 			// Visuals
+			pApp->GunHud()->Update((void*)pLocalEntity);
 			pApp->Visuals()->Nightmode();
 			// TODO: Asuswalls
 

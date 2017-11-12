@@ -112,8 +112,8 @@ public:
 
 	void AutoRevolver(CUserCmd* pUserCmd);
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 private:
 	//bool CanHit(Vector &point, float *damage_given);
 

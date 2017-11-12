@@ -9,7 +9,7 @@ public:
 	IFeature();
 	~IFeature();
 
-	virtual void Setup() = 0;
+	virtual void Setup();
 	virtual void Update(void* pParameters = 0) = 0;
 
 	void SetEnabled(bool bIsEnabled)	{ m_bIsEnabled = bIsEnabled; }

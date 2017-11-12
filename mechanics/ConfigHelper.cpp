@@ -157,12 +157,14 @@ namespace ConfigHelper
 		//this->LoadSkinChangerConfig();
 
 		// Visuals
-		pApp->Visuals()->SetCrosshair(pConfig->GetBool("visuals", "crosshair"));
-		pApp->Visuals()->SetCrosshairShowRecoil(pConfig->GetBool("visuals", "recoilcrosshair"));
-		pApp->Visuals()->SetSpreadCone(pConfig->GetBool("visuals", "spreadcone"));
-		pApp->Visuals()->SetHitmarker(pConfig->GetBool("visuals", "hitmarker"));
-		pApp->Visuals()->SetHitmarkerSound(pConfig->GetBool("visuals", "hitmarkersound"));
-		pApp->Visuals()->SetHitmarkerHitpoint(pConfig->GetBool("visuals", "hitmarkerhitpoint"));
+		pApp->GunHud()->SetCrosshair(pConfig->GetBool("visuals", "crosshair"));
+		pApp->GunHud()->SetCrosshairShowRecoil(pConfig->GetBool("visuals", "recoilcrosshair"));
+		pApp->GunHud()->SetSpreadCone(pConfig->GetBool("visuals", "spreadcone"));
+		pApp->GunHud()->SetSpreadConeShowRecoil(pConfig->GetBool("visuals", "recoilspreadcone"));
+		pApp->GunHud()->SetSpreadConeColor(pConfig->GetColor("visuals", "spreadconecolor"));
+		pApp->GunHud()->SetHitmarker(pConfig->GetBool("visuals", "hitmarker"));
+		pApp->GunHud()->SetHitmarkerSound(pConfig->GetBool("visuals", "hitmarkersound"));
+		pApp->GunHud()->SetHitmarkerHitpoint(pConfig->GetBool("visuals", "hitmarkerhitpoint"));
 		pApp->Visuals()->NoSmoke(pConfig->GetBool("visuals", "nosmoke"));
 
 		pApp->Visuals()->SetNoFlash(pConfig->GetBool("visuals", "noflash"));
@@ -347,12 +349,14 @@ namespace ConfigHelper
 		pConfig->SetBool("misc", "spamname", pApp->Misc()->GetSpamName());
 
 		// Visuals
-		pConfig->SetBool("visuals", "crosshair", pApp->Visuals()->GetCrosshair());
-		pConfig->SetBool("visuals", "recoilcrosshair", pApp->Visuals()->GetCrosshairShowRecoil());
-		pConfig->SetBool("visuals", "spreadcone", pApp->Visuals()->GetSpreadCone());
-		pConfig->SetBool("visuals", "hitmarker", pApp->Visuals()->GetHitmarker());
-		pConfig->SetBool("visuals", "hitmarkersound", pApp->Visuals()->GetHitmarkerSound());
-		pConfig->SetBool("visuals", "hitmarkerhitpoint", pApp->Visuals()->GetHitmarkerHitpoint());
+		pConfig->SetBool("visuals", "crosshair", pApp->GunHud()->GetCrosshair());
+		pConfig->SetBool("visuals", "recoilcrosshair", pApp->GunHud()->GetCrosshairShowRecoil());
+		pConfig->SetBool("visuals", "spreadcone", pApp->GunHud()->GetSpreadCone());
+		pConfig->SetBool("visuals", "recoilspreadcone", pApp->GunHud()->GetSpreadConeShowRecoil());
+		pConfig->SetColor("visuals", "spreadconecolor", pApp->GunHud()->GetSpreadConeColor());
+		pConfig->SetBool("visuals", "hitmarker", pApp->GunHud()->GetHitmarker());
+		pConfig->SetBool("visuals", "hitmarkersound", pApp->GunHud()->GetHitmarkerSound());
+		pConfig->SetBool("visuals", "hitmarkerhitpoint", pApp->GunHud()->GetHitmarkerHitpoint());
 
 		pConfig->SetBool("visuals", "nosmoke", pApp->Visuals()->GetNoSmoke());
 		pConfig->SetBool("visuals", "noflash", pApp->Visuals()->GetNoFlash());

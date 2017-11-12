@@ -50,14 +50,14 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 			pApp->Legitbot()->DrawTarget(pSurface);
 
 			// Draw Hitmarker
-			pApp->Visuals()->DrawHitmarker(pSurface);
-			pApp->Visuals()->DrawHitmarkerHitpoint(pSurface);
+			pApp->GunHud()->DrawHitmarker();
+			pApp->GunHud()->DrawHitmarkerHitpoint();
 
 			// Draw SpreadCone
-			pApp->Visuals()->DrawSpreadCone();
+			pApp->GunHud()->DrawSpreadCone();
 
 			// Draw Crosshair last (but not least)
-			pApp->Visuals()->DrawCrosshair();
+			pApp->GunHud()->DrawCrosshair();
 
 			// LBY Indicator
 			pApp->AntiAim()->DrawLBYIndicator();

@@ -88,7 +88,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	pApp->Chams()->ReloadMaterials();
 	pApp->Esp()->ResetHeadBones();
 	pApp->Visuals()->NoSmoke(pApp->Visuals()->GetNoSmoke());
-	pApp->Visuals()->ResetHitmarker();
+	pApp->GunHud()->ResetHitmarker();
 
 	m_bNewGame = true;
 }
@@ -163,7 +163,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 		pResolverPlayer->SetShotHit(pResolverPlayer->GetShotsFired() - 1);
 	}
 
-	if (pApp->Visuals()->GetHitmarkerHitpoint() && bWeaponFired && bGotImpact)
+	if (pApp->GunHud()->GetHitmarkerHitpoint() && bWeaponFired && bGotImpact)
 	{
 		HitmarkerEntry hitmarkerentry;
 		hitmarkerentry.vHit = vHit;
@@ -175,7 +175,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	}
 
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
-	if (pApp->Visuals()->GetHitmarker())
+	if (pApp->GunHud()->GetHitmarker())
 	{
 		int dmg_health = pEvent->GetInt(m_xorDmgHealth.ToCharArray());
 
@@ -191,7 +191,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 		}
 
 		// Trigger hitmarker
-		pApp->Visuals()->TriggerHitmarker();
+		pApp->GunHud()->TriggerHitmarker();
 	}
 }
 

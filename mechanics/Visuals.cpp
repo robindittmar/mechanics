@@ -3,9 +3,8 @@
 
 CVisuals::CVisuals()
 {
-	m_bCrosshair = false;
-	m_fDrawHitmarkerStartTime = 0.0f;
 	m_flZoomSensitivity = 1.0f;
+	m_iViewmodelFovValue = 70;
 }
 
 CVisuals::~CVisuals()
@@ -14,152 +13,17 @@ CVisuals::~CVisuals()
 
 void CVisuals::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
+
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
 
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
-
-	m_iViewmodelFovValue = 70;
-
-	sprintf(m_pHitmarkerSound, "%smedia\\%s", m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
 }
 
 void CVisuals::Update(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;
-}
-
-void CVisuals::TriggerHitmarker()
-{
-	m_fDrawHitmarkerStartTime = m_pApp->GlobalVars()->curtime;
-	if (m_bHitmarkerSound)
-	{
-		PlaySoundA(m_pHitmarkerSound, NULL, SND_ASYNC | SND_FILENAME);
-	}
-}
-
-void CVisuals::ResetHitmarker()
-{
-	m_fDrawHitmarkerStartTime = 0.0f;
-}
-
-void CVisuals::DrawCrosshair()
-{
-	if (!m_bCrosshair)
-		return;
-
-	const int crosshair_size = 12;
-	int iMidX, iMidY;
-
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	if (!pLocalEntity)
-		return;
-
-	QAngle qAimPunchAngles = *pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation();
-	if (m_bCrosshairShowRecoil && (qAimPunchAngles.x != 0.0f || qAimPunchAngles.y != 0.0f || qAimPunchAngles.z != 0.0f) &&
-		!m_pApp->Misc()->GetNoRecoil() && !m_pApp->Ragebot()->DidNoRecoil())
-	{
-		Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
-		qAimPunchAngles += m_pApp->GetClientViewAngles();
-
-		Vector vForward, vScreenPos;
-		AngleVectors(qAimPunchAngles, &vForward);
-
-		CGui::Instance()->WorldToScreen(vHeadPos + (vForward * 8192.0f), vScreenPos);
-		iMidX = vScreenPos.x;
-		iMidY = vScreenPos.y;
-	}
-	else
-	{
-		iMidX = m_iSurfaceWidth / 2;
-		iMidY = m_iSurfaceHeight / 2;
-	}
-
-	ISurface* pSurface = m_pApp->Surface();
-
-	// Outer lines
-	pSurface->DrawSetColor(255, 255, 255, 255);
-	pSurface->DrawLine(iMidX - crosshair_size, iMidY, iMidX + crosshair_size, iMidY);
-	pSurface->DrawLine(iMidX, iMidY - crosshair_size, iMidX, iMidY + crosshair_size);
-
-	// Inner crosshair
-	pSurface->DrawSetColor(255, 255, 0, 0);
-	pSurface->DrawLine(iMidX - (crosshair_size / 2), iMidY, iMidX + (crosshair_size / 2), iMidY);
-	pSurface->DrawLine(iMidX, iMidY - (crosshair_size / 2), iMidX, iMidY + (crosshair_size / 2));
-}
-
-void CVisuals::DrawSpreadCone()
-{
-	if (!m_bSpreadCone)
-		return;
-
-	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
-	if (!pLocalEntity)
-		return;
-
-	CWeapon* pActiveWeapon = pLocalEntity->GetActiveWeapon();
-	if (!pActiveWeapon)
-		return;
-
-	int width = CGui::Instance()->GetScreenWidth();
-	int height = CGui::Instance()->GetScreenHeight();
-
-	float spread = ((pActiveWeapon->GetInaccuracy() + pActiveWeapon->GetSpread()) * 320.f) / tanf(DEG2RAD(this->m_iFovValue) * 0.5f) * height / 480.f;
-
-	ISurface* pSurface = m_pApp->Surface();
-	pSurface->DrawSetColor(255, 255, 0, 0);
-	pSurface->DrawOutlinedCircle(width / 2, height / 2, spread, 64);
-}
-
-void CVisuals::DrawHitmarker(ISurface* pSurface)
-{
-	if (!m_bHitmarker)
-		return;
-
-	const int hitmarker_gap = 4;
-	const int hitmarker_size = 6;
-
-	int iMidX = m_iSurfaceWidth / 2;
-	int iMidY = m_iSurfaceHeight / 2;
-
-	float fTime = m_pApp->GlobalVars()->curtime - m_fDrawHitmarkerStartTime;
-	if (fTime > HITMARKER_DEFAULT_TIME)
-		return;
-
-	int iAlpha = 255 - ((fTime / HITMARKER_DEFAULT_TIME) * 255.0f);
-	if (iAlpha == 0)
-		return;
-
-	pSurface->DrawSetColor(iAlpha, 255, 255, 255);
-	pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY - hitmarker_gap); // Top left
-	pSurface->DrawLine(iMidX - (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size), iMidX - hitmarker_gap, iMidY + hitmarker_gap); // Bottom left
-	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY - hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY - (hitmarker_gap + hitmarker_size)); // Top right
-	pSurface->DrawLine(iMidX + hitmarker_gap, iMidY + hitmarker_gap, iMidX + (hitmarker_gap + hitmarker_size), iMidY + (hitmarker_gap + hitmarker_size)); // Bottom right
-}
-
-void CVisuals::DrawHitmarkerHitpoint(ISurface* pSurface)
-{
-	float fCurtime = m_pApp->GlobalVars()->curtime;
-	for (std::vector<HitmarkerEntry>::iterator it = m_pApp->m_pHitmarker.begin(); it != m_pApp->m_pHitmarker.end();)
-	{
-		Vector vScreen;
-		if (m_pApp->Gui()->WorldToScreen(it->vHit, vScreen))
-		{
-			pSurface->DrawSetColor(255, 255, 255, 255);
-			pSurface->DrawLine(vScreen.x - 4, vScreen.y - 4, vScreen.x + 4, vScreen.y + 4);
-			pSurface->DrawLine(vScreen.x - 4, vScreen.y + 4, vScreen.x + 4, vScreen.y - 4);
-		}
-
-		if (it->fStarttime + 1.0 < fCurtime)
-		{
-			it = m_pApp->m_pHitmarker.erase(it);
-		}
-		else
-		{
-			it++;
-		}
-	}
 }
 
 void CVisuals::NoFlash(float fFlashPercentage)

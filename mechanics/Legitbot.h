@@ -20,8 +20,7 @@ public:
 	void SetDrawTarget(bool bDrawTarget) { m_bDrawTarget = bDrawTarget; }
 	bool GetDrawTarget() { return m_bDrawTarget; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 	void DrawTarget(ISurface* pSurface);
 private:
 	QAngle QuadraticBezier(QAngle& p0, QAngle& p1, QAngle& p2, float t);
