@@ -39,7 +39,6 @@ public:
 
 	void CalcAdaptiveChokeAmount();
 
-	virtual void Setup() override;
 	virtual void Update(void* pParameters = 0) override;
 private:
 	bool m_bIsChoking;

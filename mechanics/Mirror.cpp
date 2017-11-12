@@ -11,7 +11,7 @@ CMirror::~CMirror()
 
 void CMirror::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
 
 	g_pResourceManager->CreateMirror();
 }

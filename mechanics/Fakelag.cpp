@@ -39,11 +39,6 @@ void CFakelag::CalcAdaptiveChokeAmount()
 	m_iAdaptiveChokeAmount = (max(0, min(iUnclampedTicks, m_iChokeAmount - 1)) ? iUnclampedTicks : m_iChokeAmount - 1);
 }
 
-void CFakelag::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CFakelag::Update(void* pParameters)
 {
 	assert(pParameters != NULL);

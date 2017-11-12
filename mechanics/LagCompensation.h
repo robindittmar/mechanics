@@ -45,8 +45,7 @@ public:
 	void SetLegitLagCompensationDuration(int bLegitLagCompensationDuration) { m_bLegitLagCompensationDuration = bLegitLagCompensationDuration; }
 	int GetLegitLagCompensationDuration() { return m_bLegitLagCompensationDuration; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 
 	int RestorePlayerClosestToCrosshair();
 

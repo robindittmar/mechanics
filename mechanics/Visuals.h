@@ -14,20 +14,15 @@
 #include "Offsets.h"
 #include "IFeature.h"
 
-#pragma comment(lib, "winmm.lib")
-
-#define HITMARKER_DEFAULT_TIME		1.0f
-
 #define HANDSDRAWSTYLE_NONE			0
 #define HANDSDRAWSTYLE_NOHANDS		1
 #define HANDSDRAWSTYLE_WIREFRAME	2
 
 #define CAM_MIN_DIST				30.0
 #define CAM_MAX_DIST				300.0
-#define CAM_HULL_OFFSET		9.0    // the size of the bounding hull used for collision checking
+#define CAM_HULL_OFFSET				9.0    // the size of the bounding hull used for collision checking
 static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET, -CAM_HULL_OFFSET, -CAM_HULL_OFFSET);
 static Vector CAM_HULL_MAX(CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
-
 
 class IMatRenderContext;
 
@@ -36,24 +31,6 @@ class CVisuals : public IFeature
 public:
 	CVisuals();
 	~CVisuals();
-
-	void SetCrosshair(bool bCrosshair) { m_bCrosshair = bCrosshair; }
-	bool GetCrosshair() { return m_bCrosshair; }
-
-	void SetCrosshairShowRecoil(bool bCrosshairShowRecoil) { m_bCrosshairShowRecoil = bCrosshairShowRecoil; }
-	bool GetCrosshairShowRecoil() { return m_bCrosshairShowRecoil; }
-
-	void SetSpreadCone(bool bSpreadCone) { m_bSpreadCone = bSpreadCone; }
-	bool GetSpreadCone() { return m_bSpreadCone; }
-
-	void SetHitmarker(bool bHitmarker) { m_bHitmarker = bHitmarker; }
-	bool GetHitmarker() { return m_bHitmarker; }
-
-	void SetHitmarkerSound(bool bHitmarkerSound) { m_bHitmarkerSound = bHitmarkerSound; }
-	bool GetHitmarkerSound() { return m_bHitmarkerSound; }
-
-	void SetHitmarkerHitpoint(bool bHitmarkerHitpoint) { m_bHitmarkerHitpoint = bHitmarkerHitpoint; }
-	bool GetHitmarkerHitpoint() { return m_bHitmarkerHitpoint; }
 
 	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
@@ -115,17 +92,9 @@ public:
 	void SetBulletTracerTeam(bool bBulletTracerTeam) { m_bBulletTracerTeam = bBulletTracerTeam; };
 	bool GetBulletTracerTeam() { return m_bBulletTracerTeam; }
 
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
-
-	void TriggerHitmarker();
-	void ResetHitmarker();
-
-	void DrawCrosshair();
-	void DrawSpreadCone();
-	void DrawHitmarker(ISurface* pSurface);
-	void DrawHitmarkerHitpoint(ISurface* pSurface);
 	void NoFlash(float fFlashPercentage);
 	void NoSmoke(bool bNoSmoke);
 	IMaterial* HandsDrawStyle(const char*, void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
@@ -142,17 +111,6 @@ public:
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
-
-	bool m_bCrosshair;
-	bool m_bCrosshairShowRecoil;
-
-	bool m_bSpreadCone;
-
-	bool m_bHitmarker;
-	bool m_bHitmarkerSound;
-	bool m_bHitmarkerHitpoint;
-	float m_fDrawHitmarkerStartTime;
-	char m_pHitmarkerSound[MAX_PATH];
 
 	bool m_bNoFlash;
 	float m_fFlashPercentage;

@@ -13,7 +13,8 @@ CMisc::~CMisc()
 
 void CMisc::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
+
 	m_pSetClanTag = (SetClanTag_t)CPattern::FindPattern((BYTE*)m_pApp->EngineDll(), 0x8C7000, (BYTE*)"\x53\x56\x57\x8B\xDA\x8B\xF9\xFF\x15", "adhgezvel");
 }
 

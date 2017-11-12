@@ -327,6 +327,9 @@
     <ClCompile Include="Fakewalk.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="GunHud.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -711,6 +714,9 @@
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
     <ClInclude Include="Fakewalk.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="GunHud.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>

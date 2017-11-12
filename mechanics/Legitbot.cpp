@@ -12,11 +12,6 @@ CLegitbot::~CLegitbot()
 {
 }
 
-void CLegitbot::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CLegitbot::Update(void* pParameters)
 {
 	assert(pParameters != NULL);

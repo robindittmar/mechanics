@@ -42,11 +42,6 @@ CChams::~CChams()
 	this->ReloadMaterials();
 }
 
-void CChams::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CChams::Update(void* pParameters)
 {
 }

@@ -11,7 +11,7 @@ CTriggerbot::~CTriggerbot()
 
 void CTriggerbot::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
 
 	m_pEngineClient = m_pApp->EngineClient();
 	m_pEntityList = m_pApp->EntityList();

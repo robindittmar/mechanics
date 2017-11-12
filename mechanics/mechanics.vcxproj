@@ -156,6 +156,7 @@
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="ConfigHelper.cpp" />
     <ClCompile Include="CreateMove.cpp" />
+    <ClCompile Include="GunHud.cpp" />
     <ClCompile Include="DrawModelExecute.cpp" />
     <ClCompile Include="EmitSound.cpp" />
     <ClCompile Include="Esp.cpp" />
@@ -251,6 +252,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="ConfigHelper.h" />
     <ClInclude Include="CreateMove.h" />
+    <ClInclude Include="GunHud.h" />
     <ClInclude Include="CUtlVector.h" />
     <ClInclude Include="DrawModelExecute.h" />
     <ClInclude Include="EmitSound.h" />

@@ -28,8 +28,7 @@ public:
 	CChams();
 	~CChams();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 
 	void SetRenderTeam(bool bRender) { m_bRenderTeam = bRender; }
 	bool GetRenderTeam() { return m_bRenderTeam; }

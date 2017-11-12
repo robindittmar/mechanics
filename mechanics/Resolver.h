@@ -24,8 +24,7 @@ public:
 
 	CResolverPlayer* GetResolverPlayer(int index) { return &m_pResolverPlayers[index]; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Update(void* pParameters = 0) override;
 private:
 	int m_iResolverType;
 

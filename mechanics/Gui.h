@@ -21,8 +21,8 @@ public:
 
 	void GetWorldToScreenMatrix();
 
-	int GetScreenWidth() { return m_iScreenWidth; }
-	int GetScreenHeight() { return m_iScreenHeight; }
+	int GetScreenWidth() const { return m_iScreenWidth; }
+	int GetScreenHeight() const { return m_iScreenHeight; }
 
 	void SetEnableGameInput(bool bEnableGameInput);
 	bool IsMouseEnabled();

@@ -9,11 +9,6 @@ CResolver::~CResolver()
 {
 }
 
-void CResolver::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 void CResolver::Update(void* pParameters)
 {
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();

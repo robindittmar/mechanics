@@ -89,8 +89,8 @@ public:
 	void SetReadyCallback(IsReadyCallback_t pIsReadyCallback) { m_IsReadyCallback = pIsReadyCallback; }
 	IsReadyCallback_t GetReadyCallback() { return m_IsReadyCallback; }
 
-	virtual void Setup();
-	virtual void Update(void* pParameters);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters) override;
 
 	void NoRecoil(CUserCmd* pUserCmd);
 	/*void Fakelag(CUserCmd* pUserCmd);*/

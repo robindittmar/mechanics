@@ -9,3 +9,8 @@ IFeature::IFeature()
 IFeature::~IFeature()
 {
 }
+
+void IFeature::Setup()
+{
+	m_pApp = CApplication::Instance();
+}

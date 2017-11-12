@@ -44,8 +44,8 @@ public:
 	void AddSound(CSoundInfo* pSound);
 	void UpdateSounds();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 private:
 	int m_iShowTime;
 	int m_iFadeoutTime;

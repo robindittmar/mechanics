@@ -96,8 +96,8 @@ public:
 
 	void ResetHeadBones();
 
-	virtual void Setup();
-	virtual void Update(void* pParameters = 0);
+	virtual void Setup() override;
+	virtual void Update(void* pParameters = 0) override;
 
 	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
 	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);

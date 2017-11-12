@@ -25,7 +25,7 @@ CSkinChanger::~CSkinChanger()
 
 void CSkinChanger::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
 
 	static CXorString xorKnifeCT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{");
 	static CXorString xorKnifeT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®");

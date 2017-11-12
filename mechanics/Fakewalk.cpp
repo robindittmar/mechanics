@@ -9,11 +9,6 @@ CFakewalk::~CFakewalk()
 {
 }
 
-void CFakewalk::Setup()
-{
-	m_pApp = CApplication::Instance();
-}
-
 // TODO not working
 void CFakewalk::Update(void* pParameters)
 {

@@ -168,8 +168,11 @@ bool CConfig::SaveFile(const char* pFilename)
 bool CConfig::GetBool(const char* pSection, const char* pKey, bool* pOut)
 {
 	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
-	bool bValue = m_mapValues[iHash][0] == '1';
+	std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.find(iHash);
+	if (it == m_mapValues.end())
+		return false;
 
+	bool bValue = it->second[0] == '1';
 	if (pOut)
 		*pOut = bValue;
 
@@ -179,8 +182,11 @@ bool CConfig::GetBool(const char* pSection, const char* pKey, bool* pOut)
 int CConfig::GetInt(const char* pSection, const char* pKey, int* pOut)
 {
 	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
-	int iValue = atoi(m_mapValues[iHash]);
+	std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.find(iHash);
+	if (it == m_mapValues.end())
+		return 0;
 
+	int iValue = atoi(it->second);
 	if (pOut)
 		*pOut = iValue;
 
@@ -190,8 +196,11 @@ int CConfig::GetInt(const char* pSection, const char* pKey, int* pOut)
 float CConfig::GetFloat(const char* pSection, const char* pKey, float* pOut)
 {
 	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
-	float fValue = atof(m_mapValues[iHash]);
+	std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.find(iHash);
+	if (it == m_mapValues.end())
+		return 0.0f;
 
+	float fValue = atof(it->second);
 	if (pOut)
 		*pOut = fValue;
 
@@ -212,8 +221,11 @@ Color CConfig::GetColor(const char* pSection, const char* pKey, Color* pOut)
 const char* CConfig::GetString(const char* pSection, const char* pKey, char* pOut, int iMaxLen)
 {
 	uint32_t iHash = this->BuildSectionKeyHash(pSection, pKey);
-	const char* pValue = m_mapValues[iHash];
+	std::unordered_map<uint32_t, const char*>::iterator it = m_mapValues.find(iHash);
+	if (it == m_mapValues.end())
+		return NULL;
 
+	const char* pValue = it->second;
 	if (pOut)
 		strncpy(pOut, pValue, iMaxLen);
 

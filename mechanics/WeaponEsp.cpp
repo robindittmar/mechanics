@@ -11,7 +11,7 @@ CWeaponEsp::~CWeaponEsp()
 
 void CWeaponEsp::Setup()
 {
-	m_pApp = CApplication::Instance();
+	IFeature::Setup();
 
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 
