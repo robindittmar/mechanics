@@ -15,12 +15,6 @@ public:
 	void SetShotHit(int iShotHit) { m_iShotHit = iShotHit; }
 	int GetShotHit() { return m_iShotHit; }
 
-	void SetOriginalYaw(float fOriginalYaw) { m_fOriginalYaw = fOriginalYaw; }
-	float GetOriginalYaw() { return m_fOriginalYaw; }
-
-	void SetLastMovingTime(float fLastMovingTime) { m_fLastMovingTime = fLastMovingTime; }
-	float GetLastMovingTime() { return m_fLastMovingTime; }
-
 	void SetLbyProxyLastValue(float fLastLby) { m_fLbyProxyLastValue = fLastLby; }
 	float GetLbyProxyLastValue() { return m_fLbyProxyLastValue; }
 
@@ -37,30 +31,25 @@ public:
 	void SetYawAngle(float fYawAngle) { m_qAngles.y = fYawAngle; m_qAngles.NormalizeAngles(); }
 	QAngle GetAngles() { return m_qAngles; }
 
-	bool m_bDidSet = false;
-	float m_fFirstLbySinceStanding;
-
-	float m_fPossibleLbyBreakerReal;
-	float m_fPossibleLbyBreakerFake;
-	float m_fPossibleLbyBreakerStart;
-
-
 	float m_fBalanceAdjustStart;
 
-	int m_iFakeCount;
-	bool m_bAdjustedWithFake;
 	bool m_bWasInAir;
+
 	bool m_bHadFakeActive;
 	bool m_bFakeActive;
+
+	bool m_bWasBreakingLby;
+	bool m_iBreakingLbyInteruptCount;
 	bool m_bBreakingLby;
-	bool m_bStartPredLbyBreaks;
+
+	bool m_bFakewalking;
+	bool m_bMoving;
+	bool m_bOnGround;
+
+	bool m_bLbyPredict;
 private:
 	int m_iShotsFired;
 	int m_iShotHit;
-	float m_fOriginalYaw;
-
-	float m_fLastMovingTime;
-	float m_fLbyAfterPossibleBreaker;
 
 	float m_fLbyUpdateTime;
 

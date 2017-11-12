@@ -29,7 +29,7 @@ public:
 private:
 	int m_iResolverType;
 
-	bool PredictLbyBreak(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
+	void CheckPlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 	void BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 
 	CResolverPlayer m_pResolverPlayers[MAX_PLAYERS];

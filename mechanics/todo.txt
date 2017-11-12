@@ -2,7 +2,6 @@
 Priority High
 --------------------------------------
 =======> PLAYERLIST!!!!
-==> AUTOWALL!
 => GUI/Menu
 => Colorpicker
 
@@ -25,13 +24,10 @@ Priority Low
 
 // NoSmoke nach mapchange
 
--> FakeYaw Moving
-
-=> Zoom Sensitivity
-=> Hitmarker on game_newmap
-
 
 => public configs & ähm general stäts in klammern nochmal irgendwie kills oder so perfekt
 
 => Config Crash if key is missing
 => Hitmarker Hitpoint save last 2 use second !!
+=> Fakelag avoid hitting ground
+=> Nightmode & Asuswalls 0-100% menu!!
