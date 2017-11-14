@@ -296,12 +296,19 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 						CResolverPlayer* pCur = pApp->Resolver()->GetResolverPlayer(pEnt->EntIndex());
 						if (pCur)
 						{
-							// Setting shots fired + 1
-							pCur->SetShotsFired(pCur->GetShotsFired() + 1);
-
-							if (pCur->GetShotsFired() > pCur->GetShotHit() + 2)
+							if (!pCur->m_bLbyPredict)
 							{
-								pCur->SetShotHit(-1);
+								// Setting shots fired + 1
+								pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+
+								if (pCur->GetShotsFired() > pCur->GetShotHit() + 2)
+								{
+									pCur->SetShotHit(-1);
+								}
+							}
+							else
+							{
+								pCur->m_bLbyPredict = false;
 							}
 						}
 					}
