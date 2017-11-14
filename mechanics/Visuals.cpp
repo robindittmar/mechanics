@@ -18,6 +18,13 @@ void CVisuals::Setup()
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
 
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
+
+	m_pLoadSky = (LoadSky_t)CPattern::FindPattern(
+		(BYTE*)m_pApp->EngineDll(),
+		ENGINEDLL_SIZE,
+		(BYTE*)"\x55\x8B\xEC\x81\xEC\x34\x01\x00\x00\x56\x57\x8B\xF9",
+		"123456789abcd"
+	);
 }
 
 void CVisuals::Update(void* pParameters)
@@ -305,12 +312,14 @@ void CVisuals::Nightmode()
 			{
 				if (bLastSetting)
 				{
-					sv_skyname->SetValue(xorSkyNight.ToCharArray());
+					//sv_skyname->SetValue(xorSkyNight.ToCharArray());
+					m_pLoadSky(xorSkyNight.ToCharArray());
 					pMaterial->ColorModulate(0.25f, 0.25f, 0.25f);
 				}
 				else
 				{
-					sv_skyname->SetValue(oldSkyname);
+					//sv_skyname->SetValue(oldSkyname);
+					m_pLoadSky(oldSkyname);
 					pMaterial->ColorModulate(1.0f, 1.0f, 1.0f);
 				}
 			}

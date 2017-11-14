@@ -24,6 +24,8 @@
 static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET, -CAM_HULL_OFFSET, -CAM_HULL_OFFSET);
 static Vector CAM_HULL_MAX(CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
 
+typedef void(__fastcall *LoadSky_t)(const char*);
+
 class IMatRenderContext;
 
 class CVisuals : public IFeature
@@ -136,6 +138,7 @@ private:
 
 	bool m_bNoScope;
 
+	LoadSky_t m_pLoadSky;
 	bool m_bNightmode;
 	bool m_bNightmodePerfomed;
 	bool m_bNightmodeMapChange;
