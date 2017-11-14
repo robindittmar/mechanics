@@ -194,7 +194,6 @@ void CSkinChanger::ParseSkinFile()
 {
 	int iLenPath;
 	char pFilepathSkins[MAX_PATH];
-	char pFilepathLanguage[MAX_PATH];
 
 	if ((iLenPath = GetModuleFileName((HMODULE)m_pApp->ClientDll(), pFilepathSkins, MAX_PATH)) == 0)
 		return;
@@ -212,10 +211,7 @@ void CSkinChanger::ParseSkinFile()
 		}
 	}
 
-	strcpy(pFilepathLanguage, pFilepathSkins);
-
 	strcat(pFilepathSkins, "scripts\\items\\items_game.txt");
-	strcat(pFilepathLanguage, "resource\\csgo_english.txt");
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "Parsing skin file (%s)\n", pFilepathSkins);
@@ -237,6 +233,7 @@ void CSkinChanger::ParseSkinFile()
 	int iLevels = 0;
 	bool bInPaintKits = false;
 	bool bInClientLootList = false;
+	//bool bInItemSets = false;
 	bool bInAlternateIcons = false;
 	char pBuffer[1024];
 	std::vector<const char*> iconpaths;
@@ -297,7 +294,7 @@ void CSkinChanger::ParseSkinFile()
 				}
 			}
 		}
-		else if (bInClientLootList)
+		else if (bInClientLootList/* || bInItemSets*/)
 		{
 			if (strstr(pBuffer, "{"))
 			{
@@ -309,11 +306,13 @@ void CSkinChanger::ParseSkinFile()
 				if (--iLevels == 0)
 				{
 					bInClientLootList = false;
+					//bInItemSets = false;
 					continue;
 				}
 			}
 
-			if (iLevels == 2)
+			if (bInClientLootList && iLevels == 2/* ||
+				bInItemSets && iLevels == 3*/)
 			{
 				char* pPaintName = strtok(pBuffer, "\"\n\t \n[]");
 				char* pWeaponName = strtok(NULL, "\"\n\t \n[]");
@@ -324,7 +323,7 @@ void CSkinChanger::ParseSkinFile()
 				}
 
 				iHash = murmurhash(pPaintName, strlen(pPaintName), 0xB16B00B5);
-				m_mapWeaponSkins[iHash] = m_mapWeapons[murmurhash(pWeaponName, strlen(pWeaponName), 0xB16B00B5)].id;
+				m_mapWeaponSkins[iHash].push_back(m_mapWeapons[murmurhash(pWeaponName, strlen(pWeaponName), 0xB16B00B5)].id);
 			}
 		}
 		else if (bInAlternateIcons)
@@ -368,6 +367,11 @@ void CSkinChanger::ParseSkinFile()
 			bInClientLootList = true;
 			iLevels = 0;
 		}
+		/*else if (strstr(pBuffer, "item_sets"))
+		{
+			bInItemSets = true;
+			iLevels = 0;
+		}*/
 		else if (strstr(pBuffer, "alternate_icons2"))
 		{
 			bInAlternateIcons = true;
@@ -377,10 +381,12 @@ void CSkinChanger::ParseSkinFile()
 
 	fclose(pFile);
 
-	// TODO: Parse language file
-	for (std::unordered_map<uint32_t, int>::iterator it = m_mapWeaponSkins.begin(); it != m_mapWeaponSkins.end(); it++)
+	for (std::unordered_map<uint32_t, std::vector<int>>::iterator it = m_mapWeaponSkins.begin(); it != m_mapWeaponSkins.end(); it++)
 	{
-		m_mapSkins[it->second][m_mapPaintKits[it->first]] = m_mapPaintKitDescription[it->first];
+		for (std::vector<int>::iterator weapIt = it->second.begin(); weapIt != it->second.end(); weapIt++)
+		{
+			m_mapSkins[*weapIt][m_mapPaintKits[it->first]] = m_mapPaintKitDescription[it->first];
+		}
 	}
 
 	// add knife skins !!!
@@ -399,10 +405,6 @@ void CSkinChanger::ClearReplacements()
 	this->DeleteModelNames();
 	this->DeleteSkinMetadata();
 	this->DeleteKillIcons();
-
-	m_mapModelMetadata.clear();
-	m_mapSkinMetadata.clear();
-	m_mapKillIcon.clear();
 }
 
 void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)

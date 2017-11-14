@@ -121,7 +121,7 @@ private:
 
 	std::unordered_map<uint32_t, int> m_mapPaintKits;
 	std::unordered_map<uint32_t, const char*> m_mapPaintKitDescription;
-	std::unordered_map<uint32_t, int> m_mapWeaponSkins;
+	std::unordered_map<uint32_t, std::vector<int>> m_mapWeaponSkins;
 	std::unordered_map<int, std::unordered_map<int, const char*>> m_mapSkins;
 };
 
