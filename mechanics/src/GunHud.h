@@ -25,6 +25,9 @@ public:
 
 	void SetSurface(ISurface* pSurface) { m_pSurface = pSurface; }
 
+	void SetPlayerHurtTime(float fPlayerHurtTime) { m_fPlayerHurtTime = fPlayerHurtTime; }
+	void SetWeaponFireTime(float fWeaponFireTime) { m_fWeaponFireTime = fWeaponFireTime; }
+
 	void SetCrosshair(bool bCrosshair) { m_bCrosshair = bCrosshair; }
 	bool GetCrosshair() { return m_bCrosshair; }
 
@@ -64,6 +67,9 @@ public:
 	void DrawHitmarkerHitpoint();
 private:
 	ISurface* m_pSurface;
+
+	float m_fPlayerHurtTime;
+	float m_fWeaponFireTime;
 
 	int m_iMiddleX, m_iMiddleY;
 	int m_iRcMiddleX, m_iRcMiddleY;

@@ -30,6 +30,7 @@ private:
 
 	void CheckPlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 	void BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
+	void BruteforceBreakingPlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity);
 
 	CResolverPlayer m_pResolverPlayers[MAX_PLAYERS];
 };

@@ -135,10 +135,6 @@ void CGameEventListener::player_spawned(IGameEvent* pEvent)
 	}
 }
 
-bool bWeaponFired = false;
-bool bGotImpact = false;
-Vector vHit;
-
 void CGameEventListener::player_hurt(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
@@ -158,22 +154,20 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 	if (pApp->EngineClient()->GetPlayerForUserID(attacker) != pApp->EngineClient()->GetLocalPlayer())
 		return;
 
+	pApp->GunHud()->SetPlayerHurtTime(pApp->GlobalVars()->curtime);
+
 	int hitgroup = pEvent->GetInt(m_xorHitgroup.ToCharArray());
 	CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pApp->EngineClient()->GetPlayerForUserID(userid));
 	if (pResolverPlayer && hitgroup == 1)
 	{
-		pResolverPlayer->SetShotHit(pResolverPlayer->GetShotsFired() - 1);
-	}
-
-	if (pApp->GunHud()->GetHitmarkerHitpoint() && bWeaponFired && bGotImpact)
-	{
-		HitmarkerEntry hitmarkerentry;
-		hitmarkerentry.vHit = vHit;
-		hitmarkerentry.fStarttime = pApp->GlobalVars()->curtime;
-		pApp->m_pHitmarker.push_back(hitmarkerentry);
-
-		bWeaponFired = false;
-		bGotImpact = false;
+		if (pResolverPlayer->m_bBreakingLby)
+		{
+			pResolverPlayer->SetBreakingShotHit(pResolverPlayer->GetBreakingShotsFired() - 1);
+		}
+		else
+		{
+			pResolverPlayer->SetShotHit(pResolverPlayer->GetShotsFired() - 1);
+		}
 	}
 
 	// TODO IMPORTANT: Probably should try to call the sound engine directly
@@ -219,6 +213,8 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	{
 		pResolverPlayer->SetShotsFired(0);
 		pResolverPlayer->SetShotHit(-1);
+		pResolverPlayer->SetBreakingShotsFired(0);
+		pResolverPlayer->SetBreakingShotHit(-1);
 	}
 
 	// Set here instead of player_spawned because of IsAlive check
@@ -283,8 +279,7 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 			CWeapon* pActive = pCurEnt->GetActiveWeapon();
 			if (pActive && !pActive->IsKnife() && !pActive->IsNade() && !pActive->IsC4())
 			{
-				bWeaponFired = true;
-				bGotImpact = false;
+				pApp->GunHud()->SetWeaponFireTime(pApp->GlobalVars()->curtime);
 
 				// Check if target exists
 				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
@@ -301,11 +296,23 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 							if (!pCur->m_bLbyPredict)
 							{
 								// Setting shots fired + 1
-								pCur->SetShotsFired(pCur->GetShotsFired() + 1);
-
-								if (pCur->GetShotsFired() > pCur->GetShotHit() + 2)
+								if (pCur->m_bBreakingLby)
 								{
-									pCur->SetShotHit(-1);
+									pCur->SetBreakingShotsFired(pCur->GetBreakingShotsFired() + 1);
+
+									if (pCur->GetBreakingShotsFired() > pCur->GetBreakingShotHit() + 2)
+									{
+										pCur->SetBreakingShotHit(-1);
+									}
+								}
+								else
+								{
+									pCur->SetShotsFired(pCur->GetShotsFired() + 1);
+
+									if (pCur->GetShotsFired() > pCur->GetShotHit() + 2)
+									{
+										pCur->SetShotHit(-1);
+									}
 								}
 							}
 							else
@@ -326,16 +333,19 @@ void CGameEventListener::bullet_impact(IGameEvent * pEvent)
 	int userid = pEvent->GetInt(m_xorUserId.ToCharArray());
 
 	IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetPlayerForUserID(userid));
+
 	if (pCurEnt)
 	{
 		// Check for valid weapon
 		CWeapon* pActiveWeapon = pCurEnt->GetActiveWeapon();
 		if (pActiveWeapon && !pActiveWeapon->IsKnife() && !pActiveWeapon->IsNade() && !pActiveWeapon->IsC4())
 		{
-			if (bWeaponFired && !bGotImpact)
+			if (pApp->GunHud()->GetHitmarkerHitpoint() && pApp->GetLocalPlayer()->EntIndex() == pCurEnt->EntIndex())
 			{
-				vHit = Vector(pEvent->GetFloat("x"), pEvent->GetFloat("y"), pEvent->GetFloat("z"));
-				bGotImpact = true;
+				HitmarkerEntry hitmarkerentry;
+				hitmarkerentry.vHit = Vector(pEvent->GetFloat("x"), pEvent->GetFloat("y"), pEvent->GetFloat("z"));
+				hitmarkerentry.fStarttime = pApp->GlobalVars()->curtime;
+				pApp->m_pHitmarker.push_back(hitmarkerentry);
 			}
 
 			if (pApp->Visuals()->GetBulletTracer())

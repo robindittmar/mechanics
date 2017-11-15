@@ -15,6 +15,13 @@ public:
 	void SetShotHit(int iShotHit) { m_iShotHit = iShotHit; }
 	int GetShotHit() { return m_iShotHit; }
 
+
+	void SetBreakingShotsFired(int iBreakingShotsFired) { m_iBreakingShotsFired = iBreakingShotsFired; }
+	int GetBreakingShotsFired() { return m_iBreakingShotsFired; }
+
+	void SetBreakingShotHit(int iBreakingShotHit) { m_iBreakingShotHit = iBreakingShotHit; }
+	int GetBreakingShotHit() { return m_iBreakingShotHit; }
+
 	void SetLbyProxyLastValue(float fLastLby) { m_fLbyProxyLastValue = fLastLby; }
 	float GetLbyProxyLastValue() { return m_fLbyProxyLastValue; }
 
@@ -50,6 +57,8 @@ public:
 private:
 	int m_iShotsFired;
 	int m_iShotHit;
+	int m_iBreakingShotsFired;
+	int m_iBreakingShotHit;
 
 	float m_fLbyUpdateTime;
 

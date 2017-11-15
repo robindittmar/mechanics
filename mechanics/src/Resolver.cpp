@@ -57,9 +57,8 @@ void CResolver::Update(void* pParameters)
 			{
 				//TODO: maybe formula exists to get the ~delta otherwise bruteforce xD
 				//TODO: check if edge AA if so flip 180°
-				//TODO: bruteforce only 120-180
 
-				BruteforcePlayer(pCurResolverPlayer, pCurEntity);
+				BruteforceBreakingPlayer(pCurResolverPlayer, pCurEntity);
 			}
 			else if (pCurResolverPlayer->m_bMoving && pCurResolverPlayer->m_bOnGround)
 			{
@@ -179,6 +178,7 @@ void CResolver::BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEnt
 	int iModuloShots = pCurResolverPlayer->GetShotsFired() % 12;
 	int iShotHit = pCurResolverPlayer->GetShotHit();
 
+	// If a shot hitted head use that bruteforceposition
 	if (iShotHit != -1)
 	{
 		iModuloShots = iShotHit;
@@ -221,6 +221,44 @@ void CResolver::BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEnt
 		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 180.0f;
 		break;
 	case 0:
+		break;
+	}
+
+	qCurEyeAngle->NormalizeAngles();
+}
+
+void CResolver::BruteforceBreakingPlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity)
+{
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	QAngle* qCurEyeAngle = pCurEntity->GetAngEyeAngles();
+	qCurEyeAngle->NormalizeAngles();
+
+	int iModuloShots = pCurResolverPlayer->GetBreakingShotsFired() % 5;
+	int iShotHit = pCurResolverPlayer->GetBreakingShotHit();
+
+	// If a shot hitted head use that bruteforceposition
+	if (iShotHit != -1)
+	{
+		iModuloShots = iShotHit;
+	}
+
+	// + links, - rechts
+	switch (iModuloShots)
+	{
+	case 4:
+		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 120.0f;
+		break;
+	case 3:
+		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y + 120.0f;
+		break;
+	case 2:
+		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 150.0f;
+		break;
+	case 1:
+		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y + 150.0f;
+		break;
+	case 0:
+		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 180.0f;
 		break;
 	}
 

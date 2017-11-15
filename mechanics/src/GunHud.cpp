@@ -5,7 +5,8 @@ CGunHud::CGunHud()
 	: m_pSurface(NULL), m_bCrosshair(false), m_bCrosshairShowRecoil(false),
 	m_bSpreadCone(false), m_bSpreadConeShowRecoil(false), m_clrSpreadCone(SPREADCONE_DEFAULT_COLOR),
 	m_bHitmarker(false), m_bHitmarkerSound(false), m_bHitmarkerHitpoint(false),
-	m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME)
+	m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME),
+	m_fPlayerHurtTime(-1)
 {
 }
 
@@ -164,25 +165,31 @@ void CGunHud::DrawHitmarker()
 
 void CGunHud::DrawHitmarkerHitpoint()
 {
+	if (m_pApp->m_pHitmarker.size() == 0)
+		return;
+
 	float fCurtime = m_pApp->GlobalVars()->curtime;
 
 	m_pSurface->DrawSetColor(255, 255, 255, 255);
-	for (std::vector<HitmarkerEntry>::iterator it = m_pApp->m_pHitmarker.begin(); it != m_pApp->m_pHitmarker.end();)
+	for (std::vector<HitmarkerEntry>::iterator it = m_pApp->m_pHitmarker.begin(); it != m_pApp->m_pHitmarker.end(); it++)
 	{
-		Vector vScreen;
-		if (m_pApp->Gui()->WorldToScreen(it->vHit, vScreen))
-		{
-			m_pSurface->DrawLine(vScreen.x - 4, vScreen.y - 4, vScreen.x + 4, vScreen.y + 4);
-			m_pSurface->DrawLine(vScreen.x - 4, vScreen.y + 4, vScreen.x + 4, vScreen.y - 4);
-		}
-
-		if (it->fStarttime + m_fHitmarkerShowTime < fCurtime)
+		while (it->fStarttime + m_fHitmarkerShowTime < fCurtime)
 		{
 			it = m_pApp->m_pHitmarker.erase(it);
+			if (it == m_pApp->m_pHitmarker.end())
+			{
+				return;
+			}
 		}
-		else
+
+		if (m_fWeaponFireTime <= it->fStarttime && it->fStarttime <= m_fPlayerHurtTime)
 		{
-			it++;
+			Vector vScreen;
+			if (m_pApp->Gui()->WorldToScreen(it->vHit, vScreen))
+			{
+				m_pSurface->DrawLine(vScreen.x - 4, vScreen.y - 4, vScreen.x + 4, vScreen.y + 4);
+				m_pSurface->DrawLine(vScreen.x - 4, vScreen.y + 4, vScreen.x + 4, vScreen.y - 4);
+			}
 		}
 	}
 }
