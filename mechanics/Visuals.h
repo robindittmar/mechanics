@@ -24,8 +24,6 @@
 static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET, -CAM_HULL_OFFSET, -CAM_HULL_OFFSET);
 static Vector CAM_HULL_MAX(CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
 
-typedef void(__fastcall *LoadSky_t)(const char*);
-
 class IMatRenderContext;
 
 class CVisuals : public IFeature
@@ -74,14 +72,6 @@ public:
 	void SetNoScope(bool bNoScope) { m_bNoScope = bNoScope; }
 	bool GetNoScope() { return m_bNoScope; }
 
-	void SetNightmode(bool bNightmode) { m_bNightmode = bNightmode; }
-	bool GetNightmode() { return m_bNightmode; }
-
-	void SetNightmodePerfomed(bool bNightmodePerfomed) { m_bNightmodePerfomed = bNightmodePerfomed; }
-	void SetNightmodeMapChanged(bool bNightmodeMapChange) { m_bNightmodeMapChange = bNightmodeMapChange; }
-
-	void SetAsusWallsPerformed(bool bAsusWallsPerformed) { m_bAsusWallsPerformed = bAsusWallsPerformed; }
-
 	void SetBulletTracer(bool bBulletTracer) { m_bBulletTracer = bBulletTracer; }
 	bool GetBulletTracer() { return m_bBulletTracer; }
 
@@ -104,7 +94,6 @@ public:
 	void DisablePostProcessing(bool bDisablePostProcessing);
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
-	void Nightmode();
 	void DrawBulletTracer();
 private:
 	int m_iSurfaceWidth;
@@ -133,11 +122,6 @@ private:
 	bool* m_dwOverridePostProcessingDisable;
 
 	bool m_bNoScope;
-
-	LoadSky_t m_pLoadSky;
-	bool m_bNightmode;
-	bool m_bNightmodePerfomed;
-	bool m_bNightmodeMapChange;
 
 	bool m_bBulletTracer;
 	bool m_bBulletTracerSelf;

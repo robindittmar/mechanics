@@ -251,7 +251,13 @@ private:
 	CCheckbox* m_pVisualsOthersCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersSpreadConeEnabled;
-	CCheckbox* m_pVisualsOthersNightmodeEnabled;
+
+	CLabel* m_pVisualsOthersNightmodeLabel;
+	CSlider* m_pVisualsOthersNightmode;
+	CLabel* m_pVisualsOthersAsuswallsLabel;
+	CSlider* m_pVisualsOthersAsuswalls;
+	CSelectbox* m_pVisualsOthersSkychanger;
+
 	CCheckbox* m_pVisualsOthersThirdperson;
 	CLabel* m_pVisualsOthersThirdpersonLabel;
 	CSlider* m_pVisualsOthersThirdpersonDistance;

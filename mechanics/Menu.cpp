@@ -188,7 +188,11 @@ void CMenu::ApplySettings()
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->GunHud()->GetCrosshairShowRecoil());
 	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->GunHud()->GetSpreadCone());
 	// TODO: SpreadConeShowRecoil & SpreadConeColor
-	m_pVisualsOthersNightmodeEnabled->SetChecked(m_pApp->Visuals()->GetNightmode());
+
+	m_pVisualsOthersNightmode->SetValue(m_pApp->MaterialVisuals()->GetNightmodeValue());
+	m_pVisualsOthersAsuswalls->SetValue(m_pApp->MaterialVisuals()->GetAsuswallsValue());
+	m_pVisualsOthersSkychanger->SetSelection(m_pApp->MaterialVisuals()->GetSkychangerValue());
+
 	m_pVisualsOthersThirdperson->SetChecked(m_pApp->Visuals()->GetThirdperson());
 	m_pVisualsOthersThirdpersonDistance->SetValue(m_pApp->Visuals()->GetThirdpersonDistance());
 	m_pVisualsOthersMirror->SetChecked(m_pApp->Mirror()->GetEnabled());
@@ -859,18 +863,50 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 156, 128, 16, "Show Spread Cone");
 	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CGunHud::SetSpreadCone, m_pApp->GunHud(), std::placeholders::_1));
 
-	m_pVisualsOthersNightmodeEnabled = new CCheckbox(4, 184, 128, 16, "Nightmode");
-	m_pVisualsOthersNightmodeEnabled->SetEventHandler(std::bind(&CVisuals::SetNightmode, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdperson = new CCheckbox(4, 216, 128, 16, "Thirdperson");
+	m_pVisualsOthersNightmodeLabel = new CLabel(4, 180, 128, 16, "Nightmode", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pVisualsOthersNightmode = new CSlider(4, 202, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pVisualsOthersNightmode->SetEventHandler(std::bind(&CMaterialVisuals::Nightmode, m_pApp->MaterialVisuals(), std::placeholders::_1));
+
+	m_pVisualsOthersAsuswallsLabel = new CLabel(4, 214, 128, 16, "Asuswalls", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+
+	m_pVisualsOthersAsuswalls = new CSlider(4, 236, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pVisualsOthersAsuswalls->SetEventHandler(std::bind(&CMaterialVisuals::Asuswalls, m_pApp->MaterialVisuals(), std::placeholders::_1));
+
+	m_pVisualsOthersSkychanger = new CSelectbox(4, 260, 128, 16, "Skychanger");
+	m_pVisualsOthersSkychanger->AddOption(SKY_NOCHANGE, "No Change");
+	m_pVisualsOthersSkychanger->AddOption(SKY_BAGGAGE, "cs_baggage_skybox_");
+	m_pVisualsOthersSkychanger->AddOption(SKY_TIBET, "cs_tibet");
+	m_pVisualsOthersSkychanger->AddOption(SKY_EMBASSY, "embassy");
+	m_pVisualsOthersSkychanger->AddOption(SKY_ITALY, "italy");
+	m_pVisualsOthersSkychanger->AddOption(SKY_JUNGLE, "jungle");
+	m_pVisualsOthersSkychanger->AddOption(SKY_OFFICE, "office");
+	m_pVisualsOthersSkychanger->AddOption(SKY_DAYLIGHT1, "sky_cs15_daylight01_hdr");
+	m_pVisualsOthersSkychanger->AddOption(SKY_DAYLIGHT2, "sky_cs15_daylight02_hdr");
+	m_pVisualsOthersSkychanger->AddOption(SKY_DAYLIGHT3, "sky_cs15_daylight03_hdr");
+	m_pVisualsOthersSkychanger->AddOption(SKY_DAYLIGHT4, "sky_cs15_daylight04_hdr");
+	m_pVisualsOthersSkychanger->AddOption(SKY_NUKEBLANK, "nukeblank");
+	m_pVisualsOthersSkychanger->AddOption(SKY_VENICE, "sky_venice");
+	m_pVisualsOthersSkychanger->AddOption(SKY_CLOUDY, "sky_csgo_cloudy01");
+	m_pVisualsOthersSkychanger->AddOption(SKY_NIGHT, "sky_csgo_night02");
+	m_pVisualsOthersSkychanger->AddOption(SKY_NIGHTB, "sky_csgo_night02b");
+	m_pVisualsOthersSkychanger->AddOption(SKY_VERTIGO, "vertigo");
+	m_pVisualsOthersSkychanger->AddOption(SKY_VERTIGOBLUE, "vertigoblue_hdr");
+	m_pVisualsOthersSkychanger->AddOption(SKY_DUST, "sky_dust");
+	m_pVisualsOthersSkychanger->AddOption(SKY_VIETNAM, "vietnam");
+	m_pVisualsOthersSkychanger->SetEventHandler(std::bind(&CMaterialVisuals::Skychanger, m_pApp->MaterialVisuals(), std::placeholders::_1));
+
+
+	m_pVisualsOthersThirdperson = new CCheckbox(156, 0, 128, 16, "Thirdperson");
 	m_pVisualsOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersThirdpersonLabel = new CLabel(4, 226, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOthersThirdpersonLabel = new CLabel(156, 18, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 
-	m_pVisualsOthersThirdpersonDistance = new CSlider(4, 248, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
+	m_pVisualsOthersThirdpersonDistance = new CSlider(156, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pVisualsOthersMirror = new CCheckbox(4, 272, 128, 16, "Mirror");
+	m_pVisualsOthersMirror = new CCheckbox(156, 64, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
 	// Bullet Tracer
@@ -914,7 +950,7 @@ void CMenu::CreateVisualsTab()
 	m_pEffectsGroup->AddChild(m_pEffectsNoFlashLabel);
 	m_pEffectsGroup->AddChild(m_pEffectsNoFlashValue);
 
-	m_pVisualsOthersGroup = new CGroupbox(184, 16, 152, 308, "Others");
+	m_pVisualsOthersGroup = new CGroupbox(184, 16, 304, 308, "Others");
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHandsDrawStyle);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerSoundEnabled);
@@ -922,13 +958,17 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmodeEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmodeLabel);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmode);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswallsLabel);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswalls);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSkychanger);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonLabel);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonDistance);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersMirror);
 
-	m_pFovChangerGroup = new CGroupbox(352, 16, 152, 308, "Fov Changer");
+	m_pFovChangerGroup = new CGroupbox(504, 16, 152, 308, "Fov Changer");
 	m_pFovChangerGroup->AddChild(m_pFovChangerFovEnabled);
 	m_pFovChangerGroup->AddChild(m_pFovChangerFovScopeEnabled);
 	m_pFovChangerGroup->AddChild(m_pFovChangerFovLabel);
@@ -937,7 +977,7 @@ void CMenu::CreateVisualsTab()
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovLabel);
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovValue);
 
-	m_pBulletTracer = new CGroupbox(520, 16, 152, 308, "Bullet Tracer");
+	m_pBulletTracer = new CGroupbox(672, 16, 152, 308, "Bullet Tracer");
 	m_pBulletTracer->AddChild(m_pBulletTracerEnabled);
 	m_pBulletTracer->AddChild(m_pBulletTracerSelf);
 	m_pBulletTracer->AddChild(m_pBulletTracerTeam);

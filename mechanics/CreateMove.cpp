@@ -95,8 +95,6 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 
 			// Visuals
 			pApp->GunHud()->Update((void*)pLocalEntity);
-			pApp->Visuals()->Nightmode();
-			// TODO: Asuswalls
 
 			// todo: auslagern!
 			if (pUserCmd->buttons & IN_ATTACK)

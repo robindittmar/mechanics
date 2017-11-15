@@ -174,7 +174,9 @@ namespace ConfigHelper
 		pApp->Visuals()->SetNoVisualRecoil(pConfig->GetBool("visuals", "novisualrecoil"));
 		pApp->Visuals()->DisablePostProcessing(pConfig->GetBool("visuals", "disablepostprocessing"));
 		pApp->Visuals()->SetNoScope(pConfig->GetBool("visuals", "noscope"));
-		pApp->Visuals()->SetNightmode(pConfig->GetBool("visuals", "nightmode"));
+		pApp->MaterialVisuals()->SetNightmodeValue(pConfig->GetFloat("visuals", "nightmodevalue"));
+		pApp->MaterialVisuals()->SetAsuswallsValue(pConfig->GetFloat("visuals", "asuswallsvalue"));
+		pApp->MaterialVisuals()->SetSkychangerValue(pConfig->GetFloat("visuals", "skychangervalue"));
 
 		pApp->Visuals()->SetThirdperson(pConfig->GetBool("visuals", "thirdperson"));
 		pApp->Visuals()->SetThirdpersonDistance(pConfig->GetInt("visuals", "thirdpersondistance"));
@@ -366,7 +368,9 @@ namespace ConfigHelper
 		pConfig->SetBool("visuals", "novisualrecoil", pApp->Visuals()->GetNoVisualRecoil());
 		pConfig->SetBool("visuals", "disablepostprocessing", pApp->Visuals()->GetDisablePostProcessing());
 		pConfig->SetBool("visuals", "noscope", pApp->Visuals()->GetNoScope());
-		pConfig->SetBool("visuals", "nightmode", pApp->Visuals()->GetNightmode());
+		pConfig->SetFloat("visuals", "nightmodevalue", pApp->MaterialVisuals()->GetNightmodeValue());
+		pConfig->SetFloat("visuals", "asuswallsvalue", pApp->MaterialVisuals()->GetAsuswallsValue());
+		pConfig->SetFloat("visuals", "skychangervalue", pApp->MaterialVisuals()->GetSkychangerValue());
 
 		pConfig->SetBool("visuals", "thirdperson", pApp->Visuals()->GetThirdperson());
 		pConfig->SetInt("visuals", "thirdpersondistance", pApp->Visuals()->GetThirdpersonDistance());

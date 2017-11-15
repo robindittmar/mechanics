@@ -56,6 +56,7 @@
 #include "Resolver.h"
 #include "Skinchanger.h"
 #include "Visuals.h"
+#include "MaterialVisuals.h"
 #include "GunHud.h"
 #include "Mirror.h"
 #include "LagCompensation.h"
@@ -233,6 +234,7 @@ public:
 	CResolver*			Resolver()			{ return &m_resolver; }
 	CSkinChanger*		SkinChanger()		{ return &m_skinchanger; }
 	CVisuals*			Visuals()			{ return &m_visuals; }
+	CMaterialVisuals*	MaterialVisuals()	{ return &m_materialvisuals; }
 	CGunHud*			GunHud()			{ return &m_gunHud; }
 	CMirror*			Mirror()			{ return &m_mirror; }
 	CLagCompensation*	LagCompensation()	{ return &m_lagcompensation; }
@@ -370,6 +372,7 @@ private:
 	CFakewalk m_fakewalk;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
+	CMaterialVisuals m_materialvisuals;
 	CGunHud m_gunHud;
 	CMirror m_mirror;
 	CLagCompensation m_lagcompensation;
