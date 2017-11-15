@@ -176,6 +176,7 @@
     <ClCompile Include="ConVar.cpp" />
     <ClCompile Include="lodepng.cpp" />
     <ClCompile Include="LowerBodyYawProxy.cpp" />
+    <ClCompile Include="MaterialVisuals.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Mirror.cpp" />
     <ClCompile Include="OverrideView.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="ICVar.h" />
     <ClInclude Include="lodepng.h" />
     <ClInclude Include="LowerBodyYawProxy.h" />
+    <ClInclude Include="MaterialVisuals.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Mirror.h" />
     <ClInclude Include="OverrideView.h" />

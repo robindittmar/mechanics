@@ -57,6 +57,7 @@ void CResolver::Update(void* pParameters)
 			{
 				//TODO: maybe formula exists to get the ~delta otherwise bruteforce xD
 				//TODO: check if edge AA if so flip 180°
+				//TODO: bruteforce only 120-180
 
 				BruteforcePlayer(pCurResolverPlayer, pCurEntity);
 			}

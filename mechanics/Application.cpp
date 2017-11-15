@@ -128,14 +128,10 @@ void CApplication::Detach()
 		m_misc.ApplyClanTag();
 	}
 
-	// Nightmode
-	if (m_visuals.GetNightmode())
-	{
-		m_visuals.SetNightmode(false);
-		m_visuals.SetNightmodePerfomed(false);
-		m_visuals.Nightmode();
-	}
-
+	// MaterialVisuals
+	m_materialvisuals.Nightmode(100);
+	m_materialvisuals.Asuswalls(100);
+	m_materialvisuals.Skychanger(0);
 
 	// Free & Exit
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
@@ -332,6 +328,7 @@ void CApplication::Setup()
 	this->m_fakewalk.Setup();
 	this->m_skinchanger.Setup();
 	this->m_visuals.Setup();
+	this->m_materialvisuals.Setup();
 	this->m_gunHud.Setup();
 	this->m_mirror.Setup();
 	this->m_radar.Setup();
