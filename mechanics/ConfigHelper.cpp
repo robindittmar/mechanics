@@ -191,7 +191,7 @@ namespace ConfigHelper
 		pApp->Visuals()->SetNoScope(pConfig->GetBool("visuals", "noscope"));
 		pApp->MaterialVisuals()->SetNightmodeValue(pConfig->GetFloat("visuals", "nightmodevalue"));
 		pApp->MaterialVisuals()->SetAsuswallsValue(pConfig->GetFloat("visuals", "asuswallsvalue"));
-		pApp->MaterialVisuals()->SetSkychangerValue(pConfig->GetFloat("visuals", "skychangervalue"));
+		pApp->MaterialVisuals()->SetSkychangerValue(pConfig->GetInt("visuals", "skychangervalue"));
 
 		pApp->Visuals()->SetThirdperson(pConfig->GetBool("visuals", "thirdperson"));
 		pApp->Visuals()->SetThirdpersonDistance(pConfig->GetInt("visuals", "thirdpersondistance"));
@@ -404,7 +404,7 @@ namespace ConfigHelper
 		pConfig->SetBool("visuals", "noscope", pApp->Visuals()->GetNoScope());
 		pConfig->SetFloat("visuals", "nightmodevalue", pApp->MaterialVisuals()->GetNightmodeValue());
 		pConfig->SetFloat("visuals", "asuswallsvalue", pApp->MaterialVisuals()->GetAsuswallsValue());
-		pConfig->SetFloat("visuals", "skychangervalue", pApp->MaterialVisuals()->GetSkychangerValue());
+		pConfig->SetInt("visuals", "skychangervalue", pApp->MaterialVisuals()->GetSkychangerValue());
 
 		pConfig->SetBool("visuals", "thirdperson", pApp->Visuals()->GetThirdperson());
 		pConfig->SetInt("visuals", "thirdpersondistance", pApp->Visuals()->GetThirdpersonDistance());
