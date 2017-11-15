@@ -4,7 +4,7 @@
 //todo: LineGoesThroughSmoke Sig: 55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0
 
 CLegitbot::CLegitbot()
-	: m_bHasTarget(false), m_fStepSize(0.005f), m_bDrawTarget(true)
+	: m_bHasTarget(false), m_fStepSize(0.1f), m_bDrawTarget(true)
 {
 }
 
@@ -54,6 +54,8 @@ void CLegitbot::Update(void* pParameters)
 
 		m_fAimProgress += m_fStepSize;
 		QAngle qNewAngles = this->QuadraticBezier(m_qStart, m_qIntermediate, m_qEnd, m_fAimProgress);
+		//qNewAngles.NormalizeAngles();
+		qNewAngles += *pLocalEntity->GetAimPunchAngle();
 
 		m_pApp->SetClientViewAngles(qNewAngles);
 
@@ -71,7 +73,7 @@ void CLegitbot::Update(void* pParameters)
 		//
 
 		// TODO
-		bool bKeyDown = GetAsyncKeyState(VK_XBUTTON1) & 0x8000;
+		bool bKeyDown = GetAsyncKeyState(VK_LBUTTON) & 0x8000;
 
 		if (!bKeyDown && !m_bDrawTarget)
 			return;
