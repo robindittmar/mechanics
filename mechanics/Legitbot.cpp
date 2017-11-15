@@ -31,6 +31,14 @@ void CLegitbot::Update(void* pParameters)
 
 	CreateMoveParam* pParam = (CreateMoveParam*)pParameters;
 
+	if (pParam->pUserCmd->mousedx != 0.0f ||
+		pParam->pUserCmd->mousedy != 0.0f)
+	{
+		m_bHasTarget = false;
+		m_bHasDrawTarget = false;
+		return;
+	}
+
 	IClientEntity* pLocalEntity;
 	IClientEntity* pCurEntity;
 
