@@ -51,7 +51,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -75,25 +75,33 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)obj\$(Platform)\$(Configuration)</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;MECHANICS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -105,7 +113,7 @@
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;_USRDLL;MECHANICS_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -116,7 +124,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -134,7 +142,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
       <Optimization>MaxSpeed</Optimization>
@@ -149,239 +157,239 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Autowall.cpp" />
-    <ClCompile Include="checksum_md5.cpp" />
-    <ClCompile Include="ClientClass.cpp" />
-    <ClCompile Include="ColorPickerPopup.cpp" />
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="ConfigHelper.cpp" />
-    <ClCompile Include="CreateMove.cpp" />
-    <ClCompile Include="GunHud.cpp" />
-    <ClCompile Include="DrawModelExecute.cpp" />
-    <ClCompile Include="EmitSound.cpp" />
-    <ClCompile Include="Esp.cpp" />
-    <ClCompile Include="EspPlayer.cpp" />
-    <ClCompile Include="EyeAnglesProxy.cpp" />
-    <ClCompile Include="Fakelag.cpp" />
-    <ClCompile Include="Fakewalk.cpp" />
-    <ClCompile Include="FindMdl.cpp" />
-    <ClCompile Include="FireEventClientSide.cpp" />
-    <ClCompile Include="FrameStageNotify.cpp" />
-    <ClCompile Include="GetViewModelFov.cpp" />
-    <ClCompile Include="IBaseClientDLL.cpp" />
-    <ClCompile Include="LagCompensation.cpp" />
-    <ClCompile Include="LagCompensationPlayerEntry.cpp" />
-    <ClCompile Include="LagCompensationPlayerList.cpp" />
-    <ClCompile Include="Legitbot.cpp" />
-    <ClCompile Include="ConVar.cpp" />
-    <ClCompile Include="lodepng.cpp" />
-    <ClCompile Include="LowerBodyYawProxy.cpp" />
-    <ClCompile Include="MaterialVisuals.cpp" />
-    <ClCompile Include="Menu.cpp" />
-    <ClCompile Include="Mirror.cpp" />
-    <ClCompile Include="OverrideView.cpp" />
-    <ClCompile Include="PaintTraverse.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PlayerList.cpp" />
-    <ClCompile Include="PlaySound.cpp" />
-    <ClCompile Include="Radar.cpp" />
-    <ClCompile Include="Ragebot.cpp" />
-    <ClCompile Include="AntiAim.cpp" />
-    <ClCompile Include="Application.cpp" />
-    <ClCompile Include="Bhop.cpp" />
-    <ClCompile Include="Button.cpp" />
-    <ClCompile Include="Canvas.cpp" />
-    <ClCompile Include="Chams.cpp" />
-    <ClCompile Include="Checkbox.cpp" />
-    <ClCompile Include="ClientEntity.cpp" />
-    <ClCompile Include="ColorPicker.cpp" />
-    <ClCompile Include="Console.cpp" />
-    <ClCompile Include="CreateInterface.cpp" />
-    <ClCompile Include="CWeapon.cpp" />
-    <ClCompile Include="DllMain.cpp" />
-    <ClCompile Include="Groupbox.cpp" />
-    <ClCompile Include="IFeature.cpp" />
-    <ClCompile Include="GameEventListener.cpp" />
-    <ClCompile Include="Gui.cpp" />
-    <ClCompile Include="IMatRenderContext.cpp" />
-    <ClCompile Include="InputEvent.cpp" />
-    <ClCompile Include="IControl.cpp" />
-    <ClCompile Include="IMaterialSystem.cpp" />
-    <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="ISurface.cpp" />
-    <ClCompile Include="Label.cpp" />
-    <ClCompile Include="Misc.cpp" />
-    <ClCompile Include="murmurhash.cpp" />
-    <ClCompile Include="NetVar.cpp" />
-    <ClCompile Include="NetVarManager.cpp" />
-    <ClCompile Include="Offsets.cpp" />
-    <ClCompile Include="Pattern.cpp" />
-    <ClCompile Include="PlayerInfo.cpp" />
-    <ClCompile Include="RenderSmokeOverlay.cpp" />
-    <ClCompile Include="RenderView.cpp" />
-    <ClCompile Include="Resolver.cpp" />
-    <ClCompile Include="ResolverPlayer.cpp" />
-    <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Selectbox.cpp" />
-    <ClCompile Include="SelectboxItem.cpp" />
-    <ClCompile Include="SelectboxPopup.cpp" />
-    <ClCompile Include="SequenceProxy.cpp" />
-    <ClCompile Include="SkinChanger.cpp" />
-    <ClCompile Include="SkinMetadata.cpp" />
-    <ClCompile Include="Slider.cpp" />
-    <ClCompile Include="SoundEsp.cpp" />
-    <ClCompile Include="SoundInfo.cpp" />
-    <ClCompile Include="TabContainer.cpp" />
-    <ClCompile Include="TabPage.cpp" />
-    <ClCompile Include="Target.cpp" />
-    <ClCompile Include="TargetSelector.cpp" />
-    <ClCompile Include="Textbox.cpp" />
-    <ClCompile Include="Tooltip.cpp" />
-    <ClCompile Include="Triggerbot.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="Vector.cpp" />
-    <ClCompile Include="VTableHook.cpp" />
-    <ClCompile Include="Visuals.cpp" />
-    <ClCompile Include="WeaponEsp.cpp" />
-    <ClCompile Include="Window.cpp" />
-    <ClCompile Include="WritableSection.cpp" />
-    <ClCompile Include="XorString.cpp" />
+    <ClCompile Include="src\Autowall.cpp" />
+    <ClCompile Include="src\checksum_md5.cpp" />
+    <ClCompile Include="src\ClientClass.cpp" />
+    <ClCompile Include="src\ColorPickerPopup.cpp" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\ConfigHelper.cpp" />
+    <ClCompile Include="src\CreateMove.cpp" />
+    <ClCompile Include="src\GunHud.cpp" />
+    <ClCompile Include="src\DrawModelExecute.cpp" />
+    <ClCompile Include="src\EmitSound.cpp" />
+    <ClCompile Include="src\Esp.cpp" />
+    <ClCompile Include="src\EspPlayer.cpp" />
+    <ClCompile Include="src\EyeAnglesProxy.cpp" />
+    <ClCompile Include="src\Fakelag.cpp" />
+    <ClCompile Include="src\Fakewalk.cpp" />
+    <ClCompile Include="src\FindMdl.cpp" />
+    <ClCompile Include="src\FireEventClientSide.cpp" />
+    <ClCompile Include="src\FrameStageNotify.cpp" />
+    <ClCompile Include="src\GetViewModelFov.cpp" />
+    <ClCompile Include="src\IBaseClientDLL.cpp" />
+    <ClCompile Include="src\LagCompensation.cpp" />
+    <ClCompile Include="src\LagCompensationPlayerEntry.cpp" />
+    <ClCompile Include="src\LagCompensationPlayerList.cpp" />
+    <ClCompile Include="src\Legitbot.cpp" />
+    <ClCompile Include="src\ConVar.cpp" />
+    <ClCompile Include="src\lodepng.cpp" />
+    <ClCompile Include="src\LowerBodyYawProxy.cpp" />
+    <ClCompile Include="src\MaterialVisuals.cpp" />
+    <ClCompile Include="src\Menu.cpp" />
+    <ClCompile Include="src\Mirror.cpp" />
+    <ClCompile Include="src\OverrideView.cpp" />
+    <ClCompile Include="src\PaintTraverse.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\PlayerList.cpp" />
+    <ClCompile Include="src\PlaySound.cpp" />
+    <ClCompile Include="src\Radar.cpp" />
+    <ClCompile Include="src\Ragebot.cpp" />
+    <ClCompile Include="src\AntiAim.cpp" />
+    <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Bhop.cpp" />
+    <ClCompile Include="src\Button.cpp" />
+    <ClCompile Include="src\Canvas.cpp" />
+    <ClCompile Include="src\Chams.cpp" />
+    <ClCompile Include="src\Checkbox.cpp" />
+    <ClCompile Include="src\ClientEntity.cpp" />
+    <ClCompile Include="src\ColorPicker.cpp" />
+    <ClCompile Include="src\Console.cpp" />
+    <ClCompile Include="src\CreateInterface.cpp" />
+    <ClCompile Include="src\CWeapon.cpp" />
+    <ClCompile Include="src\DllMain.cpp" />
+    <ClCompile Include="src\Groupbox.cpp" />
+    <ClCompile Include="src\IFeature.cpp" />
+    <ClCompile Include="src\GameEventListener.cpp" />
+    <ClCompile Include="src\Gui.cpp" />
+    <ClCompile Include="src\IMatRenderContext.cpp" />
+    <ClCompile Include="src\InputEvent.cpp" />
+    <ClCompile Include="src\IControl.cpp" />
+    <ClCompile Include="src\IMaterialSystem.cpp" />
+    <ClCompile Include="src\InputHandler.cpp" />
+    <ClCompile Include="src\ISurface.cpp" />
+    <ClCompile Include="src\Label.cpp" />
+    <ClCompile Include="src\Misc.cpp" />
+    <ClCompile Include="src\murmurhash.cpp" />
+    <ClCompile Include="src\NetVar.cpp" />
+    <ClCompile Include="src\NetVarManager.cpp" />
+    <ClCompile Include="src\Offsets.cpp" />
+    <ClCompile Include="src\Pattern.cpp" />
+    <ClCompile Include="src\PlayerInfo.cpp" />
+    <ClCompile Include="src\RenderSmokeOverlay.cpp" />
+    <ClCompile Include="src\RenderView.cpp" />
+    <ClCompile Include="src\Resolver.cpp" />
+    <ClCompile Include="src\ResolverPlayer.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp" />
+    <ClCompile Include="src\Selectbox.cpp" />
+    <ClCompile Include="src\SelectboxItem.cpp" />
+    <ClCompile Include="src\SelectboxPopup.cpp" />
+    <ClCompile Include="src\SequenceProxy.cpp" />
+    <ClCompile Include="src\SkinChanger.cpp" />
+    <ClCompile Include="src\SkinMetadata.cpp" />
+    <ClCompile Include="src\Slider.cpp" />
+    <ClCompile Include="src\SoundEsp.cpp" />
+    <ClCompile Include="src\SoundInfo.cpp" />
+    <ClCompile Include="src\TabContainer.cpp" />
+    <ClCompile Include="src\TabPage.cpp" />
+    <ClCompile Include="src\Target.cpp" />
+    <ClCompile Include="src\TargetSelector.cpp" />
+    <ClCompile Include="src\Textbox.cpp" />
+    <ClCompile Include="src\Tooltip.cpp" />
+    <ClCompile Include="src\Triggerbot.cpp" />
+    <ClCompile Include="src\Utils.cpp" />
+    <ClCompile Include="src\Vector.cpp" />
+    <ClCompile Include="src\VTableHook.cpp" />
+    <ClCompile Include="src\Visuals.cpp" />
+    <ClCompile Include="src\WeaponEsp.cpp" />
+    <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\WritableSection.cpp" />
+    <ClCompile Include="src\XorString.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Autowall.h" />
-    <ClInclude Include="checksum_md5.h" />
-    <ClInclude Include="ColorPickerPopup.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="ConfigHelper.h" />
-    <ClInclude Include="CreateMove.h" />
-    <ClInclude Include="GunHud.h" />
-    <ClInclude Include="CUtlVector.h" />
-    <ClInclude Include="DrawModelExecute.h" />
-    <ClInclude Include="EmitSound.h" />
-    <ClInclude Include="Esp.h" />
-    <ClInclude Include="EspPlayer.h" />
-    <ClInclude Include="EyeAnglesProxy.h" />
-    <ClInclude Include="Fakelag.h" />
-    <ClInclude Include="Fakewalk.h" />
-    <ClInclude Include="FindMdl.h" />
-    <ClInclude Include="FireEventClientSide.h" />
-    <ClInclude Include="FrameStageNotify.h" />
-    <ClInclude Include="GetViewModelFov.h" />
-    <ClInclude Include="IAppSystem.h" />
-    <ClInclude Include="IClientMode.h" />
-    <ClInclude Include="IEngineSound.h" />
-    <ClInclude Include="IInputSystem.h" />
-    <ClInclude Include="ILocalize.h" />
-    <ClInclude Include="IMDLCache.h" />
-    <ClInclude Include="ITexture.h" />
-    <ClInclude Include="IViewRender.h" />
-    <ClInclude Include="IViewRenderBeams.h" />
-    <ClInclude Include="LagCompensation.h" />
-    <ClInclude Include="LagCompensationPlayerEntry.h" />
-    <ClInclude Include="LagCompensationPlayerList.h" />
-    <ClInclude Include="Legitbot.h" />
-    <ClInclude Include="ConVar.h" />
-    <ClInclude Include="ICVar.h" />
-    <ClInclude Include="lodepng.h" />
-    <ClInclude Include="LowerBodyYawProxy.h" />
-    <ClInclude Include="MaterialVisuals.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Mirror.h" />
-    <ClInclude Include="OverrideView.h" />
-    <ClInclude Include="PaintTraverse.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="PlayerList.h" />
-    <ClInclude Include="PlaySound.h" />
-    <ClInclude Include="Radar.h" />
-    <ClInclude Include="Ragebot.h" />
-    <ClInclude Include="AntiAim.h" />
-    <ClInclude Include="Application.h" />
-    <ClInclude Include="Canvas.h" />
-    <ClInclude Include="Chams.h" />
-    <ClInclude Include="ColorPicker.h" />
-    <ClInclude Include="Groupbox.h" />
-    <ClInclude Include="IBaseClientDLL.h" />
-    <ClInclude Include="Bhop.h" />
-    <ClInclude Include="Button.h" />
-    <ClInclude Include="CGlobalVars.h" />
-    <ClInclude Include="Checkbox.h" />
-    <ClInclude Include="Controls.h" />
-    <ClInclude Include="CViewSetup.h" />
-    <ClInclude Include="GameEventListener.h" />
-    <ClInclude Include="CGameTrace.h" />
-    <ClInclude Include="CInput.h" />
-    <ClInclude Include="ClientClass.h" />
-    <ClInclude Include="ClientEntity.h" />
-    <ClInclude Include="ClientEntityList.h" />
-    <ClInclude Include="ClientFrameStage.h" />
-    <ClInclude Include="Console.h" />
-    <ClInclude Include="IClientState.h" />
-    <ClInclude Include="IMatRenderContext.h" />
-    <ClInclude Include="INetChannelInfo.h" />
-    <ClInclude Include="InputEvent.h" />
-    <ClInclude Include="IGameEvent.h" />
-    <ClInclude Include="IGameEventManager.h" />
-    <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="IPanel.h" />
-    <ClInclude Include="CreateInterface.h" />
-    <ClInclude Include="CWeapon.h" />
-    <ClInclude Include="IFeature.h" />
-    <ClInclude Include="Gui.h" />
-    <ClInclude Include="IControl.h" />
-    <ClInclude Include="IEngineTrace.h" />
-    <ClInclude Include="IMaterial.h" />
-    <ClInclude Include="IMaterialSystem.h" />
-    <ClInclude Include="IPhysicsSurfaceProps.h" />
-    <ClInclude Include="IRefCounted.h" />
-    <ClInclude Include="ISurface.h" />
-    <ClInclude Include="IVModelInfo.h" />
-    <ClInclude Include="IVModelRender.h" />
-    <ClInclude Include="IVRenderView.h" />
-    <ClInclude Include="KeyValues.h" />
-    <ClInclude Include="Label.h" />
-    <ClInclude Include="MathDefs.h" />
-    <ClInclude Include="Misc.h" />
-    <ClInclude Include="murmurhash.h" />
-    <ClInclude Include="NetVar.h" />
-    <ClInclude Include="NetVarManager.h" />
-    <ClInclude Include="Offsets.h" />
-    <ClInclude Include="Pattern.h" />
-    <ClInclude Include="PlayerInfo.h" />
-    <ClInclude Include="ray.h" />
-    <ClInclude Include="RenderSmokeOverlay.h" />
-    <ClInclude Include="RenderView.h" />
-    <ClInclude Include="Resolver.h" />
-    <ClInclude Include="ResolverPlayer.h" />
-    <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Selectbox.h" />
-    <ClInclude Include="SelectboxItem.h" />
-    <ClInclude Include="SelectboxPopup.h" />
-    <ClInclude Include="SequenceProxy.h" />
-    <ClInclude Include="SkinChanger.h" />
-    <ClInclude Include="SkinMetadata.h" />
-    <ClInclude Include="Slider.h" />
-    <ClInclude Include="SoundEsp.h" />
-    <ClInclude Include="SoundInfo.h" />
-    <ClInclude Include="TabContainer.h" />
-    <ClInclude Include="TabPage.h" />
-    <ClInclude Include="Target.h" />
-    <ClInclude Include="TargetSelector.h" />
-    <ClInclude Include="Textbox.h" />
-    <ClInclude Include="Tooltip.h" />
-    <ClInclude Include="Triggerbot.h" />
-    <ClInclude Include="UserCmd.h" />
-    <ClInclude Include="Utils.h" />
-    <ClInclude Include="Vector.h" />
-    <ClInclude Include="IVEngineClient.h" />
-    <ClInclude Include="VTableHook.h" />
-    <ClInclude Include="Visuals.h" />
-    <ClInclude Include="WeaponEsp.h" />
-    <ClInclude Include="Window.h" />
-    <ClInclude Include="WritableSection.h" />
-    <ClInclude Include="XorString.h" />
+    <ClInclude Include="src\Autowall.h" />
+    <ClInclude Include="src\checksum_md5.h" />
+    <ClInclude Include="src\ColorPickerPopup.h" />
+    <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\ConfigHelper.h" />
+    <ClInclude Include="src\CreateMove.h" />
+    <ClInclude Include="src\GunHud.h" />
+    <ClInclude Include="src\CUtlVector.h" />
+    <ClInclude Include="src\DrawModelExecute.h" />
+    <ClInclude Include="src\EmitSound.h" />
+    <ClInclude Include="src\Esp.h" />
+    <ClInclude Include="src\EspPlayer.h" />
+    <ClInclude Include="src\EyeAnglesProxy.h" />
+    <ClInclude Include="src\Fakelag.h" />
+    <ClInclude Include="src\Fakewalk.h" />
+    <ClInclude Include="src\FindMdl.h" />
+    <ClInclude Include="src\FireEventClientSide.h" />
+    <ClInclude Include="src\FrameStageNotify.h" />
+    <ClInclude Include="src\GetViewModelFov.h" />
+    <ClInclude Include="src\IAppSystem.h" />
+    <ClInclude Include="src\IClientMode.h" />
+    <ClInclude Include="src\IEngineSound.h" />
+    <ClInclude Include="src\IInputSystem.h" />
+    <ClInclude Include="src\ILocalize.h" />
+    <ClInclude Include="src\IMDLCache.h" />
+    <ClInclude Include="src\ITexture.h" />
+    <ClInclude Include="src\IViewRender.h" />
+    <ClInclude Include="src\IViewRenderBeams.h" />
+    <ClInclude Include="src\LagCompensation.h" />
+    <ClInclude Include="src\LagCompensationPlayerEntry.h" />
+    <ClInclude Include="src\LagCompensationPlayerList.h" />
+    <ClInclude Include="src\Legitbot.h" />
+    <ClInclude Include="src\ConVar.h" />
+    <ClInclude Include="src\ICVar.h" />
+    <ClInclude Include="src\lodepng.h" />
+    <ClInclude Include="src\LowerBodyYawProxy.h" />
+    <ClInclude Include="src\MaterialVisuals.h" />
+    <ClInclude Include="src\Menu.h" />
+    <ClInclude Include="src\Mirror.h" />
+    <ClInclude Include="src\OverrideView.h" />
+    <ClInclude Include="src\PaintTraverse.h" />
+    <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\PlayerList.h" />
+    <ClInclude Include="src\PlaySound.h" />
+    <ClInclude Include="src\Radar.h" />
+    <ClInclude Include="src\Ragebot.h" />
+    <ClInclude Include="src\AntiAim.h" />
+    <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Canvas.h" />
+    <ClInclude Include="src\Chams.h" />
+    <ClInclude Include="src\ColorPicker.h" />
+    <ClInclude Include="src\Groupbox.h" />
+    <ClInclude Include="src\IBaseClientDLL.h" />
+    <ClInclude Include="src\Bhop.h" />
+    <ClInclude Include="src\Button.h" />
+    <ClInclude Include="src\CGlobalVars.h" />
+    <ClInclude Include="src\Checkbox.h" />
+    <ClInclude Include="src\Controls.h" />
+    <ClInclude Include="src\CViewSetup.h" />
+    <ClInclude Include="src\GameEventListener.h" />
+    <ClInclude Include="src\CGameTrace.h" />
+    <ClInclude Include="src\CInput.h" />
+    <ClInclude Include="src\ClientClass.h" />
+    <ClInclude Include="src\ClientEntity.h" />
+    <ClInclude Include="src\ClientEntityList.h" />
+    <ClInclude Include="src\ClientFrameStage.h" />
+    <ClInclude Include="src\Console.h" />
+    <ClInclude Include="src\IClientState.h" />
+    <ClInclude Include="src\IMatRenderContext.h" />
+    <ClInclude Include="src\INetChannelInfo.h" />
+    <ClInclude Include="src\InputEvent.h" />
+    <ClInclude Include="src\IGameEvent.h" />
+    <ClInclude Include="src\IGameEventManager.h" />
+    <ClInclude Include="src\InputHandler.h" />
+    <ClInclude Include="src\IPanel.h" />
+    <ClInclude Include="src\CreateInterface.h" />
+    <ClInclude Include="src\CWeapon.h" />
+    <ClInclude Include="src\IFeature.h" />
+    <ClInclude Include="src\Gui.h" />
+    <ClInclude Include="src\IControl.h" />
+    <ClInclude Include="src\IEngineTrace.h" />
+    <ClInclude Include="src\IMaterial.h" />
+    <ClInclude Include="src\IMaterialSystem.h" />
+    <ClInclude Include="src\IPhysicsSurfaceProps.h" />
+    <ClInclude Include="src\IRefCounted.h" />
+    <ClInclude Include="src\ISurface.h" />
+    <ClInclude Include="src\IVModelInfo.h" />
+    <ClInclude Include="src\IVModelRender.h" />
+    <ClInclude Include="src\IVRenderView.h" />
+    <ClInclude Include="src\KeyValues.h" />
+    <ClInclude Include="src\Label.h" />
+    <ClInclude Include="src\MathDefs.h" />
+    <ClInclude Include="src\Misc.h" />
+    <ClInclude Include="src\murmurhash.h" />
+    <ClInclude Include="src\NetVar.h" />
+    <ClInclude Include="src\NetVarManager.h" />
+    <ClInclude Include="src\Offsets.h" />
+    <ClInclude Include="src\Pattern.h" />
+    <ClInclude Include="src\PlayerInfo.h" />
+    <ClInclude Include="src\ray.h" />
+    <ClInclude Include="src\RenderSmokeOverlay.h" />
+    <ClInclude Include="src\RenderView.h" />
+    <ClInclude Include="src\Resolver.h" />
+    <ClInclude Include="src\ResolverPlayer.h" />
+    <ClInclude Include="src\ResourceManager.h" />
+    <ClInclude Include="src\Selectbox.h" />
+    <ClInclude Include="src\SelectboxItem.h" />
+    <ClInclude Include="src\SelectboxPopup.h" />
+    <ClInclude Include="src\SequenceProxy.h" />
+    <ClInclude Include="src\SkinChanger.h" />
+    <ClInclude Include="src\SkinMetadata.h" />
+    <ClInclude Include="src\Slider.h" />
+    <ClInclude Include="src\SoundEsp.h" />
+    <ClInclude Include="src\SoundInfo.h" />
+    <ClInclude Include="src\TabContainer.h" />
+    <ClInclude Include="src\TabPage.h" />
+    <ClInclude Include="src\Target.h" />
+    <ClInclude Include="src\TargetSelector.h" />
+    <ClInclude Include="src\Textbox.h" />
+    <ClInclude Include="src\Tooltip.h" />
+    <ClInclude Include="src\Triggerbot.h" />
+    <ClInclude Include="src\UserCmd.h" />
+    <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="src\Vector.h" />
+    <ClInclude Include="src\IVEngineClient.h" />
+    <ClInclude Include="src\VTableHook.h" />
+    <ClInclude Include="src\Visuals.h" />
+    <ClInclude Include="src\WeaponEsp.h" />
+    <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\WritableSection.h" />
+    <ClInclude Include="src\XorString.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="todo.txt" />
+    <Text Include="src\todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

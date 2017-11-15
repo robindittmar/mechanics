@@ -45,694 +45,694 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DllMain.cpp">
+    <ClCompile Include="src\AntiAim.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Autowall.cpp">
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="Pattern.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\Bhop.cpp">
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="XorString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VTableHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameEventListener.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="murmurhash.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ResourceManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetVar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="NetVarManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Offsets.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinMetadata.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TargetSelector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Target.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
+    <ClCompile Include="src\Button.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Canvas.cpp">
+    <ClCompile Include="src\Canvas.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Checkbox.cpp">
+    <ClCompile Include="src\Chams.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Checkbox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="ColorPicker.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Groupbox.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Gui.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="IControl.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="InputEvent.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="InputHandler.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Label.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Selectbox.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectboxItem.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="SelectboxPopup.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Slider.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="TabContainer.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="TabPage.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientEntity.cpp">
+    <ClCompile Include="src\checksum_md5.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
-    <ClCompile Include="ConVar.cpp">
+    <ClCompile Include="src\ClientClass.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
-    <ClCompile Include="CreateInterface.cpp">
+    <ClCompile Include="src\ClientEntity.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
-    <ClCompile Include="CWeapon.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="IMaterialSystem.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="IMatRenderContext.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="ISurface.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="Vector.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="AntiAim.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Autowall.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Bhop.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Chams.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Esp.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="IFeature.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Legitbot.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Misc.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Ragebot.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="SkinChanger.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Triggerbot.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Visuals.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="IBaseClientDLL.cpp">
-      <Filter>Source Files\Source SDK</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Mirror.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SoundEsp.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="Menu.cpp">
+    <ClCompile Include="src\ColorPicker.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="EspPlayer.cpp">
+    <ClCompile Include="src\ColorPickerPopup.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="checksum_md5.cpp">
+    <ClCompile Include="src\ConfigHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Console.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ConVar.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
-    <ClCompile Include="WeaponEsp.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="ClientClass.cpp">
+    <ClCompile Include="src\CreateInterface.cpp">
       <Filter>Source Files\Source SDK</Filter>
     </ClCompile>
-    <ClCompile Include="Resolver.cpp">
+    <ClCompile Include="src\CreateMove.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CWeapon.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DllMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DrawModelExecute.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EmitSound.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Esp.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="ColorPickerPopup.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="src\EspPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ResolverPlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LagCompensation.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="LagCompensationPlayerEntry.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LagCompensationPlayerList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Tooltip.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="Textbox.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
-    <ClCompile Include="lodepng.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WritableSection.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConfigHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Fakelag.cpp">
-      <Filter>Source Files\Features</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateMove.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameStageNotify.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="OverrideView.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="DrawModelExecute.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="PaintTraverse.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="PlaySound.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="GetViewModelFov.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="FireEventClientSide.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderView.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderSmokeOverlay.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="EmitSound.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="FindMdl.cpp">
-      <Filter>Source Files\Hooks</Filter>
-    </ClCompile>
-    <ClCompile Include="SequenceProxy.cpp">
+    <ClCompile Include="src\EyeAnglesProxy.cpp">
       <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
-    <ClCompile Include="LowerBodyYawProxy.cpp">
+    <ClCompile Include="src\Fakelag.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Fakewalk.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FindMdl.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FireEventClientSide.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\FrameStageNotify.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GameEventListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GetViewModelFov.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Groupbox.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gui.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GunHud.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IBaseClientDLL.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IControl.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IFeature.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IMaterialSystem.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IMatRenderContext.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputEvent.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputHandler.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ISurface.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Label.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LagCompensation.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LagCompensationPlayerEntry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LagCompensationPlayerList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Legitbot.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LowerBodyYawProxy.cpp">
       <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
-    <ClCompile Include="EyeAnglesProxy.cpp">
+    <ClCompile Include="src\MaterialVisuals.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Menu.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mirror.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\murmurhash.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetVar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NetVarManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Offsets.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\OverrideView.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PaintTraverse.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Pattern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlayerInfo.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlayerList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlaySound.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Radar.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Ragebot.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderSmokeOverlay.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderView.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Resolver.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ResolverPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ResourceManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Selectbox.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SelectboxItem.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SelectboxPopup.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SequenceProxy.cpp">
       <Filter>Source Files\Hooks\Proxies</Filter>
     </ClCompile>
-    <ClCompile Include="Fakewalk.cpp">
+    <ClCompile Include="src\SkinChanger.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="GunHud.cpp">
+    <ClCompile Include="src\SkinMetadata.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Slider.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SoundEsp.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="MaterialVisuals.cpp">
+    <ClCompile Include="src\SoundInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TabContainer.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TabPage.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Target.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TargetSelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Textbox.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tooltip.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Triggerbot.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="Radar.cpp">
+    <ClCompile Include="src\Utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector.cpp">
+      <Filter>Source Files\Source SDK</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Visuals.cpp">
       <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VTableHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WeaponEsp.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\WritableSection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\XorString.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Pattern.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Console.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="XorString.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="VTableHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameEventListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="murmurhash.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ResourceManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetVar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NetVarManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Offsets.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinMetadata.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MathDefs.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TargetSelector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Target.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Canvas.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Checkbox.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorPicker.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Controls.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Groupbox.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Gui.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="IControl.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="InputEvent.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="InputHandler.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Label.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Selectbox.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectboxItem.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectboxPopup.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Slider.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="TabContainer.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="TabPage.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="CGameTrace.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="CGlobalVars.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="CInput.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientClass.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientEntity.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientEntityList.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ClientFrameStage.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ConVar.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="CreateInterface.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="CViewSetup.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="CWeapon.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IBaseClientDLL.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IClientState.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ICVar.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngineTrace.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IGameEvent.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IGameEventManager.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IMaterial.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IMaterialSystem.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="INetChannelInfo.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IPanel.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IPhysicsSurfaceProps.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IRefCounted.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ISurface.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IVEngineClient.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IVModelInfo.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IVModelRender.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IVRenderView.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="KeyValues.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="ray.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="UserCmd.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Vector.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IMatRenderContext.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="AntiAim.h">
+    <ClInclude Include="src\AntiAim.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="Autowall.h">
+    <ClInclude Include="src\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Autowall.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="Bhop.h">
+    <ClInclude Include="src\Bhop.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="Chams.h">
-      <Filter>Header Files\Features</Filter>
+    <ClInclude Include="src\Button.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Esp.h">
-      <Filter>Header Files\Features</Filter>
+    <ClInclude Include="src\Canvas.h">
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="IFeature.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Legitbot.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Misc.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Ragebot.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="SkinChanger.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Triggerbot.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Visuals.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="IViewRender.h">
+    <ClInclude Include="src\CGameTrace.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="ITexture.h">
+    <ClInclude Include="src\CGlobalVars.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="CreateMove.h">
+    <ClInclude Include="src\Chams.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Checkbox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\checksum_md5.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CInput.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientClass.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientEntity.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientEntityList.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ClientFrameStage.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ColorPicker.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ColorPickerPopup.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConfigHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Console.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Controls.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ConVar.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CreateInterface.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CreateMove.h">
       <Filter>Header Files\Hooks</Filter>
     </ClInclude>
-    <ClInclude Include="FrameStageNotify.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="DrawModelExecute.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="FireEventClientSide.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="GetViewModelFov.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="OverrideView.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="PaintTraverse.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="IEngineSound.h">
+    <ClInclude Include="src\CUtlVector.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="CUtlVector.h">
+    <ClInclude Include="src\CViewSetup.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="SoundInfo.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="src\CWeapon.h">
+      <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Mirror.h">
+    <ClInclude Include="src\DrawModelExecute.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EmitSound.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Esp.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerList.h">
+    <ClInclude Include="src\EspPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SoundEsp.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Menu.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="EspPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="checksum_md5.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="WeaponEsp.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="Resolver.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="ColorPickerPopup.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="ResolverPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LagCompensation.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="LagCompensationPlayerEntry.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LagCompensationPlayerList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Tooltip.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="Textbox.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
-    <ClInclude Include="lodepng.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IClientMode.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IMDLCache.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IViewRenderBeams.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="WritableSection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConfigHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ILocalize.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="IAppSystem.h">
-      <Filter>Header Files\Source SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="Fakelag.h">
-      <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="PlaySound.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderView.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderSmokeOverlay.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="EmitSound.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="FindMdl.h">
-      <Filter>Header Files\Hooks</Filter>
-    </ClInclude>
-    <ClInclude Include="SequenceProxy.h">
+    <ClInclude Include="src\EyeAnglesProxy.h">
       <Filter>Header Files\Hooks\Proxies</Filter>
     </ClInclude>
-    <ClInclude Include="LowerBodyYawProxy.h">
-      <Filter>Header Files\Hooks\Proxies</Filter>
+    <ClInclude Include="src\Fakelag.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="EyeAnglesProxy.h">
-      <Filter>Header Files\Hooks\Proxies</Filter>
+    <ClInclude Include="src\Fakewalk.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="IInputSystem.h">
+    <ClInclude Include="src\FindMdl.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FireEventClientSide.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\FrameStageNotify.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GameEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GetViewModelFov.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Groupbox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gui.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GunHud.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IAppSystem.h">
       <Filter>Header Files\Source SDK</Filter>
     </ClInclude>
-    <ClInclude Include="Fakewalk.h">
+    <ClInclude Include="src\IBaseClientDLL.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IClientMode.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IClientState.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IControl.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ICVar.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IEngineSound.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IEngineTrace.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IFeature.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="GunHud.h">
+    <ClInclude Include="src\IGameEvent.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IGameEventManager.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IInputSystem.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ILocalize.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IMaterial.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IMaterialSystem.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IMatRenderContext.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IMDLCache.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\INetChannelInfo.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputEvent.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputHandler.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPanel.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IPhysicsSurfaceProps.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IRefCounted.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ISurface.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ITexture.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVEngineClient.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IViewRender.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IViewRenderBeams.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVModelInfo.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVModelRender.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IVRenderView.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyValues.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Label.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LagCompensation.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="MaterialVisuals.h">
+    <ClInclude Include="src\LagCompensationPlayerEntry.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LagCompensationPlayerList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Legitbot.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="Radar.h">
+    <ClInclude Include="src\lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LowerBodyYawProxy.h">
+      <Filter>Header Files\Hooks\Proxies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MaterialVisuals.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MathDefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Menu.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mirror.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Misc.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\murmurhash.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NetVar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NetVarManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Offsets.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\OverrideView.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PaintTraverse.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Pattern.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PlayerInfo.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PlayerList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PlaySound.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Radar.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Ragebot.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ray.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderSmokeOverlay.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderView.h">
+      <Filter>Header Files\Hooks</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Resolver.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResolverPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ResourceManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Selectbox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SelectboxItem.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SelectboxPopup.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SequenceProxy.h">
+      <Filter>Header Files\Hooks\Proxies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SkinChanger.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SkinMetadata.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Slider.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoundEsp.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SoundInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TabContainer.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TabPage.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Target.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\TargetSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Textbox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tooltip.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Triggerbot.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\UserCmd.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vector.h">
+      <Filter>Header Files\Source SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Visuals.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VTableHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WeaponEsp.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\WritableSection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\XorString.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="todo.txt" />
+    <Text Include="src\todo.txt" />
   </ItemGroup>
 </Project>

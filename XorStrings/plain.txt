@@ -1,3 +1,0 @@
-game_newmap
-cs_game_disconnected
-switch_team
