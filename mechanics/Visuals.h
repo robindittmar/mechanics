@@ -78,9 +78,6 @@ public:
 	void SetNightmodePerfomed(bool bNightmodePerfomed) { m_bNightmodePerfomed = bNightmodePerfomed; }
 	void SetNightmodeMapChanged(bool bNightmodeMapChange) { m_bNightmodeMapChange = bNightmodeMapChange; }
 
-	void SetAsusWalls(bool bAsusWalls) { m_bAsusWalls = bAsusWalls; }
-	bool GetAsusWalls() { return m_bAsusWalls; }
-
 	void SetAsusWallsPerformed(bool bAsusWallsPerformed) { m_bAsusWallsPerformed = bAsusWallsPerformed; }
 
 	void SetBulletTracer(bool bBulletTracer) { m_bBulletTracer = bBulletTracer; }
@@ -106,7 +103,6 @@ public:
 	void DrawNoScope();
 	bool NoScope(unsigned int vguiPanel);
 	void Nightmode();
-	void AsusWalls();
 	void DrawBulletTracer();
 private:
 	int m_iSurfaceWidth;
@@ -139,9 +135,6 @@ private:
 	bool m_bNightmode;
 	bool m_bNightmodePerfomed;
 	bool m_bNightmodeMapChange;
-
-	bool m_bAsusWalls;
-	bool m_bAsusWallsPerformed;
 
 	bool m_bBulletTracer;
 	bool m_bBulletTracerSelf;

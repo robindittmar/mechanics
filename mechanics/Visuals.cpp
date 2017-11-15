@@ -324,34 +324,6 @@ void CVisuals::Nightmode()
 	}
 }
 
-void CVisuals::AsusWalls()
-{
-	static CXorString xorWorld("@d÷®s");
-	static bool bLastSetting = m_bAsusWalls;
-
-	if (bLastSetting != m_bAsusWalls)
-	{
-		bLastSetting = m_bAsusWalls;
-		m_bAsusWallsPerformed = false;
-	}
-
-	if (!m_bAsusWallsPerformed)
-	{
-		for (auto i = m_pApp->MaterialSystem()->FirstMaterial(); i != m_pApp->MaterialSystem()->InvalidMaterial(); i = m_pApp->MaterialSystem()->NextMaterial(i))
-		{
-			IMaterial* pMaterial = m_pApp->MaterialSystem()->GetMaterial(i);
-
-			if (!pMaterial || pMaterial->IsErrorMaterial())
-				continue;
-
-			if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()))
-			{
-				pMaterial->AlphaModulate(0.5f);
-			}
-		}
-	}
-}
-
 void CVisuals::DrawBulletTracer()
 {
 	if (!m_bBulletTracer)
