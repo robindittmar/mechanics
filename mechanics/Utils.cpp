@@ -25,15 +25,15 @@ namespace Utils
 		return fAng;
 	}
 
-	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors)
+	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors, float fPointScale)
 	{
 		Vector bbmin;
 		Vector bbmax;
 
 		// TODO: Try FixHitbox instead (trace from edge points to center and use trace.endpos as new edge)
 		float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
-		bbmin = (hitBox->m_vecBBMin - fMod) * 0.65f;
-		bbmax = (hitBox->m_vecBBMax + fMod) * 0.65f;
+		bbmin = (hitBox->m_vecBBMin - fMod) * fPointScale;
+		bbmax = (hitBox->m_vecBBMax + fMod) * fPointScale;
 
 		Vector vPoints[] = {
 			(bbmin + bbmax) * 0.5f,

@@ -34,7 +34,22 @@ namespace ConfigHelper
 
 		// Legitbot
 		pApp->Legitbot()->SetEnabled(pConfig->GetBool("legitbot", "enabled"));
+		pApp->Legitbot()->SetTriggerKey(pConfig->GetInt("legitbot", "key"));
+		pApp->Legitbot()->SetAutoshoot(pConfig->GetBool("legitbot", "autoshoot"));
+		pApp->Legitbot()->SetHelpAfterShots(pConfig->GetInt("legitbot", "helpaftershots"));
 		pApp->Legitbot()->SetTimeToAim(pConfig->GetFloat("legitbot", "aimtime"));
+		pApp->Legitbot()->SetCurve(pConfig->GetFloat("legitbot", "curve"));
+		pApp->Legitbot()->SetFieldOfView(pConfig->GetFloat("legitbot", "fov"));
+		pApp->Legitbot()->SetPointScale(pConfig->GetFloat("legitbot", "pointscale"));
+		pApp->Legitbot()->SetDrawPath(pConfig->GetBool("legitbot", "drawpath"));
+		pApp->Legitbot()->SetPathColor(pConfig->GetColor("legitbot", "pathcolor"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_HEAD, pConfig->GetBool("legitbot", "checkhead"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_CHEST, pConfig->GetBool("legitbot", "checkchest"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_PELVIS, pConfig->GetBool("legitbot", "checkpelvis"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM, pConfig->GetBool("legitbot", "checkrightforearm"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, pConfig->GetBool("legitbot", "checkleftforearm"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, pConfig->GetBool("legitbot", "checkrightcalf"));
+		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, pConfig->GetBool("legitbot", "checkleftcalf"));
 
 		// Triggerbot
 		pApp->Triggerbot()->SetEnabled(pConfig->GetBool("triggerbot", "enabled"));
@@ -193,6 +208,10 @@ namespace ConfigHelper
 		// Mirror
 		pApp->Mirror()->SetEnabled(pConfig->GetBool("visuals", "mirror"));
 
+		// Radar
+		pApp->Radar()->SetEnabled(pConfig->GetBool("visuals", "radar"));
+		pApp->Radar()->SetType(pConfig->GetInt("visuals", "radartype"));
+
 		// LagCompensation
 		pApp->LagCompensation()->SetRageLagCompensationEnabled(pConfig->GetBool("lagcompensation", "rageenabled"));
 		pApp->LagCompensation()->SetLegitLagCompensationEnabled(pConfig->GetBool("lagcompensation", "legitenabled"));
@@ -234,7 +253,22 @@ namespace ConfigHelper
 
 		// Legitbot
 		pConfig->SetBool("legitbot", "enabled", pApp->Legitbot()->GetEnabled());
+		pConfig->SetInt("legitbot", "key", pApp->Legitbot()->GetTriggerKey());
+		pConfig->SetBool("legitbot", "autoshoot", pApp->Legitbot()->GetAutoshoot());
+		pConfig->SetInt("legitbot", "helpaftershots", pApp->Legitbot()->GetHelpAfterShots());
 		pConfig->SetFloat("legitbot", "aimtime", pApp->Legitbot()->GetTimeToAim());
+		pConfig->SetFloat("legitbot", "curve", pApp->Legitbot()->GetCurve());
+		pConfig->SetFloat("legitbot", "fov", pApp->Legitbot()->GetFieldOfView());
+		pConfig->SetFloat("legitbot", "pointscale", pApp->Legitbot()->GetPointScale());
+		pConfig->SetBool("legitbot", "drawpath", pApp->Legitbot()->GetDrawPath());
+		pConfig->SetColor("legitbot", "pathcolor", pApp->Legitbot()->GetPathColor());
+		pConfig->SetBool("legitbot", "checkhead", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_HEAD));
+		pConfig->SetBool("legitbot", "checkchest", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_CHEST));
+		pConfig->SetBool("legitbot", "checkpelvis", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
+		pConfig->SetBool("legitbot", "checkrightforearm", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+		pConfig->SetBool("legitbot", "checkleftforearm", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+		pConfig->SetBool("legitbot", "checkrightcalf", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+		pConfig->SetBool("legitbot", "checkleftcalf", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
 
 		// Triggerbot
 		pConfig->SetBool("triggerbot", "enabled", pApp->Triggerbot()->GetEnabled());
@@ -384,6 +418,10 @@ namespace ConfigHelper
 
 		// Mirror
 		pConfig->SetBool("visuals", "mirror", pApp->Mirror()->GetEnabled());
+
+		// Radar
+		pConfig->SetBool("visuals", "radar", pApp->Radar()->GetEnabled());
+		pConfig->SetInt("visuals", "radartype", pApp->Radar()->GetType());
 
 		// LagCompensation
 		pConfig->SetBool("lagcompensation", "rageenabled", pApp->LagCompensation()->GetRageLagCompensationEnabled());

@@ -26,19 +26,13 @@ CTabContainer::~CTabContainer()
 void CTabContainer::SelectTab(int idx)
 {
 	m_iSelectedTab = -1;
-
 	for(int i = 0; i < m_iCountTabs; i++)
 	{
-		if(i == idx)
-		{
-			m_pChildren[i]->SetVisible(true);
-			m_iSelectedTab = i;
-		}
-		else
-		{
-			m_pChildren[i]->SetVisible(false);
-		}
+		m_pChildren[i]->SetVisible(false);
 	}
+
+	m_pChildren[idx]->SetVisible(true);
+	m_iSelectedTab = idx;
 }
 
 void CTabContainer::OnMouseMove(int mx, int my)

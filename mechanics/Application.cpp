@@ -334,6 +334,7 @@ void CApplication::Setup()
 	this->m_visuals.Setup();
 	this->m_gunHud.Setup();
 	this->m_mirror.Setup();
+	this->m_radar.Setup();
 	this->m_lagcompensation.Setup();
 
 	CConfig config;

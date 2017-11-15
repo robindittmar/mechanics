@@ -183,6 +183,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerList.cpp" />
     <ClCompile Include="PlaySound.cpp" />
+    <ClCompile Include="Radar.cpp" />
     <ClCompile Include="Ragebot.cpp" />
     <ClCompile Include="AntiAim.cpp" />
     <ClCompile Include="Application.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerList.h" />
     <ClInclude Include="PlaySound.h" />
+    <ClInclude Include="Radar.h" />
     <ClInclude Include="Ragebot.h" />
     <ClInclude Include="AntiAim.h" />
     <ClInclude Include="Application.h" />

@@ -9,7 +9,7 @@ namespace Utils
 	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
 	float GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/);
 
-	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors);
+	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors, float fPointScale);
 }
 
 #endif // __UTILS_H__

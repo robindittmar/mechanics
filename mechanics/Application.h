@@ -61,6 +61,7 @@
 #include "LagCompensation.h"
 #include "Fakelag.h"
 #include "Fakewalk.h"
+#include "Radar.h"
 
 // Source SDK
 #include "CreateInterface.h"
@@ -235,6 +236,7 @@ public:
 	CVisuals*			Visuals()			{ return &m_visuals; }
 	CGunHud*			GunHud()			{ return &m_gunHud; }
 	CMirror*			Mirror()			{ return &m_mirror; }
+	CRadar*				Radar()				{ return &m_radar; }
 	CLagCompensation*	LagCompensation()	{ return &m_lagcompensation; }
 
 	// Resource Manager
@@ -372,6 +374,7 @@ private:
 	CVisuals m_visuals;
 	CGunHud m_gunHud;
 	CMirror m_mirror;
+	CRadar m_radar;
 	CLagCompensation m_lagcompensation;
 
 	// Event listener

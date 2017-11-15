@@ -284,6 +284,7 @@ public:
 	void** GetWeapons();
 	Vector* GetVelocity();
 	bool IsSpotted();
+	void SetSpotted(bool bSpotted = true);
 	int GetArmor();
 	bool HasHeavyArmor();
 	bool HasHelmet();

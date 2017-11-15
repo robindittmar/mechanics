@@ -102,6 +102,11 @@ bool IClientEntity::IsSpotted()
 	return *(bool*)((DWORD)this + Offsets::m_bSpotted);
 }
 
+void IClientEntity::SetSpotted(bool bSpotted)
+{
+	*(bool*)((DWORD)this + Offsets::m_bSpotted) = bSpotted;
+}
+
 int IClientEntity::GetArmor()
 {
 	return *(int*)((DWORD)this + Offsets::m_ArmorValue);
