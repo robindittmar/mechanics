@@ -548,19 +548,33 @@ void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
 
 	this->DeleteModelNames();
 	this->DeleteKillIcons();
-	if (iDesiredKnifeModelIndex == 0)
+	if (m_iDesiredKnifeModelIndex == 0)
 	{
 		m_pApp->ClientState()->ForceFullUpdate();
 		return;
 	}
 
 
-	const char* pDesiredKnife = this->m_mapKnives[iDesiredKnifeModelIndex];
+	const char* pDesiredKnife = this->m_mapKnives[m_iDesiredKnifeModelIndex];
 
 	for (std::unordered_map<int, const char*>::iterator it = m_mapKnives.begin(); it != m_mapKnives.end(); it++)
 	{
+		AddSkinReplacement(
+			it->first,
+			new CSkinMetadata(
+				m_iDesiredKnifeModelIndex,
+				0,
+				0,
+				-1,
+				3
+			)
+		);
+
+		// No model replacement for our desired knife
 		if (it->first == m_iDesiredKnifeModelIndex)
+		{
 			continue;
+		}
 
 		AddModelReplacement(
 			it->second,
