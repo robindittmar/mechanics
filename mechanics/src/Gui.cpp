@@ -82,24 +82,10 @@ bool CGui::IsMouseInRect(int x, int y, int w, int h)
 	return false;
 }
 
-bool CGui::GetMousePos()
+void CGui::SetMousePos(int iX, int iY)
 {
-	POINT p;
-	if(GetCursorPos(&p))
-	{
-		// Gh3tt0 f!x
-		if (m_hGameWindow)
-		{
-			ScreenToClient(m_hGameWindow, &p);
-		}
-		
-		m_iMouseX = p.x;
-		m_iMouseY = p.y;
-
-		return true;
-	}
-
-	return false;
+	m_iMouseX = iX;
+	m_iMouseY = iY;
 }
 
 void CGui::DrawMouse(ISurface* pSurface)
@@ -159,20 +145,67 @@ bool CGui::ScreenTransform(const Vector& point, Vector& screen)
 LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 {
 	CGui* pGui = CGui::Instance();
-	if (!pGui->m_bEnableGameInput)
+	CInputHandler* pInputHandler = CInputHandler::Instance();
+	int x, y;
+
+	switch (nCode)
 	{
-		switch (nCode)
-		{
-		case WM_KEYDOWN:
-		case WM_KEYUP:
-		case WM_MOUSEMOVE:
-		case WM_LBUTTONDBLCLK:
-		case WM_LBUTTONDOWN:
-		case WM_LBUTTONUP:
-		case WM_RBUTTONDOWN:
-		case WM_RBUTTONUP:
+	case WM_CHAR:
+		pInputHandler->OnText((char)wParam);
+
+		if (!pGui->m_bEnableGameInput)
 			return 1L;
-		}
+		break;
+	case WM_KEYDOWN:
+		pInputHandler->OnKeyDown((int)wParam);
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_KEYUP:
+		pInputHandler->OnKeyUp((int)wParam);
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_MOUSEMOVE:
+		x = GET_X_LPARAM(lParam);
+		y = GET_Y_LPARAM(lParam);
+		pGui->SetMousePos(x, y);
+		pInputHandler->OnMouseMove(x, y);
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_LBUTTONDOWN:
+		pInputHandler->OnMouseDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_LBUTTONUP:
+		pInputHandler->OnMouseUp(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_RBUTTONDOWN:
+		pInputHandler->OnMouseDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_RBUTTONUP:
+		pInputHandler->OnMouseUp(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_LBUTTONDBLCLK:
+	case WM_RBUTTONDBLCLK:
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
 	}
 
 	return CallWindowProc(pGui->m_wndProc, hWnd, nCode, wParam, lParam);

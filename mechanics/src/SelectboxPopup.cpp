@@ -83,7 +83,7 @@ void CSelectboxPopup::ProcessEvent(CInputEvent* pEvent)
 	if (pEvent->eventType == EVENT_TYPE_MOUSE)
 	{
 		// Up or down, I don't care
-		if (pEvent->buttons & EVENT_BTN_LMOUSE)
+		if (pEvent->button == EVENT_BTN_LMOUSE)
 		{
 			int x = 0, y = 0;
 			this->GetAbsolutePosition(&x, &y);

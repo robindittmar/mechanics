@@ -316,7 +316,7 @@ void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderCo
 	if (strstr(pszModelName, xorWeaponsV.ToCharArray()) != NULL &&
 		strstr(pszModelName, xorWeaponsVModels.ToCharArray()) == NULL)
 	{
-		IMaterial* pMat;
+		IMaterial* pMat = NULL;
 		switch (m_iWeaponChamsStyle)
 		{
 		case WEAPON_CHAMSSTYLE_GOLD:

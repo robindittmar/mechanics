@@ -75,18 +75,22 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 
 	CApplication* pApp = CApplication::Instance();
 	CGui* pGui = CGui::Instance();
+	int x = 0, y = 0;
+
+	if (pEvent->eventType == EVENT_TYPE_MOUSE ||
+		pEvent->eventType == EVENT_TYPE_MOUSEMOVE)
+	{
+		this->GetAbsolutePosition(&x, &y);
+		m_bMouseOver = pGui->IsMouseInRect(x, y, m_iWidth, m_iHeight);
+	}
 
 	if (pEvent->eventType == EVENT_TYPE_MOUSE)
 	{
-		int x = 0, y = 0;
-		this->GetAbsolutePosition(&x, &y);
-
-		m_bMouseOver = pGui->IsMouseInRect(x, y, m_iWidth, m_iHeight);
 		if (m_bMouseOver) // Mouse inside control
 		{
-			if (pEvent->buttons & EVENT_BTN_LMOUSE)
+			if (pEvent->button == EVENT_BTN_LMOUSE)
 			{
-				if (pEvent->buttonProperties & EVENT_BTN_LMOUSE) // Button down
+				if (pEvent->buttonDirection == EVENT_BTNDIR_DOWN) // Button down
 				{
 					if (m_bCanHaveFocus)
 					{
@@ -111,38 +115,36 @@ void IControl::ProcessEvent(CInputEvent* pEvent)
 					}
 				}
 			}
-			else if (pEvent->DidMouseMove())
-			{
-				this->OnMouseMove(pEvent->mousex, pEvent->mousey);
-
-				if (m_pTooltip)
-				{
-					m_fTimeLastMouseMovement = pApp->GlobalVars()->curtime;
-					m_pTooltip->SetPosition(pEvent->mousex + TOOLTIP_DISTANCE_TO_MOUSE_X, pEvent->mousey + TOOLTIP_DISTANCE_TO_MOUSE_Y);
-				}
-			}
 		}
 		else // Mouse outside control
 		{
 			// Check if MouseDown is set & mouse is released
 			if (m_bMouseDown &&
-				pEvent->buttons & EVENT_BTN_LMOUSE &&
-				!(pEvent->buttonProperties & EVENT_BTN_LMOUSE))
+				pEvent->button == EVENT_BTN_LMOUSE &&
+				pEvent->buttonDirection == EVENT_BTNDIR_UP)
 			{
 				if (!m_bHitcheckForMouseUp)
 					this->OnMouseUp(pEvent->mousex, pEvent->mousey);
 
 				m_bMouseDown = false;
 			}
+		}
+	}
+	else if (pEvent->eventType == EVENT_TYPE_MOUSEMOVE)
+	{
+		if (m_bMouseOver) // Mouse inside control
+		{
+			this->OnMouseMove(pEvent->mousex, pEvent->mousey);
 
-			// If we shall trigger MouseMove events even if we're not over the control
-			if (!m_bHitcheckForMouseMove)
+			if (m_pTooltip)
 			{
-				if (pEvent->DidMouseMove())
-				{
-					this->OnMouseMove(pEvent->mousex, pEvent->mousey);
-				}
+				m_fTimeLastMouseMovement = pApp->GlobalVars()->curtime;
+				m_pTooltip->SetPosition(pEvent->mousex + TOOLTIP_DISTANCE_TO_MOUSE_X, pEvent->mousey + TOOLTIP_DISTANCE_TO_MOUSE_Y);
 			}
+		}
+		else if (!m_bHitcheckForMouseMove)
+		{
+			this->OnMouseMove(pEvent->mousex, pEvent->mousey);
 		}
 	}
 

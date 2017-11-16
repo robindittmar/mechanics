@@ -3,6 +3,7 @@
 
 // Std Lib
 #include <Windows.h>
+#include <Windowsx.h>
 
 // Source SDK
 #include "Vector.h"
@@ -28,7 +29,7 @@ public:
 	bool IsMouseEnabled();
 	bool IsMouseInRect(int x, int y, int w, int h);
 
-	bool GetMousePos();
+	void SetMousePos(int iX, int iY);
 	int MouseX() { return m_iMouseX; }
 	int MouseY() { return m_iMouseY; }
 

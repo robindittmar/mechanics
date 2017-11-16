@@ -42,7 +42,7 @@ private:
 	void CreateConfigTab();
 
 	CInputEvent m_inputEvent;
-	CInputHandler m_inputHandler;
+	CInputHandler* m_pInputHandler;
 
 	// Main Windows & Controls
 	CWindow* m_pWindow;
