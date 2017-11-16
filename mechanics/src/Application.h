@@ -164,6 +164,9 @@ public:
 	void SetRecoilCompensation(float recoilCompensation)	{ m_flRecoilCompensation = recoilCompensation; }
 	float GetRecoilCompensation()							{ return m_flRecoilCompensation; }
 
+	void SetRenderFieldOfView(float fRenderFieldOfView)		{ m_fRenderFieldOfView = fRenderFieldOfView; }
+	float GetRenderFieldOfView()							{ return m_fRenderFieldOfView; }
+
 	IClientEntity* GetLocalPlayer(bool bGetTargetIfLocalDead = false);
 
 	// VTable Hooks
@@ -292,6 +295,7 @@ private:
 	char* m_pFilename;
 
 	float m_flRecoilCompensation;
+	float m_fRenderFieldOfView;
 
 	RandomSeed_t m_pRandomSeed;
 	RandomInt_t m_pRandomInt;

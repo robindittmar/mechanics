@@ -1,10 +1,14 @@
 #ifndef __BHOP_H__
 #define __BHOP_H__
 
-#include "IFeature.h"
+// Std Lib
+
+// Source SDK
 #include "UserCmd.h"
 
-class CApplication;
+// Custom
+#include "IFeature.h"
+
 
 class CBhop : public IFeature
 {

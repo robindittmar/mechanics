@@ -1,6 +1,6 @@
 #include "Slider.h"
 
-CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax) : IControl(x, y, w, h)
+CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText) : IControl(x, y, w, h)
 {
 	m_bHitcheckForMouseMove = false;
 
@@ -35,13 +35,22 @@ CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, 
 		m_fPossibleValues[m_iCountPossibleValues - 1] = fMax;
 	}
 
-	m_pLabel = new CLabel(0, 0, 0, 0, "", RM_FONT_NORMAL, iOrientation == SLIDER_ORIENTATION_HORIZONTAL ? LABEL_ORIENTATION_CENTER : LABEL_ORIENTATION_LEFT);
+	m_pLabel = new CLabel(0, -16, 0, 0, "", RM_FONT_NORMAL, iOrientation == SLIDER_ORIENTATION_HORIZONTAL ? LABEL_ORIENTATION_CENTER : LABEL_ORIENTATION_LEFT);
+
+	if (pText)
+	{
+		m_pTextLabel = new CLabel(0, -18, 0, 0, pText, RM_FONT_NORMAL);
+		this->AddChild(m_pTextLabel);
+	}
 }
 
 CSlider::~CSlider()
 {
 	if (m_fPossibleValues)
 		delete[] m_fPossibleValues;
+
+	if (m_pLabel)
+		delete m_pLabel;
 }
 
 void CSlider::OnMouseMove(int mx, int my)
@@ -121,6 +130,7 @@ void CSlider::Draw(ISurface* pSurface)
 	}
 
 	m_pLabel->Draw(pSurface);
+	IControl::Draw(pSurface);
 }
 
 void CSlider::SetEnabled(bool bIsEnabled)

@@ -25,7 +25,7 @@ void CBhop::Update(void* pParameters)
 	
 	DWORD flags = pLocalEntity->GetFlags();
 	DWORD moveType = pLocalEntity->GetMoveType();
-	if (m_pApp->Gui()->IsMouseEnabled() &&
+	if (CGui::Instance()->IsMouseEnabled() &&
 		pUserCmd->buttons & IN_JUMP)
 	{
 		if (!(flags & FL_ONGROUND) && !(flags & FL_SWIM) && moveType != MOVETYPE_LADDER)

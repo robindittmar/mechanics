@@ -41,6 +41,8 @@ namespace ConfigHelper
 		pApp->Legitbot()->SetCurve(pConfig->GetFloat("legitbot", "curve"));
 		pApp->Legitbot()->SetFieldOfView(pConfig->GetFloat("legitbot", "fov"));
 		pApp->Legitbot()->SetPointScale(pConfig->GetFloat("legitbot", "pointscale"));
+		pApp->Legitbot()->SetDrawFieldOfView(pConfig->GetBool("legitbot", "drawfov"));
+		pApp->Legitbot()->SetFieldOfViewColor(pConfig->GetColor("legitbot", "fovcolor"));
 		pApp->Legitbot()->SetDrawPath(pConfig->GetBool("legitbot", "drawpath"));
 		pApp->Legitbot()->SetPathColor(pConfig->GetColor("legitbot", "pathcolor"));
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_HEAD, pConfig->GetBool("legitbot", "checkhead"));
@@ -50,7 +52,8 @@ namespace ConfigHelper
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, pConfig->GetBool("legitbot", "checkleftforearm"));
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, pConfig->GetBool("legitbot", "checkrightcalf"));
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, pConfig->GetBool("legitbot", "checkleftcalf"));
-
+		pConfig->SetBool("legitbot", "drawfov", pApp->Legitbot()->GetDrawFieldOfView());
+		pConfig->SetColor("legitbot", "fovcolor", pApp->Legitbot()->GetFieldOfViewColor());
 		// Triggerbot
 		pApp->Triggerbot()->SetEnabled(pConfig->GetBool("triggerbot", "enabled"));
 		pApp->Triggerbot()->SetShootDelay(pConfig->GetInt("triggerbot", "shootdelay"));
@@ -262,6 +265,8 @@ namespace ConfigHelper
 		pConfig->SetFloat("legitbot", "curve", pApp->Legitbot()->GetCurve());
 		pConfig->SetFloat("legitbot", "fov", pApp->Legitbot()->GetFieldOfView());
 		pConfig->SetFloat("legitbot", "pointscale", pApp->Legitbot()->GetPointScale());
+		pConfig->SetBool("legitbot", "drawfov", pApp->Legitbot()->GetDrawFieldOfView());
+		pConfig->SetColor("legitbot", "fovcolor", pApp->Legitbot()->GetFieldOfViewColor());
 		pConfig->SetBool("legitbot", "drawpath", pApp->Legitbot()->GetDrawPath());
 		pConfig->SetColor("legitbot", "pathcolor", pApp->Legitbot()->GetPathColor());
 		pConfig->SetBool("legitbot", "checkhead", pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_HEAD));

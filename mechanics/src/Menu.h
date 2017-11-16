@@ -70,14 +70,14 @@ private:
 	CSelectbox* m_pAimbotTargetCriteria;
 	CSelectbox* m_pAimbotVisibleMode;
 
-	CGroupbox* m_pHitboxGroup;
-	CCheckbox* m_pHitboxHead;
-	CCheckbox* m_pHitboxChest;
-	CCheckbox* m_pHitboxPelvis;
-	CCheckbox* m_pHitboxRForearm;
-	CCheckbox* m_pHitboxLForearm;
-	CCheckbox* m_pHitboxRCalf;
-	CCheckbox* m_pHitboxLCalf;
+	CGroupbox* m_pRageHitboxGroup;
+	CCheckbox* m_pRageHitboxHead;
+	CCheckbox* m_pRageHitboxChest;
+	CCheckbox* m_pRageHitboxPelvis;
+	CCheckbox* m_pRageHitboxRForearm;
+	CCheckbox* m_pRageHitboxLForearm;
+	CCheckbox* m_pRageHitboxRCalf;
+	CCheckbox* m_pRageHitboxLCalf;
 
 	CGroupbox* m_pRageOthersGroup;
 	CCheckbox* m_pRageOthersAutoZeusEnabled;
@@ -114,6 +114,25 @@ private:
 	//
 	// Legit tab
 	CTabPage* m_pLegitTab;
+
+	CGroupbox* m_pLegitbotGroup;
+	CCheckbox* m_pLegitbotEnabled;
+	CSlider* m_pLegitbotHelpAfterShots;
+	CSlider* m_pLegitbotTimeToAim;
+	CSlider* m_pLegitbotCurve;
+	CSlider* m_pLegitbotFov;
+	CSlider* m_pLegitbotPointScale;
+	CCheckbox* m_pLegitbotDrawPath;
+
+	CGroupbox* m_pLegitHitboxGroup;
+	CCheckbox* m_pLegitHitboxHead;
+	CCheckbox* m_pLegitHitboxChest;
+	CCheckbox* m_pLegitHitboxPelvis;
+	CCheckbox* m_pLegitHitboxRForearm;
+	CCheckbox* m_pLegitHitboxLForearm;
+	CCheckbox* m_pLegitHitboxRCalf;
+	CCheckbox* m_pLegitHitboxLCalf;
+
 	CGroupbox* m_pTriggerbotGroup;
 	CCheckbox* m_pTriggerbotEnabled;
 	CLabel* m_pTriggerbotDelayLabel;

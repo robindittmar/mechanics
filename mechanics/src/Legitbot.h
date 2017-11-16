@@ -46,6 +46,12 @@ public:
 	void SetPointScale(float fPointScale) { m_fPointScale = fPointScale; }
 	float GetPointScale() { return m_fPointScale; }
 
+	void SetDrawFieldOfView(bool bDrawFieldOfView) { m_bDrawFieldOfView = bDrawFieldOfView; }
+	bool GetDrawFieldOfView() { return m_bDrawFieldOfView; }
+
+	void SetFieldOfViewColor(Color clrFieldOfView) { m_clrFieldOfView = clrFieldOfView; }
+	Color GetFieldOfViewColor() { return m_clrFieldOfView; }
+
 	void SetDrawPath(bool bDrawPath) { m_bDrawPath = bDrawPath; }
 	bool GetDrawPath() { return m_bDrawPath; }
 
@@ -56,6 +62,7 @@ public:
 	bool GetCheckHitbox(int iHitbox) { return m_bCheckHitbox[iHitbox]; }
 
 	virtual void Update(void* pParameters = 0) override;
+	void DrawFieldOfView(ISurface* pSurface);
 	void DrawPath(ISurface* pSurface);
 private:
 	QAngle QuadraticBezier(QAngle& p0, QAngle& p1, QAngle& p2, float t);
@@ -68,6 +75,9 @@ private:
 	float m_fCurve;
 	float m_fFieldOfView;
 	float m_fPointScale;
+
+	bool m_bDrawFieldOfView;
+	Color m_clrFieldOfView;
 	bool m_bDrawPath;
 	Color m_clrPath;
 

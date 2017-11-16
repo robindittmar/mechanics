@@ -48,6 +48,7 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 
 			// Draw Legitbot Target
 			pApp->Legitbot()->DrawPath(pSurface);
+			pApp->Legitbot()->DrawFieldOfView(pSurface);
 
 			// Draw Hitmarker
 			pApp->GunHud()->DrawHitmarker();

@@ -19,5 +19,9 @@ void __fastcall hk_OverrideView(void* ecx, void* edx, CViewSetup* pViewSetup)
 		}
 		pApp->Visuals()->Thirdperson();
 	}
+
+	// Store FOV to use it for SpreadCone and other FOV based renderings
+	pApp->SetRenderFieldOfView(pViewSetup->fov);
+
 	return g_pOverrideView(ecx, pViewSetup);
 }

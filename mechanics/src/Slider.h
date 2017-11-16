@@ -29,7 +29,8 @@ public:
 		int iOrientation = SLIDER_ORIENTATION_HORIZONTAL,
 		bool bReverse = false,
 		float fMin = 0.0,
-		float fMax = 1.0f
+		float fMax = 1.0f,
+		const char* pText = NULL
 	);
 	~CSlider();
 
@@ -40,7 +41,6 @@ public:
 
 	virtual void SetEnabled(bool bIsEnabled);
 
-	// SetValue is used for technical stuff mostly, Label won't be updated
 	void SetValue(float fValue);
 	float GetValue() { return m_fValue; }
 
@@ -49,6 +49,7 @@ private:
 	void SetValueToCursorPos(int mx, int my);
 	void SetLabelText();
 
+	CLabel* m_pTextLabel;
 	CLabel* m_pLabel;
 
 	int m_iOrientation;

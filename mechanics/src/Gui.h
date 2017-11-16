@@ -26,9 +26,11 @@ public:
 	int GetScreenHeight() const { return m_iScreenHeight; }
 
 	void SetEnableGameInput(bool bEnableGameInput);
-	bool IsMouseEnabled();
+	bool GetEnableGameInput() { return m_bEnableGameInput; }
+
 	bool IsMouseInRect(int x, int y, int w, int h);
 
+	bool IsMouseEnabled();
 	void SetMousePos(int iX, int iY);
 	int MouseX() { return m_iMouseX; }
 	int MouseY() { return m_iMouseY; }
@@ -62,8 +64,6 @@ private:
 	CGui();
 	CGui(const CGui&) = delete;
 	~CGui();
-
-	void operator=(CGui const&) {}
 };
 
 #endif // __GUI_H__

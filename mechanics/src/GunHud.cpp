@@ -134,7 +134,7 @@ void CGunHud::DrawSpreadCone()
 		iMidY = m_iMiddleY;
 	}
 
-	float fSpread = ((pActiveWeapon->GetInaccuracy() + pActiveWeapon->GetSpread()) * 320.f) / tanf(DEG2RAD(m_pApp->Visuals()->GetFovValue()) * 0.5f) * m_pGui->GetScreenHeight() / 480.f;
+	float fSpread = ((pActiveWeapon->GetInaccuracy() + pActiveWeapon->GetSpread()) * 320.f) / tanf(DEG2RAD(m_pApp->GetRenderFieldOfView()) * 0.5f) * m_pGui->GetScreenHeight() / 480.f;
 
 	m_pSurface->DrawSetColor(m_clrSpreadCone);
 	m_pSurface->DrawOutlinedCircle(iMidX, iMidY, fSpread, 64);

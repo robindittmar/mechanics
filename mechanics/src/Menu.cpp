@@ -74,13 +74,13 @@ void CMenu::ApplySettings()
 	m_pAimbotTargetCriteria->SetValue(m_pApp->Ragebot()->GetTargetCriteria());
 	m_pAimbotVisibleMode->SetValue(m_pApp->TargetSelector()->GetVisibleMode());
 
-	m_pHitboxHead->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
-	m_pHitboxChest->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
-	m_pHitboxPelvis->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
-	m_pHitboxRForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
-	m_pHitboxLForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
-	m_pHitboxRCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
-	m_pHitboxLCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
+	m_pRageHitboxHead->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
+	m_pRageHitboxChest->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
+	m_pRageHitboxPelvis->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
+	m_pRageHitboxRForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+	m_pRageHitboxLForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+	m_pRageHitboxRCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+	m_pRageHitboxLCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
 
 	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
 	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
@@ -110,6 +110,25 @@ void CMenu::ApplySettings()
 	m_pAntiaimEdgeAntiaimDrawLines->SetChecked(m_pApp->AntiAim()->GetDrawEdgeAntiAimLines());
 
 	// Legit
+	// Legitbot
+	m_pLegitbotEnabled->SetChecked(m_pApp->Legitbot()->GetEnabled());
+	m_pLegitbotHelpAfterShots->SetValue(m_pApp->Legitbot()->GetHelpAfterShots());
+	m_pLegitbotTimeToAim->SetValue(m_pApp->Legitbot()->GetTimeToAim());
+	m_pLegitbotCurve->SetValue(m_pApp->Legitbot()->GetCurve());
+	m_pLegitbotFov->SetValue(m_pApp->Legitbot()->GetFieldOfView());
+	m_pLegitbotPointScale->SetValue(m_pApp->Legitbot()->GetPointScale());
+	m_pLegitbotDrawPath->SetChecked(m_pApp->Legitbot()->GetDrawPath());
+
+	// Legitbot hitboxes
+	m_pLegitHitboxHead->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_HEAD));
+	m_pLegitHitboxChest->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_CHEST));
+	m_pLegitHitboxPelvis->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
+	m_pLegitHitboxRForearm->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+	m_pLegitHitboxLForearm->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+	m_pLegitHitboxRCalf->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+	m_pLegitHitboxLCalf->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
+
+	// Triggerbot
 	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
 	m_pTriggerbotDelayValue->SetValue(m_pApp->Triggerbot()->GetShootDelay());
 	m_pTriggerbotDelayJitterValue->SetValue(m_pApp->Triggerbot()->GetShootDelayJitter());
@@ -361,36 +380,35 @@ void CMenu::CreateRageTab()
 	m_pAimbotGroup->AddChild(m_pAimbotTargetCriteria);
 	m_pAimbotGroup->AddChild(m_pAimbotVisibleMode);
 
+	m_pRageHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
+	m_pRageHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_HEAD, std::placeholders::_1));
 
-	m_pHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
-	m_pHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_HEAD, std::placeholders::_1));
+	m_pRageHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
+	m_pRageHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_CHEST, std::placeholders::_1));
 
-	m_pHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
-	m_pHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_CHEST, std::placeholders::_1));
+	m_pRageHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
+	m_pRageHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
 
-	m_pHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
-	m_pHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
+	m_pRageHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
+	m_pRageHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
 
-	m_pHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
-	m_pHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
+	m_pRageHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
 
-	m_pHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
-	m_pHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
+	m_pRageHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
 
-	m_pHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
-	m_pHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+	m_pRageHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
+	m_pRageHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
 
-	m_pHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
-	m_pHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
-
-	m_pHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
-	m_pHitboxGroup->AddChild(m_pHitboxHead);
-	m_pHitboxGroup->AddChild(m_pHitboxChest);
-	m_pHitboxGroup->AddChild(m_pHitboxPelvis);
-	m_pHitboxGroup->AddChild(m_pHitboxRForearm);
-	m_pHitboxGroup->AddChild(m_pHitboxLForearm);
-	m_pHitboxGroup->AddChild(m_pHitboxRCalf);
-	m_pHitboxGroup->AddChild(m_pHitboxLCalf);
+	m_pRageHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxHead);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxChest);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxPelvis);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxRForearm);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxLForearm);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxRCalf);
+	m_pRageHitboxGroup->AddChild(m_pRageHitboxLCalf);
 
 	m_pRageOthersAutoZeusEnabled = new CCheckbox(4, 0, 128, 16, "Auto Zeus");
 	m_pRageOthersAutoZeusEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoZeus, m_pApp->Ragebot(), std::placeholders::_1));
@@ -519,13 +537,73 @@ void CMenu::CreateRageTab()
 
 	m_pRageTab = new CTabPage("Rage");
 	m_pRageTab->AddChild(m_pAimbotGroup);
-	m_pRageTab->AddChild(m_pHitboxGroup);
+	m_pRageTab->AddChild(m_pRageHitboxGroup);
 	m_pRageTab->AddChild(m_pRageOthersGroup);
 	m_pRageTab->AddChild(m_pAntiaimGroup);
 }
 
 void CMenu::CreateLegitTab()
 {
+	m_pLegitbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pLegitbotEnabled->SetEventHandler(std::bind(&CLegitbot::SetEnabled, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotHelpAfterShots = new CSlider(4, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 10.0f, "Help after shots");
+	m_pLegitbotHelpAfterShots->SetEventHandler(std::bind(&CLegitbot::SetHelpAfterShots, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotTimeToAim = new CSlider(4, 80, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Time to Aim");
+	m_pLegitbotTimeToAim->SetEventHandler(std::bind(&CLegitbot::SetTimeToAim, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotCurve = new CSlider(4, 120, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.5f, "Curve");
+	m_pLegitbotCurve->SetEventHandler(std::bind(&CLegitbot::SetCurve, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotFov = new CSlider(4, 160, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 30.0f, "FOV");
+	m_pLegitbotFov->SetEventHandler(std::bind(&CLegitbot::SetFieldOfView, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotPointScale = new CSlider(4, 200, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 3.0f, "Point Scale");
+	m_pLegitbotPointScale->SetEventHandler(std::bind(&CLegitbot::SetPointScale, m_pApp->Legitbot(), std::placeholders::_1));
+
+	m_pLegitbotDrawPath = new CCheckbox(4, 220, 128, 16, "Draw Path");
+	m_pLegitbotDrawPath->SetEventHandler(std::bind(&CLegitbot::SetDrawPath, m_pApp->Legitbot(), std::placeholders::_1));
+	
+	m_pLegitbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
+	m_pLegitbotGroup->AddChild(m_pLegitbotEnabled);
+	m_pLegitbotGroup->AddChild(m_pLegitbotHelpAfterShots);
+	m_pLegitbotGroup->AddChild(m_pLegitbotTimeToAim);
+	m_pLegitbotGroup->AddChild(m_pLegitbotCurve);
+	m_pLegitbotGroup->AddChild(m_pLegitbotFov);
+	m_pLegitbotGroup->AddChild(m_pLegitbotPointScale);
+	m_pLegitbotGroup->AddChild(m_pLegitbotDrawPath);
+
+	m_pLegitHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
+	m_pLegitHitboxHead->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_HEAD, std::placeholders::_1));
+
+	m_pLegitHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
+	m_pLegitHitboxChest->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_CHEST, std::placeholders::_1));
+
+	m_pLegitHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
+	m_pLegitHitboxPelvis->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
+
+	m_pLegitHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
+	m_pLegitHitboxRForearm->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+
+	m_pLegitHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
+	m_pLegitHitboxLForearm->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+
+	m_pLegitHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
+	m_pLegitHitboxRCalf->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+
+	m_pLegitHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
+	m_pLegitHitboxLCalf->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
+
+	m_pLegitHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxHead);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxChest);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxPelvis);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxRForearm);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxLForearm);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxRCalf);
+	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxLCalf);
+
 	m_pTriggerbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pTriggerbotEnabled->SetEventHandler(std::bind(&CTriggerbot::SetEnabled, m_pApp->Triggerbot(), std::placeholders::_1));
 
@@ -539,13 +617,12 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 20.0f);
 	m_pTriggerbotDelayJitterValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelayJitter, m_pApp->Triggerbot(), std::placeholders::_1));
 
-	m_pTriggerbotGroup = new CGroupbox(16, 16, 152, 308, "Triggerbot");
+	m_pTriggerbotGroup = new CGroupbox(352, 16, 152, 308, "Triggerbot");
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotEnabled);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayLabel);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayValue);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterLabel);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterValue);
-
 
 	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
@@ -555,12 +632,14 @@ void CMenu::CreateLegitTab()
 	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f);
 	m_pLegitLagCompensationDuration->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationDuration, m_pApp->LagCompensation(), std::placeholders::_1));
 
-	m_pLegitLagCompensationGroup = new CGroupbox(184, 16, 152, 308, "Lag Compensation");
+	m_pLegitLagCompensationGroup = new CGroupbox(520, 16, 152, 308, "Lag Compensation");
 	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationEnabled);
 	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDurationLabel);
 	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDuration);
 
 	m_pLegitTab = new CTabPage("Legit");
+	m_pLegitTab->AddChild(m_pLegitbotGroup);
+	m_pLegitTab->AddChild(m_pLegitHitboxGroup);
 	m_pLegitTab->AddChild(m_pTriggerbotGroup);
 	m_pLegitTab->AddChild(m_pLegitLagCompensationGroup);
 }

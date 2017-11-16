@@ -63,12 +63,7 @@ void CGui::GetWorldToScreenMatrix()
 void CGui::SetEnableGameInput(bool bEnableGameInput)
 {
 	m_bEnableGameInput = bEnableGameInput;
-	m_pMouseEnable->SetValue((int)m_bEnableGameInput);
-}
-
-bool CGui::IsMouseEnabled()
-{
-	return (m_pMouseEnable->value[0] != '0');
+	m_pMouseEnable->SetValue(bEnableGameInput);
 }
 
 bool CGui::IsMouseInRect(int x, int y, int w, int h)
@@ -80,6 +75,11 @@ bool CGui::IsMouseInRect(int x, int y, int w, int h)
 	}
 
 	return false;
+}
+
+bool CGui::IsMouseEnabled()
+{
+	return (m_pMouseEnable->value[0] != '0');
 }
 
 void CGui::SetMousePos(int iX, int iY)

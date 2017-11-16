@@ -6,10 +6,10 @@
 CLegitbot::CLegitbot()
 	: m_bHasTarget(false), m_bHasDrawTarget(false), m_bAutoshoot(false),
 	m_fTimeToAim(0.2f), m_fCurve(0.0f), m_fFieldOfView(90.0f),
-	m_bDrawPath(true), m_clrPath(Color(255, 128, 0)), m_bShoot(false),
-	m_fPointScale(0.5f)
+	m_bDrawFieldOfView(false), m_clrFieldOfView(Color(0, 255, 0)), m_bDrawPath(true),
+	m_clrPath(Color(255, 128, 0)), m_bShoot(false), m_fPointScale(0.5f)
 {
-	m_bCheckHitbox[0] = true; m_iHitboxes[0] = HITBOX_HEAD;
+	m_bCheckHitbox[0] = false; m_iHitboxes[0] = HITBOX_HEAD;
 	m_bCheckHitbox[1] = false; m_iHitboxes[1] = HITBOX_CHEST;
 	m_bCheckHitbox[2] = false; m_iHitboxes[2] = HITBOX_PELVIS;
 	m_bCheckHitbox[3] = false; m_iHitboxes[3] = HITBOX_RIGHT_FOREARM;
@@ -282,6 +282,23 @@ void CLegitbot::Update(void* pParameters)
 			m_bHasDrawTarget = false;
 		}
 	}
+}
+
+void CLegitbot::DrawFieldOfView(ISurface* pSurface)
+{
+	if (!m_bIsEnabled)
+		return;
+
+	if (!m_bDrawFieldOfView)
+		return;
+
+	CGui* pGui = CGui::Instance();
+	int iMidX = pGui->GetScreenWidth() / 2;
+	int iMidY = pGui->GetScreenHeight() / 2;
+	int iRadius = iMidX * (tanf(DEG2RAD(m_fFieldOfView * 0.5f)) / tanf(DEG2RAD(m_pApp->GetRenderFieldOfView() * 0.5f)));
+
+	pSurface->DrawSetColor(m_clrFieldOfView);
+	pSurface->DrawOutlinedCircle(iMidX, iMidY, iRadius, 64);
 }
 
 void CLegitbot::DrawPath(ISurface* pSurface)
