@@ -6,36 +6,34 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlPopup.h"
 #include "Label.h"
 
-class CWindow;
 class CSelectbox;
 
 const Color g_clrSelectboxPopupSelection(255, 255, 128, 0);
 
-class CSelectboxPopup : public IControl
+class CSelectboxPopup : public IControlPopup
 {
 public:
 	CSelectboxPopup(int x = 0, int y = 0, CSelectbox* pSelectbox = NULL, CWindow* pParentWindow = NULL);
 	~CSelectboxPopup();
 
 	void SetSelectbox(CSelectbox* pSelectbox) { m_pSelectbox = pSelectbox; }
-	void SetParentWindow(CWindow* pParentWindow) { m_pParentWindow = pParentWindow; }
+	CSelectbox* GetSelectbox() const { return m_pSelectbox; }
 
 	virtual void OnMouseMove(int mx, int my);
 	virtual void OnMouseUp(int mx, int my);
 
 	virtual void GetAbsolutePosition(int* pX, int* pY);
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	virtual void ProcessEvent(CInputEvent* pEvent) override;
+	virtual void Draw(ISurface* pSurface) override;
 
 	void ClearOptions();
 	void AddOption(int curIdx, const char* text, int len);
 private:
 	CSelectbox* m_pSelectbox;
-	CWindow* m_pParentWindow;
 
 	int m_iLenLargestOptionString;
 	int m_iLargestOptionStringIndex;

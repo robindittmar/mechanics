@@ -177,6 +177,7 @@
     <ClCompile Include="src\FrameStageNotify.cpp" />
     <ClCompile Include="src\GetViewModelFov.cpp" />
     <ClCompile Include="src\IBaseClientDLL.cpp" />
+    <ClCompile Include="src\IControlPopup.cpp" />
     <ClCompile Include="src\LagCompensation.cpp" />
     <ClCompile Include="src\LagCompensationPlayerEntry.cpp" />
     <ClCompile Include="src\LagCompensationPlayerList.cpp" />
@@ -277,6 +278,7 @@
     <ClInclude Include="src\GetViewModelFov.h" />
     <ClInclude Include="src\IAppSystem.h" />
     <ClInclude Include="src\IClientMode.h" />
+    <ClInclude Include="src\IControlPopup.h" />
     <ClInclude Include="src\IEngineSound.h" />
     <ClInclude Include="src\IInputSystem.h" />
     <ClInclude Include="src\ILocalize.h" />

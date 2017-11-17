@@ -1,13 +1,14 @@
 #include "Selectbox.h"
 #include "Window.h"
 
-CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int selection) : IControl(x, y, w, h)
+CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int selection)
+	: IControl(x, y, w, h)
 {
 	m_iCountOptions = 0;
 	m_iSelection = selection;
 
 	m_bPopupInitialized = false;
-	m_pPopup = new CSelectboxPopup(0, h);
+	m_pPopup = new CSelectboxPopup(0, h, this);
 
 	m_pLabel = new CLabel(0, -18, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 	m_pSelectionLabel = new CLabel(SELECTBOX_PADDING, 0, w, h);
@@ -37,8 +38,8 @@ void CSelectbox::OnClicked()
 
 	if (!m_bPopupInitialized)
 	{
-		m_pPopup->SetSelectbox(this);
 		m_pPopup->SetParentWindow(pWindow);
+		m_bPopupInitialized = true;
 	}
 
 	pWindow->SetPopup(m_pPopup);

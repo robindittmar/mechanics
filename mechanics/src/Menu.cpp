@@ -248,6 +248,10 @@ void CMenu::ApplySettings()
 	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 	m_pSkinChangerWeapon->SetSelection(0);
 	m_pSkinChangerSkin->SetSelection(0); // TODO
+
+	// TODO: <Remove pls>
+	m_pColorPicker->SetValue(m_pApp->GunHud()->GetSpreadConeColor());
+	// TODO </Remove pls>
 }
 
 void CMenu::HandleInput()
@@ -1262,10 +1266,14 @@ void CMenu::CreateConfigTab()
 	m_pForceFullUpdate = new CButton(170, 90, 120, 45, "Force Full Update");
 	m_pForceFullUpdate->SetEventHandler(std::bind(&IClientState::ForceFullUpdate, m_pApp->ClientState()));
 
+	m_pColorPicker = new CColorPicker(300, 30);
+	m_pColorPicker->SetEventHandler(std::bind(&CGunHud::SetSpreadConeColor, m_pApp->GunHud(), std::placeholders::_1));
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pConfigGroup);
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pForceFullUpdate);
+	m_pConfigTab->AddChild(m_pColorPicker);
 }
 
 void CMenu::FillSkinIds(int iWeaponId)

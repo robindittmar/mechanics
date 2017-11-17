@@ -106,7 +106,7 @@ void CResourceManager::CreateTextures()
 	unsigned char pTexColorFade[360 * 4];
 	for(int y = 0; y < 360 * 4; y += 4)
 	{
-		this->HslToRgb(y, 1.0f, 1.0f, curR, curG, curB);
+		Utils::HslToRgb(y, 1.0f, 1.0f, curR, curG, curB);
 
 		pTexColorFade[y] = curR;
 		pTexColorFade[y + 1] = curG;
@@ -186,66 +186,4 @@ int CResourceManager::LoadPngToTexture(ISurface* pSurface, const char* pFilename
 
 	delete[] pImgData;
 	return textureId;
-}
-
-void CResourceManager::HslToRgb(int h, float s, float l, int& r, int &g, int& b)
-{
-	double      hh, p, q, t, ff;
-	long        i;
-
-	if (s <= 0.0) {       // < is bogus, just shuts up warnings
-		r = l;
-		g = l;
-		b = l;
-		return;
-	}
-	hh = h;
-	if (hh >= 360.0) hh = 0.0;
-	hh /= 60.0;
-	i = (long)hh;
-	ff = hh - i;
-	p = l * (1.0 - s);
-	q = l * (1.0 - (s * ff));
-	t = l * (1.0 - (s * (1.0 - ff)));
-
-	p *= 255.0f;
-	q *= 255.0f;
-	t *= 255.0f;
-
-	double ll = l * 255.0f;
-
-	switch (i)
-	{
-	case 0:
-		r = ll;
-		g = t;
-		b = p;
-		break;
-	case 1:
-		r = q;
-		g = ll;
-		b = p;
-		break;
-	case 2:
-		r = p;
-		g = ll;
-		b = t;
-		break;
-	case 3:
-		r = p;
-		g = q;
-		b = ll;
-		break;
-	case 4:
-		r = t;
-		g = p;
-		b = ll;
-		break;
-	case 5:
-	default:
-		r = ll;
-		g = p;
-		b = q;
-		break;
-	}
 }

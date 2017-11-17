@@ -13,13 +13,30 @@
 #define DRAWSETTEXTURERGBA_INDEX	37
 #define DRAWSETTEXTURE_INDEX		38
 #define DRAWTEXTUREDRECT_INDEX		41
-#define DELETETEXTUREBYID_INDEX		42
+//#define DELETETEXTUREBYID_INDEX		42
+#define DELETETEXTUREBYID_INDEX		143
 #define CREATENEWTEXTUREID_INDEX	43
 #define SCREATEFONT_INDEX			71
 #define SETFONTGLYPHSET_INDEX		72
 #define GETTEXTSIZE_INDEX			79
 #define DRAWOUTLINEDCIRCLE_INDEX	103
 #define DRAWTEXTUREDPOLYGON_INDEX	106
+#define DRAWTEXTUREDRECTEX_INDEX	148
+
+#define SETCLIPRECT_INDEX			147
+#define GETCLIPRECT_INDEX			146
+
+void ISurface::SetClipRect(int x0, int y0, int x1, int y1)
+{
+	typedef void(__thiscall *SetClipRect_t)(void*, int, int, int, int);
+	((SetClipRect_t)(*(void***)this)[SETCLIPRECT_INDEX])(this, x0, y0, x1, y1); // TODO: VTable Index untested
+}
+
+void ISurface::GetClipRect(int& x0, int& y0, int& x1, int& y1)
+{
+	typedef void(__thiscall *GetClipRect_t)(void*, int&, int&, int&, int&);
+	((GetClipRect_t)(*(void***)this)[GETCLIPRECT_INDEX])(this, x0, y0, x1, y1); // TODO: VTable Index untested
+}
 
 void ISurface::DrawSetColor(Color color)
 {
@@ -85,6 +102,12 @@ void ISurface::DrawTexturedRect(int x0, int y0, int x1, int y1)
 {
 	typedef void(__thiscall *DrawTexturedRect_t)(void*, int, int, int, int);
 	((DrawTexturedRect_t)(*(void***)this)[DRAWTEXTUREDRECT_INDEX])(this, x0, y0, x1, y1);
+}
+
+void ISurface::DrawTexturedRectEx(DrawTexturedRectParms_t* pDrawParms)
+{
+	typedef void(__thiscall *DrawTexturedRectEx_t)(void*, DrawTexturedRectParms_t*);
+	((DrawTexturedRectEx_t)(*(void***)this)[DRAWTEXTUREDRECTEX_INDEX])(this, pDrawParms);
 }
 
 void ISurface::DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices)

@@ -157,12 +157,44 @@ public:
 private:
 	unsigned char _color[4];
 };
+
+struct DrawTexturedRectParms_t
+{
+	DrawTexturedRectParms_t()
+	{
+		s0 = t0 = 0;
+		s1 = t1 = 1.0f;
+		alpha_ul = alpha_ur = alpha_lr = alpha_ll = 255;
+		angle = 0;
+	}
+
+	int x0;
+	int	y0;
+	int x1;
+	int y1;
+
+	float s0;
+	float t0;
+	float s1;
+	float t1;
+
+	unsigned char alpha_ul;
+	unsigned char alpha_ur;
+	unsigned char alpha_lr;
+	unsigned char alpha_ll;
+
+	float angle;
+};
+
 //-----------------------------------------------------------------------------
 // Purpose: Wraps contextless windows system functions
 //-----------------------------------------------------------------------------
 class ISurface// : public IAppSystem
 {
 public:
+	void SetClipRect(int x0, int y0, int x1, int y1);
+	void GetClipRect(int& x0, int& y0, int& x1, int& y1);
+
 	void DrawSetColor(Color color);
 	void DrawSetColor(int a, int r, int g, int b);
 	void DrawLine(int x0, int y0, int x1, int y1);
@@ -175,6 +207,7 @@ public:
 	void DrawSetTextureRGBA(int id, const unsigned char* rgba, int wide, int tall);
 	void DrawSetTexture(int id);
 	void DrawTexturedRect(int x0, int y0, int x1, int y1);
+	void DrawTexturedRectEx(DrawTexturedRectParms_t* pDrawParms);
 	void DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices);
 	bool DeleteTextureByID(int id);
 

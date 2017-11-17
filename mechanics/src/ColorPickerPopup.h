@@ -6,32 +6,36 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlPopup.h"
 #include "Label.h"
+#include "Slider.h"
 
-class CWindow;
 class CColorPicker;
 
-class CColorPickerPopup : public IControl
+const Color g_clrColorPickerPopupContainer(255, 80, 80, 80);
+
+class CColorPickerPopup : public IControlPopup
 {
 public:
 	CColorPickerPopup(int x = 0, int y = 0, CColorPicker* pColorPicker = NULL, CWindow* pParentWindow = NULL);
 	~CColorPickerPopup();
 
 	void SetColorPicker(CColorPicker* pColorPicker) { m_pColorPicker = pColorPicker; }
-	void SetParentWindow(CWindow* pParentWindow) { m_pParentWindow = pParentWindow; }
+	CColorPicker* GetColorPicker() const { return m_pColorPicker; }
 
-	virtual void OnMouseUp(int mx, int my);
+	void SetHueValue(float fHue);
 
-	virtual void GetAbsolutePosition(int* pX, int* pY);
+	virtual void GetAbsolutePosition(int* pX, int* pY) override;
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	//virtual void ProcessEvent(CInputEvent* pEvent) override;
+	virtual void Draw(ISurface* pSurface) override;
 private:
 	int m_iColorFadeTexture;
 
+	bool m_bInitialized;
+	CSlider* m_pHueSlider;
+
 	CColorPicker* m_pColorPicker;
-	CWindow* m_pParentWindow;
 };
 
 #endif // __COLORPICKERPOPUP_H__

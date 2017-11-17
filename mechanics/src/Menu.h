@@ -330,6 +330,7 @@ private:
 	CTabPage* m_pConfigTab;
 	CButton* m_pDetachBtn;
 	CButton* m_pForceFullUpdate;
+	CColorPicker* m_pColorPicker;
 
 	CGroupbox* m_pConfigGroup;
 	CSelectbox* m_pConfigLoadables;

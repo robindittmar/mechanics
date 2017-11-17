@@ -1,13 +1,12 @@
 #include "ColorPicker.h"
 #include "Window.h"
 
-CColorPicker::CColorPicker(int x, int y, int w, int h) : IControl(x, y, w, h)
+CColorPicker::CColorPicker(int x, int y, int w, int h)
+	: IControl(x, y, w, h),
+	m_pEventHandler(NULL), m_clrValue(Color(0, 0, 0, 0))
 {
 	m_bPopupInitialized = false;
-	m_pPopup = NULL;
-
-	m_clrValue = Color(255, 255, 255);
-	
+	m_pPopup = new CColorPickerPopup(0, m_iHeight, this);
 }
 
 CColorPicker::~CColorPicker()
@@ -16,14 +15,22 @@ CColorPicker::~CColorPicker()
 		delete m_pPopup;
 }
 
+void CColorPicker::SetValue(Color clrValue)
+{
+	m_clrValue = clrValue;
+
+	if (m_pEventHandler)
+		m_pEventHandler(m_clrValue);
+}
+
 void CColorPicker::OnClicked()
 {
 	CWindow* pWindow = (CWindow*)this->GetParentWindow();
 
 	if (!m_bPopupInitialized)
 	{
-		m_pPopup->SetColorPicker(this);
 		m_pPopup->SetParentWindow(pWindow);
+		m_bPopupInitialized = true;
 	}
 
 	pWindow->SetPopup(m_pPopup);

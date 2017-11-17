@@ -2,13 +2,10 @@
 #include "Window.h"
 #include "Selectbox.h"
 
-CSelectboxPopup::CSelectboxPopup(int x, int y, CSelectbox* pSelectbox, CWindow* pParentWindow) : IControl(x, y)
+CSelectboxPopup::CSelectboxPopup(int x, int y, CSelectbox* pSelectbox, CWindow* pParentWindow)
+	: IControlPopup(x, y, 0, 0, pParentWindow),
+	m_pSelectbox(pSelectbox), m_iLenLargestOptionString(-1), m_iLargestOptionStringIndex(-1)
 {
-	m_iLenLargestOptionString = -1;
-	m_iLargestOptionStringIndex = -1;
-
-	m_pSelectbox = pSelectbox;
-	m_pParentWindow = pParentWindow;
 }
 
 CSelectboxPopup::~CSelectboxPopup()
@@ -77,25 +74,10 @@ void CSelectboxPopup::GetAbsolutePosition(int* pX, int* pY)
 
 void CSelectboxPopup::ProcessEvent(CInputEvent* pEvent)
 {
-	if (!m_bIsEnabled || !m_pSelectbox || !m_pParentWindow)
+	if (!m_pSelectbox)
 		return;
 
-	if (pEvent->eventType == EVENT_TYPE_MOUSE)
-	{
-		// Up or down, I don't care
-		if (pEvent->button == EVENT_BTN_LMOUSE)
-		{
-			int x = 0, y = 0;
-			this->GetAbsolutePosition(&x, &y);
-
-			if (!CGui::Instance()->IsMouseInRect(x, y, m_iWidth, m_iHeight))
-			{
-				m_pParentWindow->SetPopup(NULL);
-			}
-		}
-	}
-
-	IControl::ProcessEvent(pEvent);
+	IControlPopup::ProcessEvent(pEvent);
 }
 
 void CSelectboxPopup::Draw(ISurface* pSurface)
