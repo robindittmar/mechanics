@@ -142,6 +142,22 @@ bool CGui::ScreenTransform(const Vector& point, Vector& screen)
 	return false;
 }
 
+unsigned short CGui::XButtonToVKey(WPARAM wParam)
+{
+	unsigned short vKey = 0;
+	switch (GET_XBUTTON_WPARAM(wParam))
+	{
+	case XBUTTON1:
+		vKey = VK_XBUTTON1;
+		break;
+	case XBUTTON2:
+		vKey = VK_XBUTTON2;
+		break;
+	}
+
+	return vKey;
+}
+
 LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 {
 	CGui* pGui = CGui::Instance();
@@ -157,13 +173,13 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 			return 1L;
 		break;
 	case WM_KEYDOWN:
-		pInputHandler->OnKeyDown((int)wParam);
+		pInputHandler->OnKeyDown((unsigned short)wParam);
 
 		if (!pGui->m_bEnableGameInput)
 			return 1L;
 		break;
 	case WM_KEYUP:
-		pInputHandler->OnKeyUp((int)wParam);
+		pInputHandler->OnKeyUp((unsigned short)wParam);
 
 		if (!pGui->m_bEnableGameInput)
 			return 1L;
@@ -197,6 +213,18 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_RBUTTONUP:
 		pInputHandler->OnMouseUp(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_XBUTTONDOWN:
+		pInputHandler->OnKeyDown(pGui->XButtonToVKey(wParam));
+
+		if (!pGui->m_bEnableGameInput)
+			return 1L;
+		break;
+	case WM_XBUTTONUP:
+		pInputHandler->OnKeyUp(pGui->XButtonToVKey(wParam));
 
 		if (!pGui->m_bEnableGameInput)
 			return 1L;

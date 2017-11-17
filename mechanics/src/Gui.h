@@ -43,7 +43,8 @@ public:
 	bool WorldToScreen(const Vector &origin, Vector &screen);
 private:
 	bool ScreenTransform(const Vector& point, Vector& screen);
-
+	
+	unsigned short XButtonToVKey(WPARAM wParam);
 	friend LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam);
 
 	const VMatrix* m_pWorldToScreenMatrix;
