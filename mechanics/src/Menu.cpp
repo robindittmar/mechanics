@@ -357,12 +357,14 @@ void CMenu::CreateRageTab()
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
 	m_pAimbotTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotTargetCriteria->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotVisibleMode = new CSelectbox(4, 252, 128, 20, "Visible mode");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
 	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotVisibleMode->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
@@ -432,6 +434,7 @@ void CMenu::CreateRageTab()
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_LBY, "LBY");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_AUTOMATIC, "Automatic");
 	m_pRageOthersResolverType->SetEventHandler(std::bind(&CResolver::SetResolverType, m_pApp->Resolver(), std::placeholders::_1));
+	m_pRageOthersResolverType->AddDependency(m_pAimbotEnabled);
 
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
 	m_pAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1));
@@ -514,6 +517,7 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimLbyIndicator = new CCheckbox(62, 0, 128, 16, "LBY Indicator");
 	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimLbyIndicator->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimStandingGroup = new CGroupbox(4, 20, 152, 190, "Standing");
 	m_pAntiaimStandingGroup->AddChild(m_pAntiaimStandingPitch);
@@ -535,15 +539,19 @@ void CMenu::CreateRageTab()
 	m_pAntiaimEdgeAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetDoEdgeAntiAim, m_pApp->AntiAim(), std::placeholders::_1));
 
 	m_pAntiaimEdgeAntiaimCheckOffsetLabel = new CLabel(4, 14, 128, 16, "Amount of Checkpoints", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pAntiaimEdgeAntiaimCheckOffsetLabel->AddDependency(m_pAntiaimEdgeAntiaimEnabled);
 
 	m_pAntiaimEdgeAntiaimCheckOffset = new CSlider(4, 34, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 2.0f, 8.0f);
 	m_pAntiaimEdgeAntiaimCheckOffset->SetEventHandler(std::bind(&CAntiAim::SetEdgeAntiAimCheckPointsAmount, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimEdgeAntiaimCheckOffset->AddDependency(m_pAntiaimEdgeAntiaimEnabled);
 
 	m_pAntiaimEdgeAntiaimDrawPoints = new CCheckbox(164, 0, 128, 16, "Draw Points");
 	m_pAntiaimEdgeAntiaimDrawPoints->SetEventHandler(std::bind(&CAntiAim::SetDrawEdgeAntiAimPoints, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimEdgeAntiaimDrawPoints->AddDependency(m_pAntiaimEdgeAntiaimEnabled);
 
 	m_pAntiaimEdgeAntiaimDrawLines = new CCheckbox(164, 20, 128, 16, "Draw Lines");
 	m_pAntiaimEdgeAntiaimDrawLines->SetEventHandler(std::bind(&CAntiAim::SetDrawEdgeAntiAimLines, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimEdgeAntiaimDrawLines->AddDependency(m_pAntiaimEdgeAntiaimEnabled);
 
 	m_pAntiaimEdgeAntiaimGroup = new CGroupbox(4, 222, 308, 65, "Edge Antiaim");
 	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimEnabled);
@@ -684,71 +692,100 @@ void CMenu::CreateVisualsTab()
 	m_pEspDrawBoundingBox->AddOption(ESP_STYLE_EDGE, "Edge");
 	m_pEspDrawBoundingBox->AddOption(ESP_STYLE_FULL, "Full");
 	m_pEspDrawBoundingBox->SetEventHandler(std::bind(&CEsp::SetDrawBoundingBox, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawBoundingBox->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawFilledBox = new CCheckbox(4, 56, 128, 16, "Fill Bounding Box");
 	m_pEspDrawFilledBox->SetEventHandler(std::bind(&CEsp::SetFillBoundingBox, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawFilledBox->AddDependency(m_pEspEnabled);
+	m_pEspDrawFilledBox->AddDependency(m_pEspDrawBoundingBox, (void*)ESP_STYLE_NONE, true);
 
 	m_pEspDrawOutline = new CCheckbox(4, 76, 128, 16, "Outlines");
 	m_pEspDrawOutline->SetEventHandler(std::bind(&CEsp::SetDrawOutline, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOutline->AddDependency(m_pEspEnabled);
+	m_pEspDrawOutline->AddDependency(m_pEspDrawBoundingBox, (void*)ESP_STYLE_NONE, true);
 
 	m_pEspDrawHealthbar = new CCheckbox(4, 104, 128, 16, "Health Bar");
 	m_pEspDrawHealthbar->SetEventHandler(std::bind(&CEsp::SetDrawHealthBar, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawHealthbar->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawHealthnumber = new CCheckbox(4, 124, 128, 16, "Health Number");
 	m_pEspDrawHealthnumber->SetEventHandler(std::bind(&CEsp::SetDrawHealthNumber, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawHealthnumber->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawArmorbar = new CCheckbox(4, 144, 128, 16, "Armor Bar");
 	m_pEspDrawArmorbar->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawArmorbar->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawArmornumber = new CCheckbox(4, 164, 128, 16, "Armor Number (WIP)");
 	//m_pEspDrawArmornumber->SetEventHandler(std::bind(&CEsp::SetDrawArmorBar, m_pApp->Esp(), std::placeholders::_1)); //todo EVENTHANDLER !!!!!
+	m_pEspDrawArmornumber->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawAmmobar = new CCheckbox(4, 184, 128, 16, "Ammo Bar");
 	m_pEspDrawAmmobar->SetEventHandler(std::bind(&CEsp::SetDrawAmmoBar, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawAmmobar->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawAmmonumber = new CCheckbox(4, 204, 128, 16, "Ammo Number");
 	m_pEspDrawAmmonumber->SetEventHandler(std::bind(&CEsp::SetDrawAmmoNumber, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawAmmonumber->AddDependency(m_pEspEnabled);
 
 	m_pEspFadeoutEnabled = new CCheckbox(4, 232, 128, 16, "Fadeout");
 	m_pEspFadeoutEnabled->SetEventHandler(std::bind(&CEsp::SetFadeoutEnabled, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspFadeoutEnabled->AddDependency(m_pEspEnabled);
 
 	m_pEspFadeoutLabel = new CLabel(4, 246, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pEspFadeoutLabel->AddDependency(m_pEspEnabled);
+	m_pEspFadeoutLabel->AddDependency(m_pEspFadeoutEnabled);
 
 	m_pEspFadeoutValue = new CSlider(4, 270, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pEspFadeoutValue->SetEventHandler(std::bind(&CEsp::SetFadeoutTime, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspFadeoutValue->AddDependency(m_pEspEnabled);
+	m_pEspFadeoutValue->AddDependency(m_pEspFadeoutEnabled);
 
 	// Second column
 	m_pEspBarrelEnabled = new CCheckbox(156, 232, 128, 16, "Show Viewangle");
 	m_pEspBarrelEnabled->SetEventHandler(std::bind(&CEsp::SetDrawViewangles, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspBarrelEnabled->AddDependency(m_pEspEnabled);
 
 	m_pEspBarrelLabel = new CLabel(156, 246, 128, 16, "Viewangle Length", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pEspBarrelLabel->AddDependency(m_pEspEnabled);
+	m_pEspBarrelLabel->AddDependency(m_pEspBarrelEnabled);
 
 	m_pEspBarrelValue = new CSlider(156, 270, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 500.0f);
 	m_pEspBarrelValue->SetEventHandler(std::bind(&CEsp::SetViewanglesLength, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspBarrelValue->AddDependency(m_pEspEnabled);
+	m_pEspBarrelValue->AddDependency(m_pEspBarrelEnabled);
 
 	m_pEspDrawGlowEnabled = new CCheckbox(156, 56, 128, 16, "Glow (WIP)");
 	//m_pEspDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, m_pApp->Esp(), std::placeholders::_1)); // TODO: EVENTHANDLER !!!!!
+	m_pEspDrawGlowEnabled->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawSkeletonEnabled = new CCheckbox(156, 76, 128, 16, "Skeleton");
 	m_pEspDrawSkeletonEnabled->SetEventHandler(std::bind(&CEsp::SetDrawSkeleton, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawSkeletonEnabled->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawOwnTeam = new CCheckbox(156, 104, 128, 16, "Own Team");
 	m_pEspDrawOwnTeam->SetEventHandler(std::bind(&CEsp::SetDrawOwnTeam, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOwnTeam->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawOwnModel = new CCheckbox(156, 124, 128, 16, "Own Model (3rd person)");
 	m_pEspDrawOwnModel->SetEventHandler(std::bind(&CEsp::SetDrawOwnModel, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOwnModel->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawOnlyVisible = new CCheckbox(156, 164, 128, 16, "Only Visible");
 	m_pEspDrawOnlyVisible->SetEventHandler(std::bind(&CEsp::SetDrawOnlyVisible, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOnlyVisible->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawOnlySpotted = new CCheckbox(156, 184, 128, 16, "Only Spotted");
 	m_pEspDrawOnlySpotted->SetEventHandler(std::bind(&CEsp::SetDrawOnlySpotted, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawOnlySpotted->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawActiveWeapon = new CCheckbox(156, 204, 128, 16, "Active Weapon");
 	m_pEspDrawActiveWeapon->SetEventHandler(std::bind(&CEsp::SetDrawActiveWeapon, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawActiveWeapon->AddDependency(m_pEspEnabled);
 
 	m_pEspDrawNames = new CCheckbox(156, 34, 128, 16, "Names");
 	m_pEspDrawNames->SetEventHandler(std::bind(&CEsp::SetDrawNames, m_pApp->Esp(), std::placeholders::_1));
+	m_pEspDrawNames->AddDependency(m_pEspEnabled);
 
 	m_pEspGroup = new CGroupbox(16, 16, 304, 308, "Esp");
 	m_pEspGroup->AddChild(m_pEspEnabled);
@@ -781,37 +818,49 @@ void CMenu::CreateVisualsTab()
 	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
 
 	m_pWeaponEspWeaponLabel = new CLabel(4, 20, 128, 16, "Weapon");
+	m_pWeaponEspWeaponLabel->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 34, 128, 16, "Names");
 	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspWeaponNameEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 54, 128, 16, "Bounding Box");
 	m_pWeaponEspWeaponBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspWeaponBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspGrenadeLabel = new CLabel(4, 74, 128, 16, "Grenade");
+	m_pWeaponEspGrenadeLabel->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspGrenadeNameEnabled = new CCheckbox(4, 88, 128, 16, "Names");
 	m_pWeaponEspGrenadeNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspGrenadeNameEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspGrenadeBoundingBoxEnabled = new CCheckbox(4, 108, 128, 16, "Bounding Box");
 	m_pWeaponEspGrenadeBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspGrenadeBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombLabel = new CLabel(4, 128, 128, 16, "Bomb");
+	m_pWeaponEspBombLabel->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombNameEnabled = new CCheckbox(4, 142, 128, 16, "Name");
 	m_pWeaponEspBombNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombNameEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombBoundingBoxEnabled = new CCheckbox(4, 162, 128, 16, "Bounding Box");
 	m_pWeaponEspBombBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombTimerEnabled = new CCheckbox(4, 182, 128, 16, "Timer");
 	m_pWeaponEspBombTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombTimerEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombDefuseTimerEnabled = new CCheckbox(4, 202, 128, 16, "Defuse Timer");
 	m_pWeaponEspBombDefuseTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDefuseTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombDefuseTimerEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspBombDamageIndicatorEnabled = new CCheckbox(4, 222, 128, 16, "Damage Indicator");
 	m_pWeaponEspBombDamageIndicatorEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDamageIndicator, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombDamageIndicatorEnabled->AddDependency(m_pWeaponEspEnabled);
 
 	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 308, "Weapon Esp");
 	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
@@ -837,18 +886,23 @@ void CMenu::CreateVisualsTab()
 	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_LIT, "Lit");
 	m_pChamsStyle->AddOption(PLAYER_CHAMSSTYLE_FLAT, "Flat");
 	m_pChamsStyle->SetEventHandler(std::bind(&CChams::SetModelStyle, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsStyle->AddDependency(m_pChamsEnabled);
 
 	m_pChamsDrawOwnTeam = new CCheckbox(4, 56, 128, 16, "Own Team");
 	m_pChamsDrawOwnTeam->SetEventHandler(std::bind(&CChams::SetRenderTeam, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsDrawOwnTeam->AddDependency(m_pChamsEnabled);
 
 	m_pChamsDrawOwnModel = new CCheckbox(4, 76, 128, 16, "Own Model (3rd person)");
 	m_pChamsDrawOwnModel->SetEventHandler(std::bind(&CChams::SetRenderLocalplayer, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsDrawOwnModel->AddDependency(m_pChamsEnabled);
 
 	m_pChamsIgnoreZ = new CCheckbox(4, 104, 128, 16, "Only Visible");
 	m_pChamsIgnoreZ->SetEventHandler(std::bind(&CChams::SetOnlyVisible, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsIgnoreZ->AddDependency(m_pChamsEnabled);
 
 	m_pChamsFakeAngle = new CCheckbox(4, 132, 128, 16, "Fake Angle");
 	m_pChamsFakeAngle->SetEventHandler(std::bind(&CChams::SetRenderFakeAngle, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsFakeAngle->AddDependency(m_pChamsEnabled);
 
 	m_pChamsWeaponChams = new CSelectbox(4, 166, 128, 20, "Weaponchams Style");
 	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_NONE, "None");
@@ -857,6 +911,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_CRYSTAL, "Crystal");
 	m_pChamsWeaponChams->AddOption(WEAPON_CHAMSSTYLE_GOLD, "Gold");
 	m_pChamsWeaponChams->SetEventHandler(std::bind(&CChams::SetWeaponChamsStyle, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsWeaponChams->AddDependency(m_pChamsEnabled);
 
 	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
@@ -871,23 +926,30 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspEnabled->SetEventHandler(std::bind(&CSoundEsp::SetEnabled, m_pApp->SoundEsp(), std::placeholders::_1));
 
 	m_pSoundEspShowTimeLabel = new CLabel(4, 20, 128, 16, "Show time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pSoundEspShowTimeLabel->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspShowTime = new CSlider(4, 42, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pSoundEspShowTime->SetEventHandler(std::bind(&CSoundEsp::SetShowTime, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspShowTime->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspFadeoutEnabled = new CCheckbox(4, 56, 128, 16, "Fadeout");
 	m_pSoundEspFadeoutEnabled->SetEventHandler(std::bind(&CSoundEsp::SetFadeoutEnabled, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspFadeoutEnabled->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspFadeoutTimeLabel = new CLabel(4, 70, 128, 16, "Fadeout time (seconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pSoundEspFadeoutTimeLabel->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspFadeoutTime = new CSlider(4, 92, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
 	m_pSoundEspFadeoutTime->SetEventHandler(std::bind(&CSoundEsp::SetFadeTime, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspFadeoutTime->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspDrawOwnTeam = new CCheckbox(4, 124, 128, 16, "Own Team");
 	m_pSoundEspDrawOwnTeam->SetEventHandler(std::bind(&CSoundEsp::SetDrawOwnTeam, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspDrawOwnTeam->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspOnlyNotVisible = new CCheckbox(4, 144, 128, 16, "Only Not Visible");
 	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawVisible, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspOnlyNotVisible->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspGroup = new CGroupbox(672, 16, 152, 308, "Sound Esp");
 	m_pSoundEspGroup->AddChild(m_pSoundEspEnabled);
@@ -907,12 +969,15 @@ void CMenu::CreateVisualsTab()
 	m_pDrawLagCompensationStyle->SetEventHandler(std::bind(&CLagCompensation::SetDrawStyle, m_pApp->LagCompensation(), std::placeholders::_1));
 
 	m_pDrawLagCompensationFrequencyLabel = new CLabel(4, 28, 128, 20, "Draw Frequency");
+	m_pDrawLagCompensationFrequencyLabel->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
 
 	m_pDrawLagCompensationFrequency = new CSlider(4, 54, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
 	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pDrawLagCompensationFrequency->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
 
 	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 68, 128, 16, "Only Visible");
 	m_pDrawLagCompensationOnlyVisible->SetEventHandler(std::bind(&CLagCompensation::SetDrawOnlyVisible, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pDrawLagCompensationOnlyVisible->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
 
 	m_pDrawLagCompensationGroup = new CGroupbox(840, 16, 152, 308, "Lag Compensation");
 	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
@@ -945,9 +1010,11 @@ void CMenu::CreateVisualsTab()
 	m_pEffectsNoFlash->SetEventHandler(std::bind(&CVisuals::SetNoFlash, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pEffectsNoFlashLabel = new CLabel(4, 102, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pEffectsNoFlashLabel->AddDependency(m_pEffectsNoFlash);
 
 	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
+	m_pEffectsNoFlashValue->AddDependency(m_pEffectsNoFlash);
 
 	// OthersGroup
 	m_pVisualsOthersHandsDrawStyle = new CSelectbox(4, 12, 128, 16, "Hands Drawstyle");
@@ -970,6 +1037,7 @@ void CMenu::CreateVisualsTab()
 
 	m_pVisualsOthersRecoilCrosshairEnabled = new CCheckbox(4, 128, 128, 16, "Show Recoil Crosshair");
 	m_pVisualsOthersRecoilCrosshairEnabled->SetEventHandler(std::bind(&CGunHud::SetCrosshairShowRecoil, m_pApp->GunHud(), std::placeholders::_1));
+	m_pVisualsOthersRecoilCrosshairEnabled->AddDependency(m_pVisualsOthersCrosshairEnabled);
 
 	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 156, 128, 16, "Show Spread Cone");
 	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CGunHud::SetSpreadCone, m_pApp->GunHud(), std::placeholders::_1));
@@ -1013,9 +1081,11 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersThirdperson->SetEventHandler(std::bind(&CVisuals::SetThirdperson, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pVisualsOthersThirdpersonLabel = new CLabel(156, 18, 128, 16, "Thirdperson Distance", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOthersThirdpersonLabel->AddDependency(m_pVisualsOthersThirdperson);
 
 	m_pVisualsOthersThirdpersonDistance = new CSlider(156, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 30.0f, 300.0f);
 	m_pVisualsOthersThirdpersonDistance->SetEventHandler(std::bind(&CVisuals::SetThirdpersonDistance, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersThirdpersonDistance->AddDependency(m_pVisualsOthersThirdperson);
 
 	m_pVisualsOthersMirror = new CCheckbox(156, 64, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
@@ -1026,9 +1096,11 @@ void CMenu::CreateVisualsTab()
 
 	m_pBulletTracerSelf = new CCheckbox(4, 20, 128, 16, "Show mine");
 	m_pBulletTracerSelf->SetEventHandler(std::bind(&CVisuals::SetBulletTracerSelf, m_pApp->Visuals(), std::placeholders::_1));
+	m_pBulletTracerSelf->AddDependency(m_pBulletTracerEnabled);
 
 	m_pBulletTracerTeam = new CCheckbox(4, 40, 128, 16, "Own Team");
 	m_pBulletTracerTeam->SetEventHandler(std::bind(&CVisuals::SetBulletTracerTeam, m_pApp->Visuals(), std::placeholders::_1));
+	m_pBulletTracerTeam->AddDependency(m_pBulletTracerEnabled);
 
 	// FovChangerGroup
 	m_pFovChangerFovEnabled = new CCheckbox(4, 0, 128, 16, "FOV");
@@ -1036,19 +1108,24 @@ void CMenu::CreateVisualsTab()
 
 	m_pFovChangerFovScopeEnabled = new CCheckbox(4, 20, 128, 16, "Scoping FOV");
 	m_pFovChangerFovScopeEnabled->SetEventHandler(std::bind(&CVisuals::SetFovChangeScoped, m_pApp->Visuals(), std::placeholders::_1));
+	m_pFovChangerFovScopeEnabled->AddDependency(m_pFovChangerFovEnabled);
 
 	m_pFovChangerFovLabel = new CLabel(4, 34, 128, 16, "FOV Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFovChangerFovLabel->AddDependency(m_pFovChangerFovEnabled);
 
 	m_pFovChangerFovValue = new CSlider(4, 56, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 170.0f);
 	m_pFovChangerFovValue->SetEventHandler(std::bind(&CVisuals::SetFovValue, m_pApp->Visuals(), std::placeholders::_1));
+	m_pFovChangerFovValue->AddDependency(m_pFovChangerFovEnabled);
 
 	m_pFovChangerViewmodelFovEnabled = new CCheckbox(4, 68, 128, 16, "Viewmodel-FOV");
 	m_pFovChangerViewmodelFovEnabled->SetEventHandler(std::bind(&CVisuals::SetViewmodelFov, m_pApp->Visuals(), std::placeholders::_1));
 
 	m_pFovChangerViewmodelFovLabel = new CLabel(4, 82, 128, 16, "FOV Viewmodel Value", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFovChangerViewmodelFovLabel->AddDependency(m_pFovChangerViewmodelFovEnabled);
 
 	m_pFovChangerViewmodelFovValue = new CSlider(4, 106, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 150.0f);
 	m_pFovChangerViewmodelFovValue->SetEventHandler(std::bind(&CVisuals::SetViewmodelFovValue, m_pApp->Visuals(), std::placeholders::_1));
+	m_pFovChangerViewmodelFovValue->AddDependency(m_pFovChangerViewmodelFovEnabled);
 
 
 	// Groups
@@ -1130,16 +1207,20 @@ void CMenu::CreateMiscTab()
 
 	m_pFakelagOnlyInAir = new CCheckbox(4, 20, 128, 16, "Only In Air");
 	m_pFakelagOnlyInAir->SetEventHandler(std::bind(&CFakelag::SetOnlyInAir, m_pApp->Fakelag(), std::placeholders::_1));
+	m_pFakelagOnlyInAir->AddDependency(m_pFakelagEnabled);
 
 	m_pFakelagLabel = new CLabel(4, 40, 128, 16, "Packets choking", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pFakelagLabel->AddDependency(m_pFakelagEnabled);
 
 	m_pFakelagChokeAmount = new CSlider(4, 62, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, (float)MAX_CHOKE_PACKETS);
 	m_pFakelagChokeAmount->SetEventHandler(std::bind(&CFakelag::SetChokeAmount, m_pApp->Fakelag(), std::placeholders::_1));
+	m_pFakelagChokeAmount->AddDependency(m_pFakelagEnabled);
 
 	m_pFakelagType = new CSelectbox(4, 86, 128, 16, "Lag Type");
 	m_pFakelagType->AddOption(FAKELAG_TYPE_FACTOR, "Factor");
 	m_pFakelagType->AddOption(FAKELAG_TYPE_ADAPTIVE, "Adaptive");
 	m_pFakelagType->SetEventHandler(std::bind(&CFakelag::SetLagType, m_pApp->Fakelag(), std::placeholders::_1));
+	m_pFakelagType->AddDependency(m_pFakelagEnabled);
 
 	m_pMiscOthersGroup = new CGroupbox(16, 16, 152, 308, "Others");
 	m_pMiscOthersGroup->AddChild(m_pMiscOthersNoRecoilEnabled);
@@ -1171,6 +1252,7 @@ void CMenu::CreateMiscTab()
 	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_RIGHT, "Right");
 	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_LEFT, "Left");
 	m_pMiscBhopCircleStrafeDirection->SetEventHandler(std::bind(&CMisc::SetCircleStrafeStartDirection, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscBhopCircleStrafeDirection->AddDependency(m_pMiscBhopCircleStrafeEnabled);
 
 	m_pMiscBhopCircleStrafeLabel = new CLabel(4, 46, 128, 16, "On: MENU");
 
