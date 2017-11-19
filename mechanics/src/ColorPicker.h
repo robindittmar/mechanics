@@ -21,6 +21,8 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
 	void SetEventHandler(std::function<void(Color)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	int m_iColorFadeTexture;

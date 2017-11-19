@@ -30,6 +30,8 @@ public:
 	virtual void ProcessEvent(CInputEvent* pEvent);
 	virtual void Draw(ISurface* pSurface);
 
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
 	void SetEventHandler(std::function<void(const char*)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	CLabel* m_pLabel;

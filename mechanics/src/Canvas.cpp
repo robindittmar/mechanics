@@ -25,3 +25,8 @@ void CCanvas::Draw(ISurface* pSurface)
 
 	IControl::Draw(pSurface);
 }
+
+bool CCanvas::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

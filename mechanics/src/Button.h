@@ -23,6 +23,8 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
 	void SetEventHandler(std::function<void()> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:
 	CLabel* m_pLabel;

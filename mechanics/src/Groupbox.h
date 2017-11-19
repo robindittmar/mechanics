@@ -15,8 +15,10 @@ public:
 	CGroupbox(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "grpbx");
 	~CGroupbox();
 
-	virtual void AddChild(IControl* pControl);
-	virtual void Draw(ISurface* pSurface);
+	virtual void AddChild(IControl* pControl) override;
+	virtual void Draw(ISurface* pSurface) override;
+
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 private:
 	bool m_bAlreadySetSize;
 

@@ -115,10 +115,19 @@ void CTextbox::Draw(ISurface* pSurface)
 				m_pContentLabel->GetTextSize(pSurface, width, height);
 
 				pSurface->DrawSetColor(Color(255, 255, 255, 255));
-				pSurface->DrawLine(x + width + 5, y + 5, x + width + 5, y + height + 5);
+				pSurface->DrawLine(x + width + 5, y + 3, x + width + 5, y + height + 3);
 			}
 		}
 	}
 
+	//int x0, y0, x1, y1;
+	//pSurface->GetClipRect(x0, y0, x1, y1);
+	//pSurface->SetClipRect(x, y, x + m_iWidth, y + m_iHeight);
 	IControl::Draw(pSurface);
+	//pSurface->SetClipRect(x0, y0, x1, y1);
+}
+
+bool CTextbox::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
 }

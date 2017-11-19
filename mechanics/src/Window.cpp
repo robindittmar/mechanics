@@ -101,6 +101,11 @@ void CWindow::Draw(ISurface* pSurface)
 		m_pPopup->Draw(pSurface);
 }
 
+bool CWindow::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}
+
 void CWindow::SetClientPosition(int x, int y)
 {
 	this->SetPosition(x, y - TITLEBAR_HEIGHT);

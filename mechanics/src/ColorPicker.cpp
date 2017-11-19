@@ -50,3 +50,8 @@ void CColorPicker::Draw(ISurface* pSurface)
 	pSurface->DrawSetColor(255, 0, 0, 0);
 	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
 }
+
+bool CColorPicker::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

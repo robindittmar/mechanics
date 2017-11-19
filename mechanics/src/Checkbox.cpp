@@ -12,8 +12,6 @@ CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isCheck
 
 CCheckbox::~CCheckbox()
 {
-	m_pEnableOnChecked.clear();
-	m_pDisableOnChecked.clear();
 }
 
 void CCheckbox::OnClicked()
@@ -78,6 +76,11 @@ void CCheckbox::Draw(ISurface* pSurface)
 	IControl::Draw(pSurface);
 }
 
+bool CCheckbox::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return m_bIsChecked;
+}
+
 void CCheckbox::SetChecked(bool bIsChecked)
 {
 	m_bIsChecked = bIsChecked;
@@ -85,23 +88,5 @@ void CCheckbox::SetChecked(bool bIsChecked)
 	if (m_pEventHandler)
 		m_pEventHandler(m_bIsChecked);
 
-	for (std::vector<IControl*>::iterator it = m_pEnableOnChecked.begin(); it != m_pEnableOnChecked.end(); it++)
-	{
-		(*it)->SetEnabled(m_bIsChecked);
-	}
-
-	for (std::vector<IControl*>::iterator it = m_pDisableOnChecked.begin(); it != m_pDisableOnChecked.end(); it++)
-	{
-		(*it)->SetEnabled(!m_bIsChecked);
-	}
-}
-
-void CCheckbox::EnableOnChecked(IControl* p)
-{
-	m_pEnableOnChecked.push_back(p);
-}
-
-void CCheckbox::DisableOnChecked(IControl* p)
-{
-	m_pDisableOnChecked.push_back(p);
+	this->NotifyDependentOnes();
 }

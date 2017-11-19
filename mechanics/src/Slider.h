@@ -34,12 +34,14 @@ public:
 	);
 	~CSlider();
 
-	virtual void OnMouseMove(int mx, int my);
-	virtual void OnMouseDown(int mx, int my);
+	virtual void OnMouseMove(int mx, int my) override;
+	virtual void OnMouseDown(int mx, int my) override;
 
-	virtual void Draw(ISurface* pSurface);
+	virtual void Draw(ISurface* pSurface) override;
 
-	virtual void SetEnabled(bool bIsEnabled);
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
+	virtual void SetEnabled(bool bIsEnabled) override;
 
 	void SetValue(float fValue);
 	float GetValue() { return m_fValue; }

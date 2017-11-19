@@ -23,14 +23,16 @@ public:
 	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "wnd");
 	~CWindow();
 
-	virtual void OnMouseMove(int mx, int my);
-	virtual void OnMouseDown(int mx, int my);
-	virtual void OnMouseUp(int mx, int my);
+	virtual void OnMouseMove(int mx, int my) override;
+	virtual void OnMouseDown(int mx, int my) override;
+	virtual void OnMouseUp(int mx, int my) override;
 
-	virtual void AddChild(IControl* pControl);
+	virtual void AddChild(IControl* pControl) override;
 
-	virtual void ProcessEvent(CInputEvent* pEvent);
-	virtual void Draw(ISurface* pSurface);
+	virtual void ProcessEvent(CInputEvent* pEvent) override;
+	virtual void Draw(ISurface* pSurface) override;
+
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 
 	void SetClientPosition(int x, int y);
 	void GetClientPosition(int* x, int* y);
