@@ -380,24 +380,31 @@ void CMenu::CreateRageTab()
 
 	m_pRageHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
 	m_pRageHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_HEAD, std::placeholders::_1));
+	m_pRageHitboxHead->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
 	m_pRageHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_CHEST, std::placeholders::_1));
+	m_pRageHitboxChest->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
 	m_pRageHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
+	m_pRageHitboxPelvis->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
 	m_pRageHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxRForearm->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
 	m_pRageHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxLForearm->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
 	m_pRageHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+	m_pRageHitboxRCalf->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
 	m_pRageHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
+	m_pRageHitboxLCalf->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
 	m_pRageHitboxGroup->AddChild(m_pRageHitboxHead);
@@ -410,12 +417,15 @@ void CMenu::CreateRageTab()
 
 	m_pRageOthersAutoZeusEnabled = new CCheckbox(4, 0, 128, 16, "Auto Zeus");
 	m_pRageOthersAutoZeusEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoZeus, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pRageOthersAutoZeusEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pRageOthersAutoRevolverEnabled = new CCheckbox(4, 20, 128, 16, "Auto Revolver");
 	m_pRageOthersAutoRevolverEnabled->SetEventHandler(std::bind(&CRagebot::SetAutoRevolver, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pRageOthersAutoRevolverEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pRageOthersLagCompensationEnabled = new CCheckbox(4, 40, 128, 16, "Lag Compensation");
 	m_pRageOthersLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetRageLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pRageOthersLagCompensationEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pRageOthersResolverType = new CSelectbox(4, 70, 128, 20, "Resolver Type");
 	m_pRageOthersResolverType->AddOption(RESOLVERTYPE_NONE, "None");
@@ -431,6 +441,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_DOWN, "Down");
 	m_pAntiaimMovingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimMovingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimMovingPitch->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimMovingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_NONE, "None");
@@ -439,14 +450,12 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Static Jitter Backwards");
 	m_pAntiaimMovingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimMovingYaw->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimMovingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
 	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimEnabled);
-	// TODO: <TEST>
-	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimMovingYaw, (void*)YAWANTIAIM_STATIC);
-	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimMovingYaw, (void*)YAWANTIAIM_BACKWARDS);
-	// TODO: </TEST>
+	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimMovingYaw, (void*)YAWANTIAIM_NONE, true);
 
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
@@ -454,9 +463,13 @@ void CMenu::CreateRageTab()
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimMovingYawFake->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimYawMovingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawMovingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimYawMovingFakeOffset->AddDependency(m_pAntiaimEnabled);
+	m_pAntiaimYawMovingFakeOffset->AddDependency(m_pAntiaimMovingYawFake, (void*)YAWANTIAIM_NONE, true);
+
 
 	//Standing
 	m_pAntiaimStandingPitch = new CSelectbox(4, 10, 128, 20, "Pitch");
@@ -464,6 +477,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingPitch->AddOption(PITCHANTIAIM_DOWN, "Down");
 	m_pAntiaimStandingPitch->AddOption(PITCHANTIAIM_UP, "Up");
 	m_pAntiaimStandingPitch->SetEventHandler(std::bind(&CAntiAim::SetPitchSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimStandingPitch->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimStandingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_NONE, "None");
@@ -472,9 +486,12 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
 	m_pAntiaimStandingYaw->SetEventHandler(std::bind(&CAntiAim::SetYawSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimStandingYaw->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimStandingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimStandingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimStandingYawOffset->AddDependency(m_pAntiaimEnabled);
+	m_pAntiaimStandingYawOffset->AddDependency(m_pAntiaimStandingYaw, (void*)YAWANTIAIM_NONE, true);
 
 	m_pAntiaimStandingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
@@ -482,12 +499,18 @@ void CMenu::CreateRageTab()
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimStandingYawFake->AddDependency(m_pAntiaimEnabled);
 
 	m_pAntiaimYawStandingFakeOffset = new CSlider(4, 138, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimYawStandingFakeOffset->SetEventHandler(std::bind(&CAntiAim::SetYawFakeOffsetStanding, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimYawStandingFakeOffset->AddDependency(m_pAntiaimEnabled);
+	m_pAntiaimYawStandingFakeOffset->AddDependency(m_pAntiaimStandingYawFake, (void*)YAWANTIAIM_NONE, true);
 
 	m_pAntiaimStandingLbyBreaker = new CCheckbox(4, 159, 128, 16, "LBY Breaker");
 	m_pAntiaimStandingLbyBreaker->SetEventHandler(std::bind(&CAntiAim::SetLbyBreaker, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimStandingLbyBreaker->AddDependency(m_pAntiaimEnabled);
+	m_pAntiaimStandingLbyBreaker->AddDependency(m_pAntiaimStandingYaw, (void*)YAWANTIAIM_NONE, true);
+	m_pAntiaimStandingLbyBreaker->AddDependency(m_pAntiaimStandingYawFake, (void*)YAWANTIAIM_NONE, true);
 
 	m_pAntiaimLbyIndicator = new CCheckbox(62, 0, 128, 16, "LBY Indicator");
 	m_pAntiaimLbyIndicator->SetEventHandler(std::bind(&CAntiAim::SetDrawLbyIndicator, m_pApp->AntiAim(), std::placeholders::_1));

@@ -245,6 +245,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 			if (!trace.IsVisible())
 				continue;
 
+			// TODO: maybe better or use AWall code not a trace <3
 			if (pCurLCList.m_pPlayerEntries[x].m_iTickCount == pCurResolverPlayer->m_iLbyUpdateTickCount)
 			{
 				iBacktracked = x;
