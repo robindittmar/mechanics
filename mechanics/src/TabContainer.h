@@ -23,13 +23,15 @@ public:
 	
 	void SelectTab(int idx);
 
-	virtual void OnMouseMove(int mx, int my);
-	virtual void OnMouseDown(int mx, int my);
-	virtual void OnMouseUp(int mx, int my);
+	virtual void OnMouseMove(int mx, int my) override;
+	virtual void OnMouseDown(int mx, int my) override;
+	virtual void OnMouseUp(int mx, int my) override;
 
-	virtual void AddChild(IControl* pControl);
+	virtual void AddChild(IControl* pControl) override;
 
-	virtual void Draw(ISurface* pSurface);
+	virtual void Draw(ISurface* pSurface) override;
+
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 private:
 	std::vector<CLabel*> m_vLabels;
 

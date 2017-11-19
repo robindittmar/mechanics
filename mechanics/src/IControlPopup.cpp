@@ -33,3 +33,8 @@ void IControlPopup::ProcessEvent(CInputEvent* pEvent)
 		}
 	}
 }
+
+bool IControlPopup::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

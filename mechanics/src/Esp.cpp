@@ -470,12 +470,12 @@ void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, 
 	if (font == NULL)
 	{
 		font = m_pApp->Surface()->SCreateFont();
-		pSurface->SetFontGlyphSet(font, "Arial", 12, 255, 0, 0, 0x200);
+		pSurface->SetFontGlyphSet(font, "Arial Black", 12, 255, 0, 0, 0x200);
 	}
 	pSurface->DrawSetTextFont(font);
 
 	wchar_t sHealth[16];
-	int iLen = swprintf(sHealth, 16, L"%d", health);
+	int iLen = swprintf(sHealth, 16, L"%d HP", health);
 
 	int w, h;
 	pSurface->GetTextSize(font, sHealth, w, h);

@@ -311,33 +311,46 @@ void CMenu::CreateRageTab()
 {
 	m_pAimbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pAimbotEnabled->SetEventHandler(std::bind(&CRagebot::SetEnabled, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotEnabled->SetTooltipText("Enables/Disables the Aimbot entirely");
 
 	m_pAimbotSilentAim = new CCheckbox(4, 20, 128, 16, "Silent Aim");
 	m_pAimbotSilentAim->SetEventHandler(std::bind(&CRagebot::SetSilentAim, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotSilentAim->SetTooltipText("Toggles wether or not the movement of the aimbot is visible to you");
+	m_pAimbotSilentAim->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotAutoshoot = new CCheckbox(4, 40, 128, 16, "Auto Shoot");
 	m_pAimbotAutoshoot->SetEventHandler(std::bind(&CRagebot::SetAutoshoot, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoshoot->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotAutoscope = new CCheckbox(4, 60, 128, 16, "Auto Scope");
 	m_pAimbotAutoscope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoscope->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotAutoReload = new CCheckbox(4, 80, 128, 16, "Auto Reload");
 	m_pAimbotAutoReload->SetEventHandler(std::bind(&CRagebot::SetAutoReload, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoReload->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipoint = new CCheckbox(4, 100, 128, 16, "Multipoint");
 	m_pAimbotMultipoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotMultipoint->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipointScale = new CSlider(4, 122, 128, 16, 0.01f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f);
 	m_pAimbotMultipointScale->SetEventHandler(std::bind(&CTargetSelector::SetMultipointScale, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotMultipointScale->AddDependency(m_pAimbotEnabled);
+	m_pAimbotMultipointScale->AddDependency(m_pAimbotMultipoint);
 
 	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 142, 128, 16, "Remove Spread (if possible)");
 	m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotNoSpreadEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotHitchanceEnabled = new CCheckbox(4, 162, 128, 16, "Hitchance");
 	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotHitchanceEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotHitchanceSlider = new CSlider(4, 184, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pAimbotHitchanceSlider->SetEventHandler(std::bind(&CRagebot::SetHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotHitchanceSlider->AddDependency(m_pAimbotEnabled);
+	m_pAimbotHitchanceSlider->AddDependency(m_pAimbotHitchanceEnabled);
 
 	m_pAimbotTargetCriteria = new CSelectbox(4, 214, 128, 20, "Target criteria");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_UNSPECIFIED, "First found");
@@ -350,25 +363,6 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
 	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, m_pApp->TargetSelector(), std::placeholders::_1));
-
-	// TODO: <TEST>
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotSilentAim);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoshoot);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoscope);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotAutoReload);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotMultipoint);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotMultipointScale);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotNoSpreadEnabled);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceEnabled);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotTargetCriteria);
-	m_pAimbotEnabled->EnableOnChecked(m_pAimbotVisibleMode);
-
-	m_pAimbotHitchanceEnabled->EnableOnChecked(m_pAimbotHitchanceSlider);
-
-	m_pAimbotEnabled->SetTooltipText("Enables/Disables the Aimbot entirely");
-	m_pAimbotSilentAim->SetTooltipText("Toggles wether or not the movement of the aimbot is visible to you");
-	// TODO: </TEST>
 
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
@@ -448,6 +442,11 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimMovingYawOffset = new CSlider(4, 76, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, true, -180.0f, 180.0f);
 	m_pAntiaimMovingYawOffset->SetEventHandler(std::bind(&CAntiAim::SetYawOffsetMoving, m_pApp->AntiAim(), std::placeholders::_1));
+	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimEnabled);
+	// TODO: <TEST>
+	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimMovingYaw, (void*)YAWANTIAIM_STATIC);
+	m_pAntiaimMovingYawOffset->AddDependency(m_pAntiaimMovingYaw, (void*)YAWANTIAIM_BACKWARDS);
+	// TODO: </TEST>
 
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");

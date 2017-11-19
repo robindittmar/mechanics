@@ -133,6 +133,11 @@ void CSlider::Draw(ISurface* pSurface)
 	IControl::Draw(pSurface);
 }
 
+bool CSlider::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}
+
 void CSlider::SetEnabled(bool bIsEnabled)
 {
 	IControl::SetEnabled(bIsEnabled);

@@ -22,3 +22,8 @@ void CTabPage::SetTitle(const char* pTitle)
 	m_pTitle = new char[m_iTitleLen];
 	memcpy(m_pTitle, pTitle, m_iTitleLen);
 }
+
+bool CTabPage::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

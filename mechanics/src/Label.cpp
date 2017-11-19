@@ -56,6 +56,11 @@ void CLabel::Draw(ISurface* pSurface)
 	pSurface->DrawPrintText(m_pContentTextW, m_iContentTextLen);
 }
 
+bool CLabel::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}
+
 void CLabel::GetTextSize(ISurface* pSurface, int& width, int& height)
 {
 	pSurface->GetTextSize(m_iFont, m_pContentTextW, width, height);

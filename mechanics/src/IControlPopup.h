@@ -19,6 +19,7 @@ public:
 	CWindow* GetParentWindow() const { return m_pParentWindow; }
 
 	virtual void ProcessEvent(CInputEvent* pEvent) override;
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 protected:
 	CWindow* m_pParentWindow;
 };

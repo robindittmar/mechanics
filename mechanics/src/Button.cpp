@@ -41,3 +41,8 @@ void CButton::Draw(ISurface* pSurface)
 	//m_pLabel->Draw(pSurface);
 	IControl::Draw(pSurface);
 }
+
+bool CButton::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

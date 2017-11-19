@@ -27,6 +27,8 @@ public:
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);
 
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
 	virtual void SetEnabled(bool bIsEnabled);
 
 	void ClearOptions();

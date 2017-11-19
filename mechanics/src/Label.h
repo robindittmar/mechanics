@@ -29,6 +29,8 @@ public:
 
 	virtual void Draw(ISurface* pSurface);
 
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
+
 	void GetTextSize(ISurface* pSurface, int& width, int& height);
 
 	void SetTextColor(Color c) { m_cTextColor = c; }

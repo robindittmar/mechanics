@@ -49,3 +49,8 @@ void CGroupbox::Draw(ISurface* pSurface)
 
 	IControl::Draw(pSurface);
 }
+
+bool CGroupbox::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

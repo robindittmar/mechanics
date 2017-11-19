@@ -178,3 +178,8 @@ void CTabContainer::Draw(ISurface* pSurface)
 
 	IControl::Draw(pSurface);
 }
+
+bool CTabContainer::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return true;
+}

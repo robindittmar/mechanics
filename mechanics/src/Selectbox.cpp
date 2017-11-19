@@ -79,6 +79,11 @@ void CSelectbox::Draw(ISurface* pSurface)
 	IControl::Draw(pSurface);
 }
 
+bool CSelectbox::ShouldDependentOnesBeEnabled(void* pParam)
+{
+	return (m_vOptions[m_iSelection]->GetId() == (int)pParam);
+}
+
 void CSelectbox::SetEnabled(bool bIsEnabled)
 {
 	IControl::SetEnabled(bIsEnabled);
@@ -151,6 +156,8 @@ void CSelectbox::SetSelection(int iSelection)
 
 		if (m_pEventHandler)
 			m_pEventHandler(m_vOptions[m_iSelection]->GetId());
+
+		this->NotifyDependentOnes();
 	}
 }
 

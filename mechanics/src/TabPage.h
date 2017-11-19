@@ -17,6 +17,8 @@ public:
 
 	void SetTitle(const char* pTitle);
 	const char* GetTitle() { return (const char*)m_pTitle; }
+
+	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 private:
 	int m_iTitleLen;
 	char* m_pTitle;
