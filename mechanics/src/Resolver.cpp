@@ -229,6 +229,7 @@ void CResolver::BruteforcePlayer(CResolverPlayer* pCurResolverPlayer, IClientEnt
 
 void CResolver::BruteforceBreakingPlayer(CResolverPlayer* pCurResolverPlayer, IClientEntity* pCurEntity)
 {
+	float fLowerBodyYaw = pCurEntity->GetLowerBodyYaw();
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	QAngle* qCurEyeAngle = pCurEntity->GetAngEyeAngles();
 	qCurEyeAngle->NormalizeAngles();
@@ -246,26 +247,26 @@ void CResolver::BruteforceBreakingPlayer(CResolverPlayer* pCurResolverPlayer, IC
 	switch (iModuloShots)
 	{
 	case 4:
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 120.0f;
+		qCurEyeAngle->y = fLowerBodyYaw - 120.0f;
 		break;
 	case 3:
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y + 120.0f;
+		qCurEyeAngle->y = fLowerBodyYaw + 120.0f;
 		break;
 	case 2:
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 150.0f;
+		qCurEyeAngle->y = fLowerBodyYaw - 150.0f;
 		break;
 	case 1:
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y + 150.0f;
+		qCurEyeAngle->y = fLowerBodyYaw + 150.0f;
 		break;
 	case 0:
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y - 180.0f;
+		qCurEyeAngle->y = fLowerBodyYaw - 180.0f;
 		break;
 	}
 
 	// Predicting LBY update
 	if (m_pApp->AntiAim()->NextLBYUpdate(pCurResolverPlayer, false, false) && iModuloShots != 0)
 	{
-		qCurEyeAngle->y = pCurResolverPlayer->GetAngles().y;
+		qCurEyeAngle->y = fLowerBodyYaw;
 		pCurResolverPlayer->m_bLbyPredict = true;
 	}
 

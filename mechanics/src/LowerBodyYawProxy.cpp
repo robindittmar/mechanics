@@ -14,11 +14,13 @@ void __cdecl hk_SetLowerBodyYawTarget(const CRecvProxyData* pDataConst, void* pS
 	{
 		CResolverPlayer* pResolverPlayer = pApp->Resolver()->GetResolverPlayer(pEntity->EntIndex());
 
-		if (fabsf(pResolverPlayer->GetLbyProxyLastValue() - pData->m_Value.m_Float) >= 30.0f)
+		if (pLocal != pEntity ||
+			pLocal == pEntity && fabsf(pResolverPlayer->GetLbyProxyLastValue() - pData->m_Value.m_Float) >= 30.0f)
 		{
 			pResolverPlayer->SetLbyProxyLastValue(pData->m_Value.m_Float);
 			pResolverPlayer->SetLbyUpdateTime(pApp->GlobalVars()->curtime);
 			pResolverPlayer->SetLbyProxyUpdatedTime(pApp->GlobalVars()->curtime);
+			pResolverPlayer->m_iLbyUpdateTickCount = pApp->LagCompensation()->GetTickcount();
 		}
 	}
 

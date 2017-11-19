@@ -224,7 +224,16 @@ void CAntiAim::Update(void* pParameters)
 	pUserCmd->viewangles[0] = angles.x;
 
 	// LBY indicator check
-	m_pApp->m_bLBY = !m_bIsMoving && pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime;
+	m_pApp->m_bLBY = pLocalResolverPlayer->GetLbyProxyUpdatedTime() + 1.1 < m_pApp->GlobalVars()->curtime &&
+		(fabsf(m_pApp->GetLastTickViewAngles().y - pLocalEntity->GetLowerBodyYaw()) > 35.0f || m_bNextLbyUpdate);
+
+	// Resets adaptive AA stuff
+	CheckForInJumpAntiAim();
+	if (pLocalEntity->GetFlags() & FL_ONGROUND)
+	{
+		m_fInJumpAngPerTick = 0.0f;
+		m_iInJumpCount = m_iInJumpPredCount = 0;
+	}
 
 	m_bIsEdgeAntiAim = EdgeAntiAim(pLocalEntity, pUserCmd);
 	if (m_bIsEdgeAntiAim)
@@ -625,6 +634,30 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 			trigger = 0.0f;
 		}
 		break;
+	case YAWANTIAIM_ADAPTIVE:
+		//TODO:
+		if (bSetMovingSettings)
+		{
+			// Moving
+
+			if (m_iInJumpCount == 0)
+			{
+				// Normal AntiAim
+				//TODO: nothing because of using static
+			}
+			else
+			{
+				// InJump AntiAim
+				fRealYawAngle = GetInJumpAntiAim();
+			}
+		}
+		else
+		{
+			// Standing
+
+			//TODO: nothing because of using static
+		}
+		break;
 	case YAWANTIAIM_NONE:
 	default:
 		fRealYawAngle = 0.0f;
@@ -638,7 +671,6 @@ void CAntiAim::ApplyYawAntiAim(QAngle* angles)
 void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 {
 	static float trigger = 0.0f;
-	static bool bFakeAngleSwitch = true;
 	float fFakeYaw = 0.0f + (m_bIsMoving ? m_fYawFakeOffsetMoving : m_fYawFakeOffsetStanding);
 
 	switch ((m_bIsMoving ? m_iYawFakeSettingMoving : m_iYawFakeSettingStanding))
@@ -653,6 +685,29 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		}
 		break;
 	case FAKEYAWANTIAIM_STATIC:
+		break;
+	case FAKEYAWANTIAIM_ADAPTIVE:
+		if (m_bIsMoving)
+		{
+			// Moving
+
+			if (m_iInJumpCount == 0)
+			{
+				// Normal AntiAim
+				//TODO: nothing because of using static
+			}
+			else
+			{
+				// InJump AntiAim
+				fFakeYaw = -GetInJumpAntiAim();
+			}
+		}
+		else
+		{
+			// Standing
+
+			//TODO: nothing because of using static
+		}
 		break;
 	case FAKEYAWANTIAIM_NONE:
 	default:
@@ -673,17 +728,17 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 		if (m_pApp->Fakelag()->GetEnabled() && (!m_pApp->Fakelag()->GetOnlyInAir() ||
 			m_pApp->Fakelag()->GetOnlyInAir() && (!(pLocal->GetFlags() & FL_ONGROUND) && !(pLocal->GetFlags() & FL_INWATER))) &&
 			m_pApp->Fakelag()->AmountPacketsChoked() + 1 <= m_pApp->Fakelag()->GetChokeAmount() && m_bIsMoving ||
-			!bFakeAngleSwitch)
+			!m_bFakeAngleSwitch)
 		{
 			angles->y += fRealYaw;
-			bFakeAngleSwitch = false;
+			m_bFakeAngleSwitch = false;
 		}
 		else
 		{
 			angles->y += fFakeYaw;
 		}
-		*m_pApp->m_bSendPackets = bFakeAngleSwitch;
-		bFakeAngleSwitch = !bFakeAngleSwitch;
+		*m_pApp->m_bSendPackets = m_bFakeAngleSwitch;
+		m_bFakeAngleSwitch = !m_bFakeAngleSwitch;
 	}
 	else
 	{
@@ -697,6 +752,39 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 
 	if (m_bWasMoving && (!m_bLbyBreaker || m_bNextLbyUpdate) && !m_bIsMoving)
 		m_bWasMoving = false;
+}
+
+void CAntiAim::CheckForInJumpAntiAim()
+{
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+
+	static float fStartVelZ = 0.0f;
+	float fVelZ = fabs(pLocalEntity->GetVelocity()->z);
+
+	if (fVelZ > 0.0f)
+	{
+		if (m_iInJumpCount == 0)
+		{
+			fStartVelZ = fVelZ;
+		}
+		else if (m_iInJumpCount == 1)
+		{
+			m_iInJumpPredCount = (int)(fStartVelZ / (fStartVelZ - fVelZ) + 0.5f) * 2;
+		}
+
+		m_iInJumpCount++;
+	}
+}
+
+float CAntiAim::GetInJumpAntiAim()
+{
+	IClientEntity* pLocal = m_pApp->GetLocalPlayer();
+	if (m_fInJumpAngPerTick == 0.0f && m_iInJumpPredCount != 0)
+	{
+		m_fInJumpAngPerTick = 160.0f / m_iInJumpPredCount;
+	}
+
+	return (100.0f + ((m_iInJumpCount - 1) * m_fInJumpAngPerTick));
 }
 
 void CAntiAim::DrawLBYIndicator()

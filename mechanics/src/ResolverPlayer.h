@@ -54,6 +54,8 @@ public:
 	bool m_bOnGround;
 
 	bool m_bLbyPredict;
+
+	int m_iLbyUpdateTickCount;
 private:
 	int m_iShotsFired;
 	int m_iShotHit;

@@ -17,14 +17,16 @@ class CApplication;
 
 // Yaw
 #define YAWANTIAIM_NONE							0
-#define YAWANTIAIM_STATIC						1
-#define YAWANTIAIM_BACKWARDS					2
-#define YAWANTIAIM_STATICJITTERBACKWARDS		3
+#define YAWANTIAIM_ADAPTIVE						1
+#define YAWANTIAIM_STATIC						2
+#define YAWANTIAIM_BACKWARDS					3
+#define YAWANTIAIM_STATICJITTERBACKWARDS		4
 
 // Yaw Fake
 #define FAKEYAWANTIAIM_NONE						0
-#define FAKEYAWANTIAIM_STATIC					1
-#define FAKEYAWANTIAIM_STATICJITTER				2
+#define FAKEYAWANTIAIM_ADAPTIVE					1
+#define FAKEYAWANTIAIM_STATIC					2
+#define FAKEYAWANTIAIM_STATICJITTER				3
 
 
 // Hide Direction
@@ -119,6 +121,8 @@ public:
 
 	virtual void Update(void* pParameters = 0) override;
 private:
+	bool m_bFakeAngleSwitch;
+
 	// Standing
 	int m_iPitchSettingStanding;
 	int m_iYawSettingStanding;
@@ -169,6 +173,13 @@ private:
 	void ApplyPitchAntiAim(QAngle* angles);
 	void ApplyYawAntiAim(QAngle* angles);
 	void ApplyYawFakeAntiAim(QAngle* angles, float fRealAngle);
+
+	int m_iInJumpCount;
+	int m_iInJumpPredCount;
+	float m_fInJumpAngPerTick;
+
+	void CheckForInJumpAntiAim();
+	float GetInJumpAntiAim();
 };
 
 #endif // __ANTIAIM_H__

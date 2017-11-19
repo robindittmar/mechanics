@@ -231,24 +231,35 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 		pCurLCList.RemoveInvalidPlayerEntries();
 		int iBacktracked = -1;
 
-		// Nothing visible :(
-		if (!bIsHittable)
-		{
-			Ray_t lcRay;
-			trace_t lcTrace;
-			Vector vCurHeadPos;
-			for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
-			{
-				vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
-				ray.Init(vMyHeadPos, vCurHeadPos);
-				m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
-				if (!trace.IsVisible())
-					continue;
+		CResolverPlayer* pCurResolverPlayer = m_pApp->Resolver()->GetResolverPlayer(i);
 
+		Ray_t lcRay;
+		trace_t lcTrace;
+		Vector vCurHeadPos;
+		for (int x = pCurLCList.m_iEntryCount - 1; x >= 0; x--)
+		{
+			vCurHeadPos = pCurLCList.m_pPlayerEntries[x].m_vHeadPos;
+
+			ray.Init(vMyHeadPos, vCurHeadPos);
+			m_pApp->EngineTrace()->TraceRay(ray, 0x200400B, &filter, &trace);
+			if (!trace.IsVisible())
+				continue;
+
+			if (pCurLCList.m_pPlayerEntries[x].m_iTickCount == pCurResolverPlayer->m_iLbyUpdateTickCount)
+			{
 				iBacktracked = x;
 				break;
 			}
 
+			if (iBacktracked == -1)
+			{
+				iBacktracked = x;
+			}
+		}
+
+		// Nothing visible :(
+		if (!bIsHittable)
+		{
 			if (iBacktracked == -1)
 				continue;
 		}

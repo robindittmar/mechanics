@@ -440,6 +440,7 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimMovingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_NONE, "None");
+	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_ADAPTIVE, "Adaptive [WIP]");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimMovingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Static Jitter Backwards");
@@ -450,6 +451,7 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimMovingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
+	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_ADAPTIVE, "Adaptive [WIP]");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimMovingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimMovingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingMoving, m_pApp->AntiAim(), std::placeholders::_1));
@@ -466,6 +468,7 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimStandingYaw = new CSelectbox(4, 46, 128, 20, "Yaw");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_NONE, "None");
+	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_ADAPTIVE, "Adaptive [WIP]");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_BACKWARDS, "Backwards");
 	m_pAntiaimStandingYaw->AddOption(YAWANTIAIM_STATICJITTERBACKWARDS, "Jitter Backwards");
@@ -476,6 +479,7 @@ void CMenu::CreateRageTab()
 
 	m_pAntiaimStandingYawFake = new CSelectbox(4, 108, 128, 20, "Yaw Fake");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_NONE, "None");
+	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_ADAPTIVE, "Adaptive [WIP]");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATIC, "Static");
 	m_pAntiaimStandingYawFake->AddOption(FAKEYAWANTIAIM_STATICJITTER, "Static Jitter");
 	m_pAntiaimStandingYawFake->SetEventHandler(std::bind(&CAntiAim::SetYawFakeSettingStanding, m_pApp->AntiAim(), std::placeholders::_1));
