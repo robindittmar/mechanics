@@ -328,6 +328,7 @@ private:
 	CTextbox* m_pSkinChangerWeaponSeed;
 	CSlider* m_pSkinChangerWeaponWear;
 
+	CCheckbox* m_pSkinChangerOnlyMyWeapon;
 
 	CGroupbox* m_pSkinChangerKnifeChangeGroup;
 	CSelectbox* m_pSkinChangerKnife;

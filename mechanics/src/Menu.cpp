@@ -246,6 +246,7 @@ void CMenu::ApplySettings()
 
 	// TODO
 	// SkinChanger
+	m_pSkinChangerOnlyMyWeapon->SetChecked(m_pApp->SkinChanger()->GetOnlyMyWeapons());
 	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 	m_pSkinChangerWeapon->SetSelection(0);
 	m_pSkinChangerSkin->SetSelection(0);
@@ -1330,7 +1331,10 @@ void CMenu::CreateSkinChangerTab()
 
 	m_pSkinChangerWeaponSeed = new CTextbox(278, 64, 128, 16, "Seed");
 
-	m_pSkinChangerWeaponWear = new CSlider(278, 100, 128, 16, 0.01, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Wear");
+	m_pSkinChangerWeaponWear = new CSlider(278, 104, 128, 16, 0.01, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Wear");
+
+	m_pSkinChangerOnlyMyWeapon = new CCheckbox(278, 120, 128, 16, "Only my weapons");
+	m_pSkinChangerOnlyMyWeapon->SetEventHandler(std::bind(&CSkinChanger::SetOnlyMyWeapons, m_pApp->SkinChanger(), std::placeholders::_1));
 
 	m_pSkinChangerSkin = new CSelectbox(140, 4, 128, 16, "Skin");
 	m_pSkinChangerSkin->AddOption(0, "None");
@@ -1353,6 +1357,7 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponStattrakCount);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponSeed);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponWear);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerOnlyMyWeapon);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyBoth);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyCt);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyT);
@@ -1405,12 +1410,12 @@ void CMenu::CreateConfigTab()
 
 void CMenu::FillSkinIds(int iWeaponId)
 {
-	if (iWeaponId == 0)
-		return;
-
 	m_pSkinChangerSkin->ClearOptions();
 	m_pSkinChangerSkin->AddOption(0, "None");
 	m_pSkinChangerSkin->SetSelection(0);
+
+	if (iWeaponId == 0)
+		return;
 
 	std::unordered_map<int, std::unordered_map<int, const char*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
 	for (std::unordered_map<int, std::unordered_map<int, const char*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
@@ -1429,9 +1434,6 @@ void CMenu::FillSkinIds(int iWeaponId)
 
 void CMenu::ApplySkin(int iSkinId)
 {
-	if (iSkinId == 0)
-		return;
-
 	int iWeaponId = m_pSkinChangerWeapon->GetValue();
 
 	int iWeaponSeed = 0;
