@@ -182,11 +182,14 @@ void CSkinChanger::Update(void* pParameters)
 		int iWeaponId = *pWeapon->GetItemDefinitionIndex();
 
 		this->ApplyCustomModel(pLocalEntity, pWeapon);
-		if (pLocalInfo.xuidlow != *pWeapon->GetOriginalOwnerXuidLow()) //todo: skin only mine
+
+		if (m_bOnlyMyWeapons && pLocalInfo.xuidlow != *pWeapon->GetOriginalOwnerXuidLow())
 			continue;
+
 		this->ApplyCustomSkin(pWeapon, iWeaponId);
 
-		*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
+		// TODO: checken was das macht !!
+		//*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
 	}
 }
 
@@ -480,8 +483,13 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 	{
 		*pWeapon->GetItemDefinitionIndex() = pSkin->m_iItemDefinitionIndex;
 	}
-
-	*pWeapon->GetFallbackPaintKit() = pSkin->m_iFallbackPaintKit;
+	
+	int* pPaintKit = pWeapon->GetFallbackPaintKit();
+	if (*pPaintKit != pSkin->m_iFallbackPaintKit)
+	{
+		m_bForceFullUpdate = true;
+	}
+	*pPaintKit = pSkin->m_iFallbackPaintKit;
 	*pWeapon->GetEntityQuality() = pSkin->m_iEntityQuality;
 	*pWeapon->GetFallbackSeed() = pSkin->m_iFallbackSeed;
 	*pWeapon->GetFallbackStatTrak() = pSkin->m_iFallbackStatTrak;

@@ -246,10 +246,17 @@ void CMenu::ApplySettings()
 	m_pMiscBhopCircleStrafeEnabled->SetChecked(m_pApp->Misc()->GetCircleStrafe());
 	m_pMiscBhopCircleStrafeDirection->SetSelection(m_pApp->Misc()->GetCircleStrafeStartDirection());
 
+	// TODO
 	// SkinChanger
+	m_pSkinChangerOnlyMyWeapon->SetChecked(m_pApp->SkinChanger()->GetOnlyMyWeapons());
 	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 	m_pSkinChangerWeapon->SetSelection(0);
-	m_pSkinChangerSkin->SetSelection(0); // TODO
+	m_pSkinChangerSkin->SetSelection(0);
+	m_pSkinChangerGlove->SetSelection(0);
+	//m_pSkinChangerWeaponName->
+	//m_pSkinChangerWeaponStattrakCount->
+	//m_pSkinChangerWeaponSeed->
+	m_pSkinChangerWeaponWear->SetValue(0.0f);
 
 	// TODO: <Remove pls>
 	m_pColorPicker->SetValue(m_pApp->GunHud()->GetSpreadConeColor());
@@ -1335,6 +1342,18 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerApplyCt = new CButton(68, 24, 60, 20, "CT");
 	m_pSkinChangerApplyBoth = new CButton(4, 24, 60, 20, "Both");
 
+
+	m_pSkinChangerWeaponName = new CTextbox(278, 4, 128, 16, "Name");
+
+	m_pSkinChangerWeaponStattrakCount = new CTextbox(278, 34, 128, 16, "Stattrak Count");
+
+	m_pSkinChangerWeaponSeed = new CTextbox(278, 64, 128, 16, "Seed");
+
+	m_pSkinChangerWeaponWear = new CSlider(278, 104, 128, 16, 0.01, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Wear");
+
+	m_pSkinChangerOnlyMyWeapon = new CCheckbox(278, 120, 128, 16, "Only my weapons");
+	m_pSkinChangerOnlyMyWeapon->SetEventHandler(std::bind(&CSkinChanger::SetOnlyMyWeapons, m_pApp->SkinChanger(), std::placeholders::_1));
+
 	m_pSkinChangerSkin = new CSelectbox(140, 4, 128, 16, "Skin");
 	m_pSkinChangerSkin->AddOption(0, "None");
 	m_pSkinChangerSkin->SetEventHandler(std::bind(&CMenu::ApplySkin, this, std::placeholders::_1));
@@ -1352,6 +1371,11 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 1008, 300, "Skins");
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeapon);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerSkin);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponName);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponStattrakCount);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponSeed);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeaponWear);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerOnlyMyWeapon);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyBoth);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyCt);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyT);
@@ -1404,12 +1428,12 @@ void CMenu::CreateConfigTab()
 
 void CMenu::FillSkinIds(int iWeaponId)
 {
-	if (iWeaponId == 0)
-		return;
-
 	m_pSkinChangerSkin->ClearOptions();
 	m_pSkinChangerSkin->AddOption(0, "None");
 	m_pSkinChangerSkin->SetSelection(0);
+
+	if (iWeaponId == 0)
+		return;
 
 	std::unordered_map<int, std::unordered_map<int, const char*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
 	for (std::unordered_map<int, std::unordered_map<int, const char*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
@@ -1428,21 +1452,36 @@ void CMenu::FillSkinIds(int iWeaponId)
 
 void CMenu::ApplySkin(int iSkinId)
 {
-	if (iSkinId == 0)
-		return;
-
 	int iWeaponId = m_pSkinChangerWeapon->GetValue();
+
+	int iWeaponSeed = 0;
+	const char* pWeaponSeed = m_pSkinChangerWeaponSeed->GetValue();
+	if (!(pWeaponSeed != NULL && pWeaponSeed[0] == '\0'))
+	{
+		iWeaponSeed = atoi(pWeaponSeed);
+	}
+
+	int iWeaponStattrakCount = -1;
+	const char* pWeaponStattrak = m_pSkinChangerWeaponStattrakCount->GetValue();
+	if (!(pWeaponStattrak != NULL && pWeaponStattrak[0] == '\0'))
+	{
+		iWeaponStattrakCount = atoi(pWeaponStattrak);
+	}
+
+	const char* pWeaponName = m_pSkinChangerWeaponName->GetValue();
+
+	float fWeaponWear = m_pSkinChangerWeaponWear->GetValue();
 
 	m_pApp->SkinChanger()->AddSkinReplacement(
 		iWeaponId,
 		new CSkinMetadata(
 			iWeaponId,
 			iSkinId,
-			0,
-			-1,
-			0,
-			NULL,
-			0.0f
+			iWeaponSeed,
+			iWeaponStattrakCount,
+			4,
+			pWeaponName,
+			fWeaponWear
 		)
 	);
 

@@ -91,6 +91,9 @@ public:
 
 	void SetNewMap(bool bNewMap = true) { m_bNewMap = bNewMap; }
 
+	void SetOnlyMyWeapons(bool bOnlyMyWeapons) { m_bOnlyMyWeapons = bOnlyMyWeapons; }
+	bool GetOnlyMyWeapons() { return m_bOnlyMyWeapons; }
+
 	// pNew won't be affected
 	void AddModelReplacement(const char* pOld, const char* pNew);
 	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
@@ -110,6 +113,8 @@ private:
 
 	bool m_bForceFullUpdate;
 	bool m_bNewMap;
+
+	bool m_bOnlyMyWeapons;
 
 	int m_iDesiredKnifeModelIndex;
 	std::unordered_map<int, const char*> m_mapKnives;
