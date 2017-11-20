@@ -1,15 +1,11 @@
 #include "Label.h"
 
-CLabel::CLabel(int x, int y, int w, int h, const char* pText, int font, int orientation, Color color) : IControl(x, y, w, h)
+CLabel::CLabel(int x, int y, int w, int h, const char* pText, int font, int orientation, Color color)
+	: IControl(x, y, w, h), m_pContentText(nullptr), m_pContentTextW(nullptr),
+	m_iOrientation(orientation), m_cTextColor(color)
 {
-	m_pContentText = NULL;
-	m_pContentTextW = NULL;
-	this->SetContentText(pText);
-
-	m_iOrientation = orientation;
-	m_cTextColor = color;
-
 	m_iFont = g_pResourceManager->GetFont(font);
+	this->SetContentText(pText);
 }
 
 CLabel::~CLabel()
@@ -34,7 +30,11 @@ void CLabel::Draw(ISurface* pSurface)
 	pSurface->GetTextSize(m_iFont, m_pContentTextW, w, h);
 
 	pSurface->DrawSetTextFont(m_iFont);
-	pSurface->DrawSetTextColor(m_cTextColor);
+
+	if (m_bIsEnabled)
+		pSurface->DrawSetTextColor(m_cTextColor);
+	else
+		pSurface->DrawSetTextColor(g_clrControlDisabled);
 	
 	frameY = (y + m_iHeight / 2) - (h / 2);
 	switch(m_iOrientation)

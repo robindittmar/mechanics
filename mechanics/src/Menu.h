@@ -24,6 +24,9 @@ public:
 	void HandleInput();
 	void Draw(ISurface* pSurface);
 
+	void SetMainColor(Color clrMainColor) { m_clrMainColor = clrMainColor; }
+	Color GetMainColor() { return m_clrMainColor; }
+
 	CWindow* GetMainWindow() { return m_pWindow; }
 	CWindow* GetMirrorWindow() { return m_pWindowMirror; }
 
@@ -43,6 +46,8 @@ private:
 
 	CInputEvent m_inputEvent;
 	CInputHandler* m_pInputHandler;
+
+	Color m_clrMainColor;
 
 	// Main Windows & Controls
 	CWindow* m_pWindow;

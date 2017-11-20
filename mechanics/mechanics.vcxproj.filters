@@ -337,7 +337,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\IControlPopup.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -735,7 +735,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\IControlPopup.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

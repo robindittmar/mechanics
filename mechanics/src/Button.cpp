@@ -1,5 +1,4 @@
 #include "Button.h"
-#include "Console.h"
 
 CButton::CButton(int x, int y, int w, int h, const char* pText) : IControl(x, y, w, h)
 {
