@@ -49,6 +49,20 @@ bool CInputHandler::RegisterKey(unsigned short vKey, int eventBtn, bool bOverrid
 	return true;
 }
 
+bool CInputHandler::UnregisterKey(int eventBtn)
+{
+	for (std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.begin(); it != m_mapKeys.end(); it++)
+	{
+		if (it->second == eventBtn)
+		{
+			m_mapKeys.erase(it);
+			return true;
+		}
+	}
+
+	return false;
+}
+
 void CInputHandler::OnMouseDown(unsigned short vKey, int x, int y)
 {
 	std::unordered_map<unsigned short, int>::iterator it = m_mapMouseBtns.find(vKey);

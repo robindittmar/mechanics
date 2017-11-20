@@ -16,30 +16,56 @@
 // Custom
 #include "IFeature.h"
 
-typedef unsigned __int64 ULONGLONG;
-
 class CTriggerbot : public IFeature
 {
 public:
 	CTriggerbot();
 	~CTriggerbot();
 
-	// Unit: milliseconds
-	void SetShootDelay(int iShootDelay) { m_iShootDelay = iShootDelay; }
-	int GetShootDelay() { return m_iShootDelay; }
+	void TriggerKeyDown();
+	void TriggerKeyUp();
+
+	void SetTriggerBurst(bool bTriggerBurst) { m_bTriggerBurst = bTriggerBurst; }
+	bool GetTriggerBurst() { return m_bTriggerBurst; }
+
+	void SetMinShots(int iMinShots) { m_iMinShots = iMinShots; }
+	int GetMinShots() { return m_iMinShots; }
+
+	void SetMaxShots(int iMaxShots) { m_iMaxShots = iMaxShots; }
+	int GetMaxShots() { return m_iMaxShots; }
+
+	// 0 - 100%
+	void SetMaxFlashPercentage(float fMaxFlashPercentage) { m_fMaxFlashPercentage = fMaxFlashPercentage / 100.0f; }
+	float GetMaxFlashPercentage() { return m_fMaxFlashPercentage * 100.0f; }
 
 	// Unit: milliseconds
-	void SetShootDelayJitter(int iShootDelayJitter) { m_iShootDelayJitter = iShootDelayJitter; }
-	int GetShootDelayJitter() { return m_iShootDelayJitter; }
+	void SetShootDelay(int iShootDelay) { m_fShootDelay = iShootDelay / 1000.0f; }
+	int GetShootDelay() { return (int)(m_fShootDelay * 1000.0f); }
+
+	// Unit: milliseconds
+	void SetShootDelayJitter(int iShootDelayJitter) { m_fShootDelayJitter = iShootDelayJitter / 1000.0f; }
+	int GetShootDelayJitter() { return (int)(m_fShootDelayJitter * 1000.0f); }
 
 	virtual void Setup() override;
 	virtual void Update(void* pParameters = 0) override;
 private:
-	ULONGLONG m_llTimestampTargetAquired;
+	bool m_bKeyDown;
+
+	float m_fCurtimeTargetAquired;
+	bool m_bAlreadyWaitedOnTarget;
 	IClientEntity* m_pCurTarget;
 
-	int m_iShootDelay;
-	int m_iShootDelayJitter;
+	int m_iShotsForThisTarget;
+	int m_iShotsOnTarget;
+
+	bool m_bTriggerBurst;
+	int m_iMinShots;
+	int m_iMaxShots;
+
+	float m_fMaxFlashPercentage;
+
+	float m_fShootDelay;
+	float m_fShootDelayJitter;
 
 	IVEngineClient* m_pEngineClient;
 	IClientEntityList* m_pEntityList;

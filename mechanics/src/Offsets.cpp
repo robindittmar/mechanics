@@ -23,6 +23,7 @@ namespace Offsets
 	int m_fFlags;
 	int m_bSpotted;
 	int m_bGunGameImmunity;
+	int m_flFlashDuration;
 	int m_flFlashMaxAlpha;
 	int m_bMoveType;
 	int m_bIsScoped;

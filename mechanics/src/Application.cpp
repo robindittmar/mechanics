@@ -659,6 +659,7 @@ void CApplication::GetNetVars()
 	Offsets::m_fFlags = m_pNetVarMgr->GetOffset(xorBasePlayer.ToCharArray(), /*m_fFlags*/CXorString("zTã„{jâ±").ToCharArray());
 	Offsets::m_bSpotted = m_pNetVarMgr->GetOffset(xorBaseEntity.ToCharArray(), /*m_bSpotted*/CXorString("zTç‘gdñ¶ro").ToCharArray());
 	Offsets::m_bGunGameImmunity = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bGunGameImmunity*/CXorString("zTç…beÂ£znÌ¯z~ë«cr").ToCharArray());
+	Offsets::m_flFlashDuration = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_flFlashDuration*/CXorString("zTã®Qgä±Oð°vì­y").ToCharArray());
 	Offsets::m_flFlashMaxAlpha = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_flFlashMaxAlpha*/CXorString("zTã®Qgä±FäºVgõªv").ToCharArray());
 	//Offsets::m_bMoveType = m_pNetVarMgr->GetOffset("DT_BaseEntity", "m_bMoveType"); <= Not existant :/
 	Offsets::m_bIsScoped = m_pNetVarMgr->GetOffset(xorCSPlayer.ToCharArray(), /*m_bIsScoped*/CXorString("zTç‹dXæ­gná").ToCharArray());

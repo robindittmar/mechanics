@@ -26,6 +26,7 @@ namespace Offsets
 	extern int m_fFlags;
 	extern int m_bSpotted;
 	extern int m_bGunGameImmunity;
+	extern int m_flFlashDuration;
 	extern int m_flFlashMaxAlpha;
 	extern int m_bMoveType;
 	extern int m_bIsScoped;

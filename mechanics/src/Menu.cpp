@@ -32,6 +32,8 @@ void CMenu::Init(CApplication* pApp)
 	m_pInputHandler->RegisterKey(VK_INSERT, EVENT_BTN_TOGGLEMENU);
 	m_pInputHandler->RegisterKey(VK_NUMPAD0, EVENT_BTN_THIRDPERSON);
 	m_pInputHandler->RegisterKey(VK_XBUTTON2, EVENT_BTN_SWITCHREALFAKE);
+
+	m_pInputHandler->RegisterKey(VK_XBUTTON1, EVENT_BTN_TRIGGERKEY);
 }
 
 void CMenu::CreateMenu()
@@ -257,19 +259,35 @@ void CMenu::ApplySettings()
 void CMenu::HandleInput()
 {
 	// Input handling
-	while (m_pInputHandler->GetInput(&m_inputEvent, m_pWindow->GetVisible()))
+	bool bVis = m_pWindow->GetVisible();
+	while (m_pInputHandler->GetInput(&m_inputEvent, bVis))
 	{
 		if (m_inputEvent.eventType == EVENT_TYPE_KEYBOARD)
 		{
+			// Implement key sensitive features here (aimkey, triggerkey, etc)
+			if (!bVis)
+			{
+				if (m_inputEvent.button == EVENT_BTN_AIMKEY)
+				{
+					// TODO
+				}
+				else if (m_inputEvent.button == EVENT_BTN_TRIGGERKEY)
+				{
+					if (m_inputEvent.buttonDirection == EVENT_BTNDIR_DOWN)
+						m_pApp->Triggerbot()->TriggerKeyDown();
+					else
+						m_pApp->Triggerbot()->TriggerKeyUp();
+				}
+			}
+
 			if (m_inputEvent.button == EVENT_BTN_TOGGLEMENU &&
 				m_inputEvent.buttonDirection == EVENT_BTNDIR_DOWN)
 			{
-				bool bVis = !m_pWindow->GetVisible();
-				m_pWindow->SetVisible(bVis);
+				m_pWindow->SetVisible(!bVis);
 
 				// Input & mouse stuff
-				m_pApp->Gui()->SetEnableGameInput(!bVis);
-				m_pApp->Gui()->SetDrawMouse(bVis);
+				m_pApp->Gui()->SetEnableGameInput(bVis);
+				m_pApp->Gui()->SetDrawMouse(!bVis);
 			}
 			else if (m_inputEvent.button == EVENT_BTN_DETACH &&
 				m_inputEvent.buttonDirection == EVENT_BTNDIR_DOWN)

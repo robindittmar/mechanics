@@ -56,6 +56,11 @@ void CMaterialVisuals::Asuswalls(float fValue)
 
 		if (strstr(pMaterial->GetTextureGroupName(), xorWorld.ToCharArray()))
 		{
+			if (strstr(pMaterial->GetName(), "floor"))
+			{
+				continue;
+			}
+
 			pMaterial->AlphaModulate(fEnd);
 		}
 	}

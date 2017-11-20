@@ -56,6 +56,10 @@ namespace ConfigHelper
 		pConfig->SetColor("legitbot", "fovcolor", pApp->Legitbot()->GetFieldOfViewColor());
 		// Triggerbot
 		pApp->Triggerbot()->SetEnabled(pConfig->GetBool("triggerbot", "enabled"));
+		pApp->Triggerbot()->SetTriggerBurst(pConfig->GetBool("triggerbot", "burst"));
+		pApp->Triggerbot()->SetMinShots(pConfig->GetInt("triggerbot", "minshots"));
+		pApp->Triggerbot()->SetMaxShots(pConfig->GetInt("triggerbot", "maxshots"));
+		pApp->Triggerbot()->SetMaxFlashPercentage(pConfig->GetFloat("triggerbot", "maxflashalpha"));
 		pApp->Triggerbot()->SetShootDelay(pConfig->GetInt("triggerbot", "shootdelay"));
 		pApp->Triggerbot()->SetShootDelayJitter(pConfig->GetInt("triggerbot", "shootdelayjitter"));
 
@@ -279,6 +283,10 @@ namespace ConfigHelper
 
 		// Triggerbot
 		pConfig->SetBool("triggerbot", "enabled", pApp->Triggerbot()->GetEnabled());
+		pConfig->SetBool("triggerbot", "burst", pApp->Triggerbot()->GetTriggerBurst());
+		pConfig->SetInt("triggerbot", "minshots", pApp->Triggerbot()->GetMinShots());
+		pConfig->SetInt("triggerbot", "maxshots", pApp->Triggerbot()->GetMaxShots());
+		pConfig->SetFloat("triggerbot", "maxflashalpha", pApp->Triggerbot()->GetMaxFlashPercentage());
 		pConfig->SetInt("triggerbot", "shootdelay", pApp->Triggerbot()->GetShootDelay());
 		pConfig->SetInt("triggerbot", "shootdelayjitter", pApp->Triggerbot()->GetShootDelayJitter());
 		

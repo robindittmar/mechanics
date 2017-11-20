@@ -34,6 +34,13 @@ public:
 	/// <param name="bOverride">Wether or not to override the VKCode if it already exists</param>
 	/// <returns>false if override=false and already exists</returns>
 	bool RegisterKey(unsigned short vKey, int eventBtn, bool bOverride = false);
+	
+	/// <summary>
+	/// Unregister Event button
+	/// </summary>
+	/// <param name="eventBtn">Event Code</param>
+	/// <returns>Wether the event code has been registered before</returns>
+	bool UnregisterKey(int eventBtn);
 
 	void OnMouseDown(unsigned short vKey, int x, int y);
 	void OnMouseMove(int x, int y);
