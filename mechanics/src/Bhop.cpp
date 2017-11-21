@@ -9,7 +9,7 @@ CBhop::~CBhop()
 {
 }
 
-void CBhop::Update(void* pParameters)
+void CBhop::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

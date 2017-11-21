@@ -26,9 +26,9 @@ class CChams : public IFeature
 {
 public:
 	CChams();
-	~CChams();
+	virtual ~CChams();
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void SetRenderTeam(bool bRender) { m_bRenderTeam = bRender; }
 	bool GetRenderTeam() { return m_bRenderTeam; }

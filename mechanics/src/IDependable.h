@@ -17,7 +17,7 @@ class IDependable
 {
 public:
 	IDependable(EnableDependency_t evaluationHandler = nullptr);
-	~IDependable();
+	virtual ~IDependable();
 
 	/// <summary>
 	/// Adds dependency of another IDependable

@@ -9,7 +9,6 @@
 #include "Tooltip.h"
 #include "IControlClickable.h"
 
-
 #define TOOLTIP_DISTANCE_TO_MOUSE_X		15
 #define TOOLTIP_DISTANCE_TO_MOUSE_Y		20
 
@@ -19,7 +18,7 @@ class IControlTooltip : public IControlClickable
 {
 public:
 	IControlTooltip(int x = 0, int y = 0, int w = 0, int h = 0);
-	~IControlTooltip();
+	virtual ~IControlTooltip();
 
 	/// <summary>
 	/// Sets the tooltip text (creates CTooltip instance & takes care of displaying)

@@ -12,7 +12,7 @@ class IControlClickable : public IControl
 {
 public:
 	IControlClickable(int x = 0, int y = 0, int w = 0, int h = 0);
-	~IControlClickable();
+	virtual ~IControlClickable();
 
 	// Internal control events (may easily be overriden
 	// will get called by IControl::ProcessEvent, when

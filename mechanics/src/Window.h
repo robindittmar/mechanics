@@ -21,7 +21,7 @@ class CWindow : public IControlClickable
 public:
 	// x, y, w, h define the client area of the window
 	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "wnd");
-	~CWindow();
+	virtual ~CWindow();
 
 	virtual void OnMouseMove(int mx, int my) override;
 	virtual void OnMouseDown(int mx, int my) override;

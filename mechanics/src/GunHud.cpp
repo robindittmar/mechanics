@@ -26,7 +26,7 @@ void CGunHud::Setup()
 	sprintf(m_pHitmarkerSound, CXorString("2xè§sbäžK.ö").ToCharArray(), m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
 }
 
-void CGunHud::Update(void* pParameters)
+void CGunHud::Think(void* pParameters)
 {
 	assert(pParameters != NULL);
 	IClientEntity* pLocalEntity = (IClientEntity*)pParameters;

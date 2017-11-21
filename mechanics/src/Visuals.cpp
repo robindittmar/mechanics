@@ -20,7 +20,7 @@ void CVisuals::Setup()
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
 }
 
-void CVisuals::Update(void* pParameters)
+void CVisuals::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

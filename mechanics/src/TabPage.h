@@ -11,7 +11,7 @@ class CTabPage : public IControl
 {
 public:
 	CTabPage(const char* pTitle = "tbpg");
-	~CTabPage();
+	virtual ~CTabPage();
 
 	int GetTitleLength() { return m_iTitleLen; }
 

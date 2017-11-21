@@ -36,7 +36,7 @@ void CRagebot::Setup()
 	return 0;
 }*/
 
-void CRagebot::Update(void* pParameters)
+void CRagebot::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

@@ -10,7 +10,7 @@ CFakewalk::~CFakewalk()
 }
 
 // TODO not working
-void CFakewalk::Update(void* pParameters)
+void CFakewalk::Think(void* pParameters)
 {
 	/*if (!m_bIsEnabled)
 		return;*/

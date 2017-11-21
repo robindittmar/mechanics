@@ -58,7 +58,7 @@ class CRagebot : public IFeature
 {
 public:
 	CRagebot();
-	~CRagebot();
+	virtual ~CRagebot();
 
 	/*// Returns wether or not the Aimbot has got a target
 	bool HasTarget() { return m_bHasTarget; }
@@ -113,7 +113,7 @@ public:
 	void AutoRevolver(CUserCmd* pUserCmd);
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	//bool CanHit(Vector &point, float *damage_given);
 

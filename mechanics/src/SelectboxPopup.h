@@ -17,7 +17,7 @@ class CSelectboxPopup : public IControlPopup
 {
 public:
 	CSelectboxPopup(int x = 0, int y = 0, CSelectbox* pSelectbox = nullptr, CWindow* pParentWindow = nullptr);
-	~CSelectboxPopup();
+	virtual ~CSelectboxPopup();
 
 	void SetSelectbox(CSelectbox* pSelectbox) { m_pSelectbox = pSelectbox; }
 	CSelectbox* GetSelectbox() const { return m_pSelectbox; }

@@ -13,7 +13,7 @@ class IControlPopup : public IControlClickable
 {
 public:
 	IControlPopup(int x = 0, int y = 0, int w = 0, int h = 0, CWindow* pParentWindow = nullptr);
-	~IControlPopup();
+	virtual ~IControlPopup();
 
 	void SetParentWindow(CWindow* pParentWindow) { m_pParentWindow = pParentWindow; }
 	CWindow* GetParentWindow() const { return m_pParentWindow; }

@@ -21,7 +21,7 @@ class CGunHud : public IFeature
 {
 public:
 	CGunHud();
-	~CGunHud();
+	virtual ~CGunHud();
 
 	void SetSurface(ISurface* pSurface) { m_pSurface = pSurface; }
 
@@ -56,7 +56,7 @@ public:
 	bool GetHitmarkerHitpoint() { return m_bHitmarkerHitpoint; }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void TriggerHitmarker();
 	void ResetHitmarker();

@@ -16,10 +16,10 @@ class CMirror : public IFeature
 {
 public:
 	CMirror();
-	~CMirror();
+	virtual ~CMirror();
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void OnRenderView(void* pThis, const CViewSetup& view, const CViewSetup& hudViewSetup, int nClearFlags, int whatToDraw);
 	void Render(ISurface* pSurface, CWindow* pTargetWindow);

@@ -20,7 +20,7 @@ class CTriggerbot : public IFeature
 {
 public:
 	CTriggerbot();
-	~CTriggerbot();
+	virtual ~CTriggerbot();
 
 	void TriggerKeyDown();
 	void TriggerKeyUp();
@@ -47,7 +47,7 @@ public:
 	int GetShootDelayJitter() { return (int)(m_fShootDelayJitter * 1000.0f); }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	bool m_bKeyDown;
 

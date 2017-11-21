@@ -137,7 +137,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,10 +154,12 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Autowall.cpp" />
+    <ClCompile Include="src\Benchmark.cpp" />
     <ClCompile Include="src\checksum_md5.cpp" />
     <ClCompile Include="src\ClientClass.cpp" />
     <ClCompile Include="src\ColorPickerPopup.cpp" />
@@ -253,7 +255,7 @@
     <ClCompile Include="src\Triggerbot.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\Vector.cpp" />
-    <ClCompile Include="src\VTableHook.cpp" />
+    <ClCompile Include="src\VMTHook.cpp" />
     <ClCompile Include="src\Visuals.cpp" />
     <ClCompile Include="src\WeaponEsp.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -262,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Autowall.h" />
+    <ClInclude Include="src\Benchmark.h" />
     <ClInclude Include="src\checksum_md5.h" />
     <ClInclude Include="src\ColorPickerPopup.h" />
     <ClInclude Include="src\Config.h" />
@@ -391,7 +394,7 @@
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\Vector.h" />
     <ClInclude Include="src\IVEngineClient.h" />
-    <ClInclude Include="src\VTableHook.h" />
+    <ClInclude Include="src\VMTHook.h" />
     <ClInclude Include="src\Visuals.h" />
     <ClInclude Include="src\WeaponEsp.h" />
     <ClInclude Include="src\Window.h" />
@@ -400,9 +403,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\todo.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

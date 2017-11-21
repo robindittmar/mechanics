@@ -72,13 +72,13 @@ class CSkinChanger : public IFeature
 {
 public:
 	CSkinChanger();
-	~CSkinChanger();
+	virtual ~CSkinChanger();
 
 	std::unordered_map<uint32_t, WeaponMetadata_t>* GetWeaponsMap() { return &m_mapWeapons; }
 	std::unordered_map<int, std::unordered_map<int, const char*>>* GetSkinsMap() { return &m_mapSkins; }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void ParseSkinFile();
 

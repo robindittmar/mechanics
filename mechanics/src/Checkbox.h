@@ -25,7 +25,7 @@ class CCheckbox : public IControlTooltip
 {
 public:
 	CCheckbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "cbx");
-	~CCheckbox();
+	virtual ~CCheckbox();
 
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);

@@ -34,7 +34,7 @@ class CMisc : public IFeature
 {
 public:
 	CMisc();
-	~CMisc();
+	virtual ~CMisc();
 
 	void SetNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; }
 	bool GetNoRecoil() { return m_bNoRecoil; }
@@ -90,7 +90,7 @@ public:
 	IsReadyCallback_t GetReadyCallback() { return m_IsReadyCallback; }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void NoRecoil(CUserCmd* pUserCmd);
 	/*void Fakelag(CUserCmd* pUserCmd);*/

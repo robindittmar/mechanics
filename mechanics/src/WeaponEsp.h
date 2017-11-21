@@ -12,7 +12,7 @@ class CWeaponEsp : public IFeature
 {
 public:
 	CWeaponEsp();
-	~CWeaponEsp();
+	virtual ~CWeaponEsp();
 
 	void SetDrawWeaponName(bool bDrawWeaponName) { m_bDrawWeaponName = bDrawWeaponName; }
 	bool GetDrawWeaponName() { return m_bDrawWeaponName; }
@@ -42,7 +42,7 @@ public:
 	bool GetDrawBombDamageIndicator() { return m_bDrawBombDamageIndicator; }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	void GrenadeEsp(IClientEntity* pCurEntity);
 	void WeaponEsp(IClientEntity* pCurEntity);

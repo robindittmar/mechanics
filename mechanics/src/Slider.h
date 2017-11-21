@@ -32,7 +32,7 @@ public:
 		float fMax = 1.0f,
 		const char* pText = nullptr
 	);
-	~CSlider();
+	virtual ~CSlider();
 
 	virtual void OnMouseMove(int mx, int my) override;
 	virtual void OnMouseDown(int mx, int my) override;

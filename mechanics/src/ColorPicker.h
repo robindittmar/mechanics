@@ -13,7 +13,7 @@ class CColorPicker : public IControlTooltip
 {
 public:
 	CColorPicker(int x = 0, int y = 0, int w = 30, int h = 30);
-	~CColorPicker();
+	virtual ~CColorPicker();
 
 	void SetValue(Color clrValue);
 	Color GetValue() { return m_clrValue; }

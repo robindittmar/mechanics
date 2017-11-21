@@ -21,7 +21,7 @@ class CTextbox : public IControlClickable
 {
 public:
 	CTextbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* label = "txtbx", int maxLen = 256);
-	~CTextbox();
+	virtual ~CTextbox();
 
 	void OnTextInput(char c);
 

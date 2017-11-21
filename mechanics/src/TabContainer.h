@@ -19,7 +19,7 @@ class CTabContainer : public IControlClickable
 {
 public:
 	CTabContainer();
-	~CTabContainer();
+	virtual ~CTabContainer();
 	
 	void SelectTab(int idx);
 

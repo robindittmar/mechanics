@@ -18,7 +18,7 @@ class CButton : public IControlClickable
 {
 public:
 	CButton(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "btn");
-	~CButton();
+	virtual ~CButton();
 
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);

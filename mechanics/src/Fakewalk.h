@@ -10,9 +10,9 @@ class CFakewalk : public IFeature
 {
 public:
 	CFakewalk();
-	~CFakewalk();
+	virtual ~CFakewalk();
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 };
 

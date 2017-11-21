@@ -22,7 +22,7 @@ class IControl : public IDependable
 {
 public:
 	IControl(int x = 0, int y = 0, int w = 0, int h = 0);
-	~IControl();
+	virtual ~IControl();
 
 	/// <summary>
 	/// Adds child to container,

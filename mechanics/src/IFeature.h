@@ -7,10 +7,10 @@ class IFeature
 {
 public:
 	IFeature();
-	~IFeature();
+	virtual ~IFeature();
 
 	virtual void Setup();
-	virtual void Update(void* pParameters = 0) = 0;
+	virtual void Think(void* pParameters = nullptr) = 0;
 
 	void SetEnabled(bool bIsEnabled)	{ m_bIsEnabled = bIsEnabled; }
 	bool GetEnabled()					{ return m_bIsEnabled; }

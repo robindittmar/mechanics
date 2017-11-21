@@ -22,7 +22,7 @@ class CSelectbox : public IControlTooltip
 {
 public:
 	CSelectbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* label = "sbx");
-	~CSelectbox();
+	virtual ~CSelectbox();
 
 	virtual void OnClicked() override;
 	virtual void Draw(ISurface* pSurface) override;

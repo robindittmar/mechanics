@@ -9,7 +9,7 @@ CResolver::~CResolver()
 {
 }
 
-void CResolver::Update(void* pParameters)
+void CResolver::Think(void* pParameters)
 {
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)

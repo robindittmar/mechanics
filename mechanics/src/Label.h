@@ -25,7 +25,7 @@ public:
 		int orientation = LABEL_ORIENTATION_LEFT,
 		Color color = Color(255, 255, 255, 255)
 	);
-	~CLabel();
+	virtual ~CLabel();
 
 	virtual void Draw(ISurface* pSurface);
 

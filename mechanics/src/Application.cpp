@@ -161,15 +161,15 @@ void CApplication::Unhook()
 
 void CApplication::Rehook()
 {
-	this->m_pClientModeHook->Rehook();
-	this->m_pModelRenderHook->Rehook();
-	this->m_pClientHook->Rehook();
-	this->m_pPanelHook->Rehook();
-	this->m_pSurfaceHook->Rehook();
-	this->m_pGameEventManagerHook->Rehook();
-	this->m_pViewRenderHook->Rehook();
-	this->m_pEngineSoundHook->Rehook();
-	this->m_pMdlHook->Rehook();
+	this->m_pClientModeHook->Replace();
+	this->m_pModelRenderHook->Replace();
+	this->m_pClientHook->Replace();
+	this->m_pPanelHook->Replace();
+	this->m_pSurfaceHook->Replace();
+	this->m_pGameEventManagerHook->Replace();
+	this->m_pViewRenderHook->Replace();
+	this->m_pEngineSoundHook->Replace();
+	this->m_pMdlHook->Replace();
 
 	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
 	g_pLowerBodyYawProxy = m_pNetVarLowerBodyYaw->HookProxy(hk_SetLowerBodyYawTarget);
@@ -275,35 +275,35 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
-	m_pClientModeHook = new VTableHook((DWORD*)m_pClientMode);
+	m_pClientModeHook = new VMTHook((DWORD*)m_pClientMode);
 	g_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	g_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
 	g_pGetViewModelFov = (GetViewModelFov_t)m_pClientModeHook->Hook(35, (DWORD*)hk_GetViewModelFov);
 
-	m_pModelRenderHook = new VTableHook((DWORD*)this->m_pModelRender);
+	m_pModelRenderHook = new VMTHook((DWORD*)this->m_pModelRender);
 	g_pDrawModelExecute = (DrawModelExecute_t)m_pModelRenderHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
-	m_pClientHook = new VTableHook((DWORD*)this->m_pClient);
+	m_pClientHook = new VMTHook((DWORD*)this->m_pClient);
 	g_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
 
-	m_pPanelHook = new VTableHook((DWORD*)this->m_pPanel);
+	m_pPanelHook = new VMTHook((DWORD*)this->m_pPanel);
 	g_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
-	m_pSurfaceHook = new VTableHook((DWORD*)this->m_pSurface);
+	m_pSurfaceHook = new VMTHook((DWORD*)this->m_pSurface);
 	g_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
 
-	m_pGameEventManagerHook = new VTableHook((DWORD*)this->m_pGameEventManager);
+	m_pGameEventManagerHook = new VMTHook((DWORD*)this->m_pGameEventManager);
 	g_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
 
-	m_pViewRenderHook = new VTableHook((DWORD*)m_pViewRender);
+	m_pViewRenderHook = new VMTHook((DWORD*)m_pViewRender);
 	g_pRenderView = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
 	g_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(40, (DWORD*)hk_RenderSmokeOverlay);
 
-	m_pEngineSoundHook = new VTableHook((DWORD*)m_pEngineSound);
+	m_pEngineSoundHook = new VMTHook((DWORD*)m_pEngineSound);
 	g_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
 	g_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
-	m_pMdlHook = new VTableHook((DWORD*)m_pMdlCache);
+	m_pMdlHook = new VMTHook((DWORD*)m_pMdlCache);
 	g_pFindMdl = (FindMdl_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
 
 	// Proxy functions
