@@ -82,7 +82,8 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 
 	pApp->Gui()->Setup();
 	pApp->SkinChanger()->SetNewMap();
-	pApp->SkinChanger()->ApplyDesiredKnife(pApp->SkinChanger()->GetDesiredKnifeModelIndex());
+	pApp->SkinChanger()->ApplyDesiredKnife(TEAMNUM_CT, pApp->SkinChanger()->GetDesiredKnifeModelIndexCT());
+	pApp->SkinChanger()->ApplyDesiredKnife(TEAMNUM_T, pApp->SkinChanger()->GetDesiredKnifeModelIndexT());
 	pApp->SkinChanger()->SetForceFullUpdate();
 	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(xorRecoilCompensation.ToCharArray())->value));
 	pApp->Chams()->ReloadMaterials();

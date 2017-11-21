@@ -2,7 +2,7 @@
 #include "Application.h"
 
 CMenu::CMenu()
-	: m_pInputHandler(CInputHandler::Instance())
+	: m_pInputHandler(CInputHandler::Instance()), m_bForceFullUpdate(false)
 {
 	m_pWindow = NULL;
 	m_pWindowMirror = NULL;
@@ -249,7 +249,7 @@ void CMenu::ApplySettings()
 	// TODO
 	// SkinChanger
 	m_pSkinChangerOnlyMyWeapon->SetChecked(m_pApp->SkinChanger()->GetOnlyMyWeapons());
-	m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
+	//m_pSkinChangerKnife->SetSelection(m_pApp->SkinChanger()->GetDesiredKnifeModelIndex());
 	m_pSkinChangerWeapon->SetSelection(0);
 	m_pSkinChangerSkin->SetSelection(0);
 	m_pSkinChangerGlove->SetSelection(0);
@@ -1332,15 +1332,20 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_KARAMBIT, "Karambit");
 	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_M9_BAYONET, "M9 Bayonet");
 	m_pSkinChangerKnife->AddOption(WEAPON_KNIFE_PUSH, "Shadow Dagger");
-	m_pSkinChangerKnife->SetEventHandler(std::bind(&CSkinChanger::ApplyDesiredKnife, m_pApp->SkinChanger(), std::placeholders::_1));
+	m_pSkinChangerKnife->SetEventHandler(std::bind(&CMenu::AddKnifeToWeapons, this, std::placeholders::_1));
+
+	//m_pSkinChangerKnife->SetEventHandler(std::bind(&CSkinChanger::ApplyDesiredKnife, m_pApp->SkinChanger(), std::placeholders::_1, true));
 
 	m_pSkinChangerKnifeChangeGroup = new CGroupbox(4, 326, 117, 32, "Knife");
 	m_pSkinChangerKnifeChangeGroup->AddChild(m_pSkinChangerKnife);
 
 	// Skins
 	m_pSkinChangerApplyT = new CButton(132, 24, 60, 20, "T");
+	m_pSkinChangerApplyT->SetEventHandler(std::bind(&CMenu::ApplySkin, this, TEAMNUM_T));
 	m_pSkinChangerApplyCt = new CButton(68, 24, 60, 20, "CT");
+	m_pSkinChangerApplyCt->SetEventHandler(std::bind(&CMenu::ApplySkin, this, TEAMNUM_CT));
 	m_pSkinChangerApplyBoth = new CButton(4, 24, 60, 20, "Both");
+	m_pSkinChangerApplyBoth->SetEventHandler(std::bind(&CMenu::ApplySkinsBothTeams, this));
 
 
 	m_pSkinChangerWeaponName = new CTextbox(278, 4, 128, 16, "Name");
@@ -1356,15 +1361,16 @@ void CMenu::CreateSkinChangerTab()
 
 	m_pSkinChangerSkin = new CSelectbox(140, 4, 128, 16, "Skin");
 	m_pSkinChangerSkin->AddOption(0, "None");
-	m_pSkinChangerSkin->SetEventHandler(std::bind(&CMenu::ApplySkin, this, std::placeholders::_1));
+	//m_pSkinChangerSkin->SetEventHandler(std::bind(&CMenu::ApplySkin, this, std::placeholders::_1));
 
 	m_pSkinChangerWeapon = new CSelectbox(4, 4, 128, 16, "Weapon");
 	m_pSkinChangerWeapon->AddOption(0, "None");
-	int iLen = strlen("weapon_"); // TODO
+	m_pSkinChangerWeapon->AddOption(-1, "Knife");
+	int iLen = strlen("weapon_"); // TODO: Xor
 	std::unordered_map<uint32_t, WeaponMetadata_t>* m_mapWeaponIds = m_pApp->SkinChanger()->GetWeaponsMap();
 	for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator it = m_mapWeaponIds->begin(); it != m_mapWeaponIds->end(); it++)
 	{
-		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.name);
+		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.name + iLen);
 	}
 	m_pSkinChangerWeapon->SetEventHandler(std::bind(&CMenu::FillSkinIds, this, std::placeholders::_1));
 
@@ -1426,11 +1432,17 @@ void CMenu::CreateConfigTab()
 	m_pConfigTab->AddChild(m_pColorPicker);
 }
 
+void CMenu::AddKnifeToWeapons(int iWeaponId)
+{
+	m_pSkinChangerWeapon->ReplaceIdOfOption("Knife", iWeaponId);
+	m_pSkinChangerWeapon->SetSelectionById(iWeaponId);
+}
+
 void CMenu::FillSkinIds(int iWeaponId)
 {
 	m_pSkinChangerSkin->ClearOptions();
 	m_pSkinChangerSkin->AddOption(0, "None");
-	m_pSkinChangerSkin->SetSelection(0);
+	//m_pSkinChangerSkin->SetSelection(0);
 
 	if (iWeaponId == 0)
 		return;
@@ -1448,10 +1460,18 @@ void CMenu::FillSkinIds(int iWeaponId)
 
 		break;
 	}
+
+	m_bForceFullUpdate = false;
+	CSkinMetadata* pSkin = m_pApp->SkinChanger()->GetSkinMetadataForWeapon(iWeaponId);
+	if (pSkin)
+		m_pSkinChangerSkin->SetSelectionById(pSkin->m_iFallbackPaintKit);
+	else
+		m_pSkinChangerSkin->SetSelection(0);
 }
 
-void CMenu::ApplySkin(int iSkinId)
+void CMenu::ApplySkin(int iTeamNum)
 {
+	int iSkinId = m_pSkinChangerSkin->GetValue();
 	int iWeaponId = m_pSkinChangerWeapon->GetValue();
 
 	int iWeaponSeed = 0;
@@ -1469,23 +1489,50 @@ void CMenu::ApplySkin(int iSkinId)
 	}
 
 	const char* pWeaponName = m_pSkinChangerWeaponName->GetValue();
-
 	float fWeaponWear = m_pSkinChangerWeaponWear->GetValue();
 
-	m_pApp->SkinChanger()->AddSkinReplacement(
-		iWeaponId,
-		new CSkinMetadata(
+	if (iWeaponId == WEAPON_KNIFE ||
+		iWeaponId == WEAPON_KNIFE_BAYONET ||
+		iWeaponId == WEAPON_KNIFE_FLIP ||
+		iWeaponId == WEAPON_KNIFE_GUT ||
+		iWeaponId == WEAPON_KNIFE_KARAMBIT ||
+		iWeaponId == WEAPON_KNIFE_M9_BAYONET ||
+		iWeaponId == WEAPON_KNIFE_BUTTERFLY ||
+		iWeaponId == WEAPON_KNIFE_FALCHION ||
+		iWeaponId == WEAPON_KNIFE_PUSH ||
+		iWeaponId == WEAPON_KNIFE_SURVIVAL_BOWIE ||
+		iWeaponId == WEAPON_KNIFE_T ||
+		iWeaponId == WEAPON_KNIFE_TACTICAL)
+	{
+		m_pApp->SkinChanger()->ApplyDesiredKnife(iTeamNum, iWeaponId, iSkinId, iWeaponSeed, iWeaponStattrakCount, pWeaponName, fWeaponWear);
+	}
+	else
+	{
+		m_pApp->SkinChanger()->AddSkinReplacement(
+			iTeamNum,
 			iWeaponId,
-			iSkinId,
-			iWeaponSeed,
-			iWeaponStattrakCount,
-			4,
-			pWeaponName,
-			fWeaponWear
-		)
-	);
+			new CSkinMetadata(
+				iWeaponId,
+				iSkinId,
+				iWeaponSeed,
+				iWeaponStattrakCount,
+				iWeaponStattrakCount > 0 ? 4 : 0,
+				pWeaponName,
+				fWeaponWear
+			)
+		);
 
-	m_pApp->SkinChanger()->SetForceFullUpdate();
+		if (m_bForceFullUpdate)
+			m_pApp->SkinChanger()->SetForceFullUpdate();
+		else
+			m_bForceFullUpdate = true;
+	}
+}
+
+void CMenu::ApplySkinsBothTeams()
+{
+	this->ApplySkin(TEAMNUM_CT);
+	this->ApplySkin(TEAMNUM_T);
 }
 
 void CMenu::FillLoadableConfigs()

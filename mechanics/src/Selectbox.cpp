@@ -126,11 +126,15 @@ void CSelectbox::AddOption(int id, const char* text)
 	m_iCountOptions++;
 }
 
-void CSelectbox::EnableControlOnSelected(int id, IControl* p)
+void CSelectbox::ReplaceIdOfOption(const char* option, int newId)
 {
-	if (id >= 0 && id < m_iCountOptions)
+	for (std::vector<CSelectboxItem*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
 	{
-		m_vOptions[id]->AddControlToEnable(p);
+		if (!strcmp((*it)->GetContentText(), option))
+		{
+			(*it)->SetId(newId);
+			break;
+		}
 	}
 }
 
@@ -141,18 +145,6 @@ void CSelectbox::SetSelection(int iSelection)
 	{
 		m_iSelection = iSelection;
 		m_pSelectionLabel->SetContentText(m_vOptions[m_iSelection]->GetContentText());
-		
-		for (int i = 0; i < m_iCountOptions; i++)
-		{
-			if (i == m_iSelection)
-			{
-				m_vOptions[i]->EnableDependentControls();
-			}
-			else
-			{
-				m_vOptions[i]->DisableDependentControls();
-			}
-		}
 
 		if (m_pEventHandler)
 			m_pEventHandler(m_vOptions[m_iSelection]->GetId());
@@ -166,5 +158,18 @@ void CSelectbox::SetValue(int iValue)
 	if (iValue >= 0 && iValue < m_iCountOptions)
 	{
 		this->SetSelection(m_vOptions[iValue]->GetId());
+	}
+}
+
+void CSelectbox::SetSelectionById(int iValue)
+{
+	int i = 0;
+	for (std::vector<CSelectboxItem*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
+	{
+		if ((*it)->GetId() == iValue)
+		{
+			this->SetSelection(i);
+		}
+		i++;
 	}
 }

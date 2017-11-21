@@ -31,8 +31,11 @@ public:
 	CWindow* GetMirrorWindow() { return m_pWindowMirror; }
 
 	// TODO
+	void AddKnifeToWeapons(int iWeaponId);
 	void FillSkinIds(int iWeaponId);
-	void ApplySkin(int iSkinId);
+	void ApplySkin(int iTeamNum);
+	void ApplySkinsBothTeams();
+
 	void FillLoadableConfigs();
 	void LoadConfig();
 	void SaveConfig();
@@ -315,6 +318,8 @@ private:
 
 	//
 	// SkinChanger tab
+	bool m_bForceFullUpdate;
+
 	CTabPage* m_pSkinChangerTab;
 	CGroupbox* m_pSkinChangerSkinsGroup;
 	CSelectbox* m_pSkinChangerWeapon;

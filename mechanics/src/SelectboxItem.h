@@ -19,17 +19,10 @@ public:
 	const char* GetContentText() { return (const char*)m_pContentText; }
 
 	int GetContentTextLength() { return m_iContentTextLen; }
-
-	void AddControlToEnable(IControl* p);
-
-	void EnableDependentControls();
-	void DisableDependentControls();
 private:
 	int m_iId;
 	char* m_pContentText;
 	int m_iContentTextLen;
-
-	std::vector<IControl*> m_vControlsToEnable;
 };
 
 #endif // __SELECTBOXITEM_H__

@@ -2,9 +2,8 @@
 #include "Application.h"
 
 CSkinChanger::CSkinChanger()
+	: m_bForceFullUpdate(true), m_iDesiredKnifeModelIndexCT(0), m_iDesiredKnifeModelIndexT(0)
 {
-	m_bForceFullUpdate = true;
-	m_iDesiredKnifeModelIndex = 0;
 }
 
 CSkinChanger::~CSkinChanger()
@@ -27,33 +26,33 @@ void CSkinChanger::Setup()
 {
 	IFeature::Setup();
 
-	static CXorString xorKnifeCT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{");
-	static CXorString xorKnifeT("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®");
-	static CXorString xorKnifeBayonet("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg");
-	static CXorString xorKnifeButterfly("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®");
-	static CXorString xorKnifeFalchion("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®");
-	static CXorString xorKnifeFlip("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤{bõìzoé");
-	static CXorString xorKnifeGut("zdá§{xªµrjõ­yxª´H`ë«qnÚ¥b«¯sg");
-	static CXorString xorKnifeM9Bayonet("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{");
-	static CXorString xorKnifeKarambit("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®");
-	static CXorString xorKnifePush("zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé");
-	static CXorString xorKnifeSurvivalBowie("zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{");
-	static CXorString xorKnifeTactical("zdá§{xªµrjõ­yxª´H`ë«qnÚ¶vhñ«tjéìzoé");
+	static CXorString xorKnifeCTModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¡c%è¦{");
+	static CXorString xorKnifeTModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¦rmä·{Ú¶9fá®");
+	static CXorString xorKnifeBayonetModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ vrê¬r«¯sg");
+	static CXorString xorKnifeButterflyModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ bñ§emé»9fá®");
+	static CXorString xorKnifeFalchionModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤vgæª~dëvoó£yhà¦9fá®");
+	static CXorString xorKnifeFlipModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¤{bõìzoé");
+	static CXorString xorKnifeGutModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¥b«¯sg");
+	static CXorString xorKnifeM9BayonetModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¯.Tç£n%è¦{");
+	static CXorString xorKnifeKarambitModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ©vyä¯9fá®");
+	static CXorString xorKnifePushModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ²bxíìzoé");
+	static CXorString xorKnifeSurvivalBowieModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ±byó«ajéudò«r%è¦{");
+	static CXorString xorKnifeTacticalModel("zdá§{xªµrjõ­yxª´H`ë«qnÚ¶vhñ«tjéìzoé");
 
-	this->m_mapKnives[WEAPON_KNIFE] = xorKnifeCT.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_T] = xorKnifeT.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_BAYONET] = xorKnifeBayonet.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_BUTTERFLY] = xorKnifeButterfly.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_FALCHION] = xorKnifeFalchion.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_FLIP] = xorKnifeFlip.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_GUT] = xorKnifeGut.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_M9_BAYONET] = xorKnifeM9Bayonet.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_KARAMBIT] = xorKnifeKarambit.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_PUSH] = xorKnifePush.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_SURVIVAL_BOWIE] = xorKnifeSurvivalBowie.ToCharArray();
-	this->m_mapKnives[WEAPON_KNIFE_TACTICAL] = xorKnifeTactical.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE] = xorKnifeCTModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_T] = xorKnifeTModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_BAYONET] = xorKnifeBayonetModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_BUTTERFLY] = xorKnifeButterflyModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_FALCHION] = xorKnifeFalchionModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_FLIP] = xorKnifeFlipModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_GUT] = xorKnifeGutModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_M9_BAYONET] = xorKnifeM9BayonetModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_KARAMBIT] = xorKnifeKarambitModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_PUSH] = xorKnifePushModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_SURVIVAL_BOWIE] = xorKnifeSurvivalBowieModel.ToCharArray();
+	this->m_mapKnives[WEAPON_KNIFE_TACTICAL] = xorKnifeTacticalModel.ToCharArray();
 
-	static CXorString xorDeagle("weapon_deagle");
+	static CXorString xorDeagle(/*weapon_deagle*/"weapon_deagle");
 	static CXorString xorElite("weapon_elite");
 	static CXorString xorFiveseven("weapon_fiveseven");
 	static CXorString xorGlock("weapon_glock");
@@ -86,6 +85,17 @@ void CSkinChanger::Setup()
 	static CXorString xorUspSilencer("weapon_usp_silencer");
 	static CXorString xorCz75("weapon_cz75a");
 	static CXorString xorRevolver("weapon_revolver");
+
+	static CXorString xorBayonet("weapon_bayonet");
+	static CXorString xorKnifeFlip("weapon_knife_flip");
+	static CXorString xorKnifeGut("weapon_knife_gut");
+	static CXorString xorKnifeKarambit("weapon_knife_karambit");
+	static CXorString xorKnifeM9Bayonet("weapon_knife_m9_bayonet");
+	static CXorString xorKnifeTactical("weapon_knife_tactical");
+	static CXorString xorKnifeFalchion("weapon_knife_falchion");
+	static CXorString xorKnifeSurvivalBowie("weapon_knife_survival_bowie");
+	static CXorString xorKnifeButterfly("weapon_knife_butterfly");
+	static CXorString xorKnifePush("weapon_knife_push");
 
 	xorDeagle.Xor();
 	xorElite.Xor();
@@ -121,6 +131,17 @@ void CSkinChanger::Setup()
 	xorCz75.Xor();
 	xorRevolver.Xor();
 
+	xorBayonet.Xor();
+	xorKnifeFlip.Xor();
+	xorKnifeGut.Xor();
+	xorKnifeKarambit.Xor();
+	xorKnifeM9Bayonet.Xor();
+	xorKnifeTactical.Xor();
+	xorKnifeFalchion.Xor();
+	xorKnifeSurvivalBowie.Xor();
+	xorKnifeButterfly.Xor();
+	xorKnifePush.Xor();
+
 	this->m_mapWeapons[murmurhash(xorDeagle.ToCharArray(), strlen(xorDeagle.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_DEAGLE, xorDeagle.ToCharArray());
 	this->m_mapWeapons[murmurhash(xorElite.ToCharArray(), strlen(xorElite.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_ELITE, xorElite.ToCharArray());
 	this->m_mapWeapons[murmurhash(xorFiveseven.ToCharArray(), strlen(xorFiveseven.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_FIVESEVEN, xorFiveseven.ToCharArray());
@@ -155,6 +176,17 @@ void CSkinChanger::Setup()
 	this->m_mapWeapons[murmurhash(xorCz75.ToCharArray(), strlen(xorCz75.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_CZ75A, xorCz75.ToCharArray());
 	this->m_mapWeapons[murmurhash(xorRevolver.ToCharArray(), strlen(xorRevolver.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_REVOLVER, xorRevolver.ToCharArray());
 
+	this->m_mapKnifeWeapons[murmurhash(xorBayonet.ToCharArray(), strlen(xorBayonet.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_BAYONET, xorBayonet.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeFlip.ToCharArray(), strlen(xorKnifeFlip.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_FLIP, xorKnifeFlip.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeGut.ToCharArray(), strlen(xorKnifeGut.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_GUT, xorKnifeGut.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeKarambit.ToCharArray(), strlen(xorKnifeKarambit.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_KARAMBIT, xorKnifeKarambit.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeM9Bayonet.ToCharArray(), strlen(xorKnifeM9Bayonet.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_M9_BAYONET, xorKnifeM9Bayonet.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeTactical.ToCharArray(), strlen(xorKnifeTactical.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_TACTICAL, xorKnifeTactical.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeFalchion.ToCharArray(), strlen(xorKnifeFalchion.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_FALCHION, xorKnifeFalchion.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeSurvivalBowie.ToCharArray(), strlen(xorKnifeSurvivalBowie.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_SURVIVAL_BOWIE, xorKnifeSurvivalBowie.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifeButterfly.ToCharArray(), strlen(xorKnifeButterfly.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_BUTTERFLY, xorKnifeButterfly.ToCharArray());
+	this->m_mapKnifeWeapons[murmurhash(xorKnifePush.ToCharArray(), strlen(xorKnifePush.ToCharArray()), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_KNIFE_PUSH, xorKnifePush.ToCharArray());
+
 	this->ParseSkinFile();
 }
 
@@ -188,8 +220,8 @@ void CSkinChanger::Update(void* pParameters)
 
 		this->ApplyCustomSkin(pWeapon, iWeaponId);
 
-		// TODO: checken was das macht !!
-		//*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
+		// Für Stattrak (unknown user)
+		*pWeapon->GetAccountID() = pLocalInfo.xuidlow;
 	}
 }
 
@@ -349,8 +381,12 @@ void CSkinChanger::ParseSkinFile()
 			{
 				char* pKey = strtok(pBuffer, "\"\t \n");
 				char* pValue = strtok(NULL, "\"\t \n");
-				char* temp;
-				if ((temp = strstr(pValue, "weapon_knife")))
+
+				char* temp = strstr(pValue, "weapon_knife");
+				if (!temp)
+					temp = strstr(pValue, "weapon_bayonet");
+
+				if (temp && strstr(pValue, "_light"))
 				{
 					int iLen = strlen(temp) + 1;
 					char* p = new char[iLen];
@@ -384,6 +420,36 @@ void CSkinChanger::ParseSkinFile()
 
 	fclose(pFile);
 
+	// add knife skins !!!
+	// for all iconpaths
+	// for all paintkits
+	// if iconpath contains paintkit NAME add to list only once!!
+	const int iLenUnderscoreLight = strlen("_light");
+	const char* p;
+	for (std::vector<const char*>::iterator it = iconpaths.begin(); it != iconpaths.end(); it++)
+	{
+		p = *it;
+		for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator it = m_mapKnifeWeapons.begin(); it != m_mapKnifeWeapons.end(); it++)
+		{
+			if (strstr(p, it->second.name))
+			{
+				int iLenFull = strlen(p);
+				int iLenKnife = strlen(it->second.name) + 1;
+				int iLenPaintKit = iLenFull - iLenKnife - iLenUnderscoreLight;
+				
+				char* pBuffer = new char[iLenPaintKit + 1];
+				memcpy(pBuffer, p + iLenKnife, iLenPaintKit);
+				pBuffer[iLenPaintKit] = '\0';
+
+				iHash = murmurhash(pBuffer, iLenPaintKit, 0xB16B00B5);
+				m_mapWeaponSkins[iHash].push_back(it->second.id);
+				break;
+			}
+		}
+
+		delete[] p;
+	}
+
 	for (std::unordered_map<uint32_t, std::vector<int>>::iterator it = m_mapWeaponSkins.begin(); it != m_mapWeaponSkins.end(); it++)
 	{
 		for (std::vector<int>::iterator weapIt = it->second.begin(); weapIt != it->second.end(); weapIt++)
@@ -391,26 +457,38 @@ void CSkinChanger::ParseSkinFile()
 			m_mapSkins[*weapIt][m_mapPaintKits[it->first]] = m_mapPaintKitDescription[it->first];
 		}
 	}
-
-	// add knife skins !!!
-	// for all iconpaths
-	// for all paintkits
-	// if iconpath contains paintkit NAME add to list only once!!
-	for (std::vector<const char*>::iterator it = iconpaths.begin(); it != iconpaths.end(); it++)
-	{
-		delete[] *it;
-	}
-	
 }
 
 void CSkinChanger::ClearReplacements()
 {
-	this->DeleteModelNames();
 	this->DeleteSkinMetadata();
-	this->DeleteKillIcons();
+	this->DeleteModelNames(TEAMNUM_CT);
+	this->DeleteModelNames(TEAMNUM_T);
+	this->DeleteKillIcons(TEAMNUM_CT);
+	this->DeleteKillIcons(TEAMNUM_T);
 }
 
-void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)
+CSkinMetadata* CSkinChanger::GetSkinMetadataForWeapon(int iWeaponId)
+{
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
+		return nullptr;
+
+	int iLocalTeam = pLocalEntity->GetTeamNum();
+	if (iLocalTeam != TEAMNUM_CT && iLocalTeam != TEAMNUM_T)
+		return nullptr;
+
+	std::unordered_map<int, CSkinMetadata*>& map = iLocalTeam == TEAMNUM_CT ? m_mapSkinMetadataCT : m_mapSkinMetadataT;
+
+	std::unordered_map<int, CSkinMetadata*>::iterator it = map.find(iWeaponId);
+
+	if (it == map.end())
+		return nullptr;
+
+	return it->second;
+}
+
+void CSkinChanger::AddModelReplacement(int iTeamNum, const char* pOld, const char* pNew)
 {
 	int iModelId = m_pApp->ModelInfo()->GetModelIndex(pOld);
 
@@ -418,15 +496,17 @@ void CSkinChanger::AddModelReplacement(const char* pOld, const char* pNew)
 	char* pTemp = new char[iLenNew];
 	memcpy(pTemp, pNew, iLenNew);
 
-	m_mapModelMetadata[iModelId] = pTemp;
+	std::unordered_map<int, const char*>& map = iTeamNum == TEAMNUM_CT ? m_mapModelMetadataCT : m_mapModelMetadataT;
+	map[iModelId] = pTemp;
 }
 
-void CSkinChanger::AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin)
+void CSkinChanger::AddSkinReplacement(int iTeamNum, int iWeaponId, CSkinMetadata* pSkin)
 {
-	m_mapSkinMetadata[iWeaponId] = pSkin;
+	std::unordered_map<int, CSkinMetadata*>& map = iTeamNum == TEAMNUM_CT ? m_mapSkinMetadataCT : m_mapSkinMetadataT;
+	map[iWeaponId] = pSkin;
 }
 
-void CSkinChanger::AddKillIconReplacement(const char* pOld, const char* pNew)
+void CSkinChanger::AddKillIconReplacement(int iTeamNum, const char* pOld, const char* pNew)
 {
 	uint32_t iHash = murmurhash(pOld, strlen(pOld), 0xB16B00B5);
 
@@ -434,11 +514,17 @@ void CSkinChanger::AddKillIconReplacement(const char* pOld, const char* pNew)
 	char* pNewWeap = new char[iLen];
 	memcpy(pNewWeap, pNew, iLen);
 
-	m_mapKillIcon[iHash] = pNewWeap;
+	std::unordered_map<uint32_t, const char*>& map = iTeamNum == TEAMNUM_CT ? m_mapKillIconCT : m_mapKillIconT;
+	map[iHash] = pNewWeap;
 }
 
 bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem)
 {
+	int iLocalTeam = pLocal->GetTeamNum();
+	if (iLocalTeam != TEAMNUM_CT && iLocalTeam != TEAMNUM_T)
+		return false;
+
+	std::unordered_map<int, const char*>& map = iLocalTeam == TEAMNUM_CT ? m_mapModelMetadataCT : m_mapModelMetadataT;
 	CBaseViewModel* pViewModel = pLocal->GetViewModel();
 	CBaseAttributableItem* pWorldModel = (CBaseAttributableItem*)m_pApp->EntityList()->GetClientEntityFromHandle(pItem->GetWorldModel());
 
@@ -452,11 +538,11 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 
 	int iModelIdx = pViewModel->GetModelIndex();
 	// We have no mapping
-	if (m_mapModelMetadata.find(iModelIdx) == m_mapModelMetadata.end())
+	if (map.find(iModelIdx) == map.end())
 		return false;
 
 	// Grab Replacement model & set it
-	int iNewModelIdx = m_pApp->ModelInfo()->GetModelIndex(m_mapModelMetadata[iModelIdx]);
+	int iNewModelIdx = m_pApp->ModelInfo()->GetModelIndex(map[iModelIdx]);
 	if (iNewModelIdx <= 0)
 		return false;
 
@@ -474,10 +560,19 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 
 bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId)
 {
-	if (m_mapSkinMetadata.find(iWeaponId) == m_mapSkinMetadata.end())
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
 		return false;
 
-	CSkinMetadata* pSkin = this->m_mapSkinMetadata[iWeaponId];
+	int iLocalTeam = pLocalEntity->GetTeamNum();
+	if (iLocalTeam != TEAMNUM_CT && iLocalTeam != TEAMNUM_T)
+		return false;
+
+	std::unordered_map<int, CSkinMetadata*>& map = iLocalTeam == TEAMNUM_CT ? m_mapSkinMetadataCT : m_mapSkinMetadataT;
+	if (map.find(iWeaponId) == map.end()) // TODO: Iterator speichern?
+		return false;
+
+	CSkinMetadata* pSkin = map[iWeaponId]; // ^ statt hier neu zu holen
 
 	if (pSkin->m_iItemDefinitionIndex != -1)
 	{
@@ -519,6 +614,16 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 	if (!m_bIsEnabled)
 		return false;
 
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
+	if (!pLocalEntity)
+		return false;
+
+	int iLocalTeam = pLocalEntity->GetTeamNum();
+	if (iLocalTeam != TEAMNUM_CT && iLocalTeam != TEAMNUM_T)
+		return false;
+
+	std::unordered_map<uint32_t, const char*>& map = iLocalTeam == TEAMNUM_CT ? m_mapKillIconCT : m_mapKillIconT;
+
 	static CXorString xorAttacker("vñ£t`à°");
 	static CXorString xorPlayerDeath("ggä»ryÚ¦rjñª");
 	static CXorString xorWeapon("`nä²xe");
@@ -539,52 +644,58 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 	// Check if we have a replacement weapon
 	const char* pWeapon = pEvent->GetString(xorWeapon.ToCharArray());
 	uint32_t iHash = murmurhash(pWeapon, strlen(pWeapon), 0xB16B00B5);
-	if (m_mapKillIcon.find(iHash) == m_mapKillIcon.end())
+	if (map.find(iHash) == map.end())
 		return false;
 
 	// Override weapon
-	pEvent->SetString(xorWeapon.ToCharArray(), m_mapKillIcon[iHash]);
+	pEvent->SetString(xorWeapon.ToCharArray(), map[iHash]);
 	return true;
 }
 
-void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
+void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, int iPaintKit, int iSeed, int iStatTrak, const char* pName, float fWear, bool bApplySkin)
 {
-	if (m_iDesiredKnifeModelIndex == iDesiredKnifeModelIndex && !m_bNewMap)
-		return;
+	int& iDesiredKnife = iTeamNum == TEAMNUM_CT ? m_iDesiredKnifeModelIndexCT : m_iDesiredKnifeModelIndexT;
+	/*if (iDesiredKnife == iDesiredKnifeModelIndex && !m_bNewMap)
+		return;*/
+	
+	iDesiredKnife = iDesiredKnifeModelIndex;
 
-	m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex;
-
-	this->DeleteModelNames();
-	this->DeleteKillIcons();
-	if (m_iDesiredKnifeModelIndex == 0)
+	this->DeleteModelNames(iTeamNum);
+	this->DeleteKillIcons(iTeamNum);
+	if (iDesiredKnife == 0)
 	{
 		m_pApp->ClientState()->ForceFullUpdate();
 		return;
 	}
 
-
-	const char* pDesiredKnife = this->m_mapKnives[m_iDesiredKnifeModelIndex];
-
+	const char* pDesiredKnife = this->m_mapKnives[iDesiredKnife];
 	for (std::unordered_map<int, const char*>::iterator it = m_mapKnives.begin(); it != m_mapKnives.end(); it++)
 	{
-		AddSkinReplacement(
-			it->first,
-			new CSkinMetadata(
-				m_iDesiredKnifeModelIndex,
-				0,
-				0,
-				-1,
-				3
-			)
-		);
+		if (bApplySkin)
+		{
+			AddSkinReplacement(
+				iTeamNum,
+				it->first,
+				new CSkinMetadata(
+					iDesiredKnife,
+					iPaintKit,
+					iSeed,
+					iStatTrak,
+					3,
+					pName,
+					fWear
+				)
+			);
+		}
 
 		// No model replacement for our desired knife
-		if (it->first == m_iDesiredKnifeModelIndex)
+		if (it->first == iDesiredKnife)
 		{
 			continue;
 		}
 
 		AddModelReplacement(
+			iTeamNum,
 			it->second,
 			pDesiredKnife
 		);
@@ -600,46 +711,144 @@ void CSkinChanger::ApplyDesiredKnife(int iDesiredKnifeModelIndex)
 	m_bNewMap = false;
 }
 
-void CSkinChanger::DeleteModelNames()
+void CSkinChanger::WriteToConfig(const char* pFilename)
 {
-	// Clean up Model names
-	const char* pCurrent;
-	for (std::unordered_map<int, const char*>::iterator it = m_mapModelMetadata.begin(); it != m_mapModelMetadata.end(); it++)
+	//CConfig config;
+	//config.Init(m_pApp);
+	//
+	////std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
+	////std::unordered_map<int, const char*> m_mapModelMetadata;
+
+	//config.SetInt("knife", "id", this->GetDesiredKnifeModelIndex());
+
+	//char pWeaponId[16];
+	//for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadata.begin(); it != m_mapSkinMetadata.end(); it++)
+	//{
+	//	if (it->first == 0)
+	//		continue;
+
+	//	itoa(it->first, pWeaponId, 10);
+	//	config.SetInt(pWeaponId, "item", it->second->m_iItemDefinitionIndex);
+	//	config.SetInt(pWeaponId, "paintkit", it->second->m_iFallbackPaintKit);
+	//	config.SetInt(pWeaponId, "stattrak", it->second->m_iFallbackStatTrak);
+	//	config.SetInt(pWeaponId, "seed", it->second->m_iFallbackSeed);
+	//	config.SetFloat(pWeaponId, "wear", it->second->m_fFallbackWear);
+	//	config.SetInt(pWeaponId, "quality", it->second->m_iEntityQuality);
+	//	config.SetString(pWeaponId, "name", it->second->m_pCustomName);
+	//}
+
+	//config.SaveFile(pFilename);
+}
+
+void CSkinChanger::LoadFromConfig(const char* pFilename)
+{
+	/*CConfig config;
+	config.Init(m_pApp);
+	config.LoadFile(pFilename);
+
+	this->ApplyDesiredKnife(config.GetInt("knife", "id"), false);
+
+	int iWeaponId = 0;
+	const char* pSection = config.GetFirstSection();
+	for (; pSection; pSection = config.GetNextSection())
 	{
-		pCurrent = it->second;
+		if (!strcmp(pSection, "knife"))
+			continue;
 
-		if (pCurrent)
-			delete[] pCurrent;
-	}
+		iWeaponId = atoi(pSection);
 
-	m_mapModelMetadata.clear();
+		this->AddSkinReplacement(
+			iWeaponId,
+			new CSkinMetadata(
+				config.GetInt(pSection, "item"),
+				config.GetInt(pSection, "paintkit"),
+				config.GetInt(pSection, "seed"),
+				config.GetInt(pSection, "stattrak"),
+				config.GetInt(pSection, "quality"),
+				config.GetString(pSection, "name"),
+				config.GetFloat(pSection, "wear")
+			)
+		);
+	}*/
 }
 
 void CSkinChanger::DeleteSkinMetadata()
 {
 	// Clean up SkinMetadata
 	CSkinMetadata* pCurrent;
-	for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadata.begin(); it != m_mapSkinMetadata.end(); it++)
+	for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadataCT.begin(); it != m_mapSkinMetadataCT.end(); it++)
 	{
 		pCurrent = it->second;
 
 		if (pCurrent)
 			delete pCurrent;
 	}
+	m_mapSkinMetadataCT.clear();
 
-	m_mapSkinMetadata.clear();
-}
-
-void CSkinChanger::DeleteKillIcons()
-{
-	const char* pCurrent;
-	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIcon.begin(); it != m_mapKillIcon.end(); it++)
+	for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadataT.begin(); it != m_mapSkinMetadataT.end(); it++)
 	{
 		pCurrent = it->second;
 
 		if (pCurrent)
-			delete[] pCurrent;
+			delete pCurrent;
 	}
+	m_mapSkinMetadataT.clear();
+}
 
-	m_mapKillIcon.clear();
+void CSkinChanger::DeleteModelNames(int iTeamNum)
+{
+	// Clean up Model names
+	const char* pCurrent;
+
+	if (iTeamNum == TEAMNUM_CT)
+	{
+		for (std::unordered_map<int, const char*>::iterator it = m_mapModelMetadataCT.begin(); it != m_mapModelMetadataCT.end(); it++)
+		{
+			pCurrent = it->second;
+
+			if (pCurrent)
+				delete[] pCurrent;
+		}
+		m_mapModelMetadataCT.clear();
+	}
+	else
+	{
+		for (std::unordered_map<int, const char*>::iterator it = m_mapModelMetadataT.begin(); it != m_mapModelMetadataT.end(); it++)
+		{
+			pCurrent = it->second;
+
+			if (pCurrent)
+				delete[] pCurrent;
+		}
+		m_mapModelMetadataT.clear();
+	}
+}
+
+void CSkinChanger::DeleteKillIcons(int iTeamNum)
+{
+	// Clean up KillIcons
+	const char* pCurrent;
+
+	if (iTeamNum == TEAMNUM_CT)
+	{
+		for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIconCT.begin(); it != m_mapKillIconCT.end(); it++)
+		{
+			pCurrent = it->second;
+
+			if (pCurrent)
+				delete[] pCurrent;
+		}
+		m_mapKillIconCT.clear();
+	}
+	else
+	{
+		for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapKillIconT.begin(); it != m_mapKillIconT.end(); it++)
+		{
+			pCurrent = it->second;
+
+			if (pCurrent)
+				delete[] pCurrent;
+		}
+		m_mapKillIconT.clear();
+	}
 }

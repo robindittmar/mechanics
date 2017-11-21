@@ -86,43 +86,60 @@ public:
 
 	void ClearReplacements();
 
-	void SetDesiredKnifeModelIndex(int iDesiredKnifeModelIndex) { m_iDesiredKnifeModelIndex = iDesiredKnifeModelIndex; }
-	int GetDesiredKnifeModelIndex() { return m_iDesiredKnifeModelIndex; }
+	int GetDesiredKnifeModelIndexCT() { return m_iDesiredKnifeModelIndexCT; }
+	int GetDesiredKnifeModelIndexT() { return m_iDesiredKnifeModelIndexT; }
 
 	void SetNewMap(bool bNewMap = true) { m_bNewMap = bNewMap; }
 
 	void SetOnlyMyWeapons(bool bOnlyMyWeapons) { m_bOnlyMyWeapons = bOnlyMyWeapons; }
 	bool GetOnlyMyWeapons() { return m_bOnlyMyWeapons; }
 
+	/// <summary>
+	/// Returns the CSkinMetadata for the WeaponId
+	/// </summary>
+	/// <param name="iWeaponId">WeaponId of weapon to check</param>
+	/// <remarks>Can only be called if ingame, since it's relying on LocalPlayer teamnum</remarks>
+	/// <returns>CSkinMetadata for changed skin for WeaponId</returns>
+	CSkinMetadata* GetSkinMetadataForWeapon(int iWeaponId);
+
 	// pNew won't be affected
-	void AddModelReplacement(const char* pOld, const char* pNew);
+	void AddModelReplacement(int iTeamNum, const char* pOld, const char* pNew);
 	// After passing pSkin to this function the SkinChanger takes care of cleaning up the heap
-	void AddSkinReplacement(int iWeaponId, CSkinMetadata* pSkin);
+	void AddSkinReplacement(int iTeamNum, int iWeaponId, CSkinMetadata* pSkin);
 	// pNew won't be affected
-	void AddKillIconReplacement(const char* pOld, const char* pNew);
+	void AddKillIconReplacement(int iTeamNum, const char* pOld, const char* pNew);
 
 	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
 	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
 	bool ApplyCustomKillIcon(IGameEvent* pEvent);
-	void ApplyDesiredKnife(int iDesiredKnifeModelIndex);
+	void ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, int iPaintKit = 0, int iSeed = 0, int iStatTrak = -1, const char* pName = nullptr, float fWear = 0.0f, bool bApplySkin = true);
+
+	void WriteToConfig(const char* pFilename);
+	void LoadFromConfig(const char* pFilename);
 private:
 	// Delete's all items of the maps
-	void DeleteModelNames();
 	void DeleteSkinMetadata();
-	void DeleteKillIcons();
+	void DeleteModelNames(int iTeamNum);
+	void DeleteKillIcons(int iTeamNum);
 
 	bool m_bForceFullUpdate;
 	bool m_bNewMap;
 
 	bool m_bOnlyMyWeapons;
 
-	int m_iDesiredKnifeModelIndex;
+	int m_iDesiredKnifeModelIndexCT;
+	int m_iDesiredKnifeModelIndexT;
 	std::unordered_map<int, const char*> m_mapKnives;
 	std::unordered_map<uint32_t, WeaponMetadata_t> m_mapWeapons;
+	std::unordered_map<uint32_t, WeaponMetadata_t> m_mapKnifeWeapons;
 
-	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
-	std::unordered_map<int, const char*> m_mapModelMetadata;
-	std::unordered_map<uint32_t, const char*> m_mapKillIcon;
+	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadataCT;
+	std::unordered_map<int, const char*> m_mapModelMetadataCT;
+	std::unordered_map<uint32_t, const char*> m_mapKillIconCT;
+
+	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadataT;
+	std::unordered_map<int, const char*> m_mapModelMetadataT;
+	std::unordered_map<uint32_t, const char*> m_mapKillIconT;
 
 	std::unordered_map<uint32_t, int> m_mapPaintKits;
 	std::unordered_map<uint32_t, const char*> m_mapPaintKitDescription;

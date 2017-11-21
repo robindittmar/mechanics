@@ -72,6 +72,9 @@ void CVisuals::NoSmoke(bool bNoSmoke)
 		if (!pMat)
 			continue;
 
+		if (pMat->IsErrorMaterial())
+			continue;
+
 		pMat->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, bNoSmokeDisabled);
 	}
 	bNoSmokeDisabled = !bNoSmokeDisabled;

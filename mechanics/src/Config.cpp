@@ -2,8 +2,8 @@
 #include "Application.h"
 
 CConfig::CConfig()
+	: m_pApp(nullptr), m_pCurSection(nullptr)
 {
-	m_pCurSection = NULL;
 }
 
 CConfig::~CConfig()
@@ -11,6 +11,7 @@ CConfig::~CConfig()
 	if (m_pCurSection)
 		delete[] m_pCurSection;
 
+	this->DeleteSectionList();
 	this->DeleteValues();
 }
 
@@ -72,12 +73,21 @@ bool CConfig::LoadFile(const char* pFilename)
 			m_pCurSection = new char[iLen - 1];
 			memcpy(m_pCurSection, pBuffer + 1, iLen - 2);
 			m_pCurSection[iLen - 2] = '\0';
+
+			// Another copy for our set
+			char* pSection = new char[iLen - 1];
+			memcpy(pSection, m_pCurSection, iLen - 1);
+			m_setSections.emplace(pSection);
+
 			continue;
 		}
 		else
 		{
 			pKey = strtok(pBuffer, "=");
 			pValue = strtok(NULL, "=");
+
+			if (!pValue)
+				pValue = "";
 
 			int iLenKey = sprintf(pKeyBuffer, "%s_%s", m_pCurSection, pKey);
 			uint32_t iHash = murmurhash(pKeyBuffer, iLenKey, 0xB16B00B5);
@@ -163,6 +173,32 @@ bool CConfig::SaveFile(const char* pFilename)
 	g_pConsole->Write(LOGLEVEL_INFO, "Done saving config\n");
 #endif // _DEBUG
 	return false;
+}
+
+const char* CConfig::GetFirstSection()
+{
+	m_itSection = m_setSections.begin();
+	if (m_itSection != m_setSections.end())
+		return *m_itSection;
+	
+	return nullptr;
+}
+
+const char* CConfig::GetNextSection()
+{
+	m_itSection++;
+	if (m_itSection != m_setSections.end())
+		return *m_itSection;
+
+	return nullptr;
+}
+
+void CConfig::DeleteSectionList()
+{
+	for (std::unordered_set<const char*>::iterator it = m_setSections.begin(); it != m_setSections.end(); it++)
+	{
+		delete[] *it;
+	}
 }
 
 bool CConfig::GetBool(const char* pSection, const char* pKey, bool* pOut)
@@ -276,6 +312,9 @@ void CConfig::SetColor(const char* pSection, const char* pKey, Color cValue)
 
 void CConfig::SetString(const char* pSection, const char* pKey, const char* pValue)
 {
+	if (!pValue)
+		return;
+
 	uint32_t iHash = this->BuildAndStoreSectionKeyHash(pSection, pKey);
 
 	int iLen = strlen(pValue) + 1;

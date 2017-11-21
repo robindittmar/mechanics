@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <cstdio>
 #include <unordered_map>
+#include <unordered_set>
 
 // Source SDK
 #include "ISurface.h"
@@ -27,6 +28,10 @@ public:
 	bool LoadFile(const char* pFilename);
 	bool SaveFile(const char* pFilename);
 
+	const char* GetFirstSection();
+	const char* GetNextSection();
+	void DeleteSectionList();
+
 	bool GetBool(const char* pSection, const char* pKey, bool* pOut = NULL);
 	int GetInt(const char* pSection, const char* pKey, int* pOut = NULL);
 	float GetFloat(const char* pSection, const char* pKey, float* pOut = NULL);
@@ -44,6 +49,8 @@ private:
 	void DeleteValues();
 
 	char* m_pCurSection;
+	std::unordered_set<const char*>::iterator m_itSection;
+	std::unordered_set<const char*> m_setSections;
 	std::unordered_map<uint32_t, const char*> m_mapKeys;
 	std::unordered_map<uint32_t, const char*> m_mapValues;
 

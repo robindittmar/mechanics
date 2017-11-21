@@ -149,10 +149,6 @@ public:
 	const char* GetWorkingDirectory()	{ return m_pFilepath; }
 	const char* GetFilename()			{ return m_pFilename; }
 
-	// TODO: REMOVE
-	void LoadSkinChangerConfig();
-	// TODO: REMOVE
-
 	// Hook helper
 	bool GetInitialHookDone()	{ return m_bInitialHookDone; }
 	bool GetHooked()			{ return m_bIsHooked; }

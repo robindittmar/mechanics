@@ -10,8 +10,6 @@ CSelectboxItem::CSelectboxItem(int id, const char* contentText)
 
 CSelectboxItem::~CSelectboxItem()
 {
-	m_vControlsToEnable.clear();
-
 	if (m_pContentText)
 		delete[] m_pContentText;
 }
@@ -30,25 +28,4 @@ void CSelectboxItem::SetContentText(const char* pContentText)
 	m_iContentTextLen = strlen(pContentText);
 	m_pContentText = new char[m_iContentTextLen + 1];
 	memcpy(m_pContentText, pContentText, m_iContentTextLen + 1);
-}
-
-void CSelectboxItem::AddControlToEnable(IControl* p)
-{
-	m_vControlsToEnable.push_back(p);
-}
-
-void CSelectboxItem::EnableDependentControls()
-{
-	for (std::vector<IControl*>::iterator it = m_vControlsToEnable.begin(); it != m_vControlsToEnable.end(); it++)
-	{
-		(*it)->SetEnabled(true);
-	}
-}
-
-void CSelectboxItem::DisableDependentControls()
-{
-	for (std::vector<IControl*>::iterator it = m_vControlsToEnable.begin(); it != m_vControlsToEnable.end(); it++)
-	{
-		(*it)->SetEnabled(false);
-	}
 }

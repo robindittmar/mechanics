@@ -35,14 +35,15 @@ public:
 	void AddOption(int id, const char* text);
 	int GetCountOptions() { return m_iCountOptions; }
 
-	// OptionId & Control to enable/disable
-	void EnableControlOnSelected(int id, IControl* p);
+	void ReplaceIdOfOption(const char* option, int newId);
 
 	void SetSelection(int iSelection);
 	int GetSelection() { return m_iSelection; }
 
 	void SetValue(int iValue);
 	int GetValue() { return m_vOptions[m_iSelection]->GetId(); }
+
+	void SetSelectionById(int iValue);
 
 	const char* GetSelectedText() { return m_vOptions[m_iSelection]->GetContentText(); }
 
