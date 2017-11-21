@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="IControlTooltip" Collapsed="true">
+    <Position X="6.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AEAACBAAAAAACgAAACAAAAAAABAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>src\IControlTooltip.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IControlPopup" Collapsed="true">
+    <Position X="13" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAIAAAAAAAAAAAAAAAAUAAAAACIAgAAAA=</HashCode>
+      <FileName>src\IControlPopup.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IControlClickable" Collapsed="true">
+    <Position X="13" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAKAAAAAAAAAAAEAAAAAAABRAAAAAAIAAAAAQChgA=</HashCode>
+      <FileName>src\IControlClickable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IControl" Collapsed="true">
+    <Position X="15.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAEAIAAABBAIEgAAgAgEQEAAAAAAAgAAYOACAAQAYIA=</HashCode>
+      <FileName>src\IControl.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IDependable" Collapsed="true">
+    <Position X="15.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAIAAACgAAAAAEAAAAAEAAgAAQACAAQAA=</HashCode>
+      <FileName>src\IDependable.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CWindow" Collapsed="true">
+    <Position X="18.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>KIAAKgAAIAAAEggAQgAAChAABFQAAUAAIACAAAACAAE=</HashCode>
+      <FileName>src\Window.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTooltip" Collapsed="true">
+    <Position X="32.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAAAIAAgAAAAAAAAgAAAHAAAAEAAAA=</HashCode>
+      <FileName>src\Tooltip.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTextbox" Collapsed="true">
+    <Position X="16.25" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAIAAAIAAEIgAAAAAABAAAAiAAAEAAABAAAAEAIIA=</HashCode>
+      <FileName>src\Textbox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTabPage" Collapsed="true">
+    <Position X="25.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAEQAAAAgAAAAAAAAAAAAAAAEAAAAAAQAAgAAA=</HashCode>
+      <FileName>src\TabPage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CTabContainer" Collapsed="true">
+    <Position X="20.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAIAAQAEgAAAAAAAAABABAAAEAAIDAAAAACABI=</HashCode>
+      <FileName>src\TabContainer.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSlider" Collapsed="true">
+    <Position X="2.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAIIAIIwAICACAAAgAQDIAAMAAIhAAAQAAAIA=</HashCode>
+      <FileName>src\Slider.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSelectboxPopup" Collapsed="true">
+    <Position X="14" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAIAAgAgAAAoAAAAACAABBAFgAAAAICAAAKAQCAAA=</HashCode>
+      <FileName>src\SelectboxPopup.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSelectboxItem" Collapsed="true">
+    <Position X="34" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAQAAAYAAAAIAAAAAAAAAAAgIAACAAAEAAAAAIAAAA=</HashCode>
+      <FileName>src\SelectboxItem.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CSelectbox" Collapsed="true">
+    <Position X="9.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAJABCJgAAAAQAAAARASQAAEAAKhBAAAAEAYA=</HashCode>
+      <FileName>src\Selectbox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CLabel" Collapsed="true">
+    <Position X="29.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAYAQACAABgAAAAIAAAAAAIgRCEEAEAAAAAAAACA=</HashCode>
+      <FileName>src\Label.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CGroupbox" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQAAAAAIEgAAAgAAAAAAIAAAAEAAABAAAAAAAAA=</HashCode>
+      <FileName>src\Groupbox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CDependency" Collapsed="true">
+    <Position X="32.25" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAAAAAAAAAAAAAIAAAAAAgCAAIAkAAAAAAAAAAgAAA=</HashCode>
+      <FileName>src\Dependency.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CColorPicker" Collapsed="true">
+    <Position X="5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIABAIgAAAAAAAAAAASQCAFAAAAAAAAAQAAA=</HashCode>
+      <FileName>src\ColorPicker.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CColorPickerPopup" Collapsed="true">
+    <Position X="11.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAgQAAARgAAAAEAACCAAAAAAAAARAAAA=</HashCode>
+      <FileName>src\ColorPickerPopup.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCheckbox" Collapsed="true">
+    <Position X="7.25" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAgIgAAAIAAAAAAASAAAEAAAjAAAAAAAAA=</HashCode>
+      <FileName>src\Checkbox.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CCanvas" Collapsed="true">
+    <Position X="27.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAIAAAAkAAAAAAAAAAAAAAAEAABAAAAAAAAAA=</HashCode>
+      <FileName>src\Canvas.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CButton" Collapsed="true">
+    <Position X="23" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAACAAAAAAAIgAAAAAAAAAAASAAAEAAABAAAAAAAAA=</HashCode>
+      <FileName>src\Button.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
