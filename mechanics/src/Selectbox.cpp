@@ -1,13 +1,10 @@
 #include "Selectbox.h"
 #include "Window.h"
 
-CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label, int selection)
-	: IControl(x, y, w, h)
+CSelectbox::CSelectbox(int x, int y, int w, int h, const char* label)
+	: IControlTooltip(x, y, w, h), m_iCountOptions(0), m_iSelection(-1),
+	m_bPopupInitialized(false)
 {
-	m_iCountOptions = 0;
-	m_iSelection = selection;
-
-	m_bPopupInitialized = false;
 	m_pPopup = new CSelectboxPopup(0, h, this);
 
 	m_pLabel = new CLabel(0, -18, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
@@ -76,11 +73,14 @@ void CSelectbox::Draw(ISurface* pSurface)
 	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	// Draw labels
-	IControl::Draw(pSurface);
+	IControlTooltip::Draw(pSurface);
 }
 
 bool CSelectbox::ShouldDependentOnesBeEnabled(void* pParam)
 {
+	if (m_iSelection == -1)
+		return false;
+
 	return (m_vOptions[m_iSelection]->GetId() == (int)pParam);
 }
 
@@ -102,6 +102,7 @@ void CSelectbox::SetEnabled(bool bIsEnabled)
 
 void CSelectbox::ClearOptions()
 {
+	m_pSelectionLabel->SetContentText(nullptr);
 	m_pPopup->ClearOptions();
 
 	CSelectboxItem* pCurrent;

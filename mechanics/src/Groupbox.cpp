@@ -1,12 +1,13 @@
 #include "Groupbox.h"
 
-CGroupbox::CGroupbox(int x, int y, int w, int h, const char* pTitle) : IControl(x, y, w, h)
+CGroupbox::CGroupbox(int x, int y, int w, int h, const char* pTitle)
+	: IControl(x, y, w, h), m_bAlreadySetSize(false)
 {
-	m_bAlreadySetSize = false;
-
 	m_pCanvas = new CCanvas(GROUPBOX_PADDING, GROUPBOX_PADDING);
 	m_pLabel = new CLabel(0, 0, w, 0, pTitle, RM_FONT_NORMAL, LABEL_ORIENTATION_CENTER);
 
+	// Using IControl:: because we want to use the original AddChild,
+	// not our overridden one :)
 	IControl::AddChild(m_pLabel);
 	IControl::AddChild(m_pCanvas);
 }

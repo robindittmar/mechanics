@@ -1,9 +1,8 @@
 #include "Button.h"
 
-CButton::CButton(int x, int y, int w, int h, const char* pText) : IControl(x, y, w, h)
+CButton::CButton(int x, int y, int w, int h, const char* pText)
+	: IControlClickable(x, y, w, h), m_pEventHandler(nullptr)
 {
-	m_pEventHandler = NULL;
-
 	// Add Label as child so we get correct positioning (also autocleanup)
 	m_pLabel = new CLabel(0, 0, w, h, pText, RM_FONT_NORMAL, LABEL_ORIENTATION_CENTER);
 	this->AddChild(m_pLabel);
@@ -37,8 +36,7 @@ void CButton::Draw(ISurface* pSurface)
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	// Draw label
-	//m_pLabel->Draw(pSurface);
-	IControl::Draw(pSurface);
+	IControlClickable::Draw(pSurface);
 }
 
 bool CButton::ShouldDependentOnesBeEnabled(void* pParam)

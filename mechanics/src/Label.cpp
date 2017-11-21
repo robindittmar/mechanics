@@ -76,8 +76,8 @@ void CLabel::SetContentText(const char* pText)
 
 	if (!pText)
 	{
-		m_pContentText = NULL;
-		m_pContentTextW = NULL;
+		m_pContentText = nullptr;
+		m_pContentTextW = nullptr;
 		return;
 	}
 

@@ -1,19 +1,12 @@
 #include "Slider.h"
 
-CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText) : IControl(x, y, w, h)
+CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText)
+	: IControlTooltip(x, y, w, h), m_iOrientation(iOrientation),
+	m_bReverse(bReverse), m_fMinValue(fMin), m_fMaxValue(fMax),
+	m_fStepSize(fStepSize), m_fPossibleValues(nullptr)
 {
 	m_bHitcheckForMouseMove = false;
-
-	m_iOrientation = iOrientation;
-	m_bReverse = bReverse;
-
-	m_fMinValue = fMin;
-	m_fMaxValue = fMax;
 	m_fValueSpan = m_fMaxValue - m_fMinValue;
-	m_fStepSize = fStepSize;
-
-	m_fPossibleValues = NULL;
-
 	if (m_fStepSize != 0.0f)
 	{
 		float m_fCountPossibleValues = m_fValueSpan / m_fStepSize;
@@ -130,7 +123,7 @@ void CSlider::Draw(ISurface* pSurface)
 	}
 
 	m_pLabel->Draw(pSurface);
-	IControl::Draw(pSurface);
+	IControlTooltip::Draw(pSurface);
 }
 
 bool CSlider::ShouldDependentOnesBeEnabled(void* pParam)

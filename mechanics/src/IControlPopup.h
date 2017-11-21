@@ -6,13 +6,13 @@
 // Source SDK
 
 // Custom
-#include "IControl.h"
+#include "IControlClickable.h"
 #include "Window.h"
 
-class IControlPopup : public IControl
+class IControlPopup : public IControlClickable
 {
 public:
-	IControlPopup(int x = 0, int y = 0, int w = 0, int h = 0, CWindow* pParentWindow = NULL);
+	IControlPopup(int x = 0, int y = 0, int w = 0, int h = 0, CWindow* pParentWindow = nullptr);
 	~IControlPopup();
 
 	void SetParentWindow(CWindow* pParentWindow) { m_pParentWindow = pParentWindow; }

@@ -6,7 +6,7 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlTooltip.h"
 #include "Label.h"
 #include "SelectboxPopup.h"
 #include "SelectboxItem.h"
@@ -18,18 +18,18 @@ const Color g_clrSelectboxBackground(255, 50, 50, 50);
 const Color g_clrSelectboxBackgroundOutline(255, 80, 80, 80);
 const Color g_clrSelectboxBackgroundOutlineHover(255, 255, 128, 0);
 
-class CSelectbox : public IControl
+class CSelectbox : public IControlTooltip
 {
 public:
-	CSelectbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* label = "sbx", int selection = 0);
+	CSelectbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* label = "sbx");
 	~CSelectbox();
 
-	virtual void OnClicked();
-	virtual void Draw(ISurface* pSurface);
+	virtual void OnClicked() override;
+	virtual void Draw(ISurface* pSurface) override;
 
 	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 
-	virtual void SetEnabled(bool bIsEnabled);
+	virtual void SetEnabled(bool bIsEnabled) override;
 
 	void ClearOptions();
 	void AddOption(int id, const char* text);

@@ -2,8 +2,7 @@
 #include "ColorPicker.h"
 
 CColorPickerPopup::CColorPickerPopup(int x, int y, CColorPicker* pColorPicker, CWindow* pParentWindow)
-	: IControlPopup(x, y, 200, 200, pParentWindow),
-	m_bInitialized(false), m_pColorPicker(pColorPicker)
+	: IControlPopup(x, y, 200, 200, pParentWindow), m_bInitialized(false), m_pColorPicker(pColorPicker)
 {
 	m_iColorFadeTexture = g_pResourceManager->GetTexture(RM_TEXTURE_COLORFADE);
 

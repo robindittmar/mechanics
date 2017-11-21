@@ -6,10 +6,10 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlTooltip.h"
 #include "ColorPickerPopup.h"
 
-class CColorPicker : public IControl
+class CColorPicker : public IControlTooltip
 {
 public:
 	CColorPicker(int x = 0, int y = 0, int w = 30, int h = 30);
@@ -18,8 +18,8 @@ public:
 	void SetValue(Color clrValue);
 	Color GetValue() { return m_clrValue; }
 
-	virtual void OnClicked();
-	virtual void Draw(ISurface* pSurface);
+	virtual void OnClicked() override;
+	virtual void Draw(ISurface* pSurface) override;
 
 	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 

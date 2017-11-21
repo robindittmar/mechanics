@@ -124,6 +124,8 @@ void CSelectboxPopup::Draw(ISurface* pSurface)
 
 		iCurY += height + SELECTBOX_PADDING;
 	}
+
+	IControlPopup::Draw(pSurface);
 }
 
 void CSelectboxPopup::ClearOptions()

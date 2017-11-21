@@ -7,14 +7,14 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlClickable.h"
 #include "Label.h"
 
 const Color g_clrButton(255, 80, 80, 80);
 const Color g_clrButtonOver(255, 70, 70, 70);
 const Color g_clrButtonDown(255, 255, 128, 0);
 
-class CButton : public IControl
+class CButton : public IControlClickable
 {
 public:
 	CButton(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "btn");
