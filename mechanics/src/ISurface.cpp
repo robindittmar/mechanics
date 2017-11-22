@@ -1,4 +1,5 @@
 #include "ISurface.h"
+#include "XorString.h"
 
 #define DRAWSETCOLOR_ALT1_INDEX		14
 #define DRAWSETCOLOR_ALT2_INDEX		15
@@ -13,7 +14,6 @@
 #define DRAWSETTEXTURERGBA_INDEX	37
 #define DRAWSETTEXTURE_INDEX		38
 #define DRAWTEXTUREDRECT_INDEX		41
-//#define DELETETEXTUREBYID_INDEX		42
 #define DELETETEXTUREBYID_INDEX		143
 #define CREATENEWTEXTUREID_INDEX	43
 #define SCREATEFONT_INDEX			71
@@ -72,6 +72,29 @@ void ISurface::DrawOutlinedCircle(int x, int y, int radius, int segments)
 {
 	typedef void(__thiscall* DrawOutlinedCircle_t)(void*, int, int, int, int);
 	return ((DrawOutlinedCircle_t)(*(void***)this)[DRAWOUTLINEDCIRCLE_INDEX])(this, x, y, radius, segments);
+}
+
+void ISurface::DrawFilledCircle(int x, int y, int radius, int segments)
+{
+	static int iCircleTexture = this->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
+
+	// negative because of drawing direction (DrawTexturedPolygon kind of works that way)
+	float fSegments = (float)-segments;
+	float fAngle;
+	
+	Vertex_t* pVertices = new Vertex_t[segments];
+	for (int i = 0; i < segments; i++)
+	{
+		fAngle = (i / fSegments) * (2 * PI_F);
+
+		pVertices[i].m_Position.x = x + (radius * sinf(fAngle));
+		pVertices[i].m_Position.y = y + (radius * cosf(fAngle));
+	}
+	
+	this->DrawSetTexture(iCircleTexture);
+	this->DrawTexturedPolygon(segments, pVertices, false);
+
+	delete[] pVertices;
 }
 
 int ISurface::CreateNewTextureID(bool procedural)

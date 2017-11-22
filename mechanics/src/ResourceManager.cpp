@@ -34,8 +34,9 @@ void CResourceManager::Init(CApplication* pApp)
 
 IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgnoreZ, bool bWireframe)
 {
+	// TODO: Try to set envmap in chams material
 	static CXorString xorVmt("5.öàpË5/ç£dnñ§oğ°r)¥àalğ«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
-
+	
 	const char* pBaseType = (bIsLit == true ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
 	char pMaterial[1024];
 	char pName[512];

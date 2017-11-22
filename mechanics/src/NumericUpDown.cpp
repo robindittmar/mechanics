@@ -3,11 +3,12 @@
 CNumericUpDown::CNumericUpDown(int x, int y, int w, int h, const char* label)
 	: CTextbox(x, y, w, h, label, 32), m_iValue(0)
 {
-	m_pBtnUp = new CButton(w - NUMERICUPDOWN_BUTTON_WIDTH, 0, NUMERICUPDOWN_BUTTON_WIDTH, h / 2, "^");
-	m_pBtnDown = new CButton(w - NUMERICUPDOWN_BUTTON_WIDTH, h / 2, NUMERICUPDOWN_BUTTON_WIDTH, h / 2, "v");
+	int iBtnHeight = h / 2 - 1;
+	m_pBtnUp = new CButton(w - NUMERICUPDOWN_BUTTON_WIDTH, 1, NUMERICUPDOWN_BUTTON_WIDTH - 1, iBtnHeight, "^");
+	m_pBtnDown = new CButton(w - NUMERICUPDOWN_BUTTON_WIDTH, iBtnHeight + 1, NUMERICUPDOWN_BUTTON_WIDTH - 1, iBtnHeight, "v");
 
-	m_pBtnUp->SetEventHandler(std::bind(&CNumericUpDown::IncrementValue, this));;
-	m_pBtnDown->SetEventHandler(std::bind(&CNumericUpDown::DecrementValue, this));;
+	m_pBtnUp->SetEventHandler(std::bind(&CNumericUpDown::IncrementValue, this));
+	m_pBtnDown->SetEventHandler(std::bind(&CNumericUpDown::DecrementValue, this));
 
 	this->AddChild(m_pBtnUp);
 	this->AddChild(m_pBtnDown);

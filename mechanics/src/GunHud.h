@@ -17,6 +17,9 @@
 #define SPREADCONE_DEFAULT_COLOR	Color(255, 255, 0, 0)
 #define HITMARKER_DEFAULT_TIME		1.0f
 
+#define SPREADCONE_STYLE_OUTLINE	0
+#define SPREADCONE_STYLE_FILLED		1
+
 class CGunHud : public IFeature
 {
 public:
@@ -36,6 +39,9 @@ public:
 
 	void SetSpreadCone(bool bSpreadCone) { m_bSpreadCone = bSpreadCone; }
 	bool GetSpreadCone() { return m_bSpreadCone; }
+
+	void SetSpreadConeStyle(int iSpreadConeStyle) { m_iSpreadConeStyle = iSpreadConeStyle; }
+	int GetSpreadConeStyle() { return m_iSpreadConeStyle; }
 
 	void SetSpreadConeShowRecoil(bool bSpreadConeShowRecoil) { m_bSpreadConeShowRecoil = bSpreadConeShowRecoil; }
 	bool GetSpreadConeShowRecoil() { return m_bSpreadConeShowRecoil; }
@@ -79,6 +85,7 @@ private:
 	bool m_bCrosshairShowRecoil;
 
 	bool m_bSpreadCone;
+	int m_iSpreadConeStyle;
 	bool m_bSpreadConeShowRecoil;
 	Color m_clrSpreadCone;
 

@@ -21,8 +21,10 @@ public:
 	/// <returns>Pointer to the just xor'ed string</returns>
 	const char* Xor();
 
-	std::string ToString() { return std::string(m_pBuffer); }
-	const char* ToCharArray() { return (const char*)m_pBuffer; }
+	std::string ToString() const { return std::string(m_pBuffer); }
+	const char* ToCharArray() const { return operator const char*(); }
+
+	operator const char*() const { return (const char*)m_pBuffer; }
 private:
 	char* m_pBuffer;
 	unsigned long m_iXorKey;

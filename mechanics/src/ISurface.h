@@ -201,6 +201,7 @@ public:
 	void DrawFilledRect(int x0, int y0, int x1, int y1);
 	void DrawOutlinedRect(int x0, int y0, int x1, int y1);
 	void DrawOutlinedCircle(int x, int y, int radius, int segments);
+	void DrawFilledCircle(int x, int y, int radius, int segments);
 
 	int CreateNewTextureID(bool procedural = false);
 	int DrawGetTextureId(char const *filename);

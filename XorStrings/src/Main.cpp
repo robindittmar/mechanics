@@ -68,20 +68,6 @@ int main(int argc, char** argv)
 	uint32_t round_start = murmurhash("round_start", strlen("round_start"), 0xB16B00B5);
 	uint32_t round_end = murmurhash("round_end", strlen("round_end"), 0xB16B00B5);
 
-	uint32_t ragebot = murmurhash("[ragebot]", strlen("[ragebot]"), 0xB16B00B5);
-	uint32_t antiaim = murmurhash("[antiaim]", strlen("[antiaim]"), 0xB16B00B5);
-	uint32_t resolver = murmurhash("[resolver]", strlen("[resolver]"), 0xB16B00B5);
-	uint32_t legitbot = murmurhash("[legitbot]", strlen("[legitbot]"), 0xB16B00B5);
-	uint32_t triggerbot = murmurhash("[triggerbot]", strlen("[triggerbot]"), 0xB16B00B5);
-	uint32_t esp = murmurhash("[esp]", strlen("[esp]"), 0xB16B00B5);
-	uint32_t weaponesp = murmurhash("[weaponesp]", strlen("[weaponesp]"), 0xB16B00B5);
-	uint32_t soundesp = murmurhash("[soundesp]", strlen("[soundesp]"), 0xB16B00B5);
-	uint32_t chams = murmurhash("[chams]", strlen("[chams]"), 0xB16B00B5);
-	uint32_t effects = murmurhash("[effects]", strlen("[effects]"), 0xB16B00B5);
-	uint32_t visualsother = murmurhash("[visualsother]", strlen("[visualsother]"), 0xB16B00B5);
-	uint32_t fov = murmurhash("[fov]", strlen("[fov]"), 0xB16B00B5);
-	uint32_t misc = murmurhash("[misc]", strlen("[misc]"), 0xB16B00B5);
-
 	//fflush(stdin);
 	//getchar();
 

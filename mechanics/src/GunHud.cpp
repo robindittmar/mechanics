@@ -3,10 +3,9 @@
 
 CGunHud::CGunHud()
 	: m_pSurface(NULL), m_bCrosshair(false), m_bCrosshairShowRecoil(false),
-	m_bSpreadCone(false), m_bSpreadConeShowRecoil(false), m_clrSpreadCone(SPREADCONE_DEFAULT_COLOR),
-	m_bHitmarker(false), m_bHitmarkerSound(false), m_bHitmarkerHitpoint(false),
-	m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME),
-	m_fPlayerHurtTime(-1)
+	m_bSpreadCone(false), m_iSpreadConeStyle(SPREADCONE_STYLE_OUTLINE), m_bSpreadConeShowRecoil(false),
+	m_clrSpreadCone(SPREADCONE_DEFAULT_COLOR), m_bHitmarker(false), m_bHitmarkerSound(false),
+	m_bHitmarkerHitpoint(false), m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME), m_fPlayerHurtTime(-1)
 {
 }
 
@@ -137,7 +136,14 @@ void CGunHud::DrawSpreadCone()
 	float fSpread = ((pActiveWeapon->GetInaccuracy() + pActiveWeapon->GetSpread()) * 320.f) / tanf(DEG2RAD(m_pApp->GetRenderFieldOfView()) * 0.5f) * m_pGui->GetScreenHeight() / 480.f;
 
 	m_pSurface->DrawSetColor(m_clrSpreadCone);
-	m_pSurface->DrawOutlinedCircle(iMidX, iMidY, fSpread, 64);
+	if (m_iSpreadConeStyle == SPREADCONE_STYLE_OUTLINE)
+	{
+		m_pSurface->DrawOutlinedCircle(iMidX, iMidY, fSpread, 64);
+	}
+	else
+	{
+		m_pSurface->DrawFilledCircle(iMidX, iMidY, fSpread, 64);
+	}
 }
 
 void CGunHud::DrawHitmarker()
