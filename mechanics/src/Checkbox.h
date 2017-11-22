@@ -6,7 +6,7 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlTooltip.h"
 #include "Label.h"
 
 #define CHECKBOX_BOXPADDING		5
@@ -21,11 +21,11 @@ const Color g_clrCheckboxFillerHover(255, 255, 100, 0);
 const Color g_clrCheckboxText(255, 255, 255, 255);
 const Color g_clrCheckboxTextHover(255, 200, 200, 200);
 
-class CCheckbox : public IControl
+class CCheckbox : public IControlTooltip
 {
 public:
-	CCheckbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "cbx", bool isChecked = false);
-	~CCheckbox();
+	CCheckbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* pText = "cbx");
+	virtual ~CCheckbox();
 
 	virtual void OnClicked();
 	virtual void Draw(ISurface* pSurface);

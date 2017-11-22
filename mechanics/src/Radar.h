@@ -16,12 +16,12 @@ class CRadar : public IFeature
 {
 public:
 	CRadar();
-	~CRadar();
+	virtual ~CRadar();
 
 	void SetType(int iType) { m_iType = iType; }
 	int GetType() { return m_iType; }
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	int m_iType;
 };

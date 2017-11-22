@@ -152,6 +152,6 @@ void CMaterialVisuals::Setup()
 	}
 }
 
-void CMaterialVisuals::Update(void* pParameters)
+void CMaterialVisuals::Think(void* pParameters)
 {
 }

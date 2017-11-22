@@ -13,7 +13,7 @@ class CGroupbox : public IControl
 {
 public:
 	CGroupbox(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "grpbx");
-	~CGroupbox();
+	virtual ~CGroupbox();
 
 	virtual void AddChild(IControl* pControl) override;
 	virtual void Draw(ISurface* pSurface) override;

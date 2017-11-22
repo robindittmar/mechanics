@@ -1,13 +1,10 @@
 #include "TabContainer.h"
 #include "Window.h"
 
-CTabContainer::CTabContainer() : IControl(0, 0, 0, 0)
+CTabContainer::CTabContainer()
+	: IControlClickable(0, 0, 0, 0), m_iCountTabs(0), m_iTabMouseDown(-1),
+	m_iMouseOverTab(-1), m_iSelectedTab(-1)
 {
-	m_iCountTabs = 0;
-
-	m_iTabMouseDown = -1;
-	m_iMouseOverTab = -1;
-	m_iSelectedTab = -1;
 }
 
 CTabContainer::~CTabContainer()
@@ -176,7 +173,7 @@ void CTabContainer::Draw(ISurface* pSurface)
 		pSurface->DrawTexturedRect(x, y + TABCONTAINER_TABHEIGHT, x + m_iWidth, y + m_iHeight);
 	}
 
-	IControl::Draw(pSurface);
+	IControlClickable::Draw(pSurface);
 }
 
 bool CTabContainer::ShouldDependentOnesBeEnabled(void* pParam)

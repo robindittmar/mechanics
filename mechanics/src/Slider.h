@@ -6,7 +6,7 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlTooltip.h"
 #include "Label.h"
 
 #define SLIDER_ORIENTATION_HORIZONTAL	0
@@ -17,7 +17,7 @@
 const Color g_clrControl(255, 0, 0, 0);
 const Color g_clrKnob(250, 255, 128, 0);
 
-class CSlider : public IControl
+class CSlider : public IControlTooltip
 {
 public:
 	CSlider(
@@ -30,9 +30,9 @@ public:
 		bool bReverse = false,
 		float fMin = 0.0,
 		float fMax = 1.0f,
-		const char* pText = NULL
+		const char* pText = nullptr
 	);
-	~CSlider();
+	virtual ~CSlider();
 
 	virtual void OnMouseMove(int mx, int my) override;
 	virtual void OnMouseDown(int mx, int my) override;

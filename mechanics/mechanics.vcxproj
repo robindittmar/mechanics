@@ -137,7 +137,7 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -154,16 +154,19 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Autowall.cpp" />
+    <ClCompile Include="src\Benchmark.cpp" />
     <ClCompile Include="src\checksum_md5.cpp" />
     <ClCompile Include="src\ClientClass.cpp" />
     <ClCompile Include="src\ColorPickerPopup.cpp" />
     <ClCompile Include="src\Config.cpp" />
     <ClCompile Include="src\ConfigHelper.cpp" />
     <ClCompile Include="src\CreateMove.cpp" />
+    <ClCompile Include="src\Dependency.cpp" />
     <ClCompile Include="src\GunHud.cpp" />
     <ClCompile Include="src\DrawModelExecute.cpp" />
     <ClCompile Include="src\EmitSound.cpp" />
@@ -177,7 +180,10 @@
     <ClCompile Include="src\FrameStageNotify.cpp" />
     <ClCompile Include="src\GetViewModelFov.cpp" />
     <ClCompile Include="src\IBaseClientDLL.cpp" />
+    <ClCompile Include="src\IControlClickable.cpp" />
+    <ClCompile Include="src\IDependable.cpp" />
     <ClCompile Include="src\IControlPopup.cpp" />
+    <ClCompile Include="src\IControlTooltip.cpp" />
     <ClCompile Include="src\LagCompensation.cpp" />
     <ClCompile Include="src\LagCompensationPlayerEntry.cpp" />
     <ClCompile Include="src\LagCompensationPlayerList.cpp" />
@@ -188,6 +194,7 @@
     <ClCompile Include="src\MaterialVisuals.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\Mirror.cpp" />
+    <ClCompile Include="src\NumericUpDown.cpp" />
     <ClCompile Include="src\OverrideView.cpp" />
     <ClCompile Include="src\PaintTraverse.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -249,7 +256,7 @@
     <ClCompile Include="src\Triggerbot.cpp" />
     <ClCompile Include="src\Utils.cpp" />
     <ClCompile Include="src\Vector.cpp" />
-    <ClCompile Include="src\VTableHook.cpp" />
+    <ClCompile Include="src\VMTHook.cpp" />
     <ClCompile Include="src\Visuals.cpp" />
     <ClCompile Include="src\WeaponEsp.cpp" />
     <ClCompile Include="src\Window.cpp" />
@@ -258,11 +265,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Autowall.h" />
+    <ClInclude Include="src\Benchmark.h" />
     <ClInclude Include="src\checksum_md5.h" />
     <ClInclude Include="src\ColorPickerPopup.h" />
     <ClInclude Include="src\Config.h" />
     <ClInclude Include="src\ConfigHelper.h" />
     <ClInclude Include="src\CreateMove.h" />
+    <ClInclude Include="src\Dependency.h" />
     <ClInclude Include="src\GunHud.h" />
     <ClInclude Include="src\CUtlVector.h" />
     <ClInclude Include="src\DrawModelExecute.h" />
@@ -278,7 +287,10 @@
     <ClInclude Include="src\GetViewModelFov.h" />
     <ClInclude Include="src\IAppSystem.h" />
     <ClInclude Include="src\IClientMode.h" />
+    <ClInclude Include="src\IControlClickable.h" />
+    <ClInclude Include="src\IDependable.h" />
     <ClInclude Include="src\IControlPopup.h" />
+    <ClInclude Include="src\IControlTooltip.h" />
     <ClInclude Include="src\IEngineSound.h" />
     <ClInclude Include="src\IInputSystem.h" />
     <ClInclude Include="src\ILocalize.h" />
@@ -297,6 +309,7 @@
     <ClInclude Include="src\MaterialVisuals.h" />
     <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\Mirror.h" />
+    <ClInclude Include="src\NumericUpDown.h" />
     <ClInclude Include="src\OverrideView.h" />
     <ClInclude Include="src\PaintTraverse.h" />
     <ClInclude Include="src\Player.h" />
@@ -383,7 +396,7 @@
     <ClInclude Include="src\Utils.h" />
     <ClInclude Include="src\Vector.h" />
     <ClInclude Include="src\IVEngineClient.h" />
-    <ClInclude Include="src\VTableHook.h" />
+    <ClInclude Include="src\VMTHook.h" />
     <ClInclude Include="src\Visuals.h" />
     <ClInclude Include="src\WeaponEsp.h" />
     <ClInclude Include="src\Window.h" />

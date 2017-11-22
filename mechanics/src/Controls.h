@@ -11,6 +11,7 @@
 #include "Checkbox.h"
 #include "Selectbox.h"
 #include "Textbox.h"
+#include "NumericUpDown.h"
 #include "Slider.h"
 #include "ColorPicker.h"
 

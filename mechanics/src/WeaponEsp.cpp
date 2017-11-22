@@ -27,7 +27,7 @@ void CWeaponEsp::Setup()
 	mbstowcs(m_pC4DamageIndicator, CXorString("Sjè£pn¿âi.ì").ToCharArray(), 64);
 }
 
-void CWeaponEsp::Update(void* pParameters)
+void CWeaponEsp::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

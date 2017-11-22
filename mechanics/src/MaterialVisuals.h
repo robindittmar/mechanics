@@ -33,7 +33,7 @@ class CMaterialVisuals : public IFeature
 {
 public:
 	CMaterialVisuals();
-	~CMaterialVisuals();
+	virtual ~CMaterialVisuals();
 
 	void SetNightmodeValue(float fNightmodeValue) { m_fNightmodeValue = fNightmodeValue; }
 	float GetNightmodeValue() { return m_fNightmodeValue; }
@@ -51,7 +51,7 @@ public:
 	void Skychanger(int iValue);
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	float m_fNightmodeValue;
 	float m_fAsuswallsValue;

@@ -32,7 +32,7 @@ void CEsp::Setup()
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
-void CEsp::Update(void* pParameters)
+void CEsp::Think(void* pParameters)
 {
 	assert(pParameters != NULL);
 

@@ -321,9 +321,6 @@
     <ClCompile Include="src\Visuals.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
-    <ClCompile Include="src\VTableHook.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\WeaponEsp.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
@@ -338,6 +335,27 @@
     </ClCompile>
     <ClCompile Include="src\IControlPopup.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Benchmark.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IControlClickable.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IControlTooltip.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IDependable.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Dependency.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\VMTHook.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NumericUpDown.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -719,9 +737,6 @@
     <ClInclude Include="src\Visuals.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
-    <ClInclude Include="src\VTableHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\WeaponEsp.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
@@ -736,6 +751,27 @@
     </ClInclude>
     <ClInclude Include="src\IControlPopup.h">
       <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Benchmark.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IControlClickable.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IControlTooltip.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IDependable.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dependency.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="src\VMTHook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NumericUpDown.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

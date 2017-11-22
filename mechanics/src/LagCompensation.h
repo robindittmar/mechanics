@@ -22,7 +22,7 @@ class CLagCompensation : public IFeature
 {
 public:
 	CLagCompensation();
-	~CLagCompensation();
+	virtual ~CLagCompensation();
 
 	void SetTickcount(int iTickcount) { m_iTickcount = iTickcount; }
 	int GetTickcount() { return m_iTickcount; }
@@ -45,7 +45,7 @@ public:
 	void SetLegitLagCompensationDuration(int bLegitLagCompensationDuration) { m_bLegitLagCompensationDuration = bLegitLagCompensationDuration; }
 	int GetLegitLagCompensationDuration() { return m_bLegitLagCompensationDuration; }
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	int RestorePlayerClosestToCrosshair();
 

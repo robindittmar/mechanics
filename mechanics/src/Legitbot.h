@@ -22,7 +22,7 @@ class CLegitbot : public IFeature
 {
 public:
 	CLegitbot();
-	~CLegitbot();
+	virtual ~CLegitbot();
 
 	void SetTriggerKey(int iTriggerKey) { m_iTriggerKey = iTriggerKey; }
 	int GetTriggerKey() { return m_iTriggerKey; }
@@ -61,7 +61,7 @@ public:
 	void SetCheckHitbox(int iHitbox, bool bCheckHitbox) { m_bCheckHitbox[iHitbox] = bCheckHitbox; }
 	bool GetCheckHitbox(int iHitbox) { return m_bCheckHitbox[iHitbox]; }
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 	void DrawFieldOfView(ISurface* pSurface);
 	void DrawPath(ISurface* pSurface);
 private:

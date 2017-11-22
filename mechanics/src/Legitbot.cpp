@@ -22,7 +22,7 @@ CLegitbot::~CLegitbot()
 {
 }
 
-void CLegitbot::Update(void* pParameters)
+void CLegitbot::Think(void* pParameters)
 {
 	assert(pParameters != NULL);
 

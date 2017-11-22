@@ -3,7 +3,7 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlClickable.h"
 #include "Label.h"
 #include "TabPage.h"
 
@@ -15,11 +15,11 @@ const Color g_clrSplitline(255, 30, 30, 30);
 
 //const Color g_clrTabText(255, 255, 255, 255);
 
-class CTabContainer : public IControl
+class CTabContainer : public IControlClickable
 {
 public:
 	CTabContainer();
-	~CTabContainer();
+	virtual ~CTabContainer();
 	
 	void SelectTab(int idx);
 

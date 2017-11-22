@@ -60,17 +60,17 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->TargetSelector()->SetHasTargets(false);
 
 			// Update Aimbot & AutoRevolver
-			pApp->Ragebot()->Update((void*)&createMoveParam);
+			pApp->Ragebot()->Think((void*)&createMoveParam);
 			pApp->Ragebot()->AutoRevolver(pUserCmd);
 
 			// Update Legitbot
-			pApp->Legitbot()->Update((void*)&createMoveParam);
+			pApp->Legitbot()->Think((void*)&createMoveParam);
 
 			// Update Triggerbot
-			pApp->Triggerbot()->Update((void*)&createMoveParam);
+			pApp->Triggerbot()->Think((void*)&createMoveParam);
 
 			// Update Bunnyhop
-			pApp->Bhop()->Update(pUserCmd);
+			pApp->Bhop()->Think(pUserCmd);
 
 			// Update AntiAim
 			/*bool bIsFakewalk = false;
@@ -82,20 +82,20 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			else
 			{*/
 			pApp->Fakelag()->CalcAdaptiveChokeAmount();
-			pApp->AntiAim()->Update(pUserCmd);
+			pApp->AntiAim()->Think(pUserCmd);
 			//}
 
 			// Miscs
 			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
-			pApp->Fakelag()->Update((void*)pUserCmd);
+			pApp->Fakelag()->Think((void*)pUserCmd);
 			pApp->Misc()->AutoStrafe(pUserCmd);
 			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
 
 			// Visuals
-			pApp->GunHud()->Update((void*)pLocalEntity);
-			pApp->Radar()->Update();
+			pApp->GunHud()->Think((void*)pLocalEntity);
+			pApp->Radar()->Think();
 
 			// todo: auslagern!
 			if (pUserCmd->buttons & IN_ATTACK)

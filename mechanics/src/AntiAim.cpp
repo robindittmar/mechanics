@@ -173,7 +173,7 @@ bool CAntiAim::NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlay
 }
 
 
-void CAntiAim::Update(void* pParameters)
+void CAntiAim::Think(void* pParameters)
 {
 	m_fCurRealYaw = 0.0f;
 	m_fCurFakeYaw = 0.0f;

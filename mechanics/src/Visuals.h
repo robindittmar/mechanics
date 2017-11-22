@@ -30,7 +30,7 @@ class CVisuals : public IFeature
 {
 public:
 	CVisuals();
-	~CVisuals();
+	virtual ~CVisuals();
 
 	void SetNoFlash(bool bNoFlash) { m_bNoFlash = bNoFlash; NoFlash(m_fFlashPercentage); }
 	bool GetNoFlash() { return m_bNoFlash; }
@@ -82,7 +82,7 @@ public:
 	bool GetBulletTracerTeam() { return m_bBulletTracerTeam; }
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void NoFlash(float fFlashPercentage);
 	void NoSmoke(bool bNoSmoke);

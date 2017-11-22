@@ -26,7 +26,7 @@ class CEsp : public IFeature
 {
 public:
 	CEsp();
-	~CEsp();
+	virtual ~CEsp();
 
 	void SetFillBoundingBox(bool bFillBoundingBox) { m_bFillBoundingBox = bFillBoundingBox; }
 	bool GetFillBoundingBox() { return m_bFillBoundingBox; }
@@ -97,7 +97,7 @@ public:
 	void ResetHeadBones();
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 
 	void DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int width, int armor, int alpha);
 	void DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color);

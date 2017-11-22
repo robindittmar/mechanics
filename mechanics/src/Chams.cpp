@@ -42,7 +42,7 @@ CChams::~CChams()
 	this->ReloadMaterials();
 }
 
-void CChams::Update(void* pParameters)
+void CChams::Think(void* pParameters)
 {
 }
 

@@ -91,7 +91,7 @@ void CSoundEsp::Setup()
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 }
 
-void CSoundEsp::Update(void* pParameters)
+void CSoundEsp::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

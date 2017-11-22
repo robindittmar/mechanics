@@ -1,7 +1,7 @@
 #include "IControlPopup.h"
 
 IControlPopup::IControlPopup(int x, int y, int w, int h, CWindow* pParentWindow)
-	: IControl(x, y, w, h), m_pParentWindow(pParentWindow)
+	: IControlClickable(x, y, w, h), m_pParentWindow(pParentWindow)
 {
 }
 
@@ -14,7 +14,7 @@ void IControlPopup::ProcessEvent(CInputEvent* pEvent)
 	if (!m_bIsEnabled || !m_pParentWindow)
 		return;
 
-	IControl::ProcessEvent(pEvent);
+	IControlClickable::ProcessEvent(pEvent);
 
 	if (pEvent->eventType == EVENT_TYPE_MOUSE)
 	{

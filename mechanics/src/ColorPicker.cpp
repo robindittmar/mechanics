@@ -2,8 +2,7 @@
 #include "Window.h"
 
 CColorPicker::CColorPicker(int x, int y, int w, int h)
-	: IControl(x, y, w, h),
-	m_pEventHandler(NULL), m_clrValue(Color(0, 0, 0, 0))
+	: IControlTooltip(x, y, w, h), m_pEventHandler(nullptr), m_clrValue(Color(0, 0, 0, 0))
 {
 	m_bPopupInitialized = false;
 	m_pPopup = new CColorPickerPopup(0, m_iHeight, this);
@@ -49,6 +48,8 @@ void CColorPicker::Draw(ISurface* pSurface)
 
 	pSurface->DrawSetColor(255, 0, 0, 0);
 	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
+
+	IControlTooltip::Draw(pSurface);
 }
 
 bool CColorPicker::ShouldDependentOnesBeEnabled(void* pParam)

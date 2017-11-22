@@ -34,7 +34,7 @@ void CTriggerbot::Setup()
 	m_pEngineTrace = m_pApp->EngineTrace();
 }
 
-void CTriggerbot::Update(void* pParameters)
+void CTriggerbot::Think(void* pParameters)
 {
 	assert(pParameters != nullptr);
 

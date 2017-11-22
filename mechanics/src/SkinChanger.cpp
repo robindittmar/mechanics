@@ -190,7 +190,7 @@ void CSkinChanger::Setup()
 	this->ParseSkinFile();
 }
 
-void CSkinChanger::Update(void* pParameters)
+void CSkinChanger::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

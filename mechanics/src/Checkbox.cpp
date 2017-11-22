@@ -1,10 +1,8 @@
 #include "Checkbox.h"
 
-CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText, bool isChecked) : IControl(x, y, w, h)
+CCheckbox::CCheckbox(int x, int y, int w, int h, const char* pText)
+	: IControlTooltip(x, y, w, h), m_bIsChecked(false), m_pEventHandler(nullptr)
 {
-	m_bIsChecked = isChecked;
-	m_pEventHandler = NULL;
-
 	int offsetX = CHECKBOX_BOXPADDING + CHECKBOX_BOXSIZE;
 	m_pLabel = new CLabel(offsetX, 0, m_iWidth - offsetX, m_iHeight, pText, RM_FONT_NORMAL);
 	this->AddChild(m_pLabel);
@@ -70,10 +68,10 @@ void CCheckbox::Draw(ISurface* pSurface)
 		);
 	}
 
-	// Draw label
+	// Set label color
 	m_pLabel->SetTextColor(clrTextColor);
-	//m_pLabel->Draw(pSurface);
-	IControl::Draw(pSurface);
+
+	IControlTooltip::Draw(pSurface);
 }
 
 bool CCheckbox::ShouldDependentOnesBeEnabled(void* pParam)

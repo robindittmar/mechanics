@@ -12,11 +12,11 @@ void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t cur
 	{
 		if (pApp->EngineClient()->IsInGame() && pLocalEntity->IsAlive())
 		{
-			pApp->Resolver()->Update();
+			pApp->Resolver()->Think();
 
-			pApp->LagCompensation()->Update();
+			pApp->LagCompensation()->Think();
 
-			pApp->SkinChanger()->Update(pLocalEntity);
+			pApp->SkinChanger()->Think(pLocalEntity);
 		}
 	}
 	else if (curStage == FRAME_RENDER_START)

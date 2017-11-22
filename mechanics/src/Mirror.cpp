@@ -1,5 +1,6 @@
 #include "Mirror.h"
 #include "Application.h"
+#include "Benchmark.h"
 
 CMirror::CMirror()
 {
@@ -13,10 +14,14 @@ void CMirror::Setup()
 {
 	IFeature::Setup();
 
+	CBenchmark mirrorBenchmark;
+	mirrorBenchmark.StartBenchmark();
 	g_pResourceManager->CreateMirror();
+	mirrorBenchmark.FinishBenchmark();
+	mirrorBenchmark.PrintBenchmark("Mirror Creation");
 }
 
-void CMirror::Update(void* pParameters)
+void CMirror::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

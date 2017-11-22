@@ -53,7 +53,7 @@ class CAntiAim : public IFeature
 {
 public:
 	CAntiAim();
-	~CAntiAim();
+	virtual ~CAntiAim();
 
 	// Standing
 	void SetPitchSettingStanding(int iPitchSetting) { m_iPitchSettingStanding = iPitchSetting; }
@@ -119,7 +119,7 @@ public:
 
 	void DrawEdgeAntiAimPoints();
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	bool m_bFakeAngleSwitch;
 

@@ -17,8 +17,8 @@ const Color g_clrColorPickerPopupContainer(255, 80, 80, 80);
 class CColorPickerPopup : public IControlPopup
 {
 public:
-	CColorPickerPopup(int x = 0, int y = 0, CColorPicker* pColorPicker = NULL, CWindow* pParentWindow = NULL);
-	~CColorPickerPopup();
+	CColorPickerPopup(int x = 0, int y = 0, CColorPicker* pColorPicker = nullptr, CWindow* pParentWindow = nullptr);
+	virtual ~CColorPickerPopup();
 
 	void SetColorPicker(CColorPicker* pColorPicker) { m_pColorPicker = pColorPicker; }
 	CColorPicker* GetColorPicker() const { return m_pColorPicker; }

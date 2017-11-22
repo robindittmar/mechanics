@@ -10,7 +10,7 @@
 #include "ConfigHelper.h"
 #include "Pattern.h"
 #include "XorString.h"
-#include "VTableHook.h"
+#include "VMTHook.h"
 #include "PlayerList.h"
 #include "Gui.h"
 #include "InputHandler.h"
@@ -22,6 +22,7 @@
 #include "Offsets.h"
 #include "MathDefs.h"
 #include "TargetSelector.h"
+#include "Benchmark.h"
 
 // Hooks
 #include "CreateMove.h"
@@ -146,7 +147,16 @@ public:
 	void Run(HMODULE hModule);
 	void Detach();
 
+	/// <summary>
+	/// Returns working directory (including trailing slash)
+	/// </summary>
+	/// <returns>Directory where our .dll is stored</returns>
 	const char* GetWorkingDirectory()	{ return m_pFilepath; }
+
+	/// <summary>
+	/// Returns the filename of our .dll
+	/// </summary>
+	/// <returns>Filename, including extension (.dll usually)</returns>
 	const char* GetFilename()			{ return m_pFilename; }
 
 	// Hook helper
@@ -166,20 +176,20 @@ public:
 	IClientEntity* GetLocalPlayer(bool bGetTargetIfLocalDead = false);
 
 	// VTable Hooks
-	VTableHook* ClientModeHook()		{ return m_pClientModeHook; }
-	VTableHook* ModelRenderHook()		{ return m_pModelRenderHook; }
-	VTableHook* ClientHook()			{ return m_pClientHook; }
-	VTableHook* PanelHook()				{ return m_pPanelHook; }
-	VTableHook* GameEventManagerHook()	{ return m_pGameEventManagerHook; }
-	VTableHook* ViewRenderHook()		{ return m_pViewRenderHook; }
-	VTableHook* EngineSoundHook()		{ return m_pEngineSoundHook; }
+	VMTHook* ClientModeHook()						{ return m_pClientModeHook; }
+	VMTHook* ModelRenderHook()						{ return m_pModelRenderHook; }
+	VMTHook* ClientHook()							{ return m_pClientHook; }
+	VMTHook* PanelHook()							{ return m_pPanelHook; }
+	VMTHook* GameEventManagerHook()					{ return m_pGameEventManagerHook; }
+	VMTHook* ViewRenderHook()						{ return m_pViewRenderHook; }
+	VMTHook* EngineSoundHook()						{ return m_pEngineSoundHook; }
 
-	RandomSeed_t	RandomSeed()	{ return m_pRandomSeed; }
-	RandomInt_t		RandomInt()		{ return m_pRandomInt; }
-	RandomFloat_t	RandomFloat()	{ return m_pRandomFloat; }
+	RandomSeed_t	RandomSeed()					{ return m_pRandomSeed; }
+	RandomInt_t		RandomInt()						{ return m_pRandomInt; }
+	RandomFloat_t	RandomFloat()					{ return m_pRandomFloat; }
 
-	InitKeyValues_t		InitKeyValues()		{ return m_pInitKeyValues; }
-	LoadFromBuffer_t	LoadFromBuffer()	{ return m_pLoadFromBuffer; }
+	InitKeyValues_t		InitKeyValues()				{ return m_pInitKeyValues; }
+	LoadFromBuffer_t	LoadFromBuffer()			{ return m_pLoadFromBuffer; }
 
 	// Engine Pointer
 	IVEngineClient*			EngineClient()			{ return m_pEngineClient; }
@@ -205,43 +215,43 @@ public:
 	ILocalize*				Localize()				{ return m_pLocalize; }
 
 	// DLL Addresses
-	DWORD ClientDll()			{ return m_dwClientDll; }
-	DWORD EngineDll()			{ return m_dwEngineDll; }
-	DWORD MaterialSystemDll()	{ return m_dwMaterialSystemDll; }
-	DWORD VGui2Dll()			{ return m_dwVGui2Dll; }
-	DWORD VGuiSurfaceDll()		{ return m_dwVGuiSurfaceDll; }
-	DWORD VPhysicsDll()			{ return m_dwVPhysicsDll; }
-	DWORD DataCacheDll()		{ return m_dwDatacacheDll; }
-	DWORD LocalizeDll()			{ return m_dwLocalizeDll; }
+	DWORD ClientDll()								{ return m_dwClientDll; }
+	DWORD EngineDll()								{ return m_dwEngineDll; }
+	DWORD MaterialSystemDll()						{ return m_dwMaterialSystemDll; }
+	DWORD VGui2Dll()								{ return m_dwVGui2Dll; }
+	DWORD VGuiSurfaceDll()							{ return m_dwVGuiSurfaceDll; }
+	DWORD VPhysicsDll()								{ return m_dwVPhysicsDll; }
+	DWORD DataCacheDll()							{ return m_dwDatacacheDll; }
+	DWORD LocalizeDll()								{ return m_dwLocalizeDll; }
 
 	// Target selector (Feature?)
-	CPlayerList* PlayerList() { return &m_playerList; }
-	CTargetSelector* TargetSelector() { return &m_targetSelector; }
+	CPlayerList* PlayerList()						{ return &m_playerList; }
+	CTargetSelector* TargetSelector()				{ return &m_targetSelector; }
 
 	// Features
-	CRagebot*			Ragebot()			{ return &m_ragebot; }
-	CLegitbot*			Legitbot()			{ return &m_legitbot; }
-	CTriggerbot*		Triggerbot()		{ return &m_triggerbot; }
-	CAntiAim*			AntiAim()			{ return &m_antiAim; }
-	CBhop*				Bhop()				{ return &m_bhop; }
-	CEsp*				Esp()				{ return &m_esp; }
-	CWeaponEsp*			WeaponEsp()			{ return &m_weaponesp; }
-	CSoundEsp*			SoundEsp()			{ return &m_soundEsp; }
-	CChams*				Chams()				{ return &m_chams; }
-	CMisc*				Misc()				{ return &m_misc; }
-	CFakelag*			Fakelag()			{ return &m_fakelag; }
-	CFakewalk*			Fakewalk()			{ return &m_fakewalk; }
-	CResolver*			Resolver()			{ return &m_resolver; }
-	CSkinChanger*		SkinChanger()		{ return &m_skinchanger; }
-	CVisuals*			Visuals()			{ return &m_visuals; }
-	CMaterialVisuals*	MaterialVisuals()	{ return &m_materialvisuals; }
-	CGunHud*			GunHud()			{ return &m_gunHud; }
-	CMirror*			Mirror()			{ return &m_mirror; }
-	CRadar*				Radar()				{ return &m_radar; }
-	CLagCompensation*	LagCompensation()	{ return &m_lagcompensation; }
+	CRagebot*			Ragebot()					{ return &m_ragebot; }
+	CLegitbot*			Legitbot()					{ return &m_legitbot; }
+	CTriggerbot*		Triggerbot()				{ return &m_triggerbot; }
+	CAntiAim*			AntiAim()					{ return &m_antiAim; }
+	CBhop*				Bhop()						{ return &m_bhop; }
+	CEsp*				Esp()						{ return &m_esp; }
+	CWeaponEsp*			WeaponEsp()					{ return &m_weaponesp; }
+	CSoundEsp*			SoundEsp()					{ return &m_soundEsp; }
+	CChams*				Chams()						{ return &m_chams; }
+	CMisc*				Misc()						{ return &m_misc; }
+	CFakelag*			Fakelag()					{ return &m_fakelag; }
+	CFakewalk*			Fakewalk()					{ return &m_fakewalk; }
+	CResolver*			Resolver()					{ return &m_resolver; }
+	CSkinChanger*		SkinChanger()				{ return &m_skinchanger; }
+	CVisuals*			Visuals()					{ return &m_visuals; }
+	CMaterialVisuals*	MaterialVisuals()			{ return &m_materialvisuals; }
+	CGunHud*			GunHud()					{ return &m_gunHud; }
+	CMirror*			Mirror()					{ return &m_mirror; }
+	CRadar*				Radar()						{ return &m_radar; }
+	CLagCompensation*	LagCompensation()			{ return &m_lagcompensation; }
 
 	// Resource Manager
-	CResourceManager* ResourceManager() { return m_pResourceManager; }
+	CResourceManager* ResourceManager()				{ return m_pResourceManager; }
 
 	// Gui
 	CGui* Gui() { return m_pGui; }
@@ -299,15 +309,15 @@ private:
 
 	bool m_bInitialHookDone;
 	bool m_bIsHooked;
-	VTableHook* m_pClientModeHook;
-	VTableHook* m_pModelRenderHook;
-	VTableHook* m_pClientHook;
-	VTableHook* m_pPanelHook;
-	VTableHook* m_pSurfaceHook;
-	VTableHook* m_pGameEventManagerHook;
-	VTableHook* m_pViewRenderHook;
-	VTableHook* m_pEngineSoundHook;
-	VTableHook* m_pMdlHook;
+	VMTHook* m_pClientModeHook;
+	VMTHook* m_pModelRenderHook;
+	VMTHook* m_pClientHook;
+	VMTHook* m_pPanelHook;
+	VMTHook* m_pSurfaceHook;
+	VMTHook* m_pGameEventManagerHook;
+	VMTHook* m_pViewRenderHook;
+	VMTHook* m_pEngineSoundHook;
+	VMTHook* m_pMdlHook;
 
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;

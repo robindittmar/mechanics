@@ -35,13 +35,13 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 			pApp->Misc()->SpectatorList();
 
 			// Draw Esp
-			pApp->Esp()->Update((void*)pSurface);
+			pApp->Esp()->Think((void*)pSurface);
 
 			// Draw Weapon Esp
-			pApp->WeaponEsp()->Update();
+			pApp->WeaponEsp()->Think();
 
 			// Draw Sound Esp
-			pApp->SoundEsp()->Update();
+			pApp->SoundEsp()->Think();
 
 			// Draw rear mirror
 			pApp->Mirror()->Render(pSurface, pApp->Menu()->GetMirrorWindow());

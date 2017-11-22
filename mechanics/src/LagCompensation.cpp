@@ -12,7 +12,7 @@ CLagCompensation::~CLagCompensation()
 {
 }
 
-void CLagCompensation::Update(void* pParameters)
+void CLagCompensation::Think(void* pParameters)
 {
 	IClientEntity* pLocalEnt = m_pApp->GetLocalPlayer();
 	if (!pLocalEnt)

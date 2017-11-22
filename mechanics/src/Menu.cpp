@@ -1417,11 +1417,18 @@ void CMenu::CreateConfigTab()
 	m_pColorPicker = new CColorPicker(300, 30);
 	m_pColorPicker->SetEventHandler(std::bind(&CGunHud::SetSpreadConeColor, m_pApp->GunHud(), std::placeholders::_1));
 
+	m_pNumericUpDown = new CNumericUpDown(300, 90, 128, 16, "Numeric Up Down :D");
+	
+	m_pConfigPrintValue = new CButton(300, 120, 128, 16, "Print NumUpDown Value");
+	m_pConfigPrintValue->SetEventHandler(std::bind(&CMenu::PrintNumUpDownValue, this));
+
 	m_pConfigTab = new CTabPage("Config");
 	m_pConfigTab->AddChild(m_pConfigGroup);
 	m_pConfigTab->AddChild(m_pDetachBtn);
 	m_pConfigTab->AddChild(m_pForceFullUpdate);
 	m_pConfigTab->AddChild(m_pColorPicker);
+	m_pConfigTab->AddChild(m_pNumericUpDown);
+	m_pConfigTab->AddChild(m_pConfigPrintValue);
 }
 
 void CMenu::AddKnifeToWeapons(int iWeaponId)
@@ -1476,20 +1483,20 @@ void CMenu::ApplySkin(int iTeamNum)
 	int iWeaponId = m_pSkinChangerWeapon->GetValue();
 
 	int iWeaponSeed = 0;
-	const char* pWeaponSeed = m_pSkinChangerWeaponSeed->GetValue();
+	const char* pWeaponSeed = m_pSkinChangerWeaponSeed->GetText();
 	if (!(pWeaponSeed != NULL && pWeaponSeed[0] == '\0'))
 	{
 		iWeaponSeed = atoi(pWeaponSeed);
 	}
 
 	int iWeaponStattrakCount = -1;
-	const char* pWeaponStattrak = m_pSkinChangerWeaponStattrakCount->GetValue();
+	const char* pWeaponStattrak = m_pSkinChangerWeaponStattrakCount->GetText();
 	if (!(pWeaponStattrak != NULL && pWeaponStattrak[0] == '\0'))
 	{
 		iWeaponStattrakCount = atoi(pWeaponStattrak);
 	}
 
-	const char* pWeaponName = m_pSkinChangerWeaponName->GetValue();
+	const char* pWeaponName = m_pSkinChangerWeaponName->GetText();
 	float fWeaponWear = m_pSkinChangerWeaponWear->GetValue();
 
 	if (iWeaponId == WEAPON_KNIFE ||
@@ -1576,7 +1583,7 @@ void CMenu::LoadConfig()
 
 void CMenu::SaveConfig()
 {
-	const char* pConfigName = m_pConfigSaveConfigName->GetValue();
+	const char* pConfigName = m_pConfigSaveConfigName->GetText();
 	if (!pConfigName)
 		return;
 
@@ -1587,4 +1594,9 @@ void CMenu::SaveConfig()
 	saveConfig.SaveFile(pConfigName);
 
 	this->FillLoadableConfigs();
+}
+
+void CMenu::PrintNumUpDownValue()
+{
+	g_pConsole->Write(LOGLEVEL_WARNING, "m_pNumericUpDown->GetValue() = %d\n", m_pNumericUpDown->GetValue());
 }

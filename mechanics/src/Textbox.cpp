@@ -2,14 +2,11 @@
 #include "Window.h"
 #include "Application.h"
 
-CTextbox::CTextbox(int x, int y, int w, int h, const char* label, int maxLen) : IControl(x, y, w, h)
+CTextbox::CTextbox(int x, int y, int w, int h, const char* label, int maxLen)
+	: IControlClickable(x, y, w, h), m_iMaxLen(maxLen), m_fLastBlink(0.0f),
+	m_bBlink(true)
 {
 	m_bCanHaveFocus = true;
-
-	m_iMaxLen = maxLen;
-
-	m_fLastBlink = 0.0f;
-	m_bBlink = true;
 
 	m_pLabel = new CLabel(0, -18, w, 20, label, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 	m_pContentLabel = new CLabel(TEXTBOX_PADDING, 0, w, h, "");
@@ -44,7 +41,12 @@ void CTextbox::OnTextInput(char c)
 		strcat(pCurText, pAppend);
 	}
 
-	m_pContentLabel->SetContentText(pCurText);
+	this->SetText(pCurText);
+}
+
+void CTextbox::SetText(const char* pText)
+{
+	m_pContentLabel->SetContentText(pText);
 
 	if (m_pEventHandler)
 		m_pEventHandler(m_pContentLabel->GetContentText());
@@ -64,7 +66,7 @@ void CTextbox::ProcessEvent(CInputEvent* pEvent)
 		}
 	}
 
-	IControl::ProcessEvent(pEvent);
+	IControlClickable::ProcessEvent(pEvent);
 }
 
 void CTextbox::Draw(ISurface* pSurface)
@@ -120,11 +122,7 @@ void CTextbox::Draw(ISurface* pSurface)
 		}
 	}
 
-	//int x0, y0, x1, y1;
-	//pSurface->GetClipRect(x0, y0, x1, y1);
-	//pSurface->SetClipRect(x, y, x + m_iWidth, y + m_iHeight);
-	IControl::Draw(pSurface);
-	//pSurface->SetClipRect(x0, y0, x1, y1);
+	IControlClickable::Draw(pSurface);
 }
 
 bool CTextbox::ShouldDependentOnesBeEnabled(void* pParam)

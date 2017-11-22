@@ -22,7 +22,7 @@ class CSoundEsp : public IFeature
 {
 public:
 	CSoundEsp();
-	~CSoundEsp();
+	virtual ~CSoundEsp();
 
 	void SetShowTime(float fShowTime) { m_iShowTime = fShowTime * 1000; }
 	float GetShowTime() { return m_iShowTime / 1000.0f; }
@@ -45,7 +45,7 @@ public:
 	void UpdateSounds();
 
 	virtual void Setup() override;
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	int m_iShowTime;
 	int m_iFadeoutTime;

@@ -7,7 +7,7 @@
 
 // Custom
 #include "Gui.h"
-#include "IControl.h"
+#include "IControlClickable.h"
 #include "Tooltip.h"
 #include "Canvas.h"
 
@@ -16,12 +16,12 @@
 const Color g_clrTitlebar(255, 30, 30, 30);
 const Color g_clrClientRegion(250, 60, 60, 60);
 
-class CWindow : public IControl
+class CWindow : public IControlClickable
 {
 public:
 	// x, y, w, h define the client area of the window
 	CWindow(int x = 0, int y = 0, int w = 0, int h = 0, const char* pTitle = "wnd");
-	~CWindow();
+	virtual ~CWindow();
 
 	virtual void OnMouseMove(int mx, int my) override;
 	virtual void OnMouseDown(int mx, int my) override;

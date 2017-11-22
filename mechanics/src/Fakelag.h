@@ -22,7 +22,7 @@ class CFakelag : public IFeature
 {
 public:
 	CFakelag();
-	~CFakelag();
+	virtual ~CFakelag();
 
 	bool IsChoking() { return m_bIsChoking; }
 	int AmountPacketsChoked() { return m_iPacketsChoked; }
@@ -39,7 +39,7 @@ public:
 
 	void CalcAdaptiveChokeAmount();
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	bool m_bIsChoking;
 

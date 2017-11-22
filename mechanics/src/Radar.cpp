@@ -10,7 +10,7 @@ CRadar::~CRadar()
 {
 }
 
-void CRadar::Update(void* pParameters)
+void CRadar::Think(void* pParameters)
 {
 	if (!m_bIsEnabled)
 		return;

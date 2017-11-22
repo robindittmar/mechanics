@@ -17,14 +17,14 @@ class CResolver : public IFeature
 {
 public:
 	CResolver();
-	~CResolver();
+	virtual ~CResolver();
 
 	void SetResolverType(int iResolverType) { m_iResolverType = iResolverType; }
 	int GetResolverType() { return m_iResolverType; }
 
 	CResolverPlayer* GetResolverPlayer(int index) { return &m_pResolverPlayers[index]; }
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 	int m_iResolverType;
 

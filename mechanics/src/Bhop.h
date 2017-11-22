@@ -14,9 +14,9 @@ class CBhop : public IFeature
 {
 public:
 	CBhop();
-	~CBhop();
+	virtual ~CBhop();
 
-	virtual void Update(void* pParameters = 0) override;
+	virtual void Think(void* pParameters = nullptr) override;
 private:
 };
 

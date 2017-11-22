@@ -16,16 +16,16 @@ const Color g_clrSelectboxPopupSelection(255, 255, 128, 0);
 class CSelectboxPopup : public IControlPopup
 {
 public:
-	CSelectboxPopup(int x = 0, int y = 0, CSelectbox* pSelectbox = NULL, CWindow* pParentWindow = NULL);
-	~CSelectboxPopup();
+	CSelectboxPopup(int x = 0, int y = 0, CSelectbox* pSelectbox = nullptr, CWindow* pParentWindow = nullptr);
+	virtual ~CSelectboxPopup();
 
 	void SetSelectbox(CSelectbox* pSelectbox) { m_pSelectbox = pSelectbox; }
 	CSelectbox* GetSelectbox() const { return m_pSelectbox; }
 
-	virtual void OnMouseMove(int mx, int my);
-	virtual void OnMouseUp(int mx, int my);
+	virtual void OnMouseMove(int mx, int my) override;
+	virtual void OnMouseUp(int mx, int my) override;
 
-	virtual void GetAbsolutePosition(int* pX, int* pY);
+	virtual void GetAbsolutePosition(int* pX, int* pY) override;
 
 	virtual void ProcessEvent(CInputEvent* pEvent) override;
 	virtual void Draw(ISurface* pSurface) override;
