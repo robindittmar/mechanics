@@ -253,9 +253,9 @@ void CMenu::ApplySettings()
 	m_pSkinChangerWeapon->SetSelection(0);
 	m_pSkinChangerSkin->SetSelection(0);
 	m_pSkinChangerGlove->SetSelection(0);
-	//m_pSkinChangerWeaponName->
-	//m_pSkinChangerWeaponStattrakCount->
-	//m_pSkinChangerWeaponSeed->
+	m_pSkinChangerWeaponName->SetText("");
+	m_pSkinChangerWeaponStattrakCount->SetValue(-1);
+	m_pSkinChangerWeaponSeed->SetValue(0);
 	m_pSkinChangerWeaponWear->SetValue(0.01f);
 
 	// TODO: <Remove pls>
@@ -1354,9 +1354,9 @@ void CMenu::CreateSkinChangerTab()
 
 	m_pSkinChangerWeaponName = new CTextbox(278, 4, 128, 16, "Name");
 
-	m_pSkinChangerWeaponStattrakCount = new CTextbox(278, 34, 128, 16, "Stattrak Count");
+	m_pSkinChangerWeaponStattrakCount = new CNumericUpDown(278, 34, 128, 16, "Stattrak Count");
 
-	m_pSkinChangerWeaponSeed = new CTextbox(278, 64, 128, 16, "Seed");
+	m_pSkinChangerWeaponSeed = new CNumericUpDown(278, 64, 128, 16, "Seed");
 
 	m_pSkinChangerWeaponWear = new CSlider(278, 104, 128, 16, 0.01, SLIDER_ORIENTATION_HORIZONTAL, false, 0.01f, 1.0f, "Wear");
 
@@ -1418,7 +1418,7 @@ void CMenu::CreateConfigTab()
 	m_pColorPicker->SetEventHandler(std::bind(&CGunHud::SetSpreadConeColor, m_pApp->GunHud(), std::placeholders::_1));
 
 	m_pNumericUpDown = new CNumericUpDown(300, 90, 128, 16, "Numeric Up Down :D");
-	
+
 	m_pConfigPrintValue = new CButton(300, 120, 128, 16, "Print NumUpDown Value");
 	m_pConfigPrintValue->SetEventHandler(std::bind(&CMenu::PrintNumUpDownValue, this));
 
@@ -1466,9 +1466,9 @@ void CMenu::FillSkinIds(int iWeaponId)
 	if (pSkin)
 	{
 		m_pSkinChangerSkin->SetSelectionById(pSkin->m_iFallbackPaintKit);
-		//m_pSkinChangerWeaponName->
-		//m_pSkinChangerWeaponSeed->
-		//m_pSkinChangerWeaponStattrakCount->
+		m_pSkinChangerWeaponName->SetText(pSkin->m_pCustomName);
+		m_pSkinChangerWeaponStattrakCount->SetValue(pSkin->m_iFallbackStatTrak);
+		m_pSkinChangerWeaponSeed->SetValue(pSkin->m_iFallbackSeed);
 		m_pSkinChangerWeaponWear->SetValue(pSkin->m_fFallbackWear);
 	}
 	else
@@ -1493,7 +1493,11 @@ void CMenu::ApplySkin(int iTeamNum)
 	const char* pWeaponStattrak = m_pSkinChangerWeaponStattrakCount->GetText();
 	if (!(pWeaponStattrak != NULL && pWeaponStattrak[0] == '\0'))
 	{
-		iWeaponStattrakCount = atoi(pWeaponStattrak);
+		int iTemp = atoi(pWeaponStattrak);
+		if (iTemp >= -1)
+		{
+			iWeaponStattrakCount = iTemp;
+		}
 	}
 
 	const char* pWeaponName = m_pSkinChangerWeaponName->GetText();

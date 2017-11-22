@@ -331,8 +331,8 @@ private:
 	CButton* m_pSkinChangerApplyT;
 
 	CTextbox* m_pSkinChangerWeaponName;
-	CTextbox* m_pSkinChangerWeaponStattrakCount;
-	CTextbox* m_pSkinChangerWeaponSeed;
+	CNumericUpDown* m_pSkinChangerWeaponStattrakCount;
+	CNumericUpDown* m_pSkinChangerWeaponSeed;
 	CSlider* m_pSkinChangerWeaponWear;
 
 	CCheckbox* m_pSkinChangerOnlyMyWeapon;

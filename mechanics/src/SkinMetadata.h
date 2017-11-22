@@ -6,7 +6,7 @@
 class CSkinMetadata
 {
 public:
-	CSkinMetadata(int itemIdx = -1, int paintKit = 0, int seed = 0, int statTrak = -1, int entityQuality = 4, const char* pCustomName = nullptr, float wear = 0.00001f);
+	CSkinMetadata(int itemIdx = -1, int paintKit = 0, int seed = 0, int statTrak = -1, int entityQuality = 4, const char* pCustomName = nullptr, float wear = 0.01f);
 	~CSkinMetadata();
 
 	void SetCustomName(const char* pCustomName);

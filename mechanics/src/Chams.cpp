@@ -166,45 +166,53 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 	matrix3x4_t mRotation;
 	matrix3x4_t mCurBone;
 	matrix3x4_t mCurBoneModified;
-	matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
+	static bool bGotMatrix = false;
+	static matrix3x4_t pBoneMatrix[MAXSTUDIOBONES];
 	Vector vCurPos, vCurPosRotated;
 
 	QAngle qRotationAngles = QAngle(0, m_pApp->AntiAim()->GetFakeYaw() - m_pApp->AntiAim()->GetRealYaw(), 0);
 	QAngle qAngles;
-
-	// Vector2Matrix
-	AngleMatrix(qRotationAngles, mRotation);
-	for (int i = 0; i < MAXSTUDIOBONES; i++)
+	
+	if (!m_pApp->Fakelag()->IsChoking())
 	{
-		// Copy original matrix
-		MatrixCopy(pCustomBoneToWorld[i], mCurBone);
-
-		// Get Position and subtract current origin
-		MatrixGetColumn(mCurBone, 3, vCurPos);
-		vCurPos -= pInfo.origin;
-
-		// Transform vector
-		VectorTransform(vCurPos, mRotation, vCurPosRotated);
-
-		// Add origin back to rotated vector
-		vCurPosRotated += pInfo.origin;
-
-		// Set position in saved matrix to 0
-		MatrixSetColumn(Vector(0, 0, 0), 3, mCurBone);
-
-		// Multiply Matrix
-		ConcatTransforms(mRotation, mCurBone, mCurBoneModified);
-
-		// Matrix2Vector
-		MatrixAngles(mCurBoneModified, (float*)&qAngles);
-
 		// Vector2Matrix
-		AngleMatrix(qAngles, vCurPosRotated, pBoneMatrix[i]);
+		AngleMatrix(qRotationAngles, mRotation);
+		for (int i = 0; i < MAXSTUDIOBONES; i++)
+		{
+			// Copy original matrix
+			MatrixCopy(pCustomBoneToWorld[i], mCurBone);
+
+			// Get Position and subtract current origin
+			MatrixGetColumn(mCurBone, 3, vCurPos);
+			vCurPos -= pInfo.origin;
+
+			// Transform vector
+			VectorTransform(vCurPos, mRotation, vCurPosRotated);
+
+			// Add origin back to rotated vector
+			vCurPosRotated += pInfo.origin;
+
+			// Set position in saved matrix to 0
+			MatrixSetColumn(Vector(0, 0, 0), 3, mCurBone);
+
+			// Multiply Matrix
+			ConcatTransforms(mRotation, mCurBone, mCurBoneModified);
+
+			// Matrix2Vector
+			MatrixAngles(mCurBoneModified, (float*)&qAngles);
+
+			// Vector2Matrix
+			AngleMatrix(qAngles, vCurPosRotated, pBoneMatrix[i]);
+		}
+		bGotMatrix = true;
 	}
 
-	m_pModelRender->ForcedMaterialOverride(m_pFakeAngle);
-	g_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMatrix);
-	m_pModelRender->ForcedMaterialOverride(NULL);
+	if (bGotMatrix)
+	{
+		m_pModelRender->ForcedMaterialOverride(m_pFakeAngle);
+		g_pDrawModelExecute(ecx, ctx, state, pInfo, pBoneMatrix);
+		m_pModelRender->ForcedMaterialOverride(NULL);
+	}
 }
 
 void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
