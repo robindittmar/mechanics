@@ -436,7 +436,7 @@ void CSkinChanger::ParseSkinFile()
 				int iLenFull = strlen(p);
 				int iLenKnife = strlen(it->second.name) + 1;
 				int iLenPaintKit = iLenFull - iLenKnife - iLenUnderscoreLight;
-				
+
 				char* pBuffer = new char[iLenPaintKit + 1];
 				memcpy(pBuffer, p + iLenKnife, iLenPaintKit);
 				pBuffer[iLenPaintKit] = '\0';
@@ -524,6 +524,12 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 	if (iLocalTeam != TEAMNUM_CT && iLocalTeam != TEAMNUM_T)
 		return false;
 
+	static bool bWasForceFullUpdate = false;
+	if (m_bForceFullUpdate)
+	{
+		bWasForceFullUpdate = m_bForceFullUpdate;
+	}
+
 	std::unordered_map<int, const char*>& map = iLocalTeam == TEAMNUM_CT ? m_mapModelMetadataCT : m_mapModelMetadataT;
 	CBaseViewModel* pViewModel = pLocal->GetViewModel();
 	CBaseAttributableItem* pWorldModel = (CBaseAttributableItem*)m_pApp->EntityList()->GetClientEntityFromHandle(pItem->GetWorldModel());
@@ -550,10 +556,10 @@ bool CSkinChanger::ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem
 	pWorldModel->SetModelIndex(iNewModelIdx + 1);
 	pViewModel->SetModelIndex(iNewModelIdx);
 
-	if (m_bForceFullUpdate)
+	if (bWasForceFullUpdate)
 	{
-		m_bForceFullUpdate = false;
-		m_pApp->ClientState()->ForceFullUpdate();
+		m_bForceFullUpdate = bWasForceFullUpdate;
+		bWasForceFullUpdate = false;
 	}
 	return true;
 }
@@ -578,7 +584,7 @@ bool CSkinChanger::ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId
 	{
 		*pWeapon->GetItemDefinitionIndex() = pSkin->m_iItemDefinitionIndex;
 	}
-	
+
 	int* pPaintKit = pWeapon->GetFallbackPaintKit();
 	if (*pPaintKit != pSkin->m_iFallbackPaintKit)
 	{
@@ -652,18 +658,18 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 	return true;
 }
 
-void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, int iPaintKit, int iSeed, int iStatTrak, const char* pName, float fWear, bool bApplySkin)
+void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, bool bApplySkin, int iPaintKit, int iSeed, int iStatTrak, const char* pName, float fWear)
 {
 	int& iDesiredKnife = iTeamNum == TEAMNUM_CT ? m_iDesiredKnifeModelIndexCT : m_iDesiredKnifeModelIndexT;
-	/*if (iDesiredKnife == iDesiredKnifeModelIndex && !m_bNewMap)
-		return;*/
-	
+
 	iDesiredKnife = iDesiredKnifeModelIndex;
 
 	this->DeleteModelNames(iTeamNum);
 	this->DeleteKillIcons(iTeamNum);
-	if (iDesiredKnife == 0)
+	if (iDesiredKnife == -1)
 	{
+		// TODO: delete skins for old knifechange
+
 		m_pApp->ClientState()->ForceFullUpdate();
 		return;
 	}
@@ -700,7 +706,7 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 			pDesiredKnife
 		);
 
-		// todo: also skin!!
+		// todo:
 		/*AddKillIconReplacement(
 			CXorString("|eì¤rTèûHiä»xeà¶").ToCharArray(),
 			CXorString("ujü­ynñ").ToCharArray()
@@ -708,7 +714,6 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 	}
 
 	m_bForceFullUpdate = true;
-	m_bNewMap = false;
 }
 
 void CSkinChanger::WriteToConfig(const char* pFilename)

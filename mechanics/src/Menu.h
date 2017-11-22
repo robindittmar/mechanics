@@ -318,8 +318,6 @@ private:
 
 	//
 	// SkinChanger tab
-	bool m_bForceFullUpdate;
-
 	CTabPage* m_pSkinChangerTab;
 	CGroupbox* m_pSkinChangerSkinsGroup;
 	CSelectbox* m_pSkinChangerWeapon;
@@ -335,10 +333,7 @@ private:
 
 	CCheckbox* m_pSkinChangerOnlyMyWeapon;
 
-	CGroupbox* m_pSkinChangerKnifeChangeGroup;
 	CSelectbox* m_pSkinChangerKnife;
-
-	CGroupbox* m_pSkinChangerGloveChangeGroup;
 	CSelectbox* m_pSkinChangerGlove;
 
 	//

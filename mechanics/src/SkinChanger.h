@@ -89,8 +89,6 @@ public:
 	int GetDesiredKnifeModelIndexCT() { return m_iDesiredKnifeModelIndexCT; }
 	int GetDesiredKnifeModelIndexT() { return m_iDesiredKnifeModelIndexT; }
 
-	void SetNewMap(bool bNewMap = true) { m_bNewMap = bNewMap; }
-
 	void SetOnlyMyWeapons(bool bOnlyMyWeapons) { m_bOnlyMyWeapons = bOnlyMyWeapons; }
 	bool GetOnlyMyWeapons() { return m_bOnlyMyWeapons; }
 
@@ -112,7 +110,7 @@ public:
 	bool ApplyCustomModel(IClientEntity* pLocal, CBaseAttributableItem* pItem);
 	bool ApplyCustomSkin(CBaseAttributableItem* pWeapon, int iWeaponId);
 	bool ApplyCustomKillIcon(IGameEvent* pEvent);
-	void ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, int iPaintKit = 0, int iSeed = 0, int iStatTrak = -1, const char* pName = nullptr, float fWear = 0.0f, bool bApplySkin = true);
+	void ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, bool bApplySkin = false, int iPaintKit = 0, int iSeed = 0, int iStatTrak = -1, const char* pName = nullptr, float fWear = 0.01f);
 
 	void WriteToConfig(const char* pFilename);
 	void LoadFromConfig(const char* pFilename);
@@ -123,7 +121,6 @@ private:
 	void DeleteKillIcons(int iTeamNum);
 
 	bool m_bForceFullUpdate;
-	bool m_bNewMap;
 
 	bool m_bOnlyMyWeapons;
 

@@ -67,44 +67,6 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 			// LC Draw
 			pApp->LagCompensation()->DrawLagCompensationEntries();
 			pApp->LagCompensation()->DrawLagCompensationIndicator();
-
-			// ****TEST*****
-			/*pApp->Surface()->DrawSetTextColor(255, 255, 0, 0);
-			pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
-			IClientEntity* pLocal = pApp->GetLocalPlayer();
-			for (int i = 0; i < MAX_PLAYERS; i++)
-			{
-			IClientEntity* pCurEnt = pApp->EntityList()->GetClientEntity(i);
-			CResolverPlayer* pCurRes = pApp->Resolver()->GetResolverPlayer(i);
-
-			if (!pCurEnt)
-			continue;
-
-			if (pCurEnt->IsDormant())
-			continue;
-
-			if (!pCurEnt->IsAlive())
-			continue;
-
-			if (!pCurRes)
-			continue;
-
-			Vector screen, origin = *pCurEnt->GetOrigin();
-			if (pApp->Gui()->WorldToScreen(origin, screen))
-			{
-			if (pCurRes->m_bHasFakeActive)
-			{
-			pApp->Surface()->DrawSetTextPos(screen.x - 3, screen.y + 10);
-			pApp->Surface()->DrawPrintText(L"FAKE", lstrlenW(L"FAKE"));
-			}
-
-			if (pCurRes->m_bStartPredLbyBreaks)
-			{
-			pApp->Surface()->DrawSetTextPos(screen.x - 8, screen.y + 25);
-			pApp->Surface()->DrawPrintText(L"LBY-Breaker", lstrlenW(L"LBY-Breaker"));
-			}
-			}
-			}*/
 		}
 	}
 
