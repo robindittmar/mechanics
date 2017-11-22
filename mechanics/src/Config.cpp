@@ -35,7 +35,7 @@ bool CConfig::LoadFile(const char* pFilename)
 	if (!pFile)
 	{
 #ifdef _DEBUG
-		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n", pFullpath);
+		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n\n", pFullpath);
 #endif // _DEBUG
 
 		return false;
@@ -104,7 +104,7 @@ bool CConfig::LoadFile(const char* pFilename)
 			m_mapValues[iHash] = pValueCopy;
 
 #ifdef _DEBUG
-			g_pConsole->Write(LOGLEVEL_INFO, "%s\t=\t%s\n", pKeyBuffer, pValueCopy);
+			g_pConsole->Write(LOGLEVEL_INFO, "%-32s = %16s\n", pKeyBuffer, pValueCopy);
 #endif // _DEBUG
 		}
 	}
@@ -112,7 +112,7 @@ bool CConfig::LoadFile(const char* pFilename)
 	fclose(pFile);
 
 #ifdef _DEBUG
-	g_pConsole->Write(LOGLEVEL_INFO, "Done loading config\n");
+	g_pConsole->Write(LOGLEVEL_INFO, "Done loading config\n\n");
 #endif // _DEBUG
 	return true;
 }
@@ -156,7 +156,7 @@ bool CConfig::SaveFile(const char* pFilename)
 	if (!pFile)
 	{
 #ifdef _DEBUG
-		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n", pFullpath);
+		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n\n", pFullpath);
 #endif // _DEBUG
 
 		return false;
@@ -170,7 +170,7 @@ bool CConfig::SaveFile(const char* pFilename)
 	fclose(pFile);
 
 #ifdef _DEBUG
-	g_pConsole->Write(LOGLEVEL_INFO, "Done saving config\n");
+	g_pConsole->Write(LOGLEVEL_INFO, "Done saving config\n\n");
 #endif // _DEBUG
 	return false;
 }

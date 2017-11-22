@@ -194,6 +194,7 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 			return 1L;
 		break;
 	case WM_LBUTTONDOWN:
+	case WM_LBUTTONDBLCLK:
 		pInputHandler->OnMouseDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 		if (!pGui->m_bEnableGameInput)
@@ -206,6 +207,7 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 			return 1L;
 		break;
 	case WM_RBUTTONDOWN:
+	case WM_RBUTTONDBLCLK:
 		pInputHandler->OnMouseDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 		if (!pGui->m_bEnableGameInput)
@@ -226,11 +228,6 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 	case WM_XBUTTONUP:
 		pInputHandler->OnKeyUp(pGui->XButtonToVKey(wParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
-	case WM_LBUTTONDBLCLK:
-	case WM_RBUTTONDBLCLK:
 		if (!pGui->m_bEnableGameInput)
 			return 1L;
 		break;

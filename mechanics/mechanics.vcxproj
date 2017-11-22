@@ -194,6 +194,7 @@
     <ClCompile Include="src\MaterialVisuals.cpp" />
     <ClCompile Include="src\Menu.cpp" />
     <ClCompile Include="src\Mirror.cpp" />
+    <ClCompile Include="src\NumericUpDown.cpp" />
     <ClCompile Include="src\OverrideView.cpp" />
     <ClCompile Include="src\PaintTraverse.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -308,6 +309,7 @@
     <ClInclude Include="src\MaterialVisuals.h" />
     <ClInclude Include="src\Menu.h" />
     <ClInclude Include="src\Mirror.h" />
+    <ClInclude Include="src\NumericUpDown.h" />
     <ClInclude Include="src\OverrideView.h" />
     <ClInclude Include="src\PaintTraverse.h" />
     <ClInclude Include="src\Player.h" />

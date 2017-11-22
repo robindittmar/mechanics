@@ -41,7 +41,12 @@ void CTextbox::OnTextInput(char c)
 		strcat(pCurText, pAppend);
 	}
 
-	m_pContentLabel->SetContentText(pCurText);
+	this->SetText(pCurText);
+}
+
+void CTextbox::SetText(const char* pText)
+{
+	m_pContentLabel->SetContentText(pText);
 
 	if (m_pEventHandler)
 		m_pEventHandler(m_pContentLabel->GetContentText());

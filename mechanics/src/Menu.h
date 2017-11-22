@@ -39,6 +39,10 @@ public:
 	void FillLoadableConfigs();
 	void LoadConfig();
 	void SaveConfig();
+
+	// <DELETE ME PLS>
+	void PrintNumUpDownValue();
+	// </DELETE ME PLS>
 private:
 	void CreateRageTab();
 	void CreateLegitTab();
@@ -354,6 +358,9 @@ private:
 	CButton* m_pConfigReloadLoadables;
 	CTextbox* m_pConfigSaveConfigName;
 	CButton* m_pConfigSaveConfigButton;
+
+	CNumericUpDown* m_pNumericUpDown;
+	CButton* m_pConfigPrintValue;
 	//
 
 	CApplication* m_pApp;

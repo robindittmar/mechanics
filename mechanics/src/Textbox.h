@@ -23,9 +23,10 @@ public:
 	CTextbox(int x = 0, int y = 0, int w = 100, int h = 20, const char* label = "txtbx", int maxLen = 256);
 	virtual ~CTextbox();
 
-	void OnTextInput(char c);
+	virtual void OnTextInput(char c);
 
-	const char* GetValue() { return m_pContentLabel->GetContentText(); }
+	void SetText(const char* pText);
+	const char* GetText() { return m_pContentLabel->GetContentText(); }
 
 	virtual void ProcessEvent(CInputEvent* pEvent) override;
 	virtual void Draw(ISurface* pSurface) override;
@@ -33,7 +34,7 @@ public:
 	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
 
 	void SetEventHandler(std::function<void(const char*)> pEventHandler) { m_pEventHandler = pEventHandler; }
-private:
+protected:
 	CLabel* m_pLabel;
 	CLabel* m_pContentLabel;
 
