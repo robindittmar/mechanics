@@ -41,6 +41,7 @@ public:
 
 	void CreateTextures();
 	int GetTexture(int textureId);
+	int GetWhiteTexture() { return m_iTextureWhite; }
 
 	void CreateFonts();
 	unsigned int GetFont(int fontId);
@@ -53,6 +54,8 @@ private:
 	IMaterial* m_pMatMirror;
 	std::unordered_map<int, int> m_mapTextures;
 	std::unordered_map<int, unsigned int> m_mapFonts;
+
+	int m_iTextureWhite;
 
 	CXorString m_xorVertexLitGeneric;
 	CXorString m_xorUnlitGeneric;

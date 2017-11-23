@@ -118,6 +118,7 @@ void CResourceManager::CreateTextures()
 	pSurface->DrawSetTextureRGBA(textureCursor, pTexCursor, 1, 1);
 	pSurface->DrawSetTextureRGBA(textureColorFade, pTexColorFade, 1, 360);
 
+	m_iTextureWhite = pSurface->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
 	m_mapTextures[RM_TEXTURE_CURSOR] = textureCursor;
 	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
 	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");

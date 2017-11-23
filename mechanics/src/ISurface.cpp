@@ -76,8 +76,6 @@ void ISurface::DrawOutlinedCircle(int x, int y, int radius, int segments)
 
 void ISurface::DrawFilledCircle(int x, int y, int radius, int segments)
 {
-	static int iCircleTexture = this->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
-
 	// negative because of drawing direction (DrawTexturedPolygon kind of works that way)
 	float fSegments = (float)-segments;
 	float fAngle;
@@ -91,7 +89,7 @@ void ISurface::DrawFilledCircle(int x, int y, int radius, int segments)
 		pVertices[i].m_Position.y = y + (radius * cosf(fAngle));
 	}
 	
-	this->DrawSetTexture(iCircleTexture);
+	this->DrawSetTexture(g_pResourceManager->GetWhiteTexture());
 	this->DrawTexturedPolygon(segments, pVertices, false);
 
 	delete[] pVertices;

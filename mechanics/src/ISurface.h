@@ -12,6 +12,8 @@
 #include "CreateInterface.h"
 #include "Vector.h"
 
+#include "ResourceManager.h"
+
 class ITexture;
 
 class IImage;
