@@ -58,8 +58,6 @@ private:
 	bool m_bReverse;
 
 	float m_fValue;
-	int m_iCountPossibleValues;
-	float* m_fPossibleValues;
 	float m_fMinValue, m_fMaxValue, m_fValueSpan, m_fStepSize;
 
 	std::function<void(float)> m_pEventHandler;

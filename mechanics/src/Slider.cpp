@@ -3,30 +3,10 @@
 CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText)
 	: IControlTooltip(x, y, w, h), m_iOrientation(iOrientation),
 	m_bReverse(bReverse), m_fMinValue(fMin), m_fMaxValue(fMax),
-	m_fStepSize(fStepSize), m_fPossibleValues(nullptr)
+	m_fStepSize(fStepSize)
 {
 	m_bHitcheckForMouseMove = false;
 	m_fValueSpan = m_fMaxValue - m_fMinValue;
-	if (m_fStepSize != 0.0f)
-	{
-		float m_fCountPossibleValues = m_fValueSpan / m_fStepSize;
-		m_iCountPossibleValues = m_fValueSpan / m_fStepSize;
-		if (m_fCountPossibleValues - m_iCountPossibleValues > 0.0f)
-			m_iCountPossibleValues += 2;
-		else
-			m_iCountPossibleValues++;
-
-		m_fPossibleValues = new float[m_iCountPossibleValues];
-		float fCurValue = fMin;
-
-		for (int i = 0; i < m_iCountPossibleValues; i++)
-		{
-			m_fPossibleValues[i] = fCurValue;
-			fCurValue += m_fStepSize;
-		}
-		
-		m_fPossibleValues[m_iCountPossibleValues - 1] = fMax;
-	}
 
 	m_pLabel = new CLabel(0, -16, 0, 0, "", RM_FONT_NORMAL, iOrientation == SLIDER_ORIENTATION_HORIZONTAL ? LABEL_ORIENTATION_CENTER : LABEL_ORIENTATION_LEFT);
 
@@ -39,9 +19,6 @@ CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, 
 
 CSlider::~CSlider()
 {
-	if (m_fPossibleValues)
-		delete[] m_fPossibleValues;
-
 	if (m_pLabel)
 		delete m_pLabel;
 }
@@ -147,7 +124,11 @@ void CSlider::SetEnabled(bool bIsEnabled)
 
 void CSlider::SetValue(float fValue)
 {
-	m_fValue = fValue;
+	if (m_fStepSize != 0.0f)
+		m_fValue = (float)((int)((fValue / m_fStepSize) + 0.5f) * m_fStepSize);
+	else
+		m_fValue = fValue;
+
 	this->SetLabelText();
 
 	if (m_pEventHandler)
@@ -186,29 +167,6 @@ void CSlider::SetValueToCursorPos(int mx, int my)
 
 	fDelta /= fRefMax;
 	fDelta = (fDelta * m_fValueSpan) + m_fMinValue;
-
-	if (m_fStepSize != 0.0f)
-	{
-		for (int i = 0; i < m_iCountPossibleValues; i++)
-		{
-			if (fDelta > m_fPossibleValues[i] && fDelta < m_fPossibleValues[i + 1])
-			{
-				float fDist1 = fDelta - m_fPossibleValues[i];
-				float fDist2 = m_fPossibleValues[i + 1] - fDelta;
-
-				if (fDist1 < fDist2)
-				{
-					fDelta = m_fPossibleValues[i];
-				}
-				else
-				{
-					fDelta = m_fPossibleValues[i + 1];
-				}
-				break;
-			}
-		}
-	}
-
 	this->SetValue(fDelta);
 }
 
