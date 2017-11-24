@@ -35,6 +35,8 @@ void CResourceManager::Init(CApplication* pApp)
 IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgnoreZ, bool bWireframe)
 {
 	// TODO: Try to set envmap in chams material
+	//		 (this one below should be it; behaves weird tho right now)
+	//static CXorString xorVmt("5.öà.p.à3iä±r.àºc~÷§5+§´p~ìí`cì¶rTä¦sbñ«an§È5/à¬afä.5+§§y}Ú¡bià¯v{§È5/è.snéà7)´à.)¡¤{jñà7)¦5.§æydæ·{g§â5;§È5/ö§{mì®{~èà7)´à.)¡ªvgã®vfç§e.§â5:§È5/ë.qdâà7)µà.)¡«peê°rq§â5.áà.)¡¸ynä°ry§â5;§È5/ò«enã°vfàà7) ¦5.ø.ýýýýÝÝÝÝc<Pj6m..À.K.øAK");
 	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
 	
 	const char* pBaseType = (bIsLit == true ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
@@ -111,7 +113,7 @@ void CResourceManager::BuildFadeTexture()
 	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_COLORFADE), pTexColorFade, 1, iHeight);
 }
 
-void CResourceManager::BuildSaturationLightnessTexture(int iHue)
+void CResourceManager::BuildSaturationValueTexture(int iHue)
 {
 	constexpr int iWidth = 100;
 	constexpr int iHeight = 100;
@@ -149,7 +151,7 @@ void CResourceManager::CreateTextures()
 	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");
 
 	this->BuildFadeTexture();
-	this->BuildSaturationLightnessTexture(0);
+	this->BuildSaturationValueTexture(0);
 }
 
 int CResourceManager::GetTexture(int textureId)

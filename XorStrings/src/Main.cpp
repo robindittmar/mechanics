@@ -12,7 +12,7 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("step"),
+		CXorString("\"%s\"\n{\n\"$basetexture\" \"vgui/white_additive\"\n\"$envmap\" \"env_cubemap\"\n\"$model\" \"1\"\n\"$flat\" \"%d\"\n\"$nocull\" \"0\"\n\"$selfillum\" \"1\"\n\"$halflambert\" \"1\"\n\"$nofog\" \"0\"\n\"$ignorez\" \"%d\"\n\"$znearer\" \"0\"\n\"$wireframe\" \"%d\"\n}"),
 		CXorString("VEngineCvar007"),
 		CXorString("¸òÖëœπ£õÃ∫©ô√∞ÑÅöÂﬁ", 0x1235AFAA),
 		CXorString("_cajthRq{nc@vdcmn=67", 0x1A),

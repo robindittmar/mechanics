@@ -181,6 +181,10 @@ void CMenu::ApplySettings()
 	m_pChamsIgnoreZ->SetChecked(m_pApp->Chams()->GetOnlyVisible());
 	m_pChamsFakeAngle->SetChecked(m_pApp->Chams()->GetRenderFakeAngle());
 	m_pChamsWeaponChams->SetSelection(m_pApp->Chams()->GetWeaponChamsStyle());
+	m_pChamsColorVisibleCT->SetValue(m_pApp->Chams()->GetColorVisibleCT());
+	m_pChamsColorHiddenCT->SetValue(m_pApp->Chams()->GetColorHiddenCT());
+	m_pChamsColorVisibleT->SetValue(m_pApp->Chams()->GetColorVisibleT());
+	m_pChamsColorHiddenT->SetValue(m_pApp->Chams()->GetColorHiddenT());
 
 	// Sound ESP
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
@@ -938,6 +942,22 @@ void CMenu::CreateVisualsTab()
 	m_pChamsWeaponChams->SetEventHandler(std::bind(&CChams::SetWeaponChamsStyle, m_pApp->Chams(), std::placeholders::_1));
 	m_pChamsWeaponChams->AddDependency(m_pChamsEnabled);
 
+	m_pChamsColorVisibleCT = new CColorPicker(4, 190);
+	m_pChamsColorVisibleCT->SetTooltipText("CT - Visible");
+	m_pChamsColorVisibleCT->SetEventHandler(std::bind(&CChams::SetColorVisibleCT, m_pApp->Chams(), std::placeholders::_1));
+
+	m_pChamsColorHiddenCT = new CColorPicker(38, 190);
+	m_pChamsColorHiddenCT->SetTooltipText("CT - Hidden");
+	m_pChamsColorHiddenCT->SetEventHandler(std::bind(&CChams::SetColorHiddenCT, m_pApp->Chams(), std::placeholders::_1));
+
+	m_pChamsColorVisibleT = new CColorPicker(72, 190);
+	m_pChamsColorVisibleT->SetTooltipText("T - Visible");
+	m_pChamsColorVisibleT->SetEventHandler(std::bind(&CChams::SetColorVisibleT, m_pApp->Chams(), std::placeholders::_1));
+
+	m_pChamsColorHiddenT = new CColorPicker(106, 190);
+	m_pChamsColorHiddenT->SetTooltipText("T - Hidden");
+	m_pChamsColorHiddenT->SetEventHandler(std::bind(&CChams::SetColorHiddenT, m_pApp->Chams(), std::placeholders::_1));
+
 	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
@@ -946,6 +966,10 @@ void CMenu::CreateVisualsTab()
 	m_pChamsGroup->AddChild(m_pChamsIgnoreZ);
 	m_pChamsGroup->AddChild(m_pChamsFakeAngle);
 	m_pChamsGroup->AddChild(m_pChamsWeaponChams);
+	m_pChamsGroup->AddChild(m_pChamsColorVisibleCT);
+	m_pChamsGroup->AddChild(m_pChamsColorHiddenCT);
+	m_pChamsGroup->AddChild(m_pChamsColorVisibleT);
+	m_pChamsGroup->AddChild(m_pChamsColorHiddenT);
 
 	m_pSoundEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pSoundEspEnabled->SetEventHandler(std::bind(&CSoundEsp::SetEnabled, m_pApp->SoundEsp(), std::placeholders::_1));

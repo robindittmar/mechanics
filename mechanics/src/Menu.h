@@ -225,6 +225,11 @@ private:
 	CCheckbox* m_pChamsFakeAngle;
 	CSelectbox* m_pChamsWeaponChams;
 
+	CColorPicker* m_pChamsColorVisibleCT;
+	CColorPicker* m_pChamsColorHiddenCT;
+	CColorPicker* m_pChamsColorVisibleT;
+	CColorPicker* m_pChamsColorHiddenT;
+
 	// Sound Esp
 	CGroupbox* m_pSoundEspGroup;
 	CCheckbox* m_pSoundEspEnabled;

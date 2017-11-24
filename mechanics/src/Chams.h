@@ -28,6 +28,7 @@ public:
 	CChams();
 	virtual ~CChams();
 
+	virtual void Setup() override;
 	virtual void Think(void* pParameters = nullptr) override;
 
 	void SetRenderTeam(bool bRender) { m_bRenderTeam = bRender; }
@@ -45,22 +46,22 @@ public:
 	void SetRenderFakeAngle(bool bRenderFakeAngle) { m_bRenderFakeAngle = bRenderFakeAngle; }
 	bool GetRenderFakeAngle() { return m_bRenderFakeAngle; }
 
-	void SetColorHiddenCT(Color clrHiddenCT) { m_clrHiddenCT = clrHiddenCT; }
+	void SetColorHiddenCT(Color clrHiddenCT);
 	Color GetColorHiddenCT() { return m_clrHiddenCT; }
 
-	void SetColorVisibleCT(Color clrVisibleCT) { m_clrVisibleCT = clrVisibleCT; }
+	void SetColorVisibleCT(Color clrVisibleCT);
 	Color GetColorVisibleCT() { return m_clrVisibleCT; }
 
-	void SetColorHiddenT(Color clrHiddenT) { m_clrHiddenT = clrHiddenT; }
+	void SetColorHiddenT(Color clrHiddenT);
 	Color GetColorHiddenT() { return m_clrHiddenT; }
 
-	void SetColorVisibleT(Color clrVisibleT) { m_clrVisibleT = clrVisibleT; }
+	void SetColorVisibleT(Color clrVisibleT);
 	Color GetColorVisibleT() { return m_clrVisibleT; }
 
 	void SetWeaponChamsStyle(int iWeaponChamStyle) { m_iWeaponChamsStyle = iWeaponChamStyle; }
 	int GetWeaponChamsStyle() { return m_iWeaponChamsStyle; }
 
-	void ReloadMaterials();
+	void DestroyMaterials();
 	void DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 	void RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
 	void RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
@@ -80,7 +81,6 @@ private:
 
 	int m_iWeaponChamsStyle;
 
-	bool m_bMaterialsInitialized;
 	IMaterial* m_pFlatHiddenCT;
 	IMaterial* m_pFlatVisibleCT;
 	IMaterial* m_pFlatHiddenT;
@@ -96,7 +96,6 @@ private:
 	IMaterial* m_pHiddenT;
 	IMaterial* m_pVisibleT;
 
-	bool m_bFakeAngleMaterialsInitialized;
 	IMaterial* m_pFakeAngle;
 	IMaterial* m_pFlatFakeAngle;
 	IMaterial* m_pLitFakeAngle;

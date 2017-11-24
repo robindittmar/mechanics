@@ -148,35 +148,33 @@ namespace Utils
 
 	void RgbToHsv(int r, int g, int b, float& h, float& s, float& v)
 	{
-		unsigned char rgbMin, rgbMax;
+		v = std::max(r, std::max(g, b));
+		float cmin = std::min(r, std::min(g, b));
+		float cdelta = v - cmin;
 
-		rgbMin = r < g ? (r < b ? r : b) : (g < b ? g : b);
-		rgbMax = r > g ? (r > b ? r : b) : (g > b ? g : b);
-
-		v = rgbMax;
-		if (v == 0)
-		{
-			h = 0;
-			s = 0;
-			return;
-		}
-
-		s = 255 * long(rgbMax - rgbMin) / v;
-		if (s == 0)
-		{
-			h = 0;
-			v /= 255.0f;
-			return;
-		}
-
-		if (rgbMax == r)
-			h = 0 + 43 * (g - b) / (rgbMax - rgbMin);
-		else if (rgbMax == g)
-			h = 85 + 43 * (b - r) / (rgbMax - rgbMin);
+		if (v == 0.0f)
+			s = 0.0f;
 		else
-			h = 171 + 43 * (r - g) / (rgbMax - rgbMin);
+			s = cdelta / v;
 
-		s /= 255.0f;
+		if (s == 0.0f)
+		{
+			h = 0.0f;
+		}
+		else
+		{
+			if (r == v)
+				h = (g - b) / cdelta;
+			else if (g == v)
+				h = 2 + (b - r) / cdelta;
+			else if (b == v)
+				h = 4 + (r - g) / cdelta;
+
+			h *= 60.0f;
+			if (h < 0.0f)
+				h += 360.0f;
+		}
+
 		v /= 255.0f;
 	}
 }

@@ -28,6 +28,8 @@ public:
 	void SetColorPicker(CColorPicker* pColorPicker) { m_pColorPicker = pColorPicker; }
 	CColorPicker* GetColorPicker() const { return m_pColorPicker; }
 
+	void OnOpen();
+
 	void SetAlpha(float fAlpha);
 	void SetHue(float fHue);
 	void SetSaturationAndValue(float fSaturation, float fValue);
@@ -51,7 +53,6 @@ private:
 	float m_fSaturation;
 	float m_fValue;
 
-	bool m_bInitialized;
 	CLabel* m_pAlphaLabel;
 	CSlider* m_pAlphaSlider;
 	CSlider* m_pHueSlider;

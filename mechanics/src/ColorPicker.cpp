@@ -32,6 +32,7 @@ void CColorPicker::OnClicked()
 		m_bPopupInitialized = true;
 	}
 
+	m_pPopup->OnOpen();
 	pWindow->SetPopup(m_pPopup);
 }
 

@@ -40,7 +40,7 @@ public:
 	IMaterial* GetMirrorMaterial() { return m_pMatMirror; }
 
 	void BuildFadeTexture();
-	void BuildSaturationLightnessTexture(int iHue);
+	void BuildSaturationValueTexture(int iHue);
 
 	void CreateTextures();
 	int GetTexture(int textureId);

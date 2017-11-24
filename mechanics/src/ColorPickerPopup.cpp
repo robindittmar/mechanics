@@ -4,8 +4,7 @@
 int CColorPickerPopup::m_iColorFadeTexture = 0;
 
 CColorPickerPopup::CColorPickerPopup(int x, int y, CColorPicker* pColorPicker, CWindow* pParentWindow)
-	: IControlPopup(x, y, 234, 232, pParentWindow), m_bInitialized(false), m_pColorPicker(pColorPicker),
-	m_bMouseDownInSatValPicker(false)
+	: IControlPopup(x, y, 234, 232, pParentWindow), m_pColorPicker(pColorPicker), m_bMouseDownInSatValPicker(false)
 {
 	m_bHitcheckForMouseMove = false;
 	m_bHitcheckForMouseUp = false;
@@ -30,6 +29,21 @@ CColorPickerPopup::~CColorPickerPopup()
 {
 }
 
+void CColorPickerPopup::OnOpen()
+{
+	Color clr = m_pColorPicker->GetValue();
+	float h, s, v;
+	Utils::RgbToHsv(clr.r(), clr.g(), clr.b(), h, s, v);
+
+	m_iAlpha = clr.a();
+	m_iHue = h;
+	m_fSaturation = s;
+	m_fValue = v;
+
+	m_pAlphaSlider->SetValue(m_iAlpha);
+	m_pHueSlider->SetValue((float)m_iHue);
+}
+
 void CColorPickerPopup::SetAlpha(float fAlpha)
 {
 	m_iAlpha = (int)fAlpha;
@@ -38,10 +52,11 @@ void CColorPickerPopup::SetAlpha(float fAlpha)
 
 void CColorPickerPopup::SetHue(float fHue)
 {
-	// Build SL Texture
-	g_pResourceManager->BuildSaturationLightnessTexture(fHue);
-
 	m_iHue = fHue;
+
+	// Build SL Texture
+	g_pResourceManager->BuildSaturationValueTexture(m_iHue);
+
 	this->UpdateValue();
 }
 
@@ -120,22 +135,6 @@ void CColorPickerPopup::Draw(ISurface* pSurface)
 {
 	if (!m_bIsVisible)
 		return;
-
-	if (!m_bInitialized)
-	{
-		Color clr = m_pColorPicker->GetValue();
-		float h, s, v;
-		Utils::RgbToHsv(clr.r(), clr.g(), clr.b(), h, s, v);
-
-		m_iAlpha = clr.a();
-		m_iHue = h;
-		m_fSaturation = s;
-		m_fValue = v;
-
-		m_pAlphaSlider->SetValue(m_iAlpha);
-		m_pHueSlider->SetValue((float)m_iHue);
-		m_bInitialized = true;
-	}
 
 	int x = 0, y = 0;
 	this->GetAbsolutePosition(&x, &y);

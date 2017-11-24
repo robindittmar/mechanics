@@ -666,7 +666,8 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 
 	this->DeleteModelNames(iTeamNum);
 	this->DeleteKillIcons(iTeamNum);
-	if (iDesiredKnife == -1)
+	// Changed this because crash in game_newmap
+	if (iDesiredKnife <= 0) // Used to be: (iDesiredKnife == -1)
 	{
 		// TODO: delete skins for old knifechange
 

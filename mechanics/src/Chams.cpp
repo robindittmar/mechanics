@@ -2,44 +2,69 @@
 #include "Application.h"
 
 CChams::CChams()
+	: m_pModelRender(nullptr), m_bRenderTeam(false), m_bRenderLocalplayer(false),
+	m_bOnlyVisible(false), m_iPlayerChamsStyle(PLAYER_CHAMSSTYLE_NONE), m_bRenderFakeAngle(false),
+	m_iWeaponChamsStyle(WEAPON_CHAMSSTYLE_NONE), m_pFlatHiddenCT(nullptr), m_pFlatVisibleCT(nullptr),
+	m_pFlatHiddenT(nullptr), m_pFlatVisibleT(nullptr), m_pFlatFakeAngle(nullptr),
+	m_pLitHiddenCT(nullptr), m_pLitVisibleCT(nullptr), m_pLitHiddenT(nullptr),
+	m_pLitVisibleT(nullptr), m_pLitFakeAngle(nullptr), m_pHiddenCT(nullptr),
+	m_pVisibleCT(nullptr), m_pHiddenT(nullptr), m_pVisibleT(nullptr),
+	m_pFakeAngle(nullptr)
 {
-	m_pModelRender = NULL;
-
-	m_bMaterialsInitialized = false;
-	m_bFakeAngleMaterialsInitialized = false;
-
-	m_bRenderTeam = false;
-	m_bRenderLocalplayer = false;
-	m_bOnlyVisible = false;
-	m_iPlayerChamsStyle = PLAYER_CHAMSSTYLE_NONE;
-	m_bRenderFakeAngle = false;
-
-	m_iWeaponChamsStyle = WEAPON_CHAMSSTYLE_NONE;
-
-	m_pFlatHiddenCT = NULL;
-	m_pFlatVisibleCT = NULL;
-	m_pFlatHiddenT = NULL;
-	m_pFlatVisibleT = NULL;
-	m_pFlatFakeAngle = NULL;
-
-	m_pLitHiddenCT = NULL;
-	m_pLitVisibleCT = NULL;
-	m_pLitHiddenT = NULL;
-	m_pLitVisibleT = NULL;
-	m_pLitFakeAngle = NULL;
-
-	m_pHiddenCT = NULL;
-	m_pVisibleCT = NULL;
-	m_pHiddenT = NULL;
-	m_pVisibleT = NULL;
-	m_pFakeAngle = NULL;
 }
 
 CChams::~CChams()
 {
 	// Only used to decrement reference count. shit won't be reinitialized,
 	// since the destructor is called on getting destroyed
-	this->ReloadMaterials();
+	this->DestroyMaterials();
+}
+
+void CChams::Setup()
+{
+	IFeature::Setup();
+
+	// Grab references
+	m_pModelRender = m_pApp->ModelRender();
+
+	// === Chams ===
+	// Create materials
+	m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+	m_pFlatVisibleCT = m_pApp->ResourceManager()->CreateMaterial(false, true);
+	m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
+	m_pFlatVisibleT = m_pApp->ResourceManager()->CreateMaterial(false, true);
+
+	m_pLitHiddenCT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
+	m_pLitVisibleCT = m_pApp->ResourceManager()->CreateMaterial(true, false);
+	m_pLitHiddenT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
+	m_pLitVisibleT = m_pApp->ResourceManager()->CreateMaterial(true, false);
+
+	// Colors
+	m_pFlatHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+	m_pFlatVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+	m_pFlatHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+	m_pFlatVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
+
+	m_pLitHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+	m_pLitVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+	m_pLitHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+	m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
+	// ===============
+
+	// === Fake angle ===
+	// Create materials
+	m_pFlatFakeAngle = m_pApp->ResourceManager()->CreateMaterial(false, true);
+	m_pLitFakeAngle = m_pApp->ResourceManager()->CreateMaterial(true, false);
+
+	// Colors
+	m_pFlatFakeAngle->AlphaModulate(0.7f);
+	m_pFlatFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
+	m_pLitFakeAngle->AlphaModulate(0.7f);
+	m_pLitFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
+	// ===============
+
+	// Force Chams to actually "load" into the pointers
+	this->SetModelStyle(m_iPlayerChamsStyle);
 }
 
 void CChams::Think(void* pParameters)
@@ -74,7 +99,51 @@ void CChams::SetModelStyle(int iPlayerChamsStyle)
 	}
 }
 
-void CChams::ReloadMaterials()
+void CChams::SetColorHiddenCT(Color clrHiddenCT)
+{
+	m_clrHiddenCT = clrHiddenCT;
+
+	m_pFlatHiddenCT->AlphaModulate(m_clrHiddenCT.a() / 255.0f);
+	m_pFlatHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+
+	m_pLitHiddenCT->AlphaModulate(m_clrHiddenCT.a() / 255.0f);
+	m_pLitHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
+}
+
+void CChams::SetColorVisibleCT(Color clrVisibleCT)
+{
+	m_clrVisibleCT = clrVisibleCT;
+
+	m_pFlatVisibleCT->AlphaModulate(m_clrVisibleCT.a() / 255.0f);
+	m_pFlatVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+
+	m_pLitVisibleCT->AlphaModulate(m_clrVisibleCT.a() / 255.0f);
+	m_pLitVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
+}
+
+void CChams::SetColorHiddenT(Color clrHiddenT)
+{
+	m_clrHiddenT = clrHiddenT;
+
+	m_pFlatHiddenT->AlphaModulate(m_clrHiddenT.a() / 255.0f);
+	m_pFlatHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+
+	m_pLitHiddenT->AlphaModulate(m_clrHiddenT.a() / 255.0f);
+	m_pLitHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
+}
+
+void CChams::SetColorVisibleT(Color clrVisibleT)
+{
+	m_clrVisibleT = clrVisibleT;
+
+	m_pFlatVisibleT->AlphaModulate(m_clrVisibleT.a() / 255.0f);
+	m_pFlatVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
+
+	m_pLitVisibleT->AlphaModulate(m_clrVisibleT.a() / 255.0f);
+	m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
+}
+
+void CChams::DestroyMaterials()
 {
 	if (m_pFlatHiddenCT)
 		m_pFlatHiddenCT->DecrementReferenceCount();
@@ -105,9 +174,6 @@ void CChams::ReloadMaterials()
 
 	if (m_pLitFakeAngle)
 		m_pLitFakeAngle->DecrementReferenceCount();
-
-	m_bMaterialsInitialized = false;
-	m_bFakeAngleMaterialsInitialized = false;
 }
 
 void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
@@ -141,27 +207,6 @@ void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelSta
 
 	if (m_pApp->AntiAim()->IsLbyUpdate())
 		return;
-
-	if (!m_bFakeAngleMaterialsInitialized)
-	{
-		// Grab references
-		m_pModelRender = m_pApp->ModelRender();
-
-		// Create materials
-		m_pFlatFakeAngle = m_pApp->ResourceManager()->CreateMaterial(false, true);
-		m_pLitFakeAngle = m_pApp->ResourceManager()->CreateMaterial(true, false);
-
-		// Colors
-		m_pFlatFakeAngle->AlphaModulate(0.7f);
-		m_pFlatFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
-		m_pLitFakeAngle->AlphaModulate(0.7f);
-		m_pLitFakeAngle->ColorModulate(1.0f, 1.0f, 1.0f);
-
-		// Force Chams to actually "load" into the pointers
-		this->SetModelStyle(m_iPlayerChamsStyle);
-
-		m_bFakeAngleMaterialsInitialized = true;
-	}
 
 	matrix3x4_t mRotation;
 	matrix3x4_t mCurBone;
@@ -225,41 +270,6 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 
 	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
 	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
-
-	// Create Materials
-	if (!m_bMaterialsInitialized)
-	{
-		// Grab references
-		m_pModelRender = m_pApp->ModelRender();
-
-		// Create materials
-		m_pFlatHiddenCT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
-		m_pFlatVisibleCT = m_pApp->ResourceManager()->CreateMaterial(false, true);
-		m_pFlatHiddenT = m_pApp->ResourceManager()->CreateMaterial(false, true, true);
-		m_pFlatVisibleT = m_pApp->ResourceManager()->CreateMaterial(false, true);
-
-		m_pLitHiddenCT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
-		m_pLitVisibleCT = m_pApp->ResourceManager()->CreateMaterial(true, false);
-		m_pLitHiddenT = m_pApp->ResourceManager()->CreateMaterial(true, false, true);
-		m_pLitVisibleT = m_pApp->ResourceManager()->CreateMaterial(true, false);
-
-		// Colors
-		m_pFlatHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
-		m_pFlatVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
-		m_pFlatHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
-		m_pFlatVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
-
-		m_pLitHiddenCT->ColorModulate(m_clrHiddenCT.r() / 255.0f, m_clrHiddenCT.g() / 255.0f, m_clrHiddenCT.b() / 255.0f);
-		m_pLitVisibleCT->ColorModulate(m_clrVisibleCT.r() / 255.0f, m_clrVisibleCT.g() / 255.0f, m_clrVisibleCT.b() / 255.0f);
-		m_pLitHiddenT->ColorModulate(m_clrHiddenT.r() / 255.0f, m_clrHiddenT.g() / 255.0f, m_clrHiddenT.b() / 255.0f);
-		m_pLitVisibleT->ColorModulate(m_clrVisibleT.r() / 255.0f, m_clrVisibleT.g() / 255.0f, m_clrVisibleT.b() / 255.0f);
-
-		// Force Chams to actually "load" into the pointers
-		this->SetModelStyle(m_iPlayerChamsStyle);
-
-		// Don't do this again :)
-		m_bMaterialsInitialized = true;
-	}
 
 	// models/player
 	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
@@ -346,7 +356,7 @@ void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderCo
 
 		if (pMat)
 		{
-			m_pApp->ModelRender()->ForcedMaterialOverride(pMat);
+			m_pModelRender->ForcedMaterialOverride(pMat);
 			g_pDrawModelExecute(ecx, ctx, state, pInfo, pCustomBoneToWorld);
 		}
 	}
