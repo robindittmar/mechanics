@@ -92,22 +92,15 @@ void CResourceManager::CreateMirror()
 	
 }
 
-void CResourceManager::CreateTextures()
+void CResourceManager::BuildFadeTexture()
 {
-	ISurface* pSurface = m_pApp->Surface();
+	constexpr int iHeight = 360;
 
-	int textureCursor = pSurface->CreateNewTextureID(true);
-	int textureColorFade = pSurface->CreateNewTextureID(true);
-
-	// Cursor texture
-	unsigned char pTexCursor[] = { 255, 90, 0, 255 };
-
-	// Color palette
 	int curR, curG, curB;
-	unsigned char pTexColorFade[360 * 4];
-	for(int y = 0; y < 360 * 4; y += 4)
+	unsigned char pTexColorFade[iHeight * 4];
+	for (int y = 0; y < iHeight * 4; y += 4)
 	{
-		Utils::HslToRgb(y, 1.0f, 1.0f, curR, curG, curB);
+		Utils::HsvToRgb(y, 1.0f, 1.0f, curR, curG, curB);
 
 		pTexColorFade[y] = curR;
 		pTexColorFade[y + 1] = curG;
@@ -115,13 +108,48 @@ void CResourceManager::CreateTextures()
 		pTexColorFade[y + 3] = 255; // Alpha
 	}
 
-	pSurface->DrawSetTextureRGBA(textureCursor, pTexCursor, 1, 1);
-	pSurface->DrawSetTextureRGBA(textureColorFade, pTexColorFade, 1, 360);
+	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_COLORFADE), pTexColorFade, 1, iHeight);
+}
+
+void CResourceManager::BuildSaturationLightnessTexture(int iHue)
+{
+	constexpr int iWidth = 100;
+	constexpr int iHeight = 100;
+
+	int idx;
+	int curR, curG, curB;
+	unsigned char pTexture[iWidth * iHeight * 4];
+	for (int y = 0; y < iHeight; y++)
+	{
+		for (int x = 0; x < iWidth; x++)
+		{
+			Utils::HsvToRgb(iHue, (x + 1) / (float)iWidth, 1.0f - ((y + 1) / (float)iHeight), curR, curG, curB);
+
+			idx = (y * iWidth + x) * 4;
+			pTexture[idx++] = curR;
+			pTexture[idx++] = curG;
+			pTexture[idx++] = curB;
+			pTexture[idx++] = 255; // Alpha
+		}
+	}
+
+	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_SLFADE), pTexture, iWidth, iHeight);
+}
+
+void CResourceManager::CreateTextures()
+{
+	ISurface* pSurface = m_pApp->Surface();
+
+	int textureColorFade = pSurface->CreateNewTextureID(true);
+	int textureSLFade = pSurface->CreateNewTextureID(true);
 
 	m_iTextureWhite = pSurface->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
-	m_mapTextures[RM_TEXTURE_CURSOR] = textureCursor;
 	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
+	m_mapTextures[RM_TEXTURE_SLFADE] = textureSLFade;
 	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");
+
+	this->BuildFadeTexture();
+	this->BuildSaturationLightnessTexture(0);
 }
 
 int CResourceManager::GetTexture(int textureId)
@@ -155,6 +183,11 @@ unsigned int CResourceManager::GetFont(int fontId)
 
 int CResourceManager::LoadPngToTexture(ISurface* pSurface, const char* pFilename)
 {
+	// TODO:
+	// <temp>
+	CBenchmark benchmark(true);
+	// </temp>
+
 	// PNG Data
 	std::vector<unsigned char> vRawImage; //the raw pixels
 	unsigned iWidth, iHeight;
@@ -187,5 +220,12 @@ int CResourceManager::LoadPngToTexture(ISurface* pSurface, const char* pFilename
 	pSurface->DrawSetTextureRGBA(textureId, pImgData, iWidth, iHeight);
 
 	delete[] pImgData;
+
+	// TODO:
+	// <temp>
+	benchmark.FinishBenchmark();
+	benchmark.PrintBenchmark("Create Texture from *.png");
+	// </temp>
+
 	return textureId;
 }

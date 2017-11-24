@@ -80,19 +80,19 @@ namespace Utils
 	/// </summary>
 	/// <param name="h"></param>
 	/// <param name="s"></param>
-	/// <param name="l"></param>
+	/// <param name="v"></param>
 	/// <param name="r"></param>
 	/// <param name="g"></param>
 	/// <param name="b"></param>
-	void HslToRgb(int h, float s, float l, int& r, int &g, int& b)
+	void HsvToRgb(int h, float s, float v, int& r, int &g, int& b)
 	{
 		double      hh, p, q, t, ff;
 		long        i;
 
 		if (s <= 0.0) {       // < is bogus, just shuts up warnings
-			r = l;
-			g = l;
-			b = l;
+			r = v;
+			g = v;
+			b = v;
 			return;
 		}
 		hh = h;
@@ -100,15 +100,15 @@ namespace Utils
 		hh /= 60.0;
 		i = (long)hh;
 		ff = hh - i;
-		p = l * (1.0 - s);
-		q = l * (1.0 - (s * ff));
-		t = l * (1.0 - (s * (1.0 - ff)));
+		p = v * (1.0 - s);
+		q = v * (1.0 - (s * ff));
+		t = v * (1.0 - (s * (1.0 - ff)));
 
 		p *= 255.0f;
 		q *= 255.0f;
 		t *= 255.0f;
 
-		double ll = l * 255.0f;
+		double ll = v * 255.0f;
 
 		switch (i)
 		{
@@ -146,67 +146,37 @@ namespace Utils
 		}
 	}
 
-	void RgbToHsl(int r, int g, int b, float& h, float& s, float& l)
+	void RgbToHsv(int r, int g, int b, float& h, float& s, float& v)
 	{
-		double r_percent = ((double)r) / 255.0;
-		double g_percent = ((double)g) / 255.0;
-		double b_percent = ((double)b) / 255.0;
+		unsigned char rgbMin, rgbMax;
 
-		double max_color = 0;
-		if ((r_percent >= g_percent) && (r_percent >= b_percent))
-			max_color = r_percent;
-		if ((g_percent >= r_percent) && (g_percent >= b_percent))
-			max_color = g_percent;
-		if ((b_percent >= r_percent) && (b_percent >= g_percent))
-			max_color = b_percent;
+		rgbMin = r < g ? (r < b ? r : b) : (g < b ? g : b);
+		rgbMax = r > g ? (r > b ? r : b) : (g > b ? g : b);
 
-		double min_color = 0;
-		if ((r_percent <= g_percent) && (r_percent <= b_percent))
-			min_color = r_percent;
-		if ((g_percent <= r_percent) && (g_percent <= b_percent))
-			min_color = g_percent;
-		if ((b_percent <= r_percent) && (b_percent <= g_percent))
-			min_color = b_percent;
-
-		double L = 0;
-		double S = 0;
-		double H = 0;
-
-		L = (max_color + min_color) / 2;
-
-		if (max_color == min_color)
+		v = rgbMax;
+		if (v == 0)
 		{
-			S = 0;
-			H = 0;
+			h = 0;
+			s = 0;
+			return;
 		}
+
+		s = 255 * long(rgbMax - rgbMin) / v;
+		if (s == 0)
+		{
+			h = 0;
+			v /= 255.0f;
+			return;
+		}
+
+		if (rgbMax == r)
+			h = 0 + 43 * (g - b) / (rgbMax - rgbMin);
+		else if (rgbMax == g)
+			h = 85 + 43 * (b - r) / (rgbMax - rgbMin);
 		else
-		{
-			if (L < .50)
-			{
-				S = (max_color - min_color) / (max_color + min_color);
-			}
-			else
-			{
-				S = (max_color - min_color) / (2 - max_color - min_color);
-			}
-			if (max_color == r_percent)
-			{
-				H = (g_percent - b_percent) / (max_color - min_color);
-			}
-			if (max_color == g_percent)
-			{
-				H = 2 + (b_percent - r_percent) / (max_color - min_color);
-			}
-			if (max_color == b_percent)
-			{
-				H = 4 + (r_percent - g_percent) / (max_color - min_color);
-			}
-		}
-		s = (S * 100);
-		l = (L * 100);
-		H = H * 60;
-		if (H < 0)
-			H += 360;
-		h = H;
+			h = 171 + 43 * (r - g) / (rgbMax - rgbMin);
+
+		s /= 255.0f;
+		v /= 255.0f;
 	}
 }

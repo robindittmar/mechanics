@@ -18,8 +18,8 @@ void IControlPopup::ProcessEvent(CInputEvent* pEvent)
 
 	if (pEvent->eventType == EVENT_TYPE_MOUSE)
 	{
-		// Up or down, I don't care
-		if (pEvent->button == EVENT_BTN_LMOUSE)
+		if (pEvent->button == EVENT_BTN_LMOUSE &&
+			pEvent->buttonDirection == EVENT_BTNDIR_DOWN)
 		{
 			int x = 0, y = 0;
 			this->GetAbsolutePosition(&x, &y);

@@ -12,8 +12,6 @@
 #include "CreateInterface.h"
 #include "Vector.h"
 
-#include "ResourceManager.h"
-
 class ITexture;
 
 class IImage;
@@ -30,9 +28,9 @@ struct Vertex_t
 	Vertex_t() {}
 	Vertex_t(const Vector2D &pos, const Vector2D &coord = Vector2D(0, 0))
 	{
-		m_Position = pos;
-		m_TexCoord = coord;
+		Init(pos, coord);
 	}
+
 	void Init(const Vector2D &pos, const Vector2D &coord = Vector2D(0, 0))
 	{
 		m_Position = pos;

@@ -1,5 +1,6 @@
 #include "ISurface.h"
 #include "XorString.h"
+#include "ResourceManager.h"
 
 #define DRAWSETCOLOR_ALT1_INDEX		14
 #define DRAWSETCOLOR_ALT2_INDEX		15

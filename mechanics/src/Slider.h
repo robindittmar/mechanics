@@ -43,6 +43,16 @@ public:
 
 	virtual void SetEnabled(bool bIsEnabled) override;
 
+	void SetDrawValue(bool bDrawValue) { m_bDrawValue = bDrawValue; }
+	bool GetDrawValue() { return m_bDrawValue; }
+
+	/// <summary>
+	/// This function will set the value of the current instance of the slider
+	/// 
+	/// It'll automatically align it to stepsize, update the label (for displaying the value) and invoke
+	/// the EventHandler, if one is present
+	/// </summary>
+	/// <param name="fValue">The desired value to set to</param>
 	void SetValue(float fValue);
 	float GetValue() { return m_fValue; }
 
@@ -57,6 +67,7 @@ private:
 	int m_iOrientation;
 	bool m_bReverse;
 
+	bool m_bDrawValue;
 	float m_fValue;
 	float m_fMinValue, m_fMaxValue, m_fValueSpan, m_fStepSize;
 

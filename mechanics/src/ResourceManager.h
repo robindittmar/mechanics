@@ -16,9 +16,9 @@
 #include "XorString.h"
 #include "Utils.h"
 
-#define RM_TEXTURE_CURSOR		0
 #define RM_TEXTURE_COLORFADE	1
-#define RM_TEXTURE_BACKGROUND	2
+#define RM_TEXTURE_SLFADE		2
+#define RM_TEXTURE_BACKGROUND	100
 
 #define RM_FONT_NORMAL			0
 #define RM_FONT_HEADER			1
@@ -38,6 +38,9 @@ public:
 	void CreateMirror();
 	ITexture* GetMirror() { return m_pMirror; }
 	IMaterial* GetMirrorMaterial() { return m_pMatMirror; }
+
+	void BuildFadeTexture();
+	void BuildSaturationLightnessTexture(int iHue);
 
 	void CreateTextures();
 	int GetTexture(int textureId);

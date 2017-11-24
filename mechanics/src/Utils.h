@@ -14,12 +14,12 @@ namespace Utils
 	/// <summary>
 	/// Convert HSL to RGB
 	/// </summary>
-	void HslToRgb(int h, float s, float l, int& r, int &g, int& b);
+	void HsvToRgb(int h, float s, float l, int& r, int &g, int& b);
 
 	/// <summary>
 	/// Converts RGB to HSl
 	/// </summary>
-	void RgbToHsl(int r, int g, int b, float& h, float& s, float& l);
+	void RgbToHsv(int r, int g, int b, float& h, float& s, float& v);
 }
 
 #endif // __UTILS_H__

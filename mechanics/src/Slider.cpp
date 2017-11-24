@@ -2,8 +2,8 @@
 
 CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText)
 	: IControlTooltip(x, y, w, h), m_iOrientation(iOrientation),
-	m_bReverse(bReverse), m_fMinValue(fMin), m_fMaxValue(fMax),
-	m_fStepSize(fStepSize)
+	m_bReverse(bReverse), m_bDrawValue(true), m_fMinValue(fMin),
+	m_fMaxValue(fMax), m_fStepSize(fStepSize)
 {
 	m_bHitcheckForMouseMove = false;
 	m_fValueSpan = m_fMaxValue - m_fMinValue;
@@ -99,7 +99,9 @@ void CSlider::Draw(ISurface* pSurface)
 		break;
 	}
 
-	m_pLabel->Draw(pSurface);
+	if (m_bDrawValue)
+		m_pLabel->Draw(pSurface);
+
 	IControlTooltip::Draw(pSurface);
 }
 
@@ -124,6 +126,7 @@ void CSlider::SetEnabled(bool bIsEnabled)
 
 void CSlider::SetValue(float fValue)
 {
+	// if stepsize != 0.0f => quantization of value to fit stepsize
 	if (m_fStepSize != 0.0f)
 		m_fValue = (float)((int)((fValue / m_fStepSize) + 0.5f) * m_fStepSize);
 	else

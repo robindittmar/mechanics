@@ -92,8 +92,8 @@ void CGui::DrawMouse(ISurface* pSurface)
 {
 	if(m_bDrawMouse)
 	{
-		pSurface->DrawSetColor(255, 255, 255, 255);
-		pSurface->DrawSetTexture(g_pResourceManager->GetTexture(RM_TEXTURE_CURSOR));
+		pSurface->DrawSetColor(255, 255, 128, 0);
+		pSurface->DrawSetTexture(g_pResourceManager->GetWhiteTexture());
 
 		// TODO:
 		Vertex_t v[4];
