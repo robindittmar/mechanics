@@ -345,6 +345,9 @@ private:
 	CSelectbox* m_pSkinChangerKnife;
 	CSelectbox* m_pSkinChangerGlove;
 
+	CButton* m_pSkinChangerLoadCfg;
+	CButton* m_pSkinChangerSaveCfg;
+
 	//
 	// Config tab
 	CTabPage* m_pConfigTab;

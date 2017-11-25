@@ -5,13 +5,6 @@
 #include "XorString.h"
 #include "ClientEntity.h"
 
-#define AUTOSTRAFEMODE_NONE				0
-#define AUTOSTRAFEMODE_LEGIT			1
-#define AUTOSTRAFEMODE_RAGE				2
-
-#define CIRCLESTRAFEDIRECTION_RIGHT		1
-#define CIRCLESTRAFEDIRECTION_LEFT		-1
-
 class CApplication;
 class CUserCmd;
 
@@ -38,27 +31,6 @@ public:
 
 	void SetNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; }
 	bool GetNoRecoil() { return m_bNoRecoil; }
-
-	/*void SetFakelag(bool bFakelag) { m_bFakelag = bFakelag; }
-	bool GetFakelag() { return m_bFakelag; }
-
-	void SetFakelagOnlyInAir(bool bFakelagOnlyInAir) { m_bFakelagOnlyInAir = bFakelagOnlyInAir; }
-	bool GetFakelagOnlyInAir() { return m_bFakelagOnlyInAir; }
-
-	void SetFakelagChokedAmount(int iFakelagChokedAmount) { m_iFakelagChokedAmount = iFakelagChokedAmount; }
-	int GetFakelagChokedAmount() { return m_iFakelagChokedAmount; }
-
-	void SetFakelagChokeAmount(int iFakelagChokeAmount) { m_iFakelagChokeAmount = iFakelagChokeAmount; }
-	int GetFakelagChokeAmount() { return m_iFakelagChokeAmount; }*/
-
-	void SetAutoStrafeMode(int iAutoStrafeMode) { m_iAutoStrafeMode = iAutoStrafeMode; }
-	int GetAutoStrafeMode() { return m_iAutoStrafeMode; }
-
-	void SetCircleStrafe(bool bCircleStrafe) { m_bCircleStrafe = bCircleStrafe; }
-	bool GetCircleStrafe() { return m_bCircleStrafe; }
-
-	void SetCircleStrafeStartDirection(float fCircleStrafeStartDirection) { m_fCircleStrafeStartDirection = fCircleStrafeStartDirection; }
-	float GetCircleStrafeStartDirection() { return m_fCircleStrafeStartDirection; }
 
 	void SetAutoPistol(bool bAutoPistol) { m_bAutoPistol = bAutoPistol; }
 	bool GetAutoPistol() { return m_bAutoPistol; }
@@ -94,8 +66,6 @@ public:
 
 	void NoRecoil(CUserCmd* pUserCmd);
 	/*void Fakelag(CUserCmd* pUserCmd);*/
-	void AutoStrafe(CUserCmd* pUserCmd);
-	void CircleStrafe(IClientEntity* pLocalEntity, CUserCmd* pUserCmd);
 	void AutoPistol(CUserCmd* pUserCmd);
 	void SpectatorList();
 	void SetClanTag(const char* tag);
@@ -106,16 +76,6 @@ public:
 	void AutoAccept(const char* filename);
 private:
 	bool m_bNoRecoil;
-
-	/*bool m_bFakelag;
-	bool m_bFakelagOnlyInAir;
-	int m_iFakelagChokeAmount;
-	int m_iFakelagChokedAmount;*/
-
-	int m_iAutoStrafeMode;
-
-	bool m_bCircleStrafe;
-	float m_fCircleStrafeStartDirection;
 
 	bool m_bAutoPistol;
 	bool m_bSpectators;

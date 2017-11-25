@@ -167,6 +167,7 @@
     <ClCompile Include="src\ConfigHelper.cpp" />
     <ClCompile Include="src\CreateMove.cpp" />
     <ClCompile Include="src\Dependency.cpp" />
+    <ClCompile Include="src\GunAccuracy.cpp" />
     <ClCompile Include="src\GunHud.cpp" />
     <ClCompile Include="src\DrawModelExecute.cpp" />
     <ClCompile Include="src\EmitSound.cpp" />
@@ -272,6 +273,7 @@
     <ClInclude Include="src\ConfigHelper.h" />
     <ClInclude Include="src\CreateMove.h" />
     <ClInclude Include="src\Dependency.h" />
+    <ClInclude Include="src\GunAccuracy.h" />
     <ClInclude Include="src\GunHud.h" />
     <ClInclude Include="src\CUtlVector.h" />
     <ClInclude Include="src\DrawModelExecute.h" />

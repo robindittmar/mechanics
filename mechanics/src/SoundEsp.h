@@ -15,8 +15,8 @@
 #include "Gui.h"
 #include "SoundInfo.h"
 
-#define SOUND_SHOWTIME			1000
-#define SOUND_FADETIME			1000
+#define SOUND_SHOWTIME			1.0f
+#define SOUND_FADEOUTTIME		1.0f
 
 class CSoundEsp : public IFeature
 {
@@ -24,11 +24,11 @@ public:
 	CSoundEsp();
 	virtual ~CSoundEsp();
 
-	void SetShowTime(float fShowTime) { m_iShowTime = fShowTime * 1000; }
-	float GetShowTime() { return m_iShowTime / 1000.0f; }
+	void SetShowTime(float fShowTime) { m_fShowTime = fShowTime; }
+	float GetShowTime() { return m_fShowTime; }
 
-	void SetFadeTime(float fFadeTime) { m_iFadeoutTime = fFadeTime * 1000; }
-	float GetFadeTime() { return m_iFadeoutTime / 1000.0f; }
+	void SetFadeoutTime(float fFadeoutTime) { m_fFadeoutTime = fFadeoutTime; }
+	float GetFadeoutTime() { return m_fFadeoutTime; }
 
 	void SetFadeoutEnabled(bool bFadeoutEnabled) { m_bFadeoutEnabled = bFadeoutEnabled; }
 	bool GetFadeoutEnabled() { return m_bFadeoutEnabled; }
@@ -36,23 +36,24 @@ public:
 	void SetDrawOwnTeam(bool bDrawOwnTeam) { m_bDrawOwnTeam = bDrawOwnTeam; }
 	bool GetDrawOwnTeam() { return m_bDrawOwnTeam; }
 
-	void SetDrawVisible(bool bDrawVisible) { m_bDrawVisible = !bDrawVisible; } // TODO: Ghettofix
-	bool GetDrawVisible() { return !m_bDrawVisible; }
+	void SetDrawOnlyNotVisible(bool bDrawOnlyNotVisible) { m_bDrawOnlyNotVisible = bDrawOnlyNotVisible; }
+	bool GetDrawOnlyNotVisible() { return m_bDrawOnlyNotVisible; }
 
 	// Only add CSoundInfo's created with 'new'
 	// cleanup ('delete') will be done by this class
 	void AddSound(CSoundInfo* pSound);
-	void UpdateSounds();
 
 	virtual void Setup() override;
 	virtual void Think(void* pParameters = nullptr) override;
+
+	void Draw(ISurface* pSurface);
 private:
-	int m_iShowTime;
-	int m_iFadeoutTime;
+	float m_fShowTime;
+	float m_fFadeoutTime;
 
 	bool m_bFadeoutEnabled;	
 	bool m_bDrawOwnTeam;
-	bool m_bDrawVisible;
+	bool m_bDrawOnlyNotVisible;
 
 	unsigned int m_iFont;
 

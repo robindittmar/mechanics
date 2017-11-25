@@ -1,13 +1,10 @@
 #include "SoundInfo.h"
+#include "Application.h"
 
 CSoundInfo::CSoundInfo(int iEntityIndex, Vector vOrigin, const char* pSample)
+	: m_fTimestamp(CApplication::Instance()->GlobalVars()->curtime), m_iEntityIndex(iEntityIndex), m_vOrigin(vOrigin),
+	m_pSample(nullptr)
 {
-	m_llTimestamp = GetTickCount64();
-
-	m_iEntityIndex = iEntityIndex;
-	m_vOrigin = vOrigin;
-
-	m_pSample = NULL;
 	this->SetSample(pSample);
 }
 
@@ -27,7 +24,7 @@ void CSoundInfo::SetSample(const char* p)
 	memcpy(m_pSample, p, iLen);
 }
 
-ULONGLONG CSoundInfo::GetTimeSinceCreation(ULONGLONG timestamp)
+float CSoundInfo::GetTimeSinceCreation(float fTimestamp)
 {
-	return (timestamp - m_llTimestamp);
+	return (fTimestamp - m_fTimestamp);
 }

@@ -46,6 +46,9 @@ public:
 	void SetDrawArmorBar(bool bDrawArmorBar) { m_bDrawArmorBar = bDrawArmorBar; }
 	bool GetDrawArmorBar() { return m_bDrawArmorBar; }
 
+	void SetDrawArmorNumber(bool bDrawArmorNumber) { m_bDrawArmorNumber = bDrawArmorNumber; }
+	bool GetDrawArmorNumber() { return m_bDrawArmorNumber; }
+
 	void SetDrawActiveWeapon(bool bDrawActiveWeapon) { m_bDrawActiveWeapon = bDrawActiveWeapon; }
 	bool GetDrawActiveWeapon() { return m_bDrawActiveWeapon; }
 
@@ -82,8 +85,8 @@ public:
 	void SetFadeoutEnabled(bool bFadeoutEnabled) { m_bFadeoutEnabled = bFadeoutEnabled; }
 	bool GetFadeoutEnabled() { return m_bFadeoutEnabled; }
 
-	void SetFadeoutTime(float fFadeoutTime) { m_iFadeoutTime = fFadeoutTime * 1000; }
-	float GetFadeoutTime() { return m_iFadeoutTime / 1000.0f; }
+	void SetFadeoutTime(float fFadeoutTime) { m_fFadeoutTime = fFadeoutTime; }
+	float GetFadeoutTime() { return m_fFadeoutTime; }
 
 	void SetColorCT(Color clrCT) { m_clrCT = clrCT; }
 	Color GetColorCT() { return m_clrCT; }
@@ -91,8 +94,11 @@ public:
 	void SetColorT(Color clrT) { m_clrT = clrT; }
 	Color GetColorT() { return m_clrT; }
 
-	void SetColorSpotted(Color clrSpotted) { m_clrSpotted = clrSpotted; }
-	Color GetColorSpotted() { return m_clrSpotted; }
+	void SetColorSpottedCT(Color clrSpottedCT) { m_clrSpottedCT = clrSpottedCT; }
+	Color GetColorSpottedCT() { return m_clrSpottedCT; }
+
+	void SetColorSpottedT(Color clrSpottedT) { m_clrSpottedT = clrSpottedT; }
+	Color GetColorSpottedT() { return m_clrSpottedT; }
 
 	void ResetHeadBones();
 
@@ -120,6 +126,7 @@ private:
 	bool m_bDrawHealthBar;
 	bool m_bDrawHealthNumber;
 	bool m_bDrawArmorBar;
+	bool m_bDrawArmorNumber;
 	bool m_bDrawActiveWeapon;
 	bool m_bDrawAmmoBar;
 	bool m_bDrawAmmoNumber;
@@ -133,17 +140,18 @@ private:
 	int m_iViewanglesLength;
 
 	bool m_bFadeoutEnabled;
-	int m_iFadeoutTime;
+	float m_fFadeoutTime;
+
+	Color m_clrCT;
+	Color m_clrT;
+	Color m_clrSpottedCT;
+	Color m_clrSpottedT;
 
 	int m_iHeadBoneCT;
 	int m_iHeadBoneT;
 
 	int m_iFont;
 	int m_iWeaponStuffOffset;
-
-	Color m_clrCT;
-	Color m_clrT;
-	Color m_clrSpotted;
 
 	CEspPlayer m_pPastPlayers[MAX_PLAYERS];
 

@@ -1,22 +1,19 @@
 #ifndef __ESPPLAYER_H__
 #define __ESPPLAYER_H__
 
-#include <Windows.h>
-#include "Vector.h"
-
 class CEspPlayer
 {
 public:
 	CEspPlayer();
 	~CEspPlayer();
 
-	void SetTimestamp(ULONGLONG llTimestamp) { m_llTimestamp = llTimestamp; }
-	ULONGLONG GetTimestamp() { return m_llTimestamp; }
+	void SetTimestamp(float fTimestamp) { m_fTimestamp = fTimestamp; }
+	float GetTimestamp() { return m_fTimestamp; }
 
 	void SetIsDormant(bool bIsDormant) { m_bIsDormant = bIsDormant; }
 	bool GetIsDormant() { return m_bIsDormant; }
 private:
-	ULONGLONG m_llTimestamp;
+	float m_fTimestamp;
 	bool m_bIsDormant;
 };
 

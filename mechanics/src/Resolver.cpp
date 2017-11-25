@@ -2,6 +2,7 @@
 #include "Application.h"
 
 CResolver::CResolver()
+	: m_iResolverType(RESOLVERTYPE_NONE)
 {
 }
 

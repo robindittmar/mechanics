@@ -2,10 +2,11 @@
 #include "Application.h"
 
 CTriggerbot::CTriggerbot()
-	: m_bKeyDown(false), m_fCurtimeTargetAquired(0.0f), m_bAlreadyWaitedOnTarget(false),
-	m_pCurTarget(nullptr), m_iShotsOnTarget(0), m_iShotsForThisTarget(0),
-	m_bTriggerBurst(false), m_iMinShots(0), m_iMaxShots(0),
-	m_fMaxFlashPercentage(0.0f), m_fShootDelay(0.0f), m_fShootDelayJitter(0.0f)
+	: m_bKeyDown(false), m_iKey(VK_MENU), m_fCurtimeTargetAquired(0.0f),
+	m_bAlreadyWaitedOnTarget(false), m_pCurTarget(nullptr), m_iShotsForThisTarget(0),
+	m_iShotsOnTarget(0), m_bTriggerBurst(false), m_iMinShots(0),
+	m_iMaxShots(0), m_fMaxFlashPercentage(0.0f), m_fShootDelay(0.03f),
+	m_fShootDelayJitter(0.005f)
 {
 }
 
@@ -21,7 +22,6 @@ void CTriggerbot::TriggerKeyDown()
 void CTriggerbot::TriggerKeyUp()
 {
 	m_bKeyDown = false;
-
 	m_pCurTarget = nullptr;
 }
 
@@ -86,7 +86,7 @@ void CTriggerbot::Think(void* pParameters)
 			return;
 
 		// Get local angles and forward vector
-		QAngle qLocalAngles = m_pApp->GetClientViewAngles() + (*pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation());
+		QAngle qLocalAngles = m_pApp->GetClientViewAngles() + (*pLocalEntity->GetAimPunchAngle() * m_pApp->GunAccuracy()->GetRecoilCompensation());
 
 		Vector vForward;
 		AngleVectors(qLocalAngles, &vForward);

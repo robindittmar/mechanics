@@ -719,51 +719,71 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 
 void CSkinChanger::WriteToConfig(const char* pFilename)
 {
-	//CConfig config;
-	//config.Init(m_pApp);
-	//
-	////std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
-	////std::unordered_map<int, const char*> m_mapModelMetadata;
+	CConfig config;
+	config.Init(m_pApp);
+	
+	//std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
+	//std::unordered_map<int, const char*> m_mapModelMetadata;
 
-	//config.SetInt("knife", "id", this->GetDesiredKnifeModelIndex());
+	config.SetInt("knife$ct", "id", this->GetDesiredKnifeModelIndexCT());
+	config.SetInt("knife$t", "id", this->GetDesiredKnifeModelIndexT());
 
-	//char pWeaponId[16];
-	//for (std::unordered_map<int, CSkinMetadata*>::iterator it = m_mapSkinMetadata.begin(); it != m_mapSkinMetadata.end(); it++)
-	//{
-	//	if (it->first == 0)
-	//		continue;
+	for (int i = 0; i < 2; i++)
+	{
+		const char* pTeamStr = i == 0 ? "ct" : "t";
+		std::unordered_map<int, CSkinMetadata*>& map = i == 0 ? m_mapSkinMetadataCT : m_mapSkinMetadataT;
 
-	//	itoa(it->first, pWeaponId, 10);
-	//	config.SetInt(pWeaponId, "item", it->second->m_iItemDefinitionIndex);
-	//	config.SetInt(pWeaponId, "paintkit", it->second->m_iFallbackPaintKit);
-	//	config.SetInt(pWeaponId, "stattrak", it->second->m_iFallbackStatTrak);
-	//	config.SetInt(pWeaponId, "seed", it->second->m_iFallbackSeed);
-	//	config.SetFloat(pWeaponId, "wear", it->second->m_fFallbackWear);
-	//	config.SetInt(pWeaponId, "quality", it->second->m_iEntityQuality);
-	//	config.SetString(pWeaponId, "name", it->second->m_pCustomName);
-	//}
+		char pWeaponId[16];
+		for (std::unordered_map<int, CSkinMetadata*>::iterator it = map.begin(); it != map.end(); it++)
+		{
+			if (it->first == 0)
+				continue;
 
-	//config.SaveFile(pFilename);
+			snprintf(pWeaponId, 16, "%d$%s", it->first, pTeamStr);
+			config.SetInt(pWeaponId, "item", it->second->m_iItemDefinitionIndex);
+			config.SetInt(pWeaponId, "paintkit", it->second->m_iFallbackPaintKit);
+			config.SetInt(pWeaponId, "stattrak", it->second->m_iFallbackStatTrak);
+			config.SetInt(pWeaponId, "seed", it->second->m_iFallbackSeed);
+			config.SetFloat(pWeaponId, "wear", it->second->m_fFallbackWear);
+			config.SetInt(pWeaponId, "quality", it->second->m_iEntityQuality);
+			config.SetString(pWeaponId, "name", it->second->m_pCustomName);
+		}
+	}
+
+	config.SaveFile(pFilename);
 }
 
 void CSkinChanger::LoadFromConfig(const char* pFilename)
 {
-	/*CConfig config;
+	CConfig config;
 	config.Init(m_pApp);
 	config.LoadFile(pFilename);
 
-	this->ApplyDesiredKnife(config.GetInt("knife", "id"), false);
+	this->ApplyDesiredKnife(TEAMNUM_CT, config.GetInt("knife$ct", "id"), false);
+	this->ApplyDesiredKnife(TEAMNUM_T, config.GetInt("knife$t", "id"), false);
 
 	int iWeaponId = 0;
+	int iTeamNum = 0;
+	
+	const char* pWeaponId;
+	const char* pTeamId;
+
+	char pBuffer[128];
 	const char* pSection = config.GetFirstSection();
 	for (; pSection; pSection = config.GetNextSection())
 	{
-		if (!strcmp(pSection, "knife"))
+		if (!strncmp(pSection, "knife", 5))
 			continue;
 
-		iWeaponId = atoi(pSection);
+		strcpy(pBuffer, pSection);
+		pWeaponId = strtok(pBuffer, "$");
+		pTeamId = strtok(NULL, "$");
+
+		iWeaponId = atoi(pWeaponId);
+		iTeamNum = pTeamId[0] == 't' ? TEAMNUM_T : TEAMNUM_CT;
 
 		this->AddSkinReplacement(
+			iTeamNum,
 			iWeaponId,
 			new CSkinMetadata(
 				config.GetInt(pSection, "item"),
@@ -775,7 +795,7 @@ void CSkinChanger::LoadFromConfig(const char* pFilename)
 				config.GetFloat(pSection, "wear")
 			)
 		);
-	}*/
+	}
 }
 
 void CSkinChanger::DeleteSkinMetadata()

@@ -2,10 +2,11 @@
 #include "Application.h"
 
 CGunHud::CGunHud()
-	: m_pSurface(NULL), m_bCrosshair(false), m_bCrosshairShowRecoil(false),
-	m_bSpreadCone(false), m_iSpreadConeStyle(SPREADCONE_STYLE_OUTLINE), m_bSpreadConeShowRecoil(false),
+	: m_pSurface(NULL), m_fPlayerHurtTime(-1.0f), m_fWeaponFireTime(-1.0f),
+	m_bCrosshair(false), m_bCrosshairShowRecoil(false), m_bSpreadCone(false),
+	m_iSpreadConeStyle(SPREADCONE_STYLE_OUTLINE), m_bSpreadConeShowRecoil(false),
 	m_clrSpreadCone(SPREADCONE_DEFAULT_COLOR), m_bHitmarker(false), m_bHitmarkerSound(false),
-	m_bHitmarkerHitpoint(false), m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME), m_fPlayerHurtTime(-1)
+	m_bHitmarkerHitpoint(false), m_fHitmarkerShowTime(HITMARKER_DEFAULT_TIME)
 {
 }
 
@@ -38,7 +39,7 @@ void CGunHud::Think(void* pParameters)
 	// calculate the point on screen our recoil is "aiming" at
 	if (m_bCrosshairShowRecoil || m_bSpreadConeShowRecoil)
 	{
-		QAngle qAimPunchAngles = *pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation();
+		QAngle qAimPunchAngles = *pLocalEntity->GetAimPunchAngle() * m_pApp->GunAccuracy()->GetRecoilCompensation();
 
 		m_bRecoilIsNonZero = (qAimPunchAngles.x != 0.0f || qAimPunchAngles.y != 0.0f || qAimPunchAngles.z != 0.0f);
 		if (m_bRecoilIsNonZero)
@@ -85,7 +86,7 @@ void CGunHud::DrawCrosshair()
 	const int crosshair_size = 12;
 
 	int iMidX, iMidY;
-	if (m_bCrosshairShowRecoil && !m_pApp->Ragebot()->DidNoRecoil() &&
+	if (m_bCrosshairShowRecoil && !m_pApp->GunAccuracy()->GetNoRecoil() &&
 		!m_pApp->Visuals()->GetNoVisualRecoil() && m_bRecoilIsNonZero)
 	{
 		iMidX = m_iRcMiddleX;

@@ -25,6 +25,9 @@ public:
 	void TriggerKeyDown();
 	void TriggerKeyUp();
 
+	void SetTriggerKey(int iKey) { m_iKey = iKey;}
+	int GetTriggerKey() { return m_iKey; }
+
 	void SetTriggerBurst(bool bTriggerBurst) { m_bTriggerBurst = bTriggerBurst; }
 	bool GetTriggerBurst() { return m_bTriggerBurst; }
 
@@ -50,6 +53,7 @@ public:
 	virtual void Think(void* pParameters = nullptr) override;
 private:
 	bool m_bKeyDown;
+	int m_iKey;
 
 	float m_fCurtimeTargetAquired;
 	bool m_bAlreadyWaitedOnTarget;

@@ -37,8 +37,12 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 	// TODO: Try to set envmap in chams material
 	//		 (this one below should be it; behaves weird tho right now)
 	//static CXorString xorVmt("5.öà.p.à3iä±r.àºc~÷§5+§´p~ìí`cì¶rTä¦sbñ«an§È5/à¬afä.5+§§y}Ú¡bià¯v{§È5/è.snéà7)´à.)¡¤{jñà7)¦5.§æydæ·{g§â5;§È5/ö§{mì®{~èà7)´à.)¡ªvgã®vfç§e.§â5:§È5/ë.qdâà7)µà.)¡«peê°rq§â5.áà.)¡¸ynä°ry§â5;§È5/ò«enã°vfàà7) ¦5.ø.ýýýýÝÝÝÝc<Pj6m..À.K.øAK");
-	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
 	
+	// vgui/white_additive
+	//static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
+	// vgui/white
+	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cn§È)¡§y}è£g)¥à5Œà3fê¦rg§â5:§È)¡¤{jñà7) ¦5Œà3eê¡bgéà7)µà§ædné¤~gé·z)¥à&)Ë5/í£{mé£zià°c)¥à&)Ë5/ë­qdâà7)µà§æ~lë­enÿà7) ¦5Œà3që§vyà°5+§ò5Œà3|ì°rm÷£zn§â5.áàv");
+
 	const char* pBaseType = (bIsLit == true ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
 	char pMaterial[1024];
 	char pName[512];

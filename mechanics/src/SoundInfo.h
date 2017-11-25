@@ -1,7 +1,6 @@
 #ifndef __SOUNDINFO_H__
 #define __SOUNDINFO_H__
 
-#include <Windows.h>
 #include "Vector.h"
 
 class CSoundInfo
@@ -16,9 +15,9 @@ public:
 	void SetSample(const char* p);
 	const char* GetSample() { return (const char*)m_pSample; }
 
-	ULONGLONG GetTimeSinceCreation(ULONGLONG timestamp);
+	float GetTimeSinceCreation(float fTimestamp);
 private:
-	ULONGLONG m_llTimestamp;
+	float m_fTimestamp;
 
 	int m_iEntityIndex;
 	Vector m_vOrigin;

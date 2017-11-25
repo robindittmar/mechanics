@@ -84,10 +84,6 @@ public:
 	void SetYawOffsetMoving(float fYawOffset) { m_fYawOffsetMoving = fYawOffset; }
 	float GetYawOffsetMoving() { return m_fYawOffsetMoving; }
 
-	float GetRealYaw() { return m_fCurRealYaw; }
-	float GetFakeYaw() { return m_fCurFakeYaw; }
-	bool IsLbyUpdate() { return m_bNextLbyUpdate && m_bLbyBreaker; }
-
 	void SetYawFakeOffsetMoving(float fYawFakeOffset) { m_fYawFakeOffsetMoving = fYawFakeOffset; }
 	float GetYawFakeOffsetMoving() { return m_fYawFakeOffsetMoving; }
 
@@ -108,6 +104,10 @@ public:
 
 	void SetDrawEdgeAntiAimLines(bool bDrawEdgeAntiAimLines) { m_bDrawEdgeAntiAimLines = bDrawEdgeAntiAimLines; }
 	bool GetDrawEdgeAntiAimLines() { return m_bDrawEdgeAntiAimLines; }
+
+	float GetRealYaw() { return m_fCurRealYaw; }
+	float GetFakeYaw() { return m_fCurFakeYaw; }
+	bool IsLbyUpdate() { return m_bNextLbyUpdate && m_bLbyBreaker; }
 
 	bool IsFakeYaw();
 	bool NextLBYUpdate(CResolverPlayer* pResolverPlayer, bool bIsLocalPlayer = false, bool bIsFakeWalking = false);
@@ -139,14 +139,8 @@ private:
 	float m_fYawOffsetMoving;
 	float m_fYawFakeOffsetMoving;
 
-	float m_fCurRealYaw;
-	float m_fCurFakeYaw;
-
 	bool m_bDrawLbyIndicator;
 	bool m_bLbyBreaker;
-
-	bool m_bIsMoving;
-	bool m_bWasMoving;
 
 	bool m_bDoEdgeAntiAim;
 	bool m_bIsEdgeAntiAim;
@@ -156,11 +150,17 @@ private:
 	bool m_bDrawEdgeAntiAimPoints;
 	bool m_bDrawEdgeAntiAimLines;
 
+	float m_fCurRealYaw;
+	float m_fCurFakeYaw;
+
+	bool m_bIsMoving;
+	bool m_bWasMoving;
+
 	bool m_bHasTargets;
 	CTarget m_pTargets[TARGETCRITERIA_COUNT];
 
-	EdgeAntiAimPoint* EdgeAntiAimPointsRight;
-	EdgeAntiAimPoint* EdgeAntiAimPointsLeft;
+	EdgeAntiAimPoint* m_pEdgeAntiAimPointsRight;
+	EdgeAntiAimPoint* m_pEdgeAntiAimPointsLeft;
 
 	void HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection);
 	int CheckHeadPoint(IClientEntity* pEnemy, int iIndex);

@@ -2,7 +2,8 @@
 #include "Application.h"
 
 CFakelag::CFakelag()
-	: m_bIsChoking(false), m_iPacketsChoked(0), m_iChokeAmount(0), m_bOnlyInAir(false), m_iLagType(FAKELAG_TYPE_FACTOR)
+	: m_bIsChoking(false), m_iPacketsChoked(0), m_iChokeAmount(10),
+	m_bOnlyInAir(false), m_iLagType(FAKELAG_TYPE_FACTOR)
 {
 }
 
@@ -10,8 +11,7 @@ CFakelag::~CFakelag()
 {
 }
 
-// TODO: andere funktion für menü
-int CFakelag::GetChokeAmount()
+int CFakelag::GetChokeAmountAdaptive()
 {
 	if (m_iLagType == FAKELAG_TYPE_ADAPTIVE)
 		return m_iAdaptiveChokeAmount;

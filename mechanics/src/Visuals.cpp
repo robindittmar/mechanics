@@ -2,9 +2,13 @@
 #include "Application.h"
 
 CVisuals::CVisuals()
+	: m_flZoomSensitivity(1.0f), m_bNoFlash(false), m_fFlashPercentage(0.0f),
+	m_bNoSmoke(false), m_iHandsDrawStyle(HANDSDRAWSTYLE_NONE), m_bNoVisualRecoil(false),
+	m_bThirdperson(false), m_iThirdpersonDistance(150), m_bFovChange(false),
+	m_bFovChangeScoped(false), m_iFovValue(90), m_bViewmodelFovChange(false),
+	m_iViewmodelFovValue(70), m_bDisablePostProcessing(false), m_bNoScope(false),
+	m_bBulletTracer(false), m_bBulletTracerSelf(false), m_bBulletTracerTeam(false)
 {
-	m_flZoomSensitivity = 1.0f;
-	m_iViewmodelFovValue = 70;
 }
 
 CVisuals::~CVisuals()
@@ -16,7 +20,6 @@ void CVisuals::Setup()
 	IFeature::Setup();
 
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
-
 	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
 }
 
@@ -125,8 +128,8 @@ void CVisuals::NoVisualRecoil(CViewSetup* pViewSetup)
 	QAngle punchAngles = *pLocalEntity->GetAimPunchAngle();
 	QAngle viewPunch = *pLocalEntity->GetViewPunchAngle();
 
-	pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * m_pApp->GetRecoilCompensation() * RECOIL_TRACKING);
-	pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * m_pApp->GetRecoilCompensation() * RECOIL_TRACKING);
+	pViewSetup->angles.x -= (viewPunch.x + punchAngles.x * m_pApp->GunAccuracy()->GetRecoilCompensation() * RECOIL_TRACKING);
+	pViewSetup->angles.y -= (viewPunch.y + punchAngles.y * m_pApp->GunAccuracy()->GetRecoilCompensation() * RECOIL_TRACKING);
 }
 
 void CVisuals::Thirdperson()

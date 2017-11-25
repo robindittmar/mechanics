@@ -12,7 +12,7 @@ void printByteString(FILE* pFile, const char* p, int len)
 int main(int argc, char** argv)
 {
 	CXorString strings[]{
-		CXorString("\"%s\"\n{\n\"$basetexture\" \"vgui/white_additive\"\n\"$envmap\" \"env_cubemap\"\n\"$model\" \"1\"\n\"$flat\" \"%d\"\n\"$nocull\" \"0\"\n\"$selfillum\" \"1\"\n\"$halflambert\" \"1\"\n\"$nofog\" \"0\"\n\"$ignorez\" \"%d\"\n\"$znearer\" \"0\"\n\"$wireframe\" \"%d\"\n}"),
+		CXorString("\"%s\"\n{\n\t\"$basetexture\" \"vgui/white\"\n\t\"$envmap\" \"\"\n\t\"$model\" \"1\"\n\t\"$flat\" \"%d\"\n\t\"$nocull\" \"0\"\n\t\"$selfillum\" \"1\"\n\t\"$halflambert\" \"1\"\n\t\"$nofog\" \"0\"\n\t\"$ignorez\" \"%d\"\n\t\"$znearer\" \"0\"\n\t\"$wireframe\" \"%d\"\n}"),
 		CXorString("VEngineCvar007"),
 		CXorString("¸òÖëœπ£õÃ∫©ô√∞ÑÅöÂﬁ", 0x1235AFAA),
 		CXorString("_cajthRq{nc@vdcmn=67", 0x1A),

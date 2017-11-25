@@ -64,6 +64,7 @@
 #include "Fakelag.h"
 #include "Fakewalk.h"
 #include "Radar.h"
+#include "GunAccuracy.h"
 
 // Source SDK
 #include "CreateInterface.h"
@@ -166,10 +167,6 @@ public:
 	void Unhook();
 	void Rehook();
 
-	// TODO: Sollte ins NoRecoil/NoSpread (NoInaccuracy als feature name vllt?)
-	void SetRecoilCompensation(float recoilCompensation)	{ m_flRecoilCompensation = recoilCompensation; }
-	float GetRecoilCompensation()							{ return m_flRecoilCompensation; }
-
 	void SetRenderFieldOfView(float fRenderFieldOfView)		{ m_fRenderFieldOfView = fRenderFieldOfView; }
 	float GetRenderFieldOfView()							{ return m_fRenderFieldOfView; }
 
@@ -230,6 +227,7 @@ public:
 
 	// Features
 	CRagebot*			Ragebot()					{ return &m_ragebot; }
+	CGunAccuracy*		GunAccuracy()				{ return &m_gunAccuracy; }
 	CLegitbot*			Legitbot()					{ return &m_legitbot; }
 	CTriggerbot*		Triggerbot()				{ return &m_triggerbot; }
 	CAntiAim*			AntiAim()					{ return &m_antiAim; }
@@ -370,6 +368,7 @@ private:
 
 	// Features
 	CRagebot m_ragebot;
+	CGunAccuracy m_gunAccuracy;
 	CLegitbot m_legitbot;
 	CTriggerbot m_triggerbot;
 	CResolver m_resolver;

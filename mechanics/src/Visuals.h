@@ -98,6 +98,7 @@ public:
 private:
 	int m_iSurfaceWidth;
 	int m_iSurfaceHeight;
+	float m_flZoomSensitivity;
 
 	bool m_bNoFlash;
 	float m_fFlashPercentage;
@@ -115,8 +116,6 @@ private:
 
 	bool m_bViewmodelFovChange;
 	int m_iViewmodelFovValue;
-
-	float m_flZoomSensitivity;
 
 	bool m_bDisablePostProcessing;
 	bool* m_dwOverridePostProcessingDisable;

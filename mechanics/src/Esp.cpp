@@ -2,15 +2,16 @@
 #include "Application.h"
 
 CEsp::CEsp() :
-	m_xorHeadZero("nä¦H;")
+	m_xorHeadZero("nä¦H;"), m_bFillBoundingBox(false), m_iDrawBoundingBox(ESP_STYLE_NONE),
+	m_bDrawSkeleton(false), m_bDrawHealthBar(false), m_bDrawHealthNumber(false),
+	m_bDrawArmorBar(false), m_bDrawArmorNumber(false), m_bDrawActiveWeapon(false),
+	m_bDrawAmmoBar(false), m_bDrawAmmoNumber(false), m_bDrawOwnTeam(false),
+	m_bDrawOwnModel(false), m_bDrawOnlyVisible(false), m_bDrawOnlySpotted(false),
+	m_bDrawOutline(false), m_bDrawNames(false), m_bDrawViewangles(false),
+	m_iViewanglesLength(45.0f), m_bFadeoutEnabled(false), m_fFadeoutTime(1.0f),
+	m_clrCT(Color(255, 0, 0, 255)), m_clrT(Color(255, 255, 0, 0)),
+	m_clrSpottedCT(Color(255, 0, 128, 255)), m_clrSpottedT(Color(255, 255, 128, 255))
 {
-	m_iFadeoutTime = 1500;
-	m_iWeaponStuffOffset = 0;
-
-	m_clrCT = Color(0, 0, 255);
-	m_clrT = Color(255, 0, 0);
-	m_clrSpotted = Color(255, 128, 0);
-
 	this->ResetHeadBones();
 }
 
@@ -57,7 +58,7 @@ void CEsp::Think(void* pParameters)
 	iLocalTeam = pLocalEntity->GetTeamNum();
 	vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
-	ULONGLONG llTimestamp = GetTickCount64();
+	float fCurtime = m_pApp->GlobalVars()->curtime;
 
 	m_iWeaponStuffOffset = 0;
 
@@ -77,11 +78,11 @@ void CEsp::Think(void* pParameters)
 			if (!m_pPastPlayers[i].GetIsDormant())
 			{
 				// Remember timestamp and dormant
-				m_pPastPlayers[i].SetTimestamp(llTimestamp);
+				m_pPastPlayers[i].SetTimestamp(fCurtime);
 				m_pPastPlayers[i].SetIsDormant(true);
 			}
 			// If our player is dormant for a longer time than we want it to fadeout
-			else if (llTimestamp - m_pPastPlayers[i].GetTimestamp() > m_iFadeoutTime)
+			else if (fCurtime - m_pPastPlayers[i].GetTimestamp() > m_fFadeoutTime)
 			{
 				continue;
 			}
@@ -155,25 +156,26 @@ void CEsp::Think(void* pParameters)
 		Color color;
 		if (m_pPastPlayers[i].GetIsDormant())
 		{
-			alpha = ((m_iFadeoutTime - (llTimestamp - m_pPastPlayers[i].GetTimestamp())) / (float)m_iFadeoutTime) * 255;
+			alpha = ((m_fFadeoutTime - (fCurtime - m_pPastPlayers[i].GetTimestamp())) / m_fFadeoutTime) * 255;
 			color = Color(alpha, 100, 100, 100);
 		}
 		else if (iCurEntityTeam == TEAMNUM_CT)
 		{
-			color = m_clrCT;
+			if (bIsSpotted)
+				color = m_clrSpottedCT;
+			else
+				color = m_clrCT;
 		}
 		else if (iCurEntityTeam == TEAMNUM_T)
 		{
-			color = m_clrT;
+			if (bIsSpotted)
+				color = m_clrSpottedT;
+			else
+				color = m_clrT;
 		}
 		else
 		{
 			continue;
-		}
-
-		if (bIsSpotted)
-		{
-			color = m_clrSpotted;
 		}
 
 		//todo: both interesting for knifebot

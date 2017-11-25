@@ -2,6 +2,7 @@
 #include "Application.h"
 
 CMaterialVisuals::CMaterialVisuals()
+	: m_fNightmodeValue(100.0f), m_fAsuswallsValue(100.0f), m_iSkychangerValue(SKY_NOCHANGE)
 {
 }
 
@@ -11,6 +12,7 @@ CMaterialVisuals::~CMaterialVisuals()
 
 void CMaterialVisuals::SetDefaultSky()
 {
+	// TODO: Xor
 	static ConVar* pSkyname = m_pApp->CVar()->FindVar("sv_skyname");
 	memcpy(m_pDefaultSky, pSkyname->value, (strlen(pSkyname->value) + 1));
 }

@@ -36,7 +36,7 @@ public:
 	void SetTimeToAim(float fTimeToAim) { m_fTimeToAim = fTimeToAim; }
 	float GetTimeToAim() { return m_fTimeToAim; }
 
-	// Curve amount of the path (determines position of intermediate point) [0.0-1.0]
+	// Curve amount of the path (determines position of intermediate point)
 	void SetCurve(float fCurve) { m_fCurve = fCurve; }
 	float GetCurve() { return m_fCurve; }
 

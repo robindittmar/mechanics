@@ -1,4 +1,5 @@
 #include "Utils.h"
+#include "Application.h"
 
 namespace Utils
 {
@@ -75,6 +76,18 @@ namespace Utils
 		}
 	}
 
+	float GetTraceFractionWorldProps(Vector start, Vector end)
+	{
+		Ray_t ray;
+		trace_t tr;
+		CTraceFilterWorldAndPropsOnly filter;
+
+		ray.Init(start, end);
+		CApplication::Instance()->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &tr);
+
+		return tr.fraction;
+	}
+
 	/// <summary>
 	/// 
 	/// </summary>
@@ -148,8 +161,8 @@ namespace Utils
 
 	void RgbToHsv(int r, int g, int b, float& h, float& s, float& v)
 	{
-		v = std::max(r, std::max(g, b));
-		float cmin = std::min(r, std::min(g, b));
+		v = max(r, max(g, b));
+		float cmin = min(r, min(g, b));
 		float cdelta = v - cmin;
 
 		if (v == 0.0f)

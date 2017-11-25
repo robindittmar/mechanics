@@ -47,7 +47,10 @@ void CColorPicker::Draw(ISurface* pSurface)
 	pSurface->DrawSetColor(m_clrValue);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
-	pSurface->DrawSetColor(255, 0, 0, 0);
+	if (m_bIsEnabled)
+		pSurface->DrawSetColor(255, 0, 0, 0);
+	else
+		pSurface->DrawSetColor(g_clrControlDisabled);
 	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
 
 	IControlTooltip::Draw(pSurface);

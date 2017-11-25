@@ -29,7 +29,6 @@ namespace ConfigHelper
 		pApp->Ragebot()->SetTargetCriteria(pConfig->GetInt("ragebot", "targetcriteria"));
 		pApp->Ragebot()->SetCalculateHitchance(pConfig->GetBool("ragebot", "hitchanceenabled"));
 		pApp->Ragebot()->SetHitchance(pConfig->GetFloat("ragebot", "hitchance"));
-		pApp->Ragebot()->SetNoSpread(pConfig->GetBool("ragebot", "nospread"));
 		pApp->Ragebot()->SetAutoRevolver(pConfig->GetBool("ragebot", "autorevolver"));
 
 		// Legitbot
@@ -96,6 +95,8 @@ namespace ConfigHelper
 
 		// Bhop
 		pApp->Bhop()->SetEnabled(pConfig->GetBool("bhop", "enabled"));
+		pApp->Bhop()->SetAutoStrafeMode(pConfig->GetInt("bhop", "autostrafe"));
+		pApp->Bhop()->SetCircleStrafe(pConfig->GetBool("bhop", "circlestrafe"));
 
 		// Esp
 		pApp->Esp()->SetEnabled(pConfig->GetBool("esp", "enabled"));
@@ -120,7 +121,8 @@ namespace ConfigHelper
 		pApp->Esp()->SetFadeoutTime(pConfig->GetFloat("esp", "fadeouttime"));
 		pApp->Esp()->SetColorCT(pConfig->GetColor("esp", "colorct"));
 		pApp->Esp()->SetColorT(pConfig->GetColor("esp", "colort"));
-		pApp->Esp()->SetColorSpotted(pConfig->GetColor("esp", "colorspotted"));
+		pApp->Esp()->SetColorSpottedCT(pConfig->GetColor("esp", "colorspottedct"));
+		pApp->Esp()->SetColorSpottedT(pConfig->GetColor("esp", "colorspottedt"));
 
 		// WeaponEsp
 		pApp->WeaponEsp()->SetEnabled(pConfig->GetBool("weaponesp", "enabled"));
@@ -138,9 +140,9 @@ namespace ConfigHelper
 		pApp->SoundEsp()->SetEnabled(pConfig->GetBool("soundesp", "enabled"));
 		pApp->SoundEsp()->SetShowTime(pConfig->GetFloat("soundesp", "showtime"));
 		pApp->SoundEsp()->SetFadeoutEnabled(pConfig->GetBool("soundesp", "fadeout"));
-		pApp->SoundEsp()->SetFadeTime(pConfig->GetFloat("soundesp", "fadeouttime"));
+		pApp->SoundEsp()->SetFadeoutTime(pConfig->GetFloat("soundesp", "fadeouttime"));
 		pApp->SoundEsp()->SetDrawOwnTeam(pConfig->GetBool("soundesp", "team"));
-		pApp->SoundEsp()->SetDrawVisible(pConfig->GetBool("soundesp", "visible"));
+		pApp->SoundEsp()->SetDrawOnlyNotVisible(pConfig->GetBool("soundesp", "visible"));
 
 		// Chams
 		pApp->Chams()->SetEnabled(pConfig->GetBool("chams", "enabled"));
@@ -161,8 +163,6 @@ namespace ConfigHelper
 		pApp->Fakelag()->SetOnlyInAir(pConfig->GetBool("misc", "fakelagonlyinair"));
 		pApp->Fakelag()->SetChokeAmount(pConfig->GetInt("misc", "fakelagamount"));
 		pApp->Fakelag()->SetLagType(pConfig->GetInt("misc", "fakelagtype"));
-		pApp->Misc()->SetAutoStrafeMode(pConfig->GetInt("misc", "autostrafe"));
-		pApp->Misc()->SetCircleStrafe(pConfig->GetBool("misc", "circlestrafe"));
 		pApp->Misc()->SetAutoPistol(pConfig->GetBool("misc", "autopistol"));
 		pApp->Misc()->SetShowSpectators(pConfig->GetBool("misc", "spectators"));
 		pApp->Misc()->SetShowOnlyMySpectators(pConfig->GetBool("misc", "onlymyspectators"));
@@ -256,8 +256,6 @@ namespace ConfigHelper
 		pConfig->SetInt("ragebot", "targetcriteria", pApp->Ragebot()->GetTargetCriteria());
 		pConfig->SetBool("ragebot", "hitchanceenabled", pApp->Ragebot()->GetCalculateHitchance());
 		pConfig->SetFloat("ragebot", "hitchance", pApp->Ragebot()->GetHitchance());
-		// TODO: NoRecoil
-		pConfig->SetBool("ragebot", "nospread", pApp->Ragebot()->GetNoSpread());
 		pConfig->SetBool("ragebot", "autorevolver", pApp->Ragebot()->GetAutoRevolver());
 
 		// Legitbot
@@ -320,6 +318,9 @@ namespace ConfigHelper
 
 		// Bhop
 		pConfig->SetBool("bhop", "enabled", pApp->Bhop()->GetEnabled());
+		pConfig->SetInt("bhop", "autostrafe", pApp->Bhop()->GetAutoStrafeMode());
+		pConfig->SetBool("bhop", "circlestrafe", pApp->Bhop()->GetCircleStrafe());
+		// TODO: CircleStrafeDirection
 
 		// Esp
 		pConfig->SetBool("esp", "enabled", pApp->Esp()->GetEnabled());
@@ -344,7 +345,8 @@ namespace ConfigHelper
 		pConfig->SetFloat("esp", "fadeouttime", pApp->Esp()->GetFadeoutTime());
 		pConfig->SetColor("esp", "colorct", pApp->Esp()->GetColorCT());
 		pConfig->SetColor("esp", "colort", pApp->Esp()->GetColorT());
-		pConfig->SetColor("esp", "colorspotted", pApp->Esp()->GetColorSpotted());
+		pConfig->SetColor("esp", "colorspottedct", pApp->Esp()->GetColorSpottedCT());
+		pConfig->SetColor("esp", "colorspottedt", pApp->Esp()->GetColorSpottedT());
 
 		// WeaponEsp
 		pConfig->SetBool("weaponesp", "enabled", pApp->WeaponEsp()->GetEnabled());
@@ -362,9 +364,9 @@ namespace ConfigHelper
 		pConfig->SetBool("soundesp", "enabled", pApp->SoundEsp()->GetEnabled());
 		pConfig->SetFloat("soundesp", "showtime", pApp->SoundEsp()->GetShowTime());
 		pConfig->SetBool("soundesp", "fadeout", pApp->SoundEsp()->GetFadeoutEnabled());
-		pConfig->SetFloat("soundesp", "fadeouttime", pApp->SoundEsp()->GetFadeTime());
+		pConfig->SetFloat("soundesp", "fadeouttime", pApp->SoundEsp()->GetFadeoutTime());
 		pConfig->SetBool("soundesp", "team", pApp->SoundEsp()->GetDrawOwnTeam());
-		pConfig->SetBool("soundesp", "visible", pApp->SoundEsp()->GetDrawVisible());
+		pConfig->SetBool("soundesp", "visible", pApp->SoundEsp()->GetDrawOnlyNotVisible());
 
 		// Chams
 		pConfig->SetBool("chams", "enabled", pApp->Chams()->GetEnabled());
@@ -385,9 +387,6 @@ namespace ConfigHelper
 		pConfig->SetBool("misc", "fakelagonlyinair", pApp->Fakelag()->GetOnlyInAir());
 		pConfig->SetInt("misc", "fakelagamount", pApp->Fakelag()->GetChokeAmount());
 		pConfig->SetInt("misc", "fakelagtype", pApp->Fakelag()->GetLagType());
-		pConfig->SetInt("misc", "autostrafe", pApp->Misc()->GetAutoStrafeMode());
-		pConfig->SetBool("misc", "circlestrafe", pApp->Misc()->GetCircleStrafe());
-		// TODO: CircleStrafeDirection
 		pConfig->SetBool("misc", "autopistol", pApp->Misc()->GetAutoPistol());
 		pConfig->SetBool("misc", "spectators", pApp->Misc()->GetShowSpectators());
 		pConfig->SetBool("misc", "onlymyspectators", pApp->Misc()->GetShowOnlyMySpectators());

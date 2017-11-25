@@ -2,9 +2,11 @@
 #include "Application.h"
 
 CMisc::CMisc()
-	: m_xorName("yjè§")
+	: m_xorName("yjè§"), m_bNoRecoil(false), m_bAutoPistol(false),
+	m_bSpectators(false), m_bOnlyMySpectators(false), m_bOnlyMyTeamSpectators(false),
+	m_bJumpScout(false), m_bIsCustomClanTag(false), m_bAutoAccept(false),
+	m_bNoName(false), m_bSpamName(false)
 {
-	m_bIsCustomClanTag = false;
 }
 
 CMisc::~CMisc()
@@ -24,7 +26,7 @@ void CMisc::Think(void* pParameters)
 
 void CMisc::NoRecoil(CUserCmd* pUserCmd)
 {
-	if (!m_bNoRecoil ||
+	/*if (!m_bNoRecoil ||
 		m_pApp->Ragebot()->DidNoRecoil() ||
 		!(pUserCmd->buttons & IN_ATTACK))
 	{
@@ -67,138 +69,7 @@ void CMisc::NoRecoil(CUserCmd* pUserCmd)
 
 		m_pApp->m_oldAimPunchAngle.x = aimPunchAngle.x * m_pApp->GetRecoilCompensation();
 		m_pApp->m_oldAimPunchAngle.y = aimPunchAngle.y * m_pApp->GetRecoilCompensation();
-	}
-}
-
-//void CMisc::Fakelag(CUserCmd* pUserCmd)
-//{
-//	if (!m_bFakelag)
-//		return;
-//
-//	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-//	if (pLocalEntity->GetVelocity()->Length() <= 0.1f)
-//	{
-//		m_iFakelagChokedAmount = 0;
-//		return;
-//	}
-//
-//	if (pUserCmd->buttons == IN_ATTACK ||
-//		pUserCmd->buttons == IN_ATTACK2 ||
-//		pUserCmd->buttons == IN_USE)
-//	{
-//		*m_pApp->m_bSendPackets = true;
-//		return;
-//	}
-//
-//	if (m_bFakelagOnlyInAir && ((pLocalEntity->GetFlags() & FL_ONGROUND) || (pLocalEntity->GetFlags() & FL_INWATER)))
-//		return;
-//
-//	if (m_iFakelagChokedAmount >= m_iFakelagChokeAmount)
-//	{
-//		*m_pApp->m_bSendPackets = true;
-//		m_iFakelagChokedAmount = 0;
-//	}
-//	else
-//	{
-//		m_iFakelagChokedAmount++;
-//		*m_pApp->m_bSendPackets = false;
-//	}
-//}
-
-void CMisc::AutoStrafe(CUserCmd* pUserCmd)
-{
-	if (m_iAutoStrafeMode == 0)
-		return;
-
-	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
-	DWORD moveType = pLocalEntity->GetMoveType();
-	if (!(pLocalEntity->GetFlags() & FL_ONGROUND) &&
-		!(moveType & MOVETYPE_NOCLIP) &&
-		!(moveType & MOVETYPE_LADDER))
-	{
-		switch (m_iAutoStrafeMode)
-		{
-		case AUTOSTRAFEMODE_RAGE:
-			pUserCmd->forwardmove = (1800.f * 4.f) / pLocalEntity->GetVelocity()->Length();
-			if (pUserCmd->mousedx > 1 || pUserCmd->mousedx < -1) {
-				pUserCmd->sidemove = pUserCmd->mousedx < 0.f ? -450.f : 450.f;
-			}
-			else {
-				pUserCmd->sidemove = (pUserCmd->command_number % 2) == 0 ? -450.f : 450.f;
-			}
-			break;
-		case AUTOSTRAFEMODE_LEGIT:
-			if (pUserCmd->mousedx > 0)
-			{
-				pUserCmd->sidemove = 450;
-			}
-			else if (pUserCmd->mousedx < 0)
-			{
-				pUserCmd->sidemove = -450;
-			}
-			break;
-		case AUTOSTRAFEMODE_NONE:
-		default:
-			break;
-		}
-	}
-}
-
-//todo: Robin wohin damit ?
-float GetTraceFractionWorldProps(Vector start, Vector end)
-{
-	Ray_t ray;
-	trace_t tr;
-	CTraceFilterWorldAndPropsOnly filter;
-
-	ray.Init(start, end);
-	CApplication::Instance()->EngineTrace()->TraceRay(ray, MASK_SOLID, &filter, &tr);
-
-	return tr.fraction;
-}
-
-void CMisc::CircleStrafe(IClientEntity * pLocalEntity, CUserCmd * pUserCmd)
-{
-	if (!m_bCircleStrafe)
-		return;
-
-	//todo: which key? maybe better method?
-	if (!GetAsyncKeyState(VK_MENU))
-		return;
-
-	static float fStrafeAngle = 0.0f;
-
-	Vector vOrigin = *pLocalEntity->GetOrigin();
-
-	Vector Velocity = *pLocalEntity->GetVelocity();
-	Velocity.z = 0;
-
-	float Speed = Velocity.Length();
-	if (Speed < 45)
-		Speed = 45;
-
-	if (Speed > 750)
-		Speed = 750;
-
-	float FinalPath = GetTraceFractionWorldProps(vOrigin + Vector(0, 0, 10), vOrigin + Vector(0, 0, 10) + Velocity / 2.0f);
-	float DeltaAngle = m_fCircleStrafeStartDirection * fmax((275.0f / Speed) * (2.0f / FinalPath) * (128.0f / (1.7f / m_pApp->GlobalVars()->interval_per_tick)) * 4.20f, 2.0f);
-	fStrafeAngle += DeltaAngle;
-
-	// Autojump
-	if (!(pLocalEntity->GetFlags() & FL_ONGROUND))
-		pUserCmd->buttons &= ~IN_JUMP;
-	else
-		pUserCmd->buttons |= IN_JUMP;
-
-	if (fabs(fStrafeAngle) >= 360.0f)
-	{
-		fStrafeAngle = 0.0f;
-	}
-	else
-	{
-		pUserCmd->forwardmove = cos((fStrafeAngle + 90 * m_fCircleStrafeStartDirection) * (PI_F / 180.0f)) * 450.0f;
-		pUserCmd->sidemove = sin((fStrafeAngle + 90 * m_fCircleStrafeStartDirection) * (PI_F / 180.0f)) * 450.0f;
-	}
+	}*/
 }
 
 void CMisc::AutoPistol(CUserCmd* pUserCmd)

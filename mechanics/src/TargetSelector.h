@@ -1,6 +1,17 @@
 #ifndef __TARGETSELECTOR_H__
 #define __TARGETSELECTOR_H__
 
+/*
+TODO:
+
+The whole TargetSelector at one point moved out of the Ragebot -- into the TargetSelector
+The purpose of that was, to reuse the targets (or atleast the targetfinding code) in Ragebot/Legitbot/Antiaim, etc etc.
+
+But today we know, that it's probably better to keep this in the Ragebot, as the targetselection is quiet different for each case
+and if you need to know the current target (in AntiAim for example) you can just ask the Ragebot, instead of the Targetselector
+(I guess you'll never use AntiAim with legitbot.. :D)
+*/
+
 // Source SDK
 #include "ClientEntity.h"
 #include "ClientEntityList.h"

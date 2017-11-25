@@ -2,6 +2,9 @@
 #include "Application.h"
 
 CWeaponEsp::CWeaponEsp()
+	: m_bDrawWeaponName(false), m_bDrawWeaponBoundingBox(false), m_bDrawGrenadeName(false),
+	m_bDrawGrenadeBoundingBox(false), m_bDrawBombName(false), m_bDrawBombBoundingBox(false),
+	m_bDrawBombTimer(false), m_bDrawBombDefuseTimer(false), m_bDrawBombDamageIndicator(false)
 {
 }
 
@@ -67,7 +70,7 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 		int x0, y0, x1, y1;
 		if (ShouldDrawBox(pCurEntity, x0, y0, x1, y1))
 		{
-			m_pApp->Surface()->DrawSetColor(m_pApp->Esp()->GetColorSpotted());
+			m_pApp->Surface()->DrawSetColor(/*m_pApp->Esp()->GetColorSpotted()*/Color(255, 255, 128, 0));
 			m_pApp->Surface()->DrawOutlinedRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1);
 		}
 	}
@@ -127,7 +130,7 @@ void CWeaponEsp::WeaponEsp(IClientEntity* pCurEntity)
 		int x0, y0, x1, y1;
 		if (ShouldDrawBox(pCurEntity, x0, y0, x1, y1))
 		{
-			m_pApp->Surface()->DrawSetColor(m_pApp->Esp()->GetColorSpotted());
+			m_pApp->Surface()->DrawSetColor(/*m_pApp->Esp()->GetColorSpotted()*/Color(255, 255, 128, 0));
 			m_pApp->Surface()->DrawOutlinedRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1);
 		}
 	}
@@ -154,7 +157,7 @@ void CWeaponEsp::BombEsp(IClientEntity* pCurEntity)
 		int x0, y0, x1, y1;
 		if (ShouldDrawBox(pCurEntity, x0, y0, x1, y1))
 		{
-			m_pApp->Surface()->DrawSetColor(m_pApp->Esp()->GetColorSpotted());
+			m_pApp->Surface()->DrawSetColor(/*m_pApp->Esp()->GetColorSpotted()*/Color(255, 255, 128, 0));
 			m_pApp->Surface()->DrawOutlinedRect(x0 + 1, y0 + 1, x1 - 1, y1 - 1);
 		}
 	}

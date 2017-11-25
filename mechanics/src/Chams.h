@@ -19,6 +19,11 @@
 #define WEAPON_CHAMSSTYLE_CRYSTAL		3
 #define WEAPON_CHAMSSTYLE_GOLD			4
 
+#define CHAMS_COLOR_HIDDENCT			Color(255, 0, 0, 255)
+#define CHAMS_COLOR_VISIBLECT			Color(255, 0, 255, 0)
+#define CHAMS_COLOR_HIDDENT				Color(255, 255, 0, 0)
+#define CHAMS_COLOR_VISIBLET			Color(255, 255, 128, 0)
+
 class IMatRenderContext;
 typedef void(__thiscall *DrawModelExecute_t)(void*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t*);
 

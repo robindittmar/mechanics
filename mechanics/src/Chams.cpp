@@ -4,6 +4,8 @@
 CChams::CChams()
 	: m_pModelRender(nullptr), m_bRenderTeam(false), m_bRenderLocalplayer(false),
 	m_bOnlyVisible(false), m_iPlayerChamsStyle(PLAYER_CHAMSSTYLE_NONE), m_bRenderFakeAngle(false),
+	m_clrHiddenCT(CHAMS_COLOR_HIDDENCT), m_clrVisibleCT(CHAMS_COLOR_VISIBLECT),
+	m_clrHiddenT(CHAMS_COLOR_HIDDENT), m_clrVisibleT(CHAMS_COLOR_VISIBLET),
 	m_iWeaponChamsStyle(WEAPON_CHAMSSTYLE_NONE), m_pFlatHiddenCT(nullptr), m_pFlatVisibleCT(nullptr),
 	m_pFlatHiddenT(nullptr), m_pFlatVisibleT(nullptr), m_pFlatFakeAngle(nullptr),
 	m_pLitHiddenCT(nullptr), m_pLitVisibleCT(nullptr), m_pLitHiddenT(nullptr),
@@ -146,34 +148,64 @@ void CChams::SetColorVisibleT(Color clrVisibleT)
 void CChams::DestroyMaterials()
 {
 	if (m_pFlatHiddenCT)
+	{
 		m_pFlatHiddenCT->DecrementReferenceCount();
+		m_pFlatHiddenCT = nullptr;
+	}
 
 	if (m_pFlatVisibleCT)
+	{
 		m_pFlatVisibleCT->DecrementReferenceCount();
+		m_pFlatVisibleCT = nullptr;
+	}
 
 	if (m_pFlatHiddenT)
+	{
 		m_pFlatHiddenT->DecrementReferenceCount();
+		m_pFlatHiddenT = nullptr;
+	}
 
 	if (m_pFlatVisibleT)
+	{
 		m_pFlatVisibleT->DecrementReferenceCount();
+		m_pFlatVisibleT = nullptr;
+	}
 
 	if (m_pFlatFakeAngle)
+	{
 		m_pFlatFakeAngle->DecrementReferenceCount();
+		m_pFlatFakeAngle = nullptr;
+	}
 
 	if (m_pLitHiddenCT)
+	{
 		m_pLitHiddenCT->DecrementReferenceCount();
+		m_pLitHiddenCT = nullptr;
+	}
 
 	if (m_pLitVisibleCT)
+	{
 		m_pLitVisibleCT->DecrementReferenceCount();
+		m_pLitVisibleCT = nullptr;
+	}
 
 	if (m_pLitHiddenT)
+	{
 		m_pLitHiddenT->DecrementReferenceCount();
+		m_pLitHiddenT = nullptr;
+	}
 
 	if (m_pLitVisibleT)
+	{
 		m_pLitVisibleT->DecrementReferenceCount();
+		m_pLitVisibleT = nullptr;
+	}
 
 	if (m_pLitFakeAngle)
+	{
 		m_pLitFakeAngle->DecrementReferenceCount();
+		m_pLitFakeAngle = nullptr;
+	}
 }
 
 void CChams::DrawFakeAngle(void* ecx, IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
@@ -268,11 +300,11 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 	if (m_iPlayerChamsStyle == PLAYER_CHAMSSTYLE_NONE)
 		return;
 
-	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
+	//static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
 	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
 
 	// models/player
-	if (strstr(pszModelName, pModelsSlashPlayers.ToCharArray()) != NULL)
+	if (strstr(pszModelName, pModelsSlashPlayers) != NULL)
 	{
 		IClientEntity* pLocalEntity = (IClientEntity*)m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());
 		IClientEntity* pModelEntity = m_pApp->EntityList()->GetClientEntity(pInfo.entity_index);
@@ -331,23 +363,23 @@ void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderCo
 	static CXorString xorGlassMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8h÷»dä®Hhé§vy");
 
 
-	if (strstr(pszModelName, xorWeaponsV.ToCharArray()) != NULL &&
-		strstr(pszModelName, xorWeaponsVModels.ToCharArray()) == NULL)
+	if (strstr(pszModelName, xorWeaponsV) != NULL &&
+		strstr(pszModelName, xorWeaponsVModels) == NULL)
 	{
 		IMaterial* pMat = NULL;
 		switch (m_iWeaponChamsStyle)
 		{
 		case WEAPON_CHAMSSTYLE_GOLD:
-			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGoldMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGoldMat, xorOtherTextures);
 			break;
 		case WEAPON_CHAMSSTYLE_CRYSTAL:
-			pMat = m_pApp->MaterialSystem()->FindMaterial(xorCrystalMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorCrystalMat, xorOtherTextures);
 			break;
 		case WEAPON_CHAMSSTYLE_PLATINUM:
-			pMat = m_pApp->MaterialSystem()->FindMaterial(xorPlatMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorPlatMat, xorOtherTextures);
 			break;
 		case WEAPON_CHAMSSTYLE_GLASS:
-			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGlassMat.ToCharArray(), xorOtherTextures.ToCharArray());
+			pMat = m_pApp->MaterialSystem()->FindMaterial(xorGlassMat, xorOtherTextures);
 			break;
 		case WEAPON_CHAMSSTYLE_NONE:
 		default:

@@ -89,13 +89,16 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->Misc()->AutoPistol(pUserCmd);
 			pApp->Misc()->NoRecoil(pUserCmd);
 			pApp->Fakelag()->Think((void*)pUserCmd);
-			pApp->Misc()->AutoStrafe(pUserCmd);
-			pApp->Misc()->CircleStrafe(pLocalEntity, pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
+
+			pApp->SoundEsp()->Think();
 
 			// Visuals
 			pApp->GunHud()->Think((void*)pLocalEntity);
 			pApp->Radar()->Think();
+
+			// Apply NoRecoil/NoSpread
+			pApp->GunAccuracy()->Think((void*)&createMoveParam);
 
 			// todo: auslagern!
 			if (pUserCmd->buttons & IN_ATTACK)

@@ -357,6 +357,9 @@
     <ClCompile Include="src\NumericUpDown.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GunAccuracy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AntiAim.h">
@@ -771,6 +774,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\NumericUpDown.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GunAccuracy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

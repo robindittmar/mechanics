@@ -70,7 +70,6 @@ void CMenu::ApplySettings()
 	m_pAimbotAutoReload->SetChecked(m_pApp->Ragebot()->GetAutoReload());
 	m_pAimbotMultipoint->SetChecked(m_pApp->TargetSelector()->GetMultipoint());
 	m_pAimbotMultipointScale->SetValue(m_pApp->TargetSelector()->GetMultipointScale());
-	m_pAimbotNoSpreadEnabled->SetChecked(m_pApp->Ragebot()->GetNoSpread());
 	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
 	m_pAimbotHitchanceSlider->SetValue(m_pApp->Ragebot()->GetHitchance());
 	m_pAimbotTargetCriteria->SetValue(m_pApp->Ragebot()->GetTargetCriteria());
@@ -190,9 +189,9 @@ void CMenu::ApplySettings()
 	m_pSoundEspEnabled->SetChecked(m_pApp->SoundEsp()->GetEnabled());
 	m_pSoundEspShowTime->SetValue(m_pApp->SoundEsp()->GetShowTime());
 	m_pSoundEspFadeoutEnabled->SetChecked(m_pApp->SoundEsp()->GetFadeoutEnabled());
-	m_pSoundEspFadeoutTime->SetValue(m_pApp->SoundEsp()->GetFadeTime());
+	m_pSoundEspFadeoutTime->SetValue(m_pApp->SoundEsp()->GetFadeoutTime());
 	m_pSoundEspDrawOwnTeam->SetChecked(m_pApp->SoundEsp()->GetDrawOwnTeam());
-	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawVisible());
+	m_pSoundEspOnlyNotVisible->SetChecked(m_pApp->SoundEsp()->GetDrawOnlyNotVisible());
 
 	// LC
 	m_pDrawLagCompensationStyle->SetSelection(m_pApp->LagCompensation()->GetDrawStyle());
@@ -236,7 +235,7 @@ void CMenu::ApplySettings()
 	// Misc
 	m_pFakelagEnabled->SetChecked(m_pApp->Fakelag()->GetEnabled());
 	m_pFakelagOnlyInAir->SetChecked(m_pApp->Fakelag()->GetOnlyInAir());
-	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmountMenu());
+	m_pFakelagChokeAmount->SetValue(m_pApp->Fakelag()->GetChokeAmount());
 	m_pFakelagType->SetValue(m_pApp->Fakelag()->GetLagType());
 
 	m_pMiscOthersNoRecoilEnabled->SetChecked(m_pApp->Misc()->GetNoRecoil());
@@ -246,9 +245,9 @@ void CMenu::ApplySettings()
 	m_pMiscOthersNoNameEnabled->SetChecked(m_pApp->Misc()->GetNoName());
 
 	m_pMiscBhopEnabled->SetChecked(m_pApp->Bhop()->GetEnabled());
-	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Misc()->GetAutoStrafeMode());
-	m_pMiscBhopCircleStrafeEnabled->SetChecked(m_pApp->Misc()->GetCircleStrafe());
-	m_pMiscBhopCircleStrafeDirection->SetSelection(m_pApp->Misc()->GetCircleStrafeStartDirection());
+	m_pMiscBhopAutoStrafeMode->SetSelection(m_pApp->Bhop()->GetAutoStrafeMode());
+	m_pMiscBhopCircleStrafeEnabled->SetChecked(m_pApp->Bhop()->GetCircleStrafe());
+	m_pMiscBhopCircleStrafeDirection->SetSelection(m_pApp->Bhop()->GetCircleStrafeStartDirection());
 
 	// TODO
 	// SkinChanger
@@ -368,8 +367,8 @@ void CMenu::CreateRageTab()
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotEnabled);
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotMultipoint);
 
-	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 142, 128, 16, "Remove Spread (if possible)");
-	m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 142, 128, 16, "Remove Spread (Not Implemented)");
+	//m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
 	m_pAimbotNoSpreadEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotHitchanceEnabled = new CCheckbox(4, 162, 128, 16, "Hitchance");
@@ -945,18 +944,22 @@ void CMenu::CreateVisualsTab()
 	m_pChamsColorVisibleCT = new CColorPicker(4, 190);
 	m_pChamsColorVisibleCT->SetTooltipText("CT - Visible");
 	m_pChamsColorVisibleCT->SetEventHandler(std::bind(&CChams::SetColorVisibleCT, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsColorVisibleCT->AddDependency(m_pChamsEnabled);
 
 	m_pChamsColorHiddenCT = new CColorPicker(38, 190);
 	m_pChamsColorHiddenCT->SetTooltipText("CT - Hidden");
 	m_pChamsColorHiddenCT->SetEventHandler(std::bind(&CChams::SetColorHiddenCT, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsColorHiddenCT->AddDependency(m_pChamsEnabled);
 
 	m_pChamsColorVisibleT = new CColorPicker(72, 190);
 	m_pChamsColorVisibleT->SetTooltipText("T - Visible");
 	m_pChamsColorVisibleT->SetEventHandler(std::bind(&CChams::SetColorVisibleT, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsColorVisibleT->AddDependency(m_pChamsEnabled);
 
 	m_pChamsColorHiddenT = new CColorPicker(106, 190);
 	m_pChamsColorHiddenT->SetTooltipText("T - Hidden");
 	m_pChamsColorHiddenT->SetEventHandler(std::bind(&CChams::SetColorHiddenT, m_pApp->Chams(), std::placeholders::_1));
+	m_pChamsColorHiddenT->AddDependency(m_pChamsEnabled);
 
 	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
@@ -989,7 +992,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspFadeoutTimeLabel->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspFadeoutTime = new CSlider(4, 92, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 5.0f);
-	m_pSoundEspFadeoutTime->SetEventHandler(std::bind(&CSoundEsp::SetFadeTime, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspFadeoutTime->SetEventHandler(std::bind(&CSoundEsp::SetFadeoutTime, m_pApp->SoundEsp(), std::placeholders::_1));
 	m_pSoundEspFadeoutTime->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspDrawOwnTeam = new CCheckbox(4, 124, 128, 16, "Own Team");
@@ -997,7 +1000,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspDrawOwnTeam->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspOnlyNotVisible = new CCheckbox(4, 144, 128, 16, "Only Not Visible");
-	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawVisible, m_pApp->SoundEsp(), std::placeholders::_1));
+	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawOnlyNotVisible, m_pApp->SoundEsp(), std::placeholders::_1));
 	m_pSoundEspOnlyNotVisible->AddDependency(m_pSoundEspEnabled);
 
 	m_pSoundEspGroup = new CGroupbox(672, 16, 152, 308, "Sound Esp");
@@ -1285,7 +1288,7 @@ void CMenu::CreateMiscTab()
 	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_NONE, "None");
 	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_LEGIT, "Legit");
 	m_pMiscBhopAutoStrafeMode->AddOption(AUTOSTRAFEMODE_RAGE, "Rage");
-	m_pMiscBhopAutoStrafeMode->SetEventHandler(std::bind(&CMisc::SetAutoStrafeMode, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscBhopAutoStrafeMode->SetEventHandler(std::bind(&CBhop::SetAutoStrafeMode, m_pApp->Bhop(), std::placeholders::_1));
 
 	m_pFakelagGroup = new CGroupbox(184, 16, 152, 308, "Fakelag");
 	m_pFakelagGroup->AddChild(m_pFakelagEnabled);
@@ -1295,12 +1298,12 @@ void CMenu::CreateMiscTab()
 	m_pFakelagGroup->AddChild(m_pFakelagType);
 
 	m_pMiscBhopCircleStrafeEnabled = new CCheckbox(4, 0, 128, 16, "Circle Strafe");
-	m_pMiscBhopCircleStrafeEnabled->SetEventHandler(std::bind(&CMisc::SetCircleStrafe, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscBhopCircleStrafeEnabled->SetEventHandler(std::bind(&CBhop::SetCircleStrafe, m_pApp->Bhop(), std::placeholders::_1));
 
 	m_pMiscBhopCircleStrafeDirection = new CSelectbox(4, 32, 124, 16, "Circle Strafe Direction");
 	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_RIGHT, "Right");
 	m_pMiscBhopCircleStrafeDirection->AddOption(CIRCLESTRAFEDIRECTION_LEFT, "Left");
-	m_pMiscBhopCircleStrafeDirection->SetEventHandler(std::bind(&CMisc::SetCircleStrafeStartDirection, m_pApp->Misc(), std::placeholders::_1));
+	m_pMiscBhopCircleStrafeDirection->SetEventHandler(std::bind(&CBhop::SetCircleStrafeStartDirection, m_pApp->Bhop(), std::placeholders::_1));
 	m_pMiscBhopCircleStrafeDirection->AddDependency(m_pMiscBhopCircleStrafeEnabled);
 
 	m_pMiscBhopCircleStrafeLabel = new CLabel(4, 46, 128, 16, "On: MENU");
@@ -1390,6 +1393,11 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerSkin = new CSelectbox(140, 34, 128, 16, "Skin");
 	m_pSkinChangerSkin->AddOption(0, "None");
 
+	m_pSkinChangerLoadCfg = new CButton(400, 4, 128, 20, "Load Cfg");
+	m_pSkinChangerLoadCfg->SetEventHandler(std::bind(&CSkinChanger::LoadFromConfig, m_pApp->SkinChanger(), "skins.cfg"));
+
+	m_pSkinChangerSaveCfg = new CButton(400, 28, 128, 20, "Save Cfg");
+	m_pSkinChangerSaveCfg->SetEventHandler(std::bind(&CSkinChanger::WriteToConfig, m_pApp->SkinChanger(), "skins.cfg"));
 
 	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 1008, 300, "Skins");
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerKnife);
@@ -1404,6 +1412,8 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyBoth);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyCt);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerApplyT);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerLoadCfg);
+	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerSaveCfg);
 
 	m_pSkinChangerTab = new CTabPage("Skin Changer");
 	m_pSkinChangerTab->AddChild(m_pSkinChangerSkinsGroup);

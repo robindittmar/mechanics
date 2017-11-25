@@ -2,7 +2,7 @@
 
 CEspPlayer::CEspPlayer()
 {
-	m_llTimestamp = 0;
+	m_fTimestamp = 0.0f;
 	m_bIsDormant = true;
 }
 

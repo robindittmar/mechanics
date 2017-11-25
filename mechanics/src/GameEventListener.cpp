@@ -83,7 +83,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	pApp->Gui()->Setup();
 	pApp->SkinChanger()->ApplyDesiredKnife(TEAMNUM_CT, pApp->SkinChanger()->GetDesiredKnifeModelIndexCT());
 	pApp->SkinChanger()->ApplyDesiredKnife(TEAMNUM_T, pApp->SkinChanger()->GetDesiredKnifeModelIndexT());
-	pApp->SetRecoilCompensation(atof(pApp->CVar()->FindVar(xorRecoilCompensation.ToCharArray())->value));
+	pApp->GunAccuracy()->SetRecoilCompensation(atof(pApp->CVar()->FindVar(xorRecoilCompensation.ToCharArray())->value));
 	pApp->Chams()->DestroyMaterials();
 	pApp->Chams()->Setup();
 	pApp->Esp()->ResetHeadBones();

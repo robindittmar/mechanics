@@ -203,11 +203,6 @@ void CApplication::Setup()
 	this->GetLibrarys();
 	this->GetInterfaces();
 
-	if (m_pEngineClient->IsInGame())
-	{
-		SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà").ToCharArray())->value));
-	}
-
 	// Resource manager
 	g_pResourceManager = new CResourceManager();
 	g_pResourceManager->Init(this);
@@ -227,6 +222,7 @@ void CApplication::Setup()
 	// Setups
 	this->m_targetSelector.Setup(this);
 	this->m_ragebot.Setup();
+	this->m_gunAccuracy.Setup();
 	this->m_legitbot.Setup();
 	this->m_triggerbot.Setup();
 	this->m_resolver.Setup();
@@ -247,13 +243,6 @@ void CApplication::Setup()
 	this->m_radar.Setup();
 	this->m_lagcompensation.Setup();
 
-	CConfig config;
-	config.Init(this);
-	config.LoadFile("rage.cfg");
-	ConfigHelper::ConfigToFeatures(&config);
-
-	this->m_skinchanger.SetEnabled(true);
-
 	// Register Event Handlers
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("txÚ¥vfàsbö¡xeë§tà¦").ToCharArray(), false); // cs_game_disconnected
@@ -266,11 +255,27 @@ void CApplication::Setup()
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("`nä²xeÚ¤~yà").ToCharArray(), false); // weapon_fire
 	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("u~é®rÚ«z{ä¡c").ToCharArray(), false); // bullet_impact
 
+	// Load config
+	CConfig config;
+	config.Init(this);
+	if (config.LoadFile("default.cfg"))
+	{
+		ConfigHelper::ConfigToFeatures(&config);
+	}
+	// <remove once implemented correctly>
+	this->m_skinchanger.SetEnabled(true);
+	// </remove once implemented correctly>
+
 	// Initialize menu
 	m_pMenu = CMenu::Instance();
 	m_pMenu->Init(this);
 	m_pMenu->CreateMenu();
 	m_pMenu->ApplySettings();
+
+	if (m_pEngineClient->IsInGame())
+	{
+		m_gunAccuracy.SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà"))->value));
+	}
 }
 
 void CApplication::Hook()

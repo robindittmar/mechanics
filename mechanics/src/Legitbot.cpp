@@ -4,10 +4,11 @@
 //todo: LineGoesThroughSmoke Sig: 55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0
 
 CLegitbot::CLegitbot()
-	: m_bHasTarget(false), m_bHasDrawTarget(false), m_bAutoshoot(false),
-	m_fTimeToAim(0.2f), m_fCurve(0.0f), m_fFieldOfView(90.0f),
-	m_bDrawFieldOfView(false), m_clrFieldOfView(Color(0, 255, 0)), m_bDrawPath(true),
-	m_clrPath(Color(255, 128, 0)), m_bShoot(false), m_fPointScale(0.5f)
+	: m_iTriggerKey(VK_LBUTTON), m_bAutoshoot(true), m_iHelpAfterShots(3),
+	m_fTimeToAim(0.1f), m_fCurve(0.3f), m_fFieldOfView(5.0f),
+	m_fPointScale(0.5f), m_bDrawFieldOfView(false), m_clrFieldOfView(Color(255, 255, 128, 0)),
+	m_bDrawPath(false), m_clrPath(Color(255, 255, 128, 0)), m_bHasTarget(false),
+	m_bHasDrawTarget(false)
 {
 	m_bCheckHitbox[0] = false; m_iHitboxes[0] = HITBOX_HEAD;
 	m_bCheckHitbox[1] = false; m_iHitboxes[1] = HITBOX_CHEST;
@@ -66,7 +67,7 @@ void CLegitbot::Think(void* pParameters)
 	vLocalHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 	qLocalAngles = m_pApp->GetClientViewAngles();
 	if (iShotsFired > 1)
-		qLocalAngles += (*pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation());
+		qLocalAngles += (*pLocalEntity->GetAimPunchAngle() * m_pApp->GunAccuracy()->GetRecoilCompensation());
 
 	if (m_bShoot)
 	{
@@ -271,7 +272,7 @@ void CLegitbot::Think(void* pParameters)
 			m_qStart = m_pApp->GetClientViewAngles();
 			m_qEnd = qEnd;
 			if (iShotsFired > 1)
-				m_qEnd -= (*pLocalEntity->GetAimPunchAngle() * m_pApp->GetRecoilCompensation());
+				m_qEnd -= (*pLocalEntity->GetAimPunchAngle() * m_pApp->GunAccuracy()->GetRecoilCompensation());
 
 			// Get interpolation point for bezier curve
 			m_qIntermediate = m_qStart;

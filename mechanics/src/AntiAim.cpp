@@ -4,23 +4,23 @@
 #include "Autowall.h"
 
 CAntiAim::CAntiAim()
+	: m_iPitchSettingStanding(PITCHANTIAIM_NONE), m_iYawSettingStanding(YAWANTIAIM_NONE),
+	m_iYawFakeSettingStanding(FAKEYAWANTIAIM_NONE), m_fYawOffsetStanding(0.0f), m_fYawFakeOffsetStanding(0.0f),
+	m_iPitchSettingMoving(PITCHANTIAIM_NONE), m_iYawSettingMoving(YAWANTIAIM_NONE),
+	m_iYawFakeSettingMoving(FAKEYAWANTIAIM_NONE), m_fYawOffsetMoving(0.0f), m_fYawFakeOffsetMoving(0.0f),
+	m_bDrawLbyIndicator(false), m_bLbyBreaker(false), m_bDoEdgeAntiAim(false),
+	m_iEdgeAntiAimCheckPointAmount(-1), m_bDrawEdgeAntiAimPoints(false), m_bDrawEdgeAntiAimLines(false)
 {
-	m_iPitchSettingStanding = PITCHANTIAIM_NONE;
-	m_iYawSettingStanding = YAWANTIAIM_NONE;
-
-	m_iEdgeAntiAimCheckPointAmount = 4;
-
-	EdgeAntiAimPointsRight = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
-	EdgeAntiAimPointsLeft = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
+	this->SetEdgeAntiAimCheckPointsAmount(4);
 }
 
 CAntiAim::~CAntiAim()
 {
-	if (EdgeAntiAimPointsRight)
-		delete[] EdgeAntiAimPointsRight;
+	if (m_pEdgeAntiAimPointsRight)
+		delete[] m_pEdgeAntiAimPointsRight;
 
-	if (EdgeAntiAimPointsLeft)
-		delete[] EdgeAntiAimPointsLeft;
+	if (m_pEdgeAntiAimPointsLeft)
+		delete[] m_pEdgeAntiAimPointsLeft;
 }
 
 void CAntiAim::SetEdgeAntiAimCheckPointsAmount(int iEdgeAntiAimCheckPointAmount)
@@ -30,14 +30,14 @@ void CAntiAim::SetEdgeAntiAimCheckPointsAmount(int iEdgeAntiAimCheckPointAmount)
 
 	m_iEdgeAntiAimCheckPointAmount = iEdgeAntiAimCheckPointAmount;
 
-	if (EdgeAntiAimPointsRight)
-		delete[] EdgeAntiAimPointsRight;
+	if (m_pEdgeAntiAimPointsRight)
+		delete[] m_pEdgeAntiAimPointsRight;
 
-	if (EdgeAntiAimPointsLeft)
-		delete[] EdgeAntiAimPointsLeft;
+	if (m_pEdgeAntiAimPointsLeft)
+		delete[] m_pEdgeAntiAimPointsLeft;
 
-	EdgeAntiAimPointsRight = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
-	EdgeAntiAimPointsLeft = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
+	m_pEdgeAntiAimPointsRight = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
+	m_pEdgeAntiAimPointsLeft = new EdgeAntiAimPoint[m_iEdgeAntiAimCheckPointAmount];
 }
 
 void CAntiAim::DrawEdgeAntiAimPoints()
@@ -57,7 +57,7 @@ void CAntiAim::DrawEdgeAntiAimPoints()
 	if (!m_bDrawEdgeAntiAimPoints && !m_bDrawEdgeAntiAimLines)
 		return;
 
-	if (!EdgeAntiAimPointsRight || !EdgeAntiAimPointsLeft)
+	if (!m_pEdgeAntiAimPointsRight || !m_pEdgeAntiAimPointsLeft)
 		return;
 
 	CTarget* pTarget = this->GetTarget(m_pApp->Ragebot()->GetTargetCriteria());
@@ -71,11 +71,11 @@ void CAntiAim::DrawEdgeAntiAimPoints()
 
 	for (int i = 0; i < m_iEdgeAntiAimCheckPointAmount; i++)
 	{
-		if (m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsRight[i].vPoint, vScreenRight[i]) &&
-			m_pApp->Gui()->WorldToScreen(EdgeAntiAimPointsLeft[i].vPoint, vScreenLeft[i]) &&
+		if (m_pApp->Gui()->WorldToScreen(m_pEdgeAntiAimPointsRight[i].vPoint, vScreenRight[i]) &&
+			m_pApp->Gui()->WorldToScreen(m_pEdgeAntiAimPointsLeft[i].vPoint, vScreenLeft[i]) &&
 			m_pApp->Gui()->WorldToScreen(origin, originScreen))
 		{
-			switch (EdgeAntiAimPointsRight[i].iIsHidden)
+			switch (m_pEdgeAntiAimPointsRight[i].iIsHidden)
 			{
 			case EDGEANTIAIMPOINT_HIGHESTDAMAGE:
 				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
@@ -98,7 +98,7 @@ void CAntiAim::DrawEdgeAntiAimPoints()
 			if (m_bDrawEdgeAntiAimLines)
 				m_pApp->Surface()->DrawLine(vScreenRight[i].x, vScreenRight[i].y, originScreen.x, originScreen.y);
 
-			switch (EdgeAntiAimPointsLeft[i].iIsHidden)
+			switch (m_pEdgeAntiAimPointsLeft[i].iIsHidden)
 			{
 			case EDGEANTIAIMPOINT_HIGHESTDAMAGE:
 				m_pApp->Surface()->DrawSetColor(255, 255, 0, 0);
@@ -280,8 +280,8 @@ void CAntiAim::HideHead(CUserCmd* pUserCmd, QAngle qAimAngle, int iHideDirection
 
 int CAntiAim::CheckHeadPoint(IClientEntity* pEnemy, int iIndex)
 {
-	EdgeAntiAimPoint* vRight = &EdgeAntiAimPointsRight[iIndex];
-	EdgeAntiAimPoint* vLeft = &EdgeAntiAimPointsLeft[iIndex];
+	EdgeAntiAimPoint* vRight = &m_pEdgeAntiAimPointsRight[iIndex];
+	EdgeAntiAimPoint* vLeft = &m_pEdgeAntiAimPointsLeft[iIndex];
 
 	Ray_t rayRight, rayLeft;
 	trace_t traceRight, traceLeft;
@@ -410,8 +410,8 @@ bool CAntiAim::EdgeAntiAim(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
 	// Initialize checkpoints
 	for (int i = 0; i < m_iEdgeAntiAimCheckPointAmount; i++)
 	{
-		EdgeAntiAimPointsRight[i].vPoint = vLocalHeadpos + (right * (15 + (i * 10)));
-		EdgeAntiAimPointsLeft[i].vPoint = vLocalHeadpos - (right * (15 + (i * 10)));
+		m_pEdgeAntiAimPointsRight[i].vPoint = vLocalHeadpos + (right * (15 + (i * 10)));
+		m_pEdgeAntiAimPointsLeft[i].vPoint = vLocalHeadpos - (right * (15 + (i * 10)));
 	}
 
 	bool bWasInvalid = false;
@@ -727,7 +727,7 @@ void CAntiAim::ApplyYawFakeAntiAim(QAngle* angles, float fRealYaw)
 	{
 		if (m_pApp->Fakelag()->GetEnabled() && (!m_pApp->Fakelag()->GetOnlyInAir() ||
 			m_pApp->Fakelag()->GetOnlyInAir() && (!(pLocal->GetFlags() & FL_ONGROUND) && !(pLocal->GetFlags() & FL_INWATER))) &&
-			m_pApp->Fakelag()->AmountPacketsChoked() + 1 <= m_pApp->Fakelag()->GetChokeAmount() && m_bIsMoving ||
+			m_pApp->Fakelag()->AmountPacketsChoked() + 1 <= m_pApp->Fakelag()->GetChokeAmountAdaptive() && m_bIsMoving ||
 			!m_bFakeAngleSwitch)
 		{
 			angles->y += fRealYaw;

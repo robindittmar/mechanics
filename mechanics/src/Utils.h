@@ -1,9 +1,16 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#include <algorithm>
+// Std Lib
+
+// Source SDK
 #include "Vector.h"
 #include "IVModelInfo.h"
+#include "IEngineTrace.h"
+#include "CGameTrace.h"
+#include "ray.h"
+
+// Custom
 
 namespace Utils
 {
@@ -11,6 +18,8 @@ namespace Utils
 	float GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/);
 
 	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors, float fPointScale);
+
+	float GetTraceFractionWorldProps(Vector start, Vector end);
 
 	/// <summary>
 	/// Convert HSL to RGB

@@ -28,8 +28,8 @@ public:
 	int AmountPacketsChoked() { return m_iPacketsChoked; }
 
 	void SetChokeAmount(int iChokeAmount) { m_iChokeAmount = iChokeAmount; }
-	int GetChokeAmountMenu() { return m_iChokeAmount; }
-	int GetChokeAmount();
+	int GetChokeAmount() { return m_iChokeAmount; }
+	int GetChokeAmountAdaptive();
 
 	void SetOnlyInAir(bool bOnlyInAir) { m_bOnlyInAir = bOnlyInAir; }
 	bool GetOnlyInAir() { return m_bOnlyInAir; }

@@ -1,11 +1,11 @@
 #include "LagCompensation.h"
 #include "Application.h"
 
-
 CLagCompensation::CLagCompensation()
+	: m_iTickcount(-1), m_iDrawStyle(LC_DRAWSTYLE_NONE), m_iDrawFrequency(1),
+	m_bDrawOnlyVisible(false), m_bRageLagCompensationEnabled(false),
+	m_bLegitLagCompensationEnabled(false), m_bLegitLagCompensationDuration(200)
 {
-	m_iDrawStyle = LC_DRAWSTYLE_NONE;
-	m_iDrawFrequency = 1;
 }
 
 CLagCompensation::~CLagCompensation()
@@ -61,8 +61,8 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 	QAngle qLocalAngles = m_pApp->GetClientViewAngles();
 
 	QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
-	qLocalAngles.x -= aimPunchAngle.x * m_pApp->GetRecoilCompensation();
-	qLocalAngles.y -= aimPunchAngle.y * m_pApp->GetRecoilCompensation();
+	qLocalAngles.x -= aimPunchAngle.x * m_pApp->GunAccuracy()->GetRecoilCompensation();
+	qLocalAngles.y -= aimPunchAngle.y * m_pApp->GunAccuracy()->GetRecoilCompensation();
 
 	float fViewangleDist = 99999.0f;
 	int iCurTickcount = -1;

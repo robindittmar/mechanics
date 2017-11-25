@@ -2,6 +2,7 @@
 #include "Application.h"
 
 CTargetSelector::CTargetSelector()
+	: m_iVisibleMode(VISIBLEMODE_CANHIT), m_bMultipoint(false), m_fMultipointScale(0.5f)
 {
 	m_bCheckHitbox[0] = true; m_iHitboxes[0] = HITBOX_HEAD;
 	m_bCheckHitbox[1] = false; m_iHitboxes[1] = HITBOX_CHEST;
@@ -10,8 +11,6 @@ CTargetSelector::CTargetSelector()
 	m_bCheckHitbox[4] = false; m_iHitboxes[4] = HITBOX_LEFT_FOREARM;
 	m_bCheckHitbox[5] = false; m_iHitboxes[5] = HITBOX_RIGHT_CALF;
 	m_bCheckHitbox[6] = false; m_iHitboxes[6] = HITBOX_LEFT_CALF;
-
-	m_fMultipointScale = 0.65;
 }
 
 CTargetSelector::~CTargetSelector()
@@ -60,6 +59,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 	float fViewangleDist;
 	float fOriginDist;
 	float fDamage;
+	float fMinDamage = m_pApp->Ragebot()->GetMinDamage();
 	float fLowestViewangleDist = 999999.0f;
 	float fLowestOriginDist = 999999.0f;
 	float fHighestDamage = -1.0f;
@@ -181,7 +181,7 @@ void CTargetSelector::SelectTargets(float fInputSampleTime)
 						// TODO:
 						if (Autowall::CanHit(vHitbox[i], &fDamage))
 						{
-							if (fDamage > fHighestDamage)
+							if (fDamage > fHighestDamage && fDamage > fMinDamage)
 							{
 								vEnemyPos = vHitbox[i];
 
