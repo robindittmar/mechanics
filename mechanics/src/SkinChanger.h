@@ -14,6 +14,9 @@
 #include "SkinMetadata.h"
 #include "murmurhash.h"
 
+#define SKINCHANGER_CONFIG_FOLDER_FULL_RELATIVE		"cfg\\skins\\"
+#define SKINCHANGER_CONFIG_FOLDER					"skins\\"
+
 #define GLOVE_NONE				0
 #define GLOVE_BLOODHOUND		1
 #define GLOVE_DRIVER			2
@@ -112,8 +115,8 @@ public:
 	bool ApplyCustomKillIcon(IGameEvent* pEvent);
 	void ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, bool bApplySkin = false, int iPaintKit = 0, int iSeed = 0, int iStatTrak = -1, const char* pName = nullptr, float fWear = 0.01f);
 
-	void WriteToConfig(const char* pFilename);
-	void LoadFromConfig(const char* pFilename);
+	bool WriteToConfig(const char* pFilename);
+	bool LoadFromConfig(const char* pFilename);
 private:
 	// Delete's all items of the maps
 	void DeleteSkinMetadata();

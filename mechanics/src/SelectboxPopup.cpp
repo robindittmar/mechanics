@@ -87,42 +87,45 @@ void CSelectboxPopup::Draw(ISurface* pSurface)
 
 	int iCountOptions = m_pSelectbox->GetCountOptions();
 
-	// Get absolute position
-	int x = 0, y = 0;
-	this->GetAbsolutePosition(&x, &y);
-
-	// Get size of longest string
-	int width, height;
-	m_vOptionLabels[m_iLargestOptionStringIndex]->GetTextSize(pSurface, width, height);
-
-	// Save row width/height for event handling
-	m_iRowRenderWidth = width + (SELECTBOX_PADDING * 2);
-	m_iRowRenderHeight = height + SELECTBOX_PADDING;
-
-	int iSelectboxWidth = m_pSelectbox->Width();
-
-	this->m_iWidth = iSelectboxWidth < m_iRowRenderWidth ? m_iRowRenderWidth : iSelectboxWidth;
-	this->m_iHeight = (m_iRowRenderHeight * iCountOptions) + SELECTBOX_PADDING;
-
-	// Render popup box first
-	pSurface->DrawSetColor(255, 50, 50, 50);
-	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
-
-	// Render options
-	int iCurY = y + SELECTBOX_PADDING;
-	for (int i = 0; i < iCountOptions; i++)
+	if (iCountOptions > 0)
 	{
-		if (m_iSelectedOption == i)
+		// Get absolute position
+		int x = 0, y = 0;
+		this->GetAbsolutePosition(&x, &y);
+
+		// Get size of longest string
+		int width, height;
+		m_vOptionLabels[m_iLargestOptionStringIndex]->GetTextSize(pSurface, width, height);
+
+		// Save row width/height for event handling
+		m_iRowRenderWidth = width + (SELECTBOX_PADDING * 2);
+		m_iRowRenderHeight = height + SELECTBOX_PADDING;
+
+		int iSelectboxWidth = m_pSelectbox->Width();
+
+		this->m_iWidth = iSelectboxWidth < m_iRowRenderWidth ? m_iRowRenderWidth : iSelectboxWidth;
+		this->m_iHeight = (m_iRowRenderHeight * iCountOptions) + SELECTBOX_PADDING;
+
+		// Render popup box first
+		pSurface->DrawSetColor(255, 50, 50, 50);
+		pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
+
+		// Render options
+		int iCurY = y + SELECTBOX_PADDING;
+		for (int i = 0; i < iCountOptions; i++)
 		{
-			pSurface->DrawSetColor(g_clrSelectboxPopupSelection);
-			pSurface->DrawFilledRect(x, iCurY, x + m_iWidth, iCurY + m_iRowRenderHeight);
-			pSurface->DrawSetColor(255, 50, 50, 50);
+			if (m_iSelectedOption == i)
+			{
+				pSurface->DrawSetColor(g_clrSelectboxPopupSelection);
+				pSurface->DrawFilledRect(x, iCurY, x + m_iWidth, iCurY + m_iRowRenderHeight);
+				pSurface->DrawSetColor(255, 50, 50, 50);
+			}
+
+			m_vOptionLabels[i]->SetBoundaries(x + SELECTBOX_PADDING, iCurY, m_iRowRenderWidth, m_iRowRenderHeight);
+			m_vOptionLabels[i]->Draw(pSurface);
+
+			iCurY += height + SELECTBOX_PADDING;
 		}
-
-		m_vOptionLabels[i]->SetBoundaries(x + SELECTBOX_PADDING, iCurY, m_iRowRenderWidth, m_iRowRenderHeight);
-		m_vOptionLabels[i]->Draw(pSurface);
-
-		iCurY += height + SELECTBOX_PADDING;
 	}
 
 	IControlPopup::Draw(pSurface);

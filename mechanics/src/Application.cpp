@@ -137,6 +137,26 @@ void CApplication::Detach()
 	CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, NULL, NULL);
 }
 
+bool CApplication::CreateFolder(const char* pName)
+{
+	char pBuffer[MAX_PATH];
+	snprintf(pBuffer, MAX_PATH, "%s%s", this->GetWorkingDirectory(), pName);
+
+	if (!CreateDirectory(pBuffer, NULL))
+	{
+		DWORD dwErr = GetLastError();
+		if (GetLastError() != ERROR_ALREADY_EXISTS)
+		{
+#ifdef _DEBUG
+			g_pConsole->Write(LOGLEVEL_ERROR, "Error when creating folder ('%s'): %d\n", pBuffer, dwErr);
+#endif
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void CApplication::Unhook()
 {
 	// Proxy functions
@@ -198,6 +218,9 @@ void CApplication::Setup()
 
 	// Grab info about our own dll path etc
 	this->GetModuleInfo();
+
+	// Create sub directories
+	this->CreateSubFolders();
 
 	// Load DLL addresses and interfaces + some sigs
 	this->GetLibrarys();
@@ -321,6 +344,12 @@ void CApplication::Hook()
 
 	this->m_bIsHooked = true;
 	this->m_bInitialHookDone = true;
+}
+
+void CApplication::CreateSubFolders()
+{
+	this->CreateFolder(CONFIG_FOLDER);
+	this->CreateFolder(SKINCHANGER_CONFIG_FOLDER_FULL_RELATIVE);
 }
 
 void CApplication::GetModuleInfo()

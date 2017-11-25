@@ -717,13 +717,13 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 	m_bForceFullUpdate = true;
 }
 
-void CSkinChanger::WriteToConfig(const char* pFilename)
+bool CSkinChanger::WriteToConfig(const char* pFilename)
 {
+	char pFullFilename[MAX_PATH];
+	snprintf(pFullFilename, MAX_PATH, "%s%s", SKINCHANGER_CONFIG_FOLDER, pFilename);
+
 	CConfig config;
 	config.Init(m_pApp);
-	
-	//std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadata;
-	//std::unordered_map<int, const char*> m_mapModelMetadata;
 
 	config.SetInt("knife$ct", "id", this->GetDesiredKnifeModelIndexCT());
 	config.SetInt("knife$t", "id", this->GetDesiredKnifeModelIndexT());
@@ -750,14 +750,18 @@ void CSkinChanger::WriteToConfig(const char* pFilename)
 		}
 	}
 
-	config.SaveFile(pFilename);
+	return config.SaveFile(pFullFilename);
 }
 
-void CSkinChanger::LoadFromConfig(const char* pFilename)
+bool CSkinChanger::LoadFromConfig(const char* pFilename)
 {
+	char pFullFilename[MAX_PATH];
+	snprintf(pFullFilename, MAX_PATH, "%s%s", SKINCHANGER_CONFIG_FOLDER, pFilename);
+
 	CConfig config;
 	config.Init(m_pApp);
-	config.LoadFile(pFilename);
+	if (!config.LoadFile(pFullFilename))
+		return false;
 
 	this->ApplyDesiredKnife(TEAMNUM_CT, config.GetInt("knife$ct", "id"), false);
 	this->ApplyDesiredKnife(TEAMNUM_T, config.GetInt("knife$t", "id"), false);
@@ -796,6 +800,8 @@ void CSkinChanger::LoadFromConfig(const char* pFilename)
 			)
 		);
 	}
+
+	return true;
 }
 
 void CSkinChanger::DeleteSkinMetadata()

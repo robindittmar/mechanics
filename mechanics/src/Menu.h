@@ -36,7 +36,12 @@ public:
 	void ApplySkin(int iTeamNum);
 	void ApplySkinsBothTeams();
 
-	void FillLoadableConfigs();
+	/// <summary>
+	/// Fills given selectbox with all files (Directories are excluded) from the given directory
+	/// </summary>
+	/// <param name="pSelectbox">Selectbox to fill</param>
+	/// <param name="pPath">Relative path of folder to list (please include trailing slash!) e.g. "cfg\\", "cfg\\skins\\"</param>
+	void FillSelectboxWithFiles(CSelectbox* pSelectbox, const char* pPath);
 	void LoadConfig();
 	void SaveConfig();
 

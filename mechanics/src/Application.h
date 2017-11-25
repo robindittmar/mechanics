@@ -160,6 +160,15 @@ public:
 	/// <returns>Filename, including extension (.dll usually)</returns>
 	const char* GetFilename()			{ return m_pFilename; }
 
+	/// <summary>
+	/// Creates single directory (non recursive)
+	/// 
+	/// Does nothing if directory already exists
+	/// </summary>
+	/// <param name="pName">Name of folder</param>
+	/// <returns>False when error occuurs</returns>
+	bool CreateFolder(const char* pName);
+
 	// Hook helper
 	bool GetInitialHookDone()	{ return m_bInitialHookDone; }
 	bool GetHooked()			{ return m_bIsHooked; }
@@ -281,6 +290,9 @@ public:
 private:
 	void Setup();
 	void Hook();
+
+	// Creates necessary directories
+	void CreateSubFolders();
 
 	// Own DLL
 	void GetModuleInfo();

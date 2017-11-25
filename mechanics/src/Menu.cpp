@@ -1422,13 +1422,13 @@ void CMenu::CreateSkinChangerTab()
 void CMenu::CreateConfigTab()
 {
 	m_pConfigLoadables = new CSelectbox(4, 10, 100, 16, "Loadable Configs");
-	FillLoadableConfigs();
+	FillSelectboxWithFiles(m_pConfigLoadables, CONFIG_FOLDER);
 
 	m_pConfigLoadConfigButton = new CButton(4, 32, 128, 16, "Load Config");
 	m_pConfigLoadConfigButton->SetEventHandler(std::bind(&CMenu::LoadConfig, this));
 
 	m_pConfigReloadLoadables = new CButton(4, 52, 128, 16, "Reload Configs");
-	m_pConfigReloadLoadables->SetEventHandler(std::bind(&CMenu::FillLoadableConfigs, this));
+	m_pConfigReloadLoadables->SetEventHandler(std::bind(&CMenu::FillSelectboxWithFiles, this, m_pConfigLoadables, CONFIG_FOLDER));
 
 	m_pConfigSaveConfigName = new CTextbox(4, 87, 128, 16, "Configname");
 
@@ -1579,28 +1579,26 @@ void CMenu::ApplySkinsBothTeams()
 	this->ApplySkin(TEAMNUM_T);
 }
 
-void CMenu::FillLoadableConfigs()
+void CMenu::FillSelectboxWithFiles(CSelectbox* pSelectbox, const char* pPath)
 {
-	m_pConfigLoadables->ClearOptions();
+	pSelectbox->ClearOptions();
 
 	int iCount = 0;
 	WIN32_FIND_DATA ffd;
-	char pPath[MAX_PATH];
+	char pSearchQuery[MAX_PATH];
 	HANDLE hFind = INVALID_HANDLE_VALUE;
 
-	sprintf(pPath, "%s%s*", m_pApp->GetWorkingDirectory(), CONFIG_FOLDER);
+	sprintf(pSearchQuery, "%s%s*", m_pApp->GetWorkingDirectory(), pPath);
 
-	hFind = FindFirstFile(pPath, &ffd);
+	hFind = FindFirstFile(pSearchQuery, &ffd);
 	if (hFind == INVALID_HANDLE_VALUE)
-	{
 		return;
-	}
 
 	do
 	{
 		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
 		{
-			m_pConfigLoadables->AddOption(iCount++, ffd.cFileName);
+			pSelectbox->AddOption(iCount++, ffd.cFileName);
 		}
 	} while (FindNextFile(hFind, &ffd) != 0);
 }
@@ -1613,10 +1611,11 @@ void CMenu::LoadConfig()
 
 	CConfig loadConfig;
 	loadConfig.Init(CApplication::Instance());
-	loadConfig.LoadFile(pConfigName);
-	ConfigHelper::ConfigToFeatures(&loadConfig);
-
-	this->ApplySettings();
+	if (loadConfig.LoadFile(pConfigName))
+	{
+		ConfigHelper::ConfigToFeatures(&loadConfig);
+		this->ApplySettings();
+	}
 }
 
 void CMenu::SaveConfig()
@@ -1630,8 +1629,7 @@ void CMenu::SaveConfig()
 	ConfigHelper::FeaturesToConfig(&saveConfig);
 
 	saveConfig.SaveFile(pConfigName);
-
-	this->FillLoadableConfigs();
+	this->FillSelectboxWithFiles(m_pConfigLoadables, CONFIG_FOLDER);
 }
 
 void CMenu::PrintNumUpDownValue()
