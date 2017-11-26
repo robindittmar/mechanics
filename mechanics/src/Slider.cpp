@@ -3,7 +3,8 @@
 CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, bool bReverse, float fMin, float fMax, const char* pText)
 	: IControlTooltip(x, y, w, h), m_iOrientation(iOrientation),
 	m_bReverse(bReverse), m_bDrawValue(true), m_fMinValue(fMin),
-	m_fMaxValue(fMax), m_fStepSize(fStepSize)
+	m_fMaxValue(fMax), m_fStepSize(fStepSize), m_pLabel(nullptr),
+	m_pTextLabel(nullptr)
 {
 	m_bHitcheckForMouseMove = false;
 	m_fValueSpan = m_fMaxValue - m_fMinValue;
@@ -12,7 +13,7 @@ CSlider::CSlider(int x, int y, int w, int h, float fStepSize, int iOrientation, 
 
 	if (pText)
 	{
-		m_pTextLabel = new CLabel(0, -18, 0, 0, pText, RM_FONT_NORMAL);
+		m_pTextLabel = new CLabel(0, -14, 0, 0, pText, RM_FONT_NORMAL);
 		this->AddChild(m_pTextLabel);
 	}
 }
@@ -114,14 +115,10 @@ void CSlider::SetEnabled(bool bIsEnabled)
 {
 	IControl::SetEnabled(bIsEnabled);
 
-	if (m_bIsEnabled)
-	{
-		m_pLabel->SetTextColor(Color(255, 255, 255, 255));
-	}
-	else
-	{
-		m_pLabel->SetTextColor(g_clrControlDisabled);
-	}
+	if (m_pTextLabel)
+		m_pTextLabel->SetEnabled(bIsEnabled);
+
+	m_pLabel->SetEnabled(bIsEnabled);
 }
 
 void CSlider::SetValue(float fValue)

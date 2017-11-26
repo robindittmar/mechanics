@@ -113,12 +113,14 @@ void CMenu::ApplySettings()
 	// Legit
 	// Legitbot
 	m_pLegitbotEnabled->SetChecked(m_pApp->Legitbot()->GetEnabled());
+	m_pLegitbotAutoshoot->SetChecked(m_pApp->Legitbot()->GetAutoshoot());
 	m_pLegitbotHelpAfterShots->SetValue(m_pApp->Legitbot()->GetHelpAfterShots());
 	m_pLegitbotTimeToAim->SetValue(m_pApp->Legitbot()->GetTimeToAim());
 	m_pLegitbotCurve->SetValue(m_pApp->Legitbot()->GetCurve());
 	m_pLegitbotFov->SetValue(m_pApp->Legitbot()->GetFieldOfView());
 	m_pLegitbotPointScale->SetValue(m_pApp->Legitbot()->GetPointScale());
 	m_pLegitbotDrawPath->SetChecked(m_pApp->Legitbot()->GetDrawPath());
+	m_pLegitbotPathColor->SetValue(m_pApp->Legitbot()->GetPathColor());
 
 	// Legitbot hitboxes
 	m_pLegitHitboxHead->SetChecked(m_pApp->Legitbot()->GetCheckHitbox(TARGET_HITBOX_HEAD));
@@ -133,6 +135,9 @@ void CMenu::ApplySettings()
 	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
 	m_pTriggerbotDelayValue->SetValue(m_pApp->Triggerbot()->GetShootDelay());
 	m_pTriggerbotDelayJitterValue->SetValue(m_pApp->Triggerbot()->GetShootDelayJitter());
+	m_pTriggerbotBurst->SetChecked(m_pApp->Triggerbot()->GetTriggerBurst());
+	m_pTriggerbotMinShots->SetValue(m_pApp->Triggerbot()->GetMinShots());
+	m_pTriggerbotMaxShots->SetValue(m_pApp->Triggerbot()->GetMaxShots());
 
 	// Legit Lag Compensation
 	m_pLegitLagCompensationEnabled->SetChecked(m_pApp->LagCompensation()->GetLegitLagCompensationEnabled());
@@ -613,53 +618,76 @@ void CMenu::CreateLegitTab()
 	m_pLegitbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pLegitbotEnabled->SetEventHandler(std::bind(&CLegitbot::SetEnabled, m_pApp->Legitbot(), std::placeholders::_1));
 
-	m_pLegitbotHelpAfterShots = new CSlider(4, 40, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 10.0f, "Help after shots");
+	m_pLegitbotAutoshoot = new CCheckbox(4, 20, 128, 16, "Autoshoot");
+	m_pLegitbotAutoshoot->SetEventHandler(std::bind(&CLegitbot::SetAutoshoot, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotAutoshoot->AddDependency(m_pLegitbotEnabled);
+
+	m_pLegitbotHelpAfterShots = new CSlider(4, 60, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 10.0f, "Help after shots");
 	m_pLegitbotHelpAfterShots->SetEventHandler(std::bind(&CLegitbot::SetHelpAfterShots, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotHelpAfterShots->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitbotTimeToAim = new CSlider(4, 80, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Time to Aim");
+	m_pLegitbotTimeToAim = new CSlider(4, 100, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f, "Time to Aim");
 	m_pLegitbotTimeToAim->SetEventHandler(std::bind(&CLegitbot::SetTimeToAim, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotTimeToAim->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitbotCurve = new CSlider(4, 120, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.5f, "Curve");
+	m_pLegitbotCurve = new CSlider(4, 140, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.5f, "Curve");
 	m_pLegitbotCurve->SetEventHandler(std::bind(&CLegitbot::SetCurve, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotCurve->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitbotFov = new CSlider(4, 160, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 30.0f, "FOV");
+	m_pLegitbotFov = new CSlider(4, 180, 128, 16, 0.1f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.1f, 30.0f, "FOV");
 	m_pLegitbotFov->SetEventHandler(std::bind(&CLegitbot::SetFieldOfView, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotFov->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitbotPointScale = new CSlider(4, 200, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 3.0f, "Point Scale");
+	m_pLegitbotPointScale = new CSlider(4, 220, 128, 16, 0.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 3.0f, "Point Scale");
 	m_pLegitbotPointScale->SetEventHandler(std::bind(&CLegitbot::SetPointScale, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotPointScale->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitbotDrawPath = new CCheckbox(4, 220, 128, 16, "Draw Path");
+	m_pLegitbotDrawPath = new CCheckbox(4, 260, 80, 16, "Draw Path");
 	m_pLegitbotDrawPath->SetEventHandler(std::bind(&CLegitbot::SetDrawPath, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotDrawPath->AddDependency(m_pLegitbotEnabled);
+	
+	m_pLegitbotPathColor = new CColorPicker(100, 260, 16, 16);
+	m_pLegitbotPathColor->SetEventHandler(std::bind(&CLegitbot::SetPathColor, m_pApp->Legitbot(), std::placeholders::_1));
+	m_pLegitbotPathColor->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pLegitbotGroup->AddChild(m_pLegitbotEnabled);
+	m_pLegitbotGroup->AddChild(m_pLegitbotAutoshoot);
 	m_pLegitbotGroup->AddChild(m_pLegitbotHelpAfterShots);
 	m_pLegitbotGroup->AddChild(m_pLegitbotTimeToAim);
 	m_pLegitbotGroup->AddChild(m_pLegitbotCurve);
 	m_pLegitbotGroup->AddChild(m_pLegitbotFov);
 	m_pLegitbotGroup->AddChild(m_pLegitbotPointScale);
 	m_pLegitbotGroup->AddChild(m_pLegitbotDrawPath);
+	m_pLegitbotGroup->AddChild(m_pLegitbotPathColor);
 
 	m_pLegitHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
 	m_pLegitHitboxHead->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_HEAD, std::placeholders::_1));
+	m_pLegitHitboxHead->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
 	m_pLegitHitboxChest->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_CHEST, std::placeholders::_1));
+	m_pLegitHitboxChest->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
 	m_pLegitHitboxPelvis->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
+	m_pLegitHitboxPelvis->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
 	m_pLegitHitboxRForearm->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+	m_pLegitHitboxRForearm->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
 	m_pLegitHitboxLForearm->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+	m_pLegitHitboxLForearm->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
 	m_pLegitHitboxRCalf->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+	m_pLegitHitboxRCalf->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
 	m_pLegitHitboxLCalf->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
+	m_pLegitHitboxLCalf->AddDependency(m_pLegitbotEnabled);
 
 	m_pLegitHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxHead);
@@ -673,34 +701,45 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pTriggerbotEnabled->SetEventHandler(std::bind(&CTriggerbot::SetEnabled, m_pApp->Triggerbot(), std::placeholders::_1));
 
-	m_pTriggerbotDelayLabel = new CLabel(4, 24, 128, 16, "Delay (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
-
-	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 750.0f);
+	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 50.0f, "Delay (milliseconds)");
 	m_pTriggerbotDelayValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelay, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotDelayValue->AddDependency(m_pTriggerbotEnabled);
 
-	m_pTriggerbotDelayJitterLabel = new CLabel(4, 60, 128, 16, "Delay Jitter (milliseconds)", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
-
-	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 20.0f);
+	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 50.0f, "Delay Jitter (milliseconds)");
 	m_pTriggerbotDelayJitterValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelayJitter, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotDelayJitterValue->AddDependency(m_pTriggerbotEnabled);
+
+	m_pTriggerbotBurst = new CCheckbox(4, 120, 128, 16, "Burstfire");
+	m_pTriggerbotBurst->SetEventHandler(std::bind(&CTriggerbot::SetTriggerBurst, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotBurst->AddDependency(m_pTriggerbotEnabled);
+
+	m_pTriggerbotMinShots = new CSlider(4, 140, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Min shots");
+	m_pTriggerbotMinShots->SetEventHandler(std::bind(&CTriggerbot::SetMinShots, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotMinShots->AddDependency(m_pTriggerbotEnabled);
+	m_pTriggerbotMinShots->AddDependency(m_pTriggerbotBurst);
+
+	m_pTriggerbotMaxShots = new CSlider(4, 160, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Max shots");
+	m_pTriggerbotMaxShots->SetEventHandler(std::bind(&CTriggerbot::SetMaxShots, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotEnabled);
+	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotBurst);
 
 	m_pTriggerbotGroup = new CGroupbox(352, 16, 152, 308, "Triggerbot");
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotEnabled);
-	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayLabel);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayValue);
-	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterLabel);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterValue);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotBurst);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotMinShots);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotMaxShots);
 
 	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
 
-	m_pLegitLagCompensationDurationLabel = new CLabel(4, 20, 128, 16, "Duration", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
-
-	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f);
+	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f, "Duration");
 	m_pLegitLagCompensationDuration->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationDuration, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pLegitLagCompensationDuration->AddDependency(m_pLegitLagCompensationEnabled);
 
 	m_pLegitLagCompensationGroup = new CGroupbox(520, 16, 152, 308, "Lag Compensation");
 	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationEnabled);
-	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDurationLabel);
 	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDuration);
 
 	m_pLegitTab = new CTabPage("Legit");

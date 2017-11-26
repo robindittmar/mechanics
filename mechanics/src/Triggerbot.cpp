@@ -4,8 +4,8 @@
 CTriggerbot::CTriggerbot()
 	: m_bKeyDown(false), m_iKey(VK_MENU), m_fCurtimeTargetAquired(0.0f),
 	m_bAlreadyWaitedOnTarget(false), m_pCurTarget(nullptr), m_iShotsForThisTarget(0),
-	m_iShotsOnTarget(0), m_bTriggerBurst(false), m_iMinShots(0),
-	m_iMaxShots(0), m_fMaxFlashPercentage(0.0f), m_fShootDelay(0.03f),
+	m_iShotsOnTarget(0), m_bTriggerBurst(false), m_iMinShots(1),
+	m_iMaxShots(2), m_fMaxFlashPercentage(0.0f), m_fShootDelay(0.03f),
 	m_fShootDelayJitter(0.005f)
 {
 }

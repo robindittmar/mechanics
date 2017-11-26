@@ -134,12 +134,14 @@ private:
 
 	CGroupbox* m_pLegitbotGroup;
 	CCheckbox* m_pLegitbotEnabled;
+	CCheckbox* m_pLegitbotAutoshoot;
 	CSlider* m_pLegitbotHelpAfterShots;
 	CSlider* m_pLegitbotTimeToAim;
 	CSlider* m_pLegitbotCurve;
 	CSlider* m_pLegitbotFov;
 	CSlider* m_pLegitbotPointScale;
 	CCheckbox* m_pLegitbotDrawPath;
+	CColorPicker* m_pLegitbotPathColor;
 
 	CGroupbox* m_pLegitHitboxGroup;
 	CCheckbox* m_pLegitHitboxHead;
@@ -152,14 +154,14 @@ private:
 
 	CGroupbox* m_pTriggerbotGroup;
 	CCheckbox* m_pTriggerbotEnabled;
-	CLabel* m_pTriggerbotDelayLabel;
 	CSlider* m_pTriggerbotDelayValue;
-	CLabel* m_pTriggerbotDelayJitterLabel;
 	CSlider* m_pTriggerbotDelayJitterValue;
+	CCheckbox* m_pTriggerbotBurst;
+	CSlider* m_pTriggerbotMinShots; // TODO: CRangeSlider, instead of 2 sliders
+	CSlider* m_pTriggerbotMaxShots;
 
 	CGroupbox* m_pLegitLagCompensationGroup;
 	CCheckbox* m_pLegitLagCompensationEnabled;
-	CLabel* m_pLegitLagCompensationDurationLabel;
 	CSlider* m_pLegitLagCompensationDuration;
 
 	//
