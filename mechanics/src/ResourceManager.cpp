@@ -100,21 +100,28 @@ void CResourceManager::CreateMirror()
 
 void CResourceManager::BuildFadeTexture()
 {
+	constexpr int iWidth = 1;
 	constexpr int iHeight = 360;
 
+	int idx;
 	int curR, curG, curB;
-	unsigned char pTexColorFade[iHeight * 4];
-	for (int y = 0; y < iHeight * 4; y += 4)
+	unsigned char pTexColorFade[iWidth * iHeight * 4];
+	for (int y = 0; y < iHeight; y++)
 	{
-		Utils::HsvToRgb(y, 1.0f, 1.0f, curR, curG, curB);
+		for (int x = 0; x < iWidth; x++)
+		{
+			idx = (y * iWidth + x) * 4;
 
-		pTexColorFade[y] = curR;
-		pTexColorFade[y + 1] = curG;
-		pTexColorFade[y + 2] = curB;
-		pTexColorFade[y + 3] = 255; // Alpha
+			Utils::HsvToRgb(y, 1.0f, 1.0f, curR, curG, curB);
+
+			pTexColorFade[idx++] = curR;
+			pTexColorFade[idx++] = curG;
+			pTexColorFade[idx++] = curB;
+			pTexColorFade[idx++] = 255; // Alpha
+		}
 	}
 
-	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_COLORFADE), pTexColorFade, 1, iHeight);
+	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_COLORFADE), pTexColorFade, iWidth, iHeight);
 }
 
 void CResourceManager::BuildSaturationValueTexture(int iHue)

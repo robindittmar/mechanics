@@ -14,6 +14,7 @@
 #define DRAWPRINTTEXT_INDEX			28
 #define DRAWSETTEXTURERGBA_INDEX	37
 #define DRAWSETTEXTURE_INDEX		38
+#define DRAWGETTEXTURESIZE_INDEX	40
 #define DRAWTEXTUREDRECT_INDEX		41
 #define DELETETEXTUREBYID_INDEX		143
 #define CREATENEWTEXTUREID_INDEX	43
@@ -118,6 +119,12 @@ void ISurface::DrawSetTexture(int id)
 {
 	typedef void(__thiscall *DrawSetTexture_t)(void*, int);
 	((DrawSetTexture_t)(*(void***)this)[DRAWSETTEXTURE_INDEX])(this, id);
+}
+
+void ISurface::DrawGetTextureSize(int id, int& wide, int& tall)
+{
+	typedef void(__thiscall *DrawGetTextureSize_t)(void*, int, int&, int&);
+	((DrawGetTextureSize_t)(*(void***)this)[DRAWGETTEXTURESIZE_INDEX])(this, id, wide, tall);
 }
 
 void ISurface::DrawTexturedRect(int x0, int y0, int x1, int y1)

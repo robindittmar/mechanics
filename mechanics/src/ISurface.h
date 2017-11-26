@@ -207,6 +207,7 @@ public:
 	int DrawGetTextureId(char const *filename);
 	void DrawSetTextureRGBA(int id, const unsigned char* rgba, int wide, int tall);
 	void DrawSetTexture(int id);
+	void DrawGetTextureSize(int id, int& wide, int& tall);
 	void DrawTexturedRect(int x0, int y0, int x1, int y1);
 	void DrawTexturedRectEx(DrawTexturedRectParms_t* pDrawParms);
 	void DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices);

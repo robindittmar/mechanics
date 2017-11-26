@@ -149,8 +149,8 @@ void CColorPickerPopup::Draw(ISurface* pSurface)
 	Vertex_t pVertices[4];
 	pVertices[0].Init(Vector2D(x + 4, y + 4), Vector2D(0.0f, 0.0f));
 	pVertices[1].Init(Vector2D(x + 24, y + 4), Vector2D(1.0f, 0.0f));
-	pVertices[2].Init(Vector2D(x + 24, y + 204), Vector2D(1.0f, 0.2555555555555556f));
-	pVertices[3].Init(Vector2D(x + 4, y + 204), Vector2D(0.0f, 0.2555555555555556f));
+	pVertices[2].Init(Vector2D(x + 24, y + 204), Vector2D(1.0f, 1.0f));
+	pVertices[3].Init(Vector2D(x + 4, y + 204), Vector2D(0.0f, 1.0f));
 
 	pSurface->DrawSetColor(255, 255, 255, 255);
 	pSurface->DrawSetTexture(m_iColorFadeTexture);
