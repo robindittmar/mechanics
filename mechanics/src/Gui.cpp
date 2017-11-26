@@ -158,6 +158,8 @@ unsigned short CGui::XButtonToVKey(WPARAM wParam)
 	return vKey;
 }
 
+#define WNDPROC_RETURN_OR_BREAK if (!pGui->m_bEnableGameInput) { return 1L; } break
+
 LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 {
 	CGui* pGui = CGui::Instance();
@@ -169,68 +171,52 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 	case WM_CHAR:
 		pInputHandler->OnText((char)wParam);
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_KEYDOWN:
 		pInputHandler->OnKeyDown((unsigned short)wParam);
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_KEYUP:
 		pInputHandler->OnKeyUp((unsigned short)wParam);
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_MOUSEMOVE:
 		x = GET_X_LPARAM(lParam);
 		y = GET_Y_LPARAM(lParam);
 		pGui->SetMousePos(x, y);
 		pInputHandler->OnMouseMove(x, y);
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_LBUTTONDOWN:
 	case WM_LBUTTONDBLCLK:
 		pInputHandler->OnMouseDown(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_LBUTTONUP:
 		pInputHandler->OnMouseUp(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:
 		pInputHandler->OnMouseDown(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_RBUTTONUP:
 		pInputHandler->OnMouseUp(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_XBUTTONDOWN:
 		pInputHandler->OnKeyDown(pGui->XButtonToVKey(wParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
 	case WM_XBUTTONUP:
 		pInputHandler->OnKeyUp(pGui->XButtonToVKey(wParam));
 
-		if (!pGui->m_bEnableGameInput)
-			return 1L;
-		break;
+		WNDPROC_RETURN_OR_BREAK;
+	case WM_MOUSEWHEEL:
+		pInputHandler->OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam), GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		WNDPROC_RETURN_OR_BREAK;
 	}
 
 	return CallWindowProc(pGui->m_wndProc, hWnd, nCode, wParam, lParam);

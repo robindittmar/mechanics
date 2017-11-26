@@ -5,7 +5,8 @@
 #define EVENT_TYPE_KEYBOARD		1
 #define EVENT_TYPE_MOUSE		2
 #define EVENT_TYPE_MOUSEMOVE	3
-#define EVENT_TYPE_CHARACTER	4
+#define EVENT_TYPE_MOUSEWHEEL	4
+#define EVENT_TYPE_CHARACTER	5
 
 #define EVENT_BTNDIR_NONE		-1
 #define EVENT_BTNDIR_DOWN		0
@@ -36,8 +37,8 @@ public:
 
 	int eventType;
 	int mousex, mousey;
-	int button;
-	int buttonDirection; // Down = 1, Up = 0
+	int button; // in case of EVENT_TYPE_MOUSEWHEEL => delta of mouse movement
+	int buttonDirection; // Down = 0, Up = 1 (EVENT_BTNDIR_*)
 	char character;
 private:
 };

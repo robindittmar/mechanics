@@ -86,6 +86,11 @@ void CInputHandler::OnMouseUp(unsigned short vKey, int x, int y)
 	m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSE, x, y, it->second, EVENT_BTNDIR_UP));
 }
 
+void CInputHandler::OnMouseWheel(short delta, int x, int y)
+{
+	m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSEWHEEL, x, y, delta));
+}
+
 void CInputHandler::OnKeyDown(unsigned short vKey)
 {
 	std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.find(vKey);

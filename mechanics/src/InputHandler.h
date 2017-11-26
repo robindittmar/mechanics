@@ -45,6 +45,8 @@ public:
 	void OnMouseDown(unsigned short vKey, int x, int y);
 	void OnMouseMove(int x, int y);
 	void OnMouseUp(unsigned short vKey, int x, int y);
+	
+	void OnMouseWheel(short delta, int x, int y);
 
 	void OnKeyDown(unsigned short vKey);
 	void OnKeyUp(unsigned short vKey);
