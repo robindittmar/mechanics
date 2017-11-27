@@ -4,6 +4,8 @@
 CGunAccuracy::CGunAccuracy()
 	: m_fRecoilCompensation(2.0f), m_bNoRecoil(false), m_bNoSpread(false)
 {
+	// TODO: This might go into the menu somewhere
+	m_bIsEnabled = true;
 }
 
 CGunAccuracy::~CGunAccuracy()
@@ -18,6 +20,10 @@ void CGunAccuracy::Think(void* pParameters)
 		return;
 
 	CreateMoveParam* pParam = (CreateMoveParam*)pParameters;
+	CUserCmd* pUserCmd = pParam->pUserCmd;
+
+	if (!(pUserCmd->buttons & IN_ATTACK))
+		return;
 
 	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
@@ -36,16 +42,16 @@ void CGunAccuracy::Think(void* pParameters)
 		return;
 
 	// Store angles
-	m_qAngles = QAngle(pParam->pUserCmd->viewangles);
+	m_qAngles = QAngle(pUserCmd->viewangles);
 
 	// Modify angles
 	this->ApplyNoRecoil(pLocalEntity);
-	this->ApplyNoSpread(pLocalEntity, pWeapon, pParam->pUserCmd->random_seed);
+	this->ApplyNoSpread(pLocalEntity, pWeapon, pUserCmd->random_seed);
 
 	// Restore new calculated angles
-	pParam->pUserCmd->viewangles[0] = m_qAngles.x;
-	pParam->pUserCmd->viewangles[1] = m_qAngles.y;
-	pParam->pUserCmd->viewangles[2] = m_qAngles.z;
+	pUserCmd->viewangles[0] = m_qAngles.x;
+	pUserCmd->viewangles[1] = m_qAngles.y;
+	pUserCmd->viewangles[2] = m_qAngles.z;
 }
 
 void CGunAccuracy::ApplyNoRecoil(IClientEntity* pLocalEntity)

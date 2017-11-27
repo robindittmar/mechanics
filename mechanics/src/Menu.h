@@ -79,7 +79,8 @@ private:
 	CCheckbox* m_pAimbotMultipoint;
 	CSlider* m_pAimbotMultipointScale;
 
-	CCheckbox* m_pAimbotNoSpreadEnabled;
+	CCheckbox* m_pRageNoRecoilEnabled;
+	CCheckbox* m_pRageNoSpreadEnabled;
 
 	CCheckbox* m_pAimbotHitchanceEnabled;
 	CSlider* m_pAimbotHitchanceSlider;
