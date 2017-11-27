@@ -58,7 +58,7 @@ void CMenu::CreateMenu()
 	m_pWindow->AddChild(m_pMainContainer);
 
 	m_pWindowMirror = new CWindow(100, 100, MIRROR_WIDTH, MIRROR_HEIGHT, "Mirror");
-	m_pWindowMirror->SetVisible(true);
+	m_pWindowMirror->SetVisible(false);
 }
 
 void CMenu::ApplySettings()
@@ -1401,11 +1401,10 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerWeapon = new CSelectbox(4, 34, 128, 16, "Weapon");
 	m_pSkinChangerWeapon->AddOption(0, "None");
 	m_pSkinChangerWeapon->AddOption(-1, "Knife");
-	int iLen = strlen("weapon_"); // TODO: Xor
 	std::unordered_map<uint32_t, WeaponMetadata_t>* m_mapWeaponIds = m_pApp->SkinChanger()->GetWeaponsMap();
 	for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator it = m_mapWeaponIds->begin(); it != m_mapWeaponIds->end(); it++)
 	{
-		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.name + iLen);
+		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.readableName);
 	}
 	m_pSkinChangerWeapon->SetEventHandler(std::bind(&CMenu::FillSkinIds, this, std::placeholders::_1));
 

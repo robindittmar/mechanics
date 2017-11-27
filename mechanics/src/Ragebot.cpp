@@ -92,7 +92,7 @@ void CRagebot::Think(void* pParameters)
 
 	// Hitchance
 	float fHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
-	if (fHitchance < m_fHitchance && m_pTarget->GetIsBacktracked() == -1)
+	if (fHitchance < m_fHitchance/* && m_pTarget->GetIsBacktracked() == -1*/)
 		return;
 
 	// Checks if weapon could hit

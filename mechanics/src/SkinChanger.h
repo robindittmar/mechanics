@@ -60,14 +60,16 @@ class CApplication;
 
 struct WeaponMetadata_t
 {
-	WeaponMetadata_t(int iId = 0, const char* pName = NULL)
+	WeaponMetadata_t(int iId = 0, const char* pName = nullptr, const char* pReadableName = nullptr)
 	{
 		id = iId;
 		name = pName;
+		readableName = pReadableName;
 	}
 
 	int id;
 	const char* name;
+	const char* readableName;
 };
 
 // Hint: also changes models :D
