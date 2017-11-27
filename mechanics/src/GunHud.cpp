@@ -86,8 +86,9 @@ void CGunHud::DrawCrosshair()
 	const int crosshair_size = 12;
 
 	int iMidX, iMidY;
-	if (m_bCrosshairShowRecoil && !m_pApp->GunAccuracy()->GetNoRecoil() &&
-		!m_pApp->Visuals()->GetNoVisualRecoil() && m_bRecoilIsNonZero)
+	if (m_bCrosshairShowRecoil &&
+		m_bRecoilIsNonZero &&
+		!m_pApp->GunAccuracy()->GetNoRecoil())
 	{
 		iMidX = m_iRcMiddleX;
 		iMidY = m_iRcMiddleY;
@@ -123,7 +124,9 @@ void CGunHud::DrawSpreadCone()
 		return;
 
 	int iMidX, iMidY;
-	if (m_bSpreadConeShowRecoil && m_bRecoilIsNonZero)
+	if (m_bSpreadConeShowRecoil &&
+		m_bRecoilIsNonZero &&
+		!m_pApp->GunAccuracy()->GetNoRecoil())
 	{
 		iMidX = m_iRcMiddleX;
 		iMidY = m_iRcMiddleY;

@@ -31,6 +31,9 @@ namespace ConfigHelper
 		pApp->Ragebot()->SetHitchance(pConfig->GetFloat("ragebot", "hitchance"));
 		pApp->Ragebot()->SetAutoRevolver(pConfig->GetBool("ragebot", "autorevolver"));
 
+		pApp->GunAccuracy()->SetNoRecoil(pConfig->GetBool("accuracy", "norecoil"));
+		pApp->GunAccuracy()->SetNoSpread(pConfig->GetBool("accuracy", "nospread"));
+
 		// Legitbot
 		pApp->Legitbot()->SetEnabled(pConfig->GetBool("legitbot", "enabled"));
 		pApp->Legitbot()->SetTriggerKey(pConfig->GetInt("legitbot", "key"));
@@ -51,8 +54,7 @@ namespace ConfigHelper
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, pConfig->GetBool("legitbot", "checkleftforearm"));
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, pConfig->GetBool("legitbot", "checkrightcalf"));
 		pApp->Legitbot()->SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, pConfig->GetBool("legitbot", "checkleftcalf"));
-		pConfig->SetBool("legitbot", "drawfov", pApp->Legitbot()->GetDrawFieldOfView());
-		pConfig->SetColor("legitbot", "fovcolor", pApp->Legitbot()->GetFieldOfViewColor());
+		
 		// Triggerbot
 		pApp->Triggerbot()->SetEnabled(pConfig->GetBool("triggerbot", "enabled"));
 		pApp->Triggerbot()->SetTriggerBurst(pConfig->GetBool("triggerbot", "burst"));
@@ -257,6 +259,9 @@ namespace ConfigHelper
 		pConfig->SetBool("ragebot", "hitchanceenabled", pApp->Ragebot()->GetCalculateHitchance());
 		pConfig->SetFloat("ragebot", "hitchance", pApp->Ragebot()->GetHitchance());
 		pConfig->SetBool("ragebot", "autorevolver", pApp->Ragebot()->GetAutoRevolver());
+
+		pConfig->SetBool("accuracy", "norecoil", pApp->GunAccuracy()->GetNoRecoil());
+		pConfig->SetBool("accuracy", "nospread", pApp->GunAccuracy()->GetNoSpread());
 
 		// Legitbot
 		pConfig->SetBool("legitbot", "enabled", pApp->Legitbot()->GetEnabled());

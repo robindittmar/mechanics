@@ -75,6 +75,9 @@ void CMenu::ApplySettings()
 	m_pAimbotTargetCriteria->SetValue(m_pApp->Ragebot()->GetTargetCriteria());
 	m_pAimbotVisibleMode->SetValue(m_pApp->TargetSelector()->GetVisibleMode());
 
+	m_pRageNoRecoilEnabled->SetChecked(m_pApp->GunAccuracy()->GetNoRecoil());
+	m_pRageNoSpreadEnabled->SetChecked(m_pApp->GunAccuracy()->GetNoSpread());
+
 	m_pRageHitboxHead->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
 	m_pRageHitboxChest->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
 	m_pRageHitboxPelvis->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
@@ -372,9 +375,11 @@ void CMenu::CreateRageTab()
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotEnabled);
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotMultipoint);
 
-	m_pAimbotNoSpreadEnabled = new CCheckbox(4, 142, 128, 16, "Remove Spread (Not Implemented)");
-	//m_pAimbotNoSpreadEnabled->SetEventHandler(std::bind(&CRagebot::SetNoSpread, m_pApp->Ragebot(), std::placeholders::_1));
-	m_pAimbotNoSpreadEnabled->AddDependency(m_pAimbotEnabled);
+	m_pRageNoRecoilEnabled = new CCheckbox(4, 142, 64, 16, "Remove Recoil");
+	m_pRageNoRecoilEnabled->SetEventHandler(std::bind(&CGunAccuracy::SetNoRecoil, m_pApp->GunAccuracy(), std::placeholders::_1));
+
+	m_pRageNoSpreadEnabled = new CCheckbox(72, 142, 64, 16, "Remove Spread");
+	m_pRageNoSpreadEnabled->SetEventHandler(std::bind(&CGunAccuracy::SetNoSpread, m_pApp->GunAccuracy(), std::placeholders::_1));
 
 	m_pAimbotHitchanceEnabled = new CCheckbox(4, 162, 128, 16, "Hitchance");
 	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
@@ -407,7 +412,8 @@ void CMenu::CreateRageTab()
 	m_pAimbotGroup->AddChild(m_pAimbotAutoReload);
 	m_pAimbotGroup->AddChild(m_pAimbotMultipoint);
 	m_pAimbotGroup->AddChild(m_pAimbotMultipointScale);
-	m_pAimbotGroup->AddChild(m_pAimbotNoSpreadEnabled);
+	m_pAimbotGroup->AddChild(m_pRageNoRecoilEnabled);
+	m_pAimbotGroup->AddChild(m_pRageNoSpreadEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotHitchanceEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotHitchanceSlider);
 	m_pAimbotGroup->AddChild(m_pAimbotTargetCriteria);
