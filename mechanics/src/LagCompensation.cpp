@@ -204,14 +204,23 @@ void CLagCompensation::DrawLagCompensationIndicator()
 			pTargetEntity = pTarget->GetEntity();
 		}
 
+		// Check if got LC target
 		bool bGotLCEntries = pTargetEntity;
 		if (pTargetEntity)
 		{
-			CLagCompensationPlayerList* lcList = m_pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex());
-			lcList->RemoveInvalidPlayerEntries();
-			bGotLCEntries = lcList->m_iEntryCount > 0;
+			if (pTargetEntity->IsDormant())
+			{
+				bGotLCEntries = false;
+			}
+			else
+			{
+				CLagCompensationPlayerList* lcList = m_pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex());
+				lcList->RemoveInvalidPlayerEntries();
+				bGotLCEntries = lcList->m_iEntryCount > 0;
+			}
 		}
 
+		// Draw LC Indicator
 		if (pTargetEntity && bGotLCEntries)
 		{
 			m_pApp->Surface()->DrawSetTextColor(255, 0, 255, 0);
