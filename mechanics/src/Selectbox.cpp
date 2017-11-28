@@ -127,6 +127,15 @@ void CSelectbox::AddOption(int id, const char* text)
 	m_iCountOptions++;
 }
 
+void CSelectbox::AddOptionW(int id, const wchar_t* text)
+{
+	CSelectboxItem* pOption = new CSelectboxItem(id, text);
+	m_vOptions.push_back(pOption);
+	m_pPopup->AddOptionW(m_iCountOptions, text, pOption->GetContentTextLength());
+	
+	m_iCountOptions++;
+}
+
 void CSelectbox::ReplaceIdOfOption(const char* option, int newId)
 {
 	for (std::vector<CSelectboxItem*>::iterator it = m_vOptions.begin(); it != m_vOptions.end(); it++)
@@ -145,7 +154,7 @@ void CSelectbox::SetSelection(int iSelection)
 	if (iSelection >= 0 && iSelection < m_iCountOptions)
 	{
 		m_iSelection = iSelection;
-		m_pSelectionLabel->SetContentText(m_vOptions[m_iSelection]->GetContentText());
+		m_pSelectionLabel->SetContentTextW(m_vOptions[m_iSelection]->GetContentTextW());
 
 		if (m_pEventHandler)
 			m_pEventHandler(m_vOptions[m_iSelection]->GetId());

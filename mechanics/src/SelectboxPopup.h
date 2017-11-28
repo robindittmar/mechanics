@@ -32,6 +32,7 @@ public:
 
 	void ClearOptions();
 	void AddOption(int curIdx, const char* text, int len);
+	void AddOptionW(int curIdx, const wchar_t* text, int len);
 private:
 	CSelectbox* m_pSelectbox;
 

@@ -20,7 +20,7 @@ public:
 		int y = 0,
 		int w = 0,
 		int h = 0,
-		const char* pText = NULL,
+		const char* pText = nullptr,
 		int font = RM_FONT_NORMAL,
 		int orientation = LABEL_ORIENTATION_LEFT,
 		Color color = Color(255, 255, 255, 255)
@@ -43,7 +43,12 @@ public:
 
 	void SetContentText(const char* pText);
 	const char* GetContentText() { return (const char*)m_pContentText; }
+
+	void SetContentTextW(const wchar_t* pTextW);
+	const wchar_t* GetContentTextW() { return (const wchar_t*)m_pContentTextW; }
 private:
+	void FreeMemory();
+
 	unsigned int m_iFont;
 
 	Color m_cTextColor;

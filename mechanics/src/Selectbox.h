@@ -33,6 +33,7 @@ public:
 
 	void ClearOptions();
 	void AddOption(int id, const char* text);
+	void AddOptionW(int id, const wchar_t* text);
 	int GetCountOptions() { return m_iCountOptions; }
 
 	void ReplaceIdOfOption(const char* option, int newId);
@@ -45,7 +46,8 @@ public:
 
 	void SetSelectionById(int iValue);
 
-	const char* GetSelectedText() { return m_vOptions[m_iSelection]->GetContentText(); }
+	const char* GetSelectedText() const { return m_vOptions[m_iSelection]->GetContentText(); }
+	const wchar_t* GetSelectedTextW() const { return m_vOptions[m_iSelection]->GetContentTextW(); }
 
 	void SetEventHandler(std::function<void(int)> pEventHandler) { m_pEventHandler = pEventHandler; }
 private:

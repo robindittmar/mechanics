@@ -10,11 +10,7 @@ CLabel::CLabel(int x, int y, int w, int h, const char* pText, int font, int orie
 
 CLabel::~CLabel()
 {
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
-
-	if (m_pContentText)
-		delete[] m_pContentText;
+	this->FreeMemory();
 }
 
 void CLabel::Draw(ISurface* pSurface)
@@ -68,23 +64,47 @@ void CLabel::GetTextSize(ISurface* pSurface, int& width, int& height)
 
 void CLabel::SetContentText(const char* pText)
 {
-	if (m_pContentText)
-		delete[] m_pContentText;
-
-	if (m_pContentTextW)
-		delete[] m_pContentTextW;
+	this->FreeMemory();
 
 	if (!pText)
-	{
-		m_pContentText = nullptr;
-		m_pContentTextW = nullptr;
 		return;
-	}
 
 	m_iContentTextLen = strlen(pText) + 1;
+
 	m_pContentText = new char[m_iContentTextLen];
 	memcpy(m_pContentText, pText, m_iContentTextLen);
 
 	m_pContentTextW = new wchar_t[m_iContentTextLen];
 	mbstowcs(m_pContentTextW, m_pContentText, m_iContentTextLen);
+}
+
+void CLabel::SetContentTextW(const wchar_t* pTextW)
+{
+	this->FreeMemory();
+
+	if (!pTextW)
+		return;
+
+	m_iContentTextLen = wcslen(pTextW) + 1;
+
+	m_pContentTextW = new wchar_t[m_iContentTextLen];
+	memcpy(m_pContentTextW, pTextW, m_iContentTextLen * sizeof(wchar_t));
+
+	m_pContentText = new char[m_iContentTextLen];
+	wcstombs(m_pContentText, m_pContentTextW, m_iContentTextLen);
+}
+
+void CLabel::FreeMemory()
+{
+	if (m_pContentTextW)
+	{
+		delete[] m_pContentTextW;
+		m_pContentTextW = nullptr;
+	}
+
+	if (m_pContentText)
+	{
+		delete[] m_pContentText;
+		m_pContentText = nullptr;
+	}
 }

@@ -1526,15 +1526,15 @@ void CMenu::FillSkinIds(int iWeaponId)
 		return;
 	}
 
-	std::unordered_map<int, std::unordered_map<int, const char*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
-	for (std::unordered_map<int, std::unordered_map<int, const char*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
+	std::unordered_map<int, std::unordered_map<int, const wchar_t*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
+	for (std::unordered_map<int, std::unordered_map<int, const wchar_t*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
 	{
 		if (itWeaps->first != iWeaponId)
 			continue;
 
-		for (std::unordered_map<int, const char*>::iterator itPaintKits = itWeaps->second.begin(); itPaintKits != itWeaps->second.end(); itPaintKits++)
+		for (std::unordered_map<int, const wchar_t*>::iterator itPaintKits = itWeaps->second.begin(); itPaintKits != itWeaps->second.end(); itPaintKits++)
 		{
-			m_pSkinChangerSkin->AddOption(itPaintKits->first, itPaintKits->second);
+			m_pSkinChangerSkin->AddOptionW(itPaintKits->first, itPaintKits->second);
 		}
 
 		break;

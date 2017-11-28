@@ -158,3 +158,17 @@ void CSelectboxPopup::AddOption(int curIdx, const char* text, int len)
 		m_iLargestOptionStringIndex = curIdx;
 	}
 }
+
+void CSelectboxPopup::AddOptionW(int curIdx, const wchar_t* text, int len)
+{
+	CLabel* pLabel = new CLabel();
+	pLabel->SetContentTextW(text);
+
+	m_vOptionLabels.push_back(pLabel);
+
+	if (len > m_iLenLargestOptionString)
+	{
+		m_iLenLargestOptionString = len;
+		m_iLargestOptionStringIndex = curIdx;
+	}
+}

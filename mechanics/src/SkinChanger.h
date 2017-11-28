@@ -80,7 +80,7 @@ public:
 	virtual ~CSkinChanger();
 
 	std::unordered_map<uint32_t, WeaponMetadata_t>* GetWeaponsMap() { return &m_mapWeapons; }
-	std::unordered_map<int, std::unordered_map<int, const char*>>* GetSkinsMap() { return &m_mapSkins; }
+	std::unordered_map<int, std::unordered_map<int, const wchar_t*>>* GetSkinsMap() { return &m_mapSkins; }
 
 	virtual void Setup() override;
 	virtual void Think(void* pParameters = nullptr) override;
@@ -144,9 +144,9 @@ private:
 	std::unordered_map<uint32_t, const char*> m_mapKillIconT;
 
 	std::unordered_map<uint32_t, int> m_mapPaintKits;
-	std::unordered_map<uint32_t, const char*> m_mapPaintKitDescription;
+	std::unordered_map<uint32_t, const wchar_t*> m_mapPaintKitDescription;
 	std::unordered_map<uint32_t, std::vector<int>> m_mapWeaponSkins;
-	std::unordered_map<int, std::unordered_map<int, const char*>> m_mapSkins;
+	std::unordered_map<int, std::unordered_map<int, const wchar_t*>> m_mapSkins;
 };
 
 #endif // __SKINCHANGER_H__

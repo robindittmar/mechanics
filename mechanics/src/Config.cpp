@@ -35,7 +35,7 @@ bool CConfig::LoadFile(const char* pFilename)
 	if (!pFile)
 	{
 #ifdef _DEBUG
-		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n\n", pFullpath);
+		g_pConsole->Write(LOGLEVEL_WARNING, "Couldn't open file '%s'\n\n", pFullpath);
 #endif // _DEBUG
 
 		return false;
@@ -156,7 +156,7 @@ bool CConfig::SaveFile(const char* pFilename)
 	if (!pFile)
 	{
 #ifdef _DEBUG
-		g_pConsole->Write(LOGLEVEL_ERROR, "Couldn't open file '%s'\n\n", pFullpath);
+		g_pConsole->Write(LOGLEVEL_WARNING, "Couldn't open file '%s'\n\n", pFullpath);
 #endif // _DEBUG
 
 		return false;

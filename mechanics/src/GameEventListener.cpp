@@ -90,6 +90,11 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 	pApp->Visuals()->NoSmoke(pApp->Visuals()->GetNoSmoke());
 	pApp->GunHud()->ResetHitmarker();
 
+#ifdef _DEBUG
+	INetChannelInfo* pNetChannelInfo = pApp->EngineClient()->GetNetChannelInfo();
+	g_pConsole->Write(LOGLEVEL_INFO, "[game_newmap]: %s (name=%s)\n", pNetChannelInfo->GetAddress(), pNetChannelInfo->GetName());
+#endif // _DEBUG
+
 	m_bNewGame = true;
 }
 

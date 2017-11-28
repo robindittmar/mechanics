@@ -10,8 +10,8 @@ CSkinChanger::~CSkinChanger()
 {
 	this->ClearReplacements();
 
-	const char* pCurrent;
-	for (std::unordered_map<uint32_t, const char*>::iterator it = m_mapPaintKitDescription.begin(); it != m_mapPaintKitDescription.end(); it++)
+	const wchar_t* pCurrent;
+	for (std::unordered_map<uint32_t, const wchar_t*>::iterator it = m_mapPaintKitDescription.begin(); it != m_mapPaintKitDescription.end(); it++)
 	{
 		pCurrent = it->second;
 
@@ -261,6 +261,12 @@ void CSkinChanger::ParseSkinFile()
 	uint32_t iHash;
 	int iCurPaintKit = 0;
 
+	int iCurPhase = -1;
+	bool bEmerald = false;
+	bool bRuby = false;
+	bool bSapphire = false;
+	bool bBlackPearl = false;
+
 	int iLevels = 0;
 	bool bInPaintKits = false;
 	bool bInClientLootList = false;
@@ -309,6 +315,21 @@ void CSkinChanger::ParseSkinFile()
 
 					if (!strcmp(pKey, "name"))
 					{
+						char* pPhase = strstr(pValue, "phase");
+						if (pPhase)
+						{
+							iCurPhase = *(pPhase + 5) - '0';
+						}
+						else
+						{
+							iCurPhase = -1;
+						}
+						
+						bEmerald = strstr(pValue, "emerald") != nullptr;
+						bRuby = strstr(pValue, "ruby") != nullptr;
+						bSapphire = strstr(pValue, "sapphire") != nullptr;
+						bBlackPearl = strstr(pValue, "blackpearl") != nullptr;
+
 						iHash = murmurhash(pValue, strlen(pValue), 0xB16B00B5);
 						m_mapPaintKits[iHash] = iCurPaintKit;
 					}
@@ -317,8 +338,38 @@ void CSkinChanger::ParseSkinFile()
 						wchar_t* pTranslation = m_pApp->Localize()->Find(pValue + 1);
 
 						int iLen = wcslen(pTranslation) + 1;
-						char* p = new char[iLen];
-						wcstombs(p, pTranslation, iLen);
+						wchar_t* p;
+						if (bEmerald)
+						{
+							p = new wchar_t[8];
+							wcscpy(p, L"Emerald");
+						}
+						else if (bRuby)
+						{
+							p = new wchar_t[5];
+							wcscpy(p, L"Ruby");
+						}
+						else if (bSapphire)
+						{
+							p = new wchar_t[9];
+							wcscpy(p, L"Sapphire");
+						}
+						else if (bBlackPearl)
+						{
+							p = new wchar_t[12];
+							wcscpy(p, L"Black Pearl");
+						}
+						else if (iCurPhase == -1)
+						{
+							p = new wchar_t[iLen];
+							memcpy(p, pTranslation, iLen * sizeof(wchar_t));
+						}
+						else
+						{
+							iLen += 8; // " x"
+							p = new wchar_t[iLen];
+							swprintf(p, iLen, L"%ls Phase %d", pTranslation, iCurPhase);
+						}
 
 						m_mapPaintKitDescription[iHash] = p;
 					}
@@ -416,10 +467,6 @@ void CSkinChanger::ParseSkinFile()
 
 	fclose(pFile);
 
-	// add knife skins !!!
-	// for all iconpaths
-	// for all paintkits
-	// if iconpath contains paintkit NAME add to list only once!!
 	const int iLenUnderscoreLight = strlen("_light");
 	const char* p;
 	for (std::vector<const char*>::iterator it = iconpaths.begin(); it != iconpaths.end(); it++)
@@ -453,6 +500,8 @@ void CSkinChanger::ParseSkinFile()
 			m_mapSkins[*weapIt][m_mapPaintKits[it->first]] = m_mapPaintKitDescription[it->first];
 		}
 	}
+
+	// TODO: Sort strings alphabetically
 }
 
 void CSkinChanger::ClearReplacements()
