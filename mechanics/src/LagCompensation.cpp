@@ -58,11 +58,7 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 		return -1;
 
 	Vector vLocalHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
-	QAngle qLocalAngles = m_pApp->GetClientViewAngles();
-
-	QAngle aimPunchAngle = *pLocalEntity->GetAimPunchAngle();
-	qLocalAngles.x -= aimPunchAngle.x * m_pApp->GunAccuracy()->GetRecoilCompensation();
-	qLocalAngles.y -= aimPunchAngle.y * m_pApp->GunAccuracy()->GetRecoilCompensation();
+	QAngle qLocalAngles = m_pApp->GetClientViewAngles() + (*pLocalEntity->GetAimPunchAngle() * m_pApp->GunAccuracy()->GetRecoilCompensation());
 
 	float fViewangleDist = 99999.0f;
 	int iCurTickcount = -1;
