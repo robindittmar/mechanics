@@ -501,7 +501,42 @@ void CSkinChanger::ParseSkinFile()
 		}
 	}
 
-	// TODO: Sort strings alphabetically
+	this->SortWeaponsAndSkinsByName();
+}
+
+void CSkinChanger::SortWeaponsAndSkinsByName()
+{
+	CBenchmark sortWeaps(true);
+	m_vWeapons.reserve(m_mapWeapons.size());
+	for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator mIt = m_mapWeapons.begin(); mIt != m_mapWeapons.end(); mIt++)
+	{
+		m_vWeapons.emplace_back(mIt->second);
+	}
+
+	std::sort(m_vWeapons.begin(), m_vWeapons.end(), [](const WeaponMetadata_t& a, const WeaponMetadata_t& b) {
+		return strcmp(a.readableName, b.readableName) < 0;
+	});
+	sortWeaps.FinishBenchmark();
+	sortWeaps.PrintBenchmark("Sorting Weapons");
+
+	CBenchmark sortSkins(true);
+	std::unordered_map<int, std::vector<SkinMetadata_t>>::iterator it;
+	for (std::unordered_map<int, std::unordered_map<int, const wchar_t*>>::iterator itWeaps = m_mapSkins.begin(); itWeaps != m_mapSkins.end(); itWeaps++)
+	{
+		int iWeaponId = itWeaps->first;
+
+		m_vSkins[iWeaponId].reserve(itWeaps->second.size());
+		for (std::unordered_map<int, const wchar_t*>::iterator itPaintKits = itWeaps->second.begin(); itPaintKits != itWeaps->second.end(); itPaintKits++)
+		{
+			m_vSkins[iWeaponId].emplace_back(SkinMetadata_t(itPaintKits->first, itPaintKits->second));
+		}
+
+		std::sort(m_vSkins[iWeaponId].begin(), m_vSkins[iWeaponId].end(), [](const SkinMetadata_t& a, const SkinMetadata_t& b) {
+			return wcscmp(a.name, b.name) < 0;
+		});
+	}
+	sortSkins.FinishBenchmark();
+	sortSkins.PrintBenchmark("Sorting Skins");
 }
 
 void CSkinChanger::ClearReplacements()

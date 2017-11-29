@@ -46,7 +46,7 @@ void CRagebot::Think(void* pParameters)
 	pUserCmd = pParam->pUserCmd;
 	fInputSampleTime = pParam->fInputSampleTime;
 
-	pLocalEntity = m_pEntityList->GetClientEntity(m_pEngineClient->GetLocalPlayer());
+	pLocalEntity = m_pApp->GetLocalPlayer();
 	if (!pLocalEntity)
 		return;
 
@@ -76,9 +76,12 @@ void CRagebot::Think(void* pParameters)
 		return;
 	}
 
+	//CBenchmark targetBenchmark(true);
 	// Choose target
 	if (!m_pTargetSelector->GetHasTargets())
 		m_pTargetSelector->SelectTargets(fInputSampleTime);
+	//targetBenchmark.FinishBenchmark();
+	//targetBenchmark.PrintBenchmark("Target selection");
 
 	m_pTarget = m_pTargetSelector->GetTarget(m_iTargetCriteria);
 	if (!m_pTarget) // This should never happen
@@ -90,9 +93,13 @@ void CRagebot::Think(void* pParameters)
 	// Copy target angles
 	m_qAimAngles = *m_pTarget->GetAimAngles();
 
+	CBenchmark hitchanceBenchmark(true);
 	// Hitchance
-	float fHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
-	if (fHitchance < m_fHitchance/* && m_pTarget->GetIsBacktracked() == -1*/)
+	bool bHitchance = this->CalculateHitchance(pLocalEntity, pMyActiveWeapon, m_pTarget->GetEntity());
+	hitchanceBenchmark.FinishBenchmark();
+	hitchanceBenchmark.PrintBenchmark("Calc Hitchance");
+
+	if (!bHitchance)
 		return;
 
 	// Checks if weapon could hit
@@ -237,18 +244,20 @@ void CRagebot::AutoRevolver(CUserCmd* pUserCmd)
 	}
 }
 
-
-float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget)
+bool CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget)
 {
 	if (!m_bCalculateHitchance)
-		return 1.0f;
+		return true;
 
 	int iHits = 0;
-	const float fMaxHits = 256.0f;
+	int iHitsRequired = m_fHitchance * 256;
+
+	int iMisses = 0;
+	int iMissesRquired = 256 - iHitsRequired;
 
 	CWeaponInfo* pWeaponInfo = pActiveWeapon->GetWeaponInfo();
 	if (!pWeaponInfo)
-		return 0.0f;
+		return false;
 
 	Vector vHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 	Vector vForward;
@@ -259,34 +268,26 @@ float CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActive
 	CTraceFilterOnlyPlayers traceFilter(pLocalEntity);
 
 	pActiveWeapon->UpdateAccuracyPenalty();
-
 	for (int i = 1; i <= 256; i++)
 	{
-		m_pApp->RandomSeed()(i);
-
-		float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
-		float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-		float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
-		float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
-
-		float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
-		float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
-
-		float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
-		float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
-
 		qCurAngles = m_qAimAngles;
-		qCurAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
-		qCurAngles.y += RAD2DEG(atanf(fSpreadX));
+		m_pApp->GunAccuracy()->ApplySpreadToAngles(qCurAngles, pLocalEntity, pActiveWeapon, i);
+
 		AngleVectors(qCurAngles, &vForward);
 
 		ray.Init(vHeadPos, vHeadPos + (vForward * pWeaponInfo->flRange));
 		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
 		if (trace.DidHitEntity(pTarget))
 		{
-			iHits++;
+			if (++iHits >= iHitsRequired)
+				return true;
+		}
+		else
+		{
+			if (++iMisses >= iMissesRquired)
+				return false;
 		}
 	}
 
-	return (float)(iHits / fMaxHits);
+	return false;
 }

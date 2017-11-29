@@ -12,6 +12,25 @@ CGunAccuracy::~CGunAccuracy()
 {
 }
 
+void CGunAccuracy::ApplySpreadToAngles(QAngle& qAngles, IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, int iSeed)
+{
+	m_pApp->RandomSeed()((iSeed & 255) + 1);
+
+	float fRand1 = m_pApp->RandomFloat()(0.0f, 1.0f);
+	float fRandPi1 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+	float fRand2 = m_pApp->RandomFloat()(0.0f, 1.0f);
+	float fRandPi2 = m_pApp->RandomFloat()(0.0f, 2.0f * PI_F);
+
+	float fRandInaccurary = fRand1 * pActiveWeapon->GetInaccuracy();
+	float fRandSpread = fRand2 * pActiveWeapon->GetSpread();
+
+	float fSpreadX = cos(fRandPi1) * fRandInaccurary + cos(fRandPi2) * fRandSpread;
+	float fSpreadY = sin(fRandPi1) * fRandInaccurary + sin(fRandPi2) * fRandSpread;
+
+	qAngles.x += RAD2DEG(atan2f(fSpreadY, sqrtf(1.0f + fSpreadX * fSpreadX)));
+	qAngles.y += RAD2DEG(atanf(fSpreadX));
+}
+
 void CGunAccuracy::Think(void* pParameters)
 {
 	assert(pParameters != nullptr);

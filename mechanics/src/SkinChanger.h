@@ -2,6 +2,8 @@
 #define __SKINCHANGER_H__
 
 // Std lib
+#include <algorithm>
+#include <vector>
 #include <unordered_map>
 
 // Source SDK
@@ -72,6 +74,18 @@ struct WeaponMetadata_t
 	const char* readableName;
 };
 
+struct SkinMetadata_t
+{
+	SkinMetadata_t(int iId = 0, const wchar_t* pName = nullptr)
+	{
+		id = iId;
+		name = pName;
+	}
+
+	int id;
+	const wchar_t* name;
+};
+
 // Hint: also changes models :D
 class CSkinChanger : public IFeature
 {
@@ -82,10 +96,14 @@ public:
 	std::unordered_map<uint32_t, WeaponMetadata_t>* GetWeaponsMap() { return &m_mapWeapons; }
 	std::unordered_map<int, std::unordered_map<int, const wchar_t*>>* GetSkinsMap() { return &m_mapSkins; }
 
+	std::vector<WeaponMetadata_t>* GetWeapons() { return &m_vWeapons; }
+	std::unordered_map<int, std::vector<SkinMetadata_t>>* GetSkins() { return &m_vSkins; }
+
 	virtual void Setup() override;
 	virtual void Think(void* pParameters = nullptr) override;
 
 	void ParseSkinFile();
+	void SortWeaponsAndSkinsByName();
 
 	void SetForceFullUpdate(bool bForceFullUpdate = true) { m_bForceFullUpdate = bForceFullUpdate; }
 
@@ -134,6 +152,11 @@ private:
 	std::unordered_map<int, const char*> m_mapKnives;
 	std::unordered_map<uint32_t, WeaponMetadata_t> m_mapWeapons;
 	std::unordered_map<uint32_t, WeaponMetadata_t> m_mapKnifeWeapons;
+
+	// Sorted
+	std::vector<WeaponMetadata_t> m_vWeapons;
+	std::unordered_map<int, std::vector<SkinMetadata_t>> m_vSkins;
+	// /Sorted
 
 	std::unordered_map<int, CSkinMetadata*> m_mapSkinMetadataCT;
 	std::unordered_map<int, const char*> m_mapModelMetadataCT;

@@ -117,7 +117,7 @@ private:
 	void inline Shoot(CUserCmd* pUserCmd, float fNextPrimaryAttack, float fServerTime);
 	void inline Aim(CUserCmd* pUserCmd);
 
-	float CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget);
+	bool CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, IClientEntity* pTarget);
 	
 	float m_fDamage;
 	QAngle m_qAimAngles;

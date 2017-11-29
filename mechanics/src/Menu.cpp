@@ -1407,10 +1407,10 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerWeapon = new CSelectbox(4, 34, 128, 16, "Weapon");
 	m_pSkinChangerWeapon->AddOption(0, "None");
 	m_pSkinChangerWeapon->AddOption(-1, "Knife");
-	std::unordered_map<uint32_t, WeaponMetadata_t>* m_mapWeaponIds = m_pApp->SkinChanger()->GetWeaponsMap();
-	for (std::unordered_map<uint32_t, WeaponMetadata_t>::iterator it = m_mapWeaponIds->begin(); it != m_mapWeaponIds->end(); it++)
+	std::vector<WeaponMetadata_t>* m_mapWeaponIds = m_pApp->SkinChanger()->GetWeapons();
+	for (std::vector<WeaponMetadata_t>::iterator it = m_mapWeaponIds->begin(); it != m_mapWeaponIds->end(); it++)
 	{
-		m_pSkinChangerWeapon->AddOption(it->second.id, it->second.readableName);
+		m_pSkinChangerWeapon->AddOption(it->id, it->readableName);
 	}
 	m_pSkinChangerWeapon->SetEventHandler(std::bind(&CMenu::FillSkinIds, this, std::placeholders::_1));
 
@@ -1526,18 +1526,17 @@ void CMenu::FillSkinIds(int iWeaponId)
 		return;
 	}
 
-	std::unordered_map<int, std::unordered_map<int, const wchar_t*>>* m_pSkins = m_pApp->SkinChanger()->GetSkinsMap();
-	for (std::unordered_map<int, std::unordered_map<int, const wchar_t*>>::iterator itWeaps = m_pSkins->begin(); itWeaps != m_pSkins->end(); itWeaps++)
+	std::unordered_map<int, std::vector<SkinMetadata_t>>* m_pSkins = m_pApp->SkinChanger()->GetSkins();
+	std::unordered_map<int, std::vector<SkinMetadata_t>>::iterator it = m_pSkins->find(iWeaponId);
+	if (it == m_pSkins->end())
 	{
-		if (itWeaps->first != iWeaponId)
-			continue;
+		m_pSkinChangerSkin->SetSelection(0);
+		return;
+	}
 
-		for (std::unordered_map<int, const wchar_t*>::iterator itPaintKits = itWeaps->second.begin(); itPaintKits != itWeaps->second.end(); itPaintKits++)
-		{
-			m_pSkinChangerSkin->AddOptionW(itPaintKits->first, itPaintKits->second);
-		}
-
-		break;
+	for (std::vector<SkinMetadata_t>::iterator skinIt = it->second.begin(); skinIt != it->second.end(); skinIt++)
+	{
+		m_pSkinChangerSkin->AddOptionW(skinIt->id, skinIt->name);
 	}
 
 	CSkinMetadata* pSkin = m_pApp->SkinChanger()->GetSkinMetadataForWeapon(iWeaponId);

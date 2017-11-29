@@ -20,6 +20,8 @@ public:
 	void SetRecoilCompensation(float fRecoilCompensation) { m_fRecoilCompensation = fRecoilCompensation; }
 	float GetRecoilCompensation() { return m_fRecoilCompensation; }
 
+	void ApplySpreadToAngles(QAngle& qAngles, IClientEntity* pLocalEntity, CWeapon* pActiveWeapon, int iSeed);
+
 	void SetNoRecoil(bool bNoRecoil) { m_bNoRecoil = bNoRecoil; }
 	bool GetNoRecoil() { return m_bNoRecoil; }
 
