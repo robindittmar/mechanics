@@ -42,6 +42,8 @@ public:
 	/// <returns>Wether the event code has been registered before</returns>
 	bool UnregisterKey(int eventBtn);
 
+	void SetRawInput(bool bRawInput) { m_bRawInput = bRawInput; }
+
 	void OnMouseDown(unsigned short vKey, int x, int y);
 	void OnMouseMove(int x, int y);
 	void OnMouseUp(unsigned short vKey, int x, int y);
@@ -54,6 +56,7 @@ public:
 private:
 	CGui* m_pGui;
 
+	bool m_bRawInput;
 	std::unordered_map<unsigned short, int> m_mapKeys;
 	std::unordered_map<unsigned short, int> m_mapMouseBtns;
 

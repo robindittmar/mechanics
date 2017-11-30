@@ -255,7 +255,7 @@ public:
 	void* pSkip;
 };
 
-class CTraceFilterOnlyPlayers : public ITraceFilter
+class CTraceFilterOnlyPlayers : public CTraceFilterEntitiesOnly
 {
 public:
 	CTraceFilterOnlyPlayers(IHandleEntity* pEntityHandle)
@@ -271,10 +271,7 @@ public:
 		IClientEntity* pEntity = (IClientEntity*)pEntityHandle;
 		return (pEntity->GetClientClass()->m_ClassID == CCSPlayer);
 	}
-	virtual TraceType_t GetTraceType() const
-	{
-		return TRACE_ENTITIES_ONLY;
-	}
+
 	void* pSkip;
 };
 

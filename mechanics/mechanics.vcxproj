@@ -185,6 +185,8 @@
     <ClCompile Include="src\IDependable.cpp" />
     <ClCompile Include="src\IControlPopup.cpp" />
     <ClCompile Include="src\IControlTooltip.cpp" />
+    <ClCompile Include="src\KeyBinder.cpp" />
+    <ClCompile Include="src\KeyBinderPopup.cpp" />
     <ClCompile Include="src\LagCompensation.cpp" />
     <ClCompile Include="src\LagCompensationPlayerEntry.cpp" />
     <ClCompile Include="src\LagCompensationPlayerList.cpp" />
@@ -288,6 +290,7 @@
     <ClInclude Include="src\FrameStageNotify.h" />
     <ClInclude Include="src\GetViewModelFov.h" />
     <ClInclude Include="src\IAppSystem.h" />
+    <ClInclude Include="src\IBaseInterface.h" />
     <ClInclude Include="src\IClientMode.h" />
     <ClInclude Include="src\IControlClickable.h" />
     <ClInclude Include="src\IDependable.h" />
@@ -300,6 +303,8 @@
     <ClInclude Include="src\ITexture.h" />
     <ClInclude Include="src\IViewRender.h" />
     <ClInclude Include="src\IViewRenderBeams.h" />
+    <ClInclude Include="src\KeyBinder.h" />
+    <ClInclude Include="src\KeyBinderPopup.h" />
     <ClInclude Include="src\LagCompensation.h" />
     <ClInclude Include="src\LagCompensationPlayerEntry.h" />
     <ClInclude Include="src\LagCompensationPlayerList.h" />

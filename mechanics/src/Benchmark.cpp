@@ -1,4 +1,5 @@
 #include "Benchmark.h"
+#include "Application.h"
 
 CBenchmark::CBenchmark(bool bStart)
 {
@@ -30,4 +31,6 @@ void CBenchmark::PrintBenchmark(const char* pName)
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "Benchmark [%s] finished after %ld microseconds\n", pName, this->GetElapsedTime());
 #endif // _DEBUG
+
+	CApplication::Instance()->ConColorMsg()(Color(255, 255, 128, 0), "Benchmark [%s] finished after %ld microseconds\n", pName, this->GetElapsedTime());
 }

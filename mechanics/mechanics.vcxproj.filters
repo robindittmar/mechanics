@@ -360,6 +360,12 @@
     <ClCompile Include="src\GunAccuracy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\KeyBinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeyBinderPopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AntiAim.h">
@@ -777,6 +783,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\GunAccuracy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IBaseInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyBinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KeyBinderPopup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -729,6 +729,10 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotEnabled);
 	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotBurst);
 
+	m_pTriggerbotKey = new CKeyBinder(4, 180, 128, 16, EVENT_BTN_TRIGGERKEY);
+	m_pTriggerbotKey->SetEventHandler(std::bind(&CTriggerbot::SetTriggerKey, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotKey->AddDependency(m_pTriggerbotEnabled);
+
 	m_pTriggerbotGroup = new CGroupbox(352, 16, 152, 308, "Triggerbot");
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotEnabled);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayValue);
@@ -736,6 +740,7 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotBurst);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMinShots);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMaxShots);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotKey);
 
 	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));

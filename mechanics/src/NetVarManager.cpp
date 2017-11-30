@@ -8,7 +8,7 @@ CNetVarManager::CNetVarManager()
 CNetVarManager::~CNetVarManager()
 {
 	CNetVar* pCurrent;
-	for (std::unordered_map<uint32_t, CNetVar*>::iterator it = m_mapNetVars.begin(); it != m_mapNetVars.end(); it++)
+	for (std::map<uint32_t, CNetVar*>::iterator it = m_mapNetVars.begin(); it != m_mapNetVars.end(); it++)
 	{
 		pCurrent = it->second;
 

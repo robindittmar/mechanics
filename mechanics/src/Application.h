@@ -99,6 +99,7 @@
 #include "IClientMode.h"
 #include "IMDLCache.h"
 #include "ILocalize.h"
+#include "IInputSystem.h"
 
 #define OFFSET_GLOBALS					0x1B
 #define OFFSET_LASTOCCLUSIONCHECK		0xA30
@@ -110,9 +111,11 @@
 #define ENGINEDLL_SIZE					0x8C7000
 #define MATERIALSYSTEMDLL_SIZE			0x10C000
 
-typedef void(_cdecl* RandomSeed_t)(int);
-typedef int(_cdecl* RandomInt_t)(int, int);
-typedef float(_cdecl* RandomFloat_t)(float, float);
+typedef void(__cdecl *ConColorMsg_t)(Color const&, const char*, ...);
+
+typedef void(__cdecl *RandomSeed_t)(int);
+typedef int(__cdecl *RandomInt_t)(int, int);
+typedef float(__cdecl *RandomFloat_t)(float, float);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
 typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
@@ -190,6 +193,8 @@ public:
 	VMTHook* ViewRenderHook()						{ return m_pViewRenderHook; }
 	VMTHook* EngineSoundHook()						{ return m_pEngineSoundHook; }
 
+	ConColorMsg_t	ConColorMsg()					{ return m_pConColorMsg; }
+
 	RandomSeed_t	RandomSeed()					{ return m_pRandomSeed; }
 	RandomInt_t		RandomInt()						{ return m_pRandomInt; }
 	RandomFloat_t	RandomFloat()					{ return m_pRandomFloat; }
@@ -219,8 +224,10 @@ public:
 	IViewRenderBeams*		ViewRenderBeams()		{ return m_pViewRenderBeams; }
 	IMDLCache*				MDLCache()				{ return m_pMdlCache; }
 	ILocalize*				Localize()				{ return m_pLocalize; }
+	IInputSystem*			InputSystem()			{ return m_pInputSystem; }
 
 	// DLL Addresses
+	DWORD Tier0Dll()								{ return m_dwTier0Dll; }
 	DWORD ClientDll()								{ return m_dwClientDll; }
 	DWORD EngineDll()								{ return m_dwEngineDll; }
 	DWORD MaterialSystemDll()						{ return m_dwMaterialSystemDll; }
@@ -229,6 +236,7 @@ public:
 	DWORD VPhysicsDll()								{ return m_dwVPhysicsDll; }
 	DWORD DataCacheDll()							{ return m_dwDatacacheDll; }
 	DWORD LocalizeDll()								{ return m_dwLocalizeDll; }
+	DWORD InputSystemDll()							{ return m_dwInputSystemDll; }
 
 	// Target selector (Feature?)
 	CPlayerList* PlayerList()						{ return &m_playerList; }
@@ -310,12 +318,7 @@ private:
 	int m_iLenFilename;
 	char* m_pFilename;
 
-	float m_flRecoilCompensation;
 	float m_fRenderFieldOfView;
-
-	RandomSeed_t m_pRandomSeed;
-	RandomInt_t m_pRandomInt;
-	RandomFloat_t m_pRandomFloat;
 
 	bool m_bInitialHookDone;
 	bool m_bIsHooked;
@@ -328,6 +331,12 @@ private:
 	VMTHook* m_pViewRenderHook;
 	VMTHook* m_pEngineSoundHook;
 	VMTHook* m_pMdlHook;
+
+	ConColorMsg_t m_pConColorMsg;
+
+	RandomSeed_t m_pRandomSeed;
+	RandomInt_t m_pRandomInt;
+	RandomFloat_t m_pRandomFloat;
 
 	InitKeyValues_t m_pInitKeyValues;
 	LoadFromBuffer_t m_pLoadFromBuffer;
@@ -361,7 +370,9 @@ private:
 	IEngineSound* m_pEngineSound;
 	IMDLCache* m_pMdlCache;
 	ILocalize* m_pLocalize;
+	IInputSystem* m_pInputSystem;
 
+	DWORD m_dwTier0Dll;
 	DWORD m_dwClientDll;
 	DWORD m_dwEngineDll;
 	DWORD m_dwMaterialSystemDll;
@@ -371,6 +382,7 @@ private:
 	DWORD m_dwVStdLibDll;
 	DWORD m_dwDatacacheDll;
 	DWORD m_dwLocalizeDll;
+	DWORD m_dwInputSystemDll;
 
 	QAngle m_qClientViewAngles;
 	QAngle m_qLastTickAngles;

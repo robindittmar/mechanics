@@ -2,7 +2,7 @@
 #define __NETVAR_H__
 
 // Std lib
-#include <unordered_map>
+#include <map>
 
 // Source Sdk
 #include "ClientClass.h"
@@ -39,7 +39,7 @@ private:
 	RecvVarProxy_t m_pOrigProxyFn;
 
 	bool m_bIsTable;
-	std::unordered_map<uint32_t, CNetVar*> m_mapChilds;
+	std::map<uint32_t, CNetVar*> m_mapChilds;
 };
 
 #endif // __NETVAR_H__

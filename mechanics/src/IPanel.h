@@ -5,16 +5,12 @@
 #undef SendMessage
 #endif
 
+#include "IBaseInterface.h"
+
 class KeyValues;
 
 class SurfacePlat;
 class IClientPanel;
-
-class IBaseInterface
-{
-public:
-	virtual	~IBaseInterface() {}
-};
 
 //!! must be removed
 class Panel;

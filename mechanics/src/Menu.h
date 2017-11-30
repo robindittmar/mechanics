@@ -160,6 +160,7 @@ private:
 	CCheckbox* m_pTriggerbotBurst;
 	CSlider* m_pTriggerbotMinShots; // TODO: CRangeSlider, instead of 2 sliders
 	CSlider* m_pTriggerbotMaxShots;
+	CKeyBinder* m_pTriggerbotKey;
 
 	CGroupbox* m_pLegitLagCompensationGroup;
 	CCheckbox* m_pLegitLagCompensationEnabled;

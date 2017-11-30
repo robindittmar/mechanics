@@ -10,7 +10,7 @@ CNetVar::CNetVar(int iOffset, void** pProxyFn, bool bIsTable)
 CNetVar::~CNetVar()
 {
 	CNetVar* pCurrent;
-	for(std::unordered_map<uint32_t, CNetVar*>::iterator it = m_mapChilds.begin(); it != m_mapChilds.end(); it++)
+	for(std::map<uint32_t, CNetVar*>::iterator it = m_mapChilds.begin(); it != m_mapChilds.end(); it++)
 	{
 		pCurrent = it->second;
 

@@ -39,8 +39,8 @@ private:
 	// Describes if we add all offsets of sub-tables
 	// or only return the last one (default = only last one)
 	bool m_bSummarizeOffsets;
-	std::unordered_map<uint32_t, bool> m_mapTablesToLoad;
-	std::unordered_map<uint32_t, CNetVar*> m_mapNetVars;
+	std::map<uint32_t, bool> m_mapTablesToLoad;
+	std::map<uint32_t, CNetVar*> m_mapNetVars;
 };
 
 #endif // __NETVARMANAGER_H__

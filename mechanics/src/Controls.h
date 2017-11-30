@@ -14,5 +14,6 @@
 #include "NumericUpDown.h"
 #include "Slider.h"
 #include "ColorPicker.h"
+#include "KeyBinder.h"
 
 #endif // __CONTROLS_H__

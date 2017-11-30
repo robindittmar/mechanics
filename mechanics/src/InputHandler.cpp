@@ -1,6 +1,7 @@
 #include "InputHandler.h"
 
 CInputHandler::CInputHandler()
+	: m_bRawInput(false)
 {
 	m_pGui = CGui::Instance();
 
@@ -65,11 +66,22 @@ bool CInputHandler::UnregisterKey(int eventBtn)
 
 void CInputHandler::OnMouseDown(unsigned short vKey, int x, int y)
 {
-	std::unordered_map<unsigned short, int>::iterator it = m_mapMouseBtns.find(vKey);
-	if (it == m_mapMouseBtns.end())
-		return;
+	if (m_bRawInput)
+	{
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, vKey, EVENT_BTNDIR_DOWN));
+	}
+	else
+	{
+		// Mouse Input
+		std::unordered_map<unsigned short, int>::iterator it = m_mapMouseBtns.find(vKey);
+		if (it != m_mapMouseBtns.end())
+		{
+			m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSE, x, y, it->second, EVENT_BTNDIR_DOWN));
+		}
 
-	m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSE, x, y, it->second, EVENT_BTNDIR_DOWN));
+		// Keyboard input (for Keybindings that are bound to mouse)
+		this->OnKeyDown(vKey);
+	}
 }
 
 void CInputHandler::OnMouseMove(int x, int y)
@@ -79,11 +91,22 @@ void CInputHandler::OnMouseMove(int x, int y)
 
 void CInputHandler::OnMouseUp(unsigned short vKey, int x, int y)
 {
-	std::unordered_map<unsigned short, int>::iterator it = m_mapMouseBtns.find(vKey);
-	if (it == m_mapMouseBtns.end())
-		return;
+	if (m_bRawInput)
+	{
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, vKey, EVENT_BTNDIR_UP));
+	}
+	else
+	{
+		// Mouse Input
+		std::unordered_map<unsigned short, int>::iterator it = m_mapMouseBtns.find(vKey);
+		if (it != m_mapMouseBtns.end())
+		{
+			m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSE, x, y, it->second, EVENT_BTNDIR_UP));
+		}
 
-	m_vEvents.push_back(CInputEvent(EVENT_TYPE_MOUSE, x, y, it->second, EVENT_BTNDIR_UP));
+		// Keyboard input (for Keybindings that are bound to mouse)
+		this->OnKeyUp(vKey);
+	}
 }
 
 void CInputHandler::OnMouseWheel(short delta, int x, int y)
@@ -93,20 +116,34 @@ void CInputHandler::OnMouseWheel(short delta, int x, int y)
 
 void CInputHandler::OnKeyDown(unsigned short vKey)
 {
-	std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.find(vKey);
-	if (it == m_mapKeys.end())
-		return;
+	if (m_bRawInput)
+	{
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, vKey, EVENT_BTNDIR_DOWN));
+	}
+	else
+	{
+		std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.find(vKey);
+		if (it == m_mapKeys.end())
+			return;
 
-	m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, it->second, EVENT_BTNDIR_DOWN));
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, it->second, EVENT_BTNDIR_DOWN));
+	}
 }
 
 void CInputHandler::OnKeyUp(unsigned short vKey)
 {
-	std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.find(vKey);
-	if (it == m_mapKeys.end())
-		return;
+	if (m_bRawInput)
+	{
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, vKey, EVENT_BTNDIR_UP));
+	}
+	else
+	{
+		std::unordered_map<unsigned short, int>::iterator it = m_mapKeys.find(vKey);
+		if (it == m_mapKeys.end())
+			return;
 
-	m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, it->second, EVENT_BTNDIR_UP));
+		m_vEvents.push_back(CInputEvent(EVENT_TYPE_KEYBOARD, 0, 0, it->second, EVENT_BTNDIR_UP));
+	}
 }
 
 void CInputHandler::OnText(char cChar)

@@ -173,10 +173,12 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
 		pInputHandler->OnKeyDown((unsigned short)wParam);
 
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_KEYUP:
+	case WM_SYSKEYUP:
 		pInputHandler->OnKeyUp((unsigned short)wParam);
 
 		WNDPROC_RETURN_OR_BREAK;
@@ -203,6 +205,15 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_RBUTTONUP:
 		pInputHandler->OnMouseUp(VK_RBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		WNDPROC_RETURN_OR_BREAK;
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONDBLCLK:
+		pInputHandler->OnMouseDown(VK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+
+		WNDPROC_RETURN_OR_BREAK;
+	case WM_MBUTTONUP:
+		pInputHandler->OnMouseUp(VK_MBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_XBUTTONDOWN:
