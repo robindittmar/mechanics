@@ -300,9 +300,6 @@
     <ClCompile Include="src\Target.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TargetSelector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Textbox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -364,6 +361,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\KeyBinderPopup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IInputSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -720,9 +720,6 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="src\Target.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\TargetSelector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Textbox.h">

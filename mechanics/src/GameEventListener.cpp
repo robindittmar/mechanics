@@ -287,7 +287,7 @@ void CGameEventListener::weapon_fire(IGameEvent* pEvent)
 				pApp->GunHud()->SetWeaponFireTime(pApp->GlobalVars()->curtime);
 
 				// Check if target exists
-				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
+				CTarget* pTarget = pApp->Ragebot()->GetSelectedTarget();
 				if (pTarget)
 				{
 					// Check if target ent exists

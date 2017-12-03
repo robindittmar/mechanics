@@ -24,6 +24,17 @@ namespace Utils
 	/// <summary>
 	/// 
 	/// </summary>
+	/// <param name="vSource"></param>
+	/// <param name="vTarget"></param>
+	/// <returns></returns>
+	float GetOriginDist(Vector& vSource, Vector& vTarget)
+	{
+		return (vTarget - vSource).Length();
+	}
+
+	/// <summary>
+	/// 
+	/// </summary>
 	/// <param name="qSource"></param>
 	/// <param name="qTarget"></param>
 	/// <returns></returns>
@@ -37,6 +48,26 @@ namespace Utils
 		//return (sinf(DEG2RAD(fAng)) * fOriginDistance);
 		return fAng;
 	}
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="hitBox"></param>
+	/// <param name="boneMatrix"></param>
+	/// <param name="hitBoxVector"></param>
+	void GetHitBoxCenter(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector& hitBoxVector)
+	{
+		Vector bbmin;
+		Vector bbmax;
+
+		float fMod = hitBox->m_flRadius != -1.0f ? hitBox->m_flRadius : 0.0f;
+		bbmin = (hitBox->m_vecBBMin - fMod);
+		bbmax = (hitBox->m_vecBBMax + fMod);
+
+		Vector vPoint = (bbmin + bbmax) * 0.5f;
+		VectorTransform(vPoint, boneMatrix[hitBox->m_iBone], hitBoxVector);
+	}
+
 
 	/// <summary>
 	/// 

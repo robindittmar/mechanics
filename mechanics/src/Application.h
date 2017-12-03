@@ -21,7 +21,6 @@
 #include "NetVarManager.h"
 #include "Offsets.h"
 #include "MathDefs.h"
-#include "TargetSelector.h"
 #include "Benchmark.h"
 
 // Hooks
@@ -240,7 +239,6 @@ public:
 
 	// Target selector (Feature?)
 	CPlayerList* PlayerList()						{ return &m_playerList; }
-	CTargetSelector* TargetSelector()				{ return &m_targetSelector; }
 
 	// Features
 	CRagebot*			Ragebot()					{ return &m_ragebot; }
@@ -388,7 +386,6 @@ private:
 	QAngle m_qLastTickAngles;
 
 	CPlayerList m_playerList;
-	CTargetSelector m_targetSelector;
 
 	// Features
 	CRagebot m_ragebot;

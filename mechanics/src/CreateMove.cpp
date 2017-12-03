@@ -56,9 +56,6 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			// Create instance of CreateMoveParam
 			CreateMoveParam createMoveParam = { fInputSampleTime, pUserCmd };
 
-			// New tick, so we didn't get any targets yet
-			pApp->TargetSelector()->SetHasTargets(false);
-
 			// Update Aimbot & AutoRevolver
 			pApp->Ragebot()->Think((void*)&createMoveParam);
 			pApp->Ragebot()->AutoRevolver(pUserCmd);
@@ -103,25 +100,30 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			// todo: auslagern!
 			if (pUserCmd->buttons & IN_ATTACK)
 			{
-				CTarget* pTarget = pApp->TargetSelector()->GetTarget(pApp->Ragebot()->GetTargetCriteria());
-				if (pTarget)
+				if (pApp->Ragebot()->GetSelectedTargetIdx() != -1)
 				{
-					int iIsBacktracked = pTarget->GetIsBacktracked();
-					if (iIsBacktracked != -1)
+					CTarget* pTarget = pApp->Ragebot()->GetSelectedTarget();
+					if (pTarget)
 					{
-						IClientEntity* pTargetEntity = pTarget->GetEntity();
-						if (pTargetEntity)
+						int iIsBacktracked = pTarget->GetIsBacktracked();
+						if (iIsBacktracked != -1)
 						{
-							//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
-							pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex())->m_pPlayerEntries[iIsBacktracked].m_iTickCount + 1;
+							IClientEntity* pTargetEntity = pTarget->GetEntity();
+							if (pTargetEntity)
+							{
+								//pApp->LagCompensation()->GetLCList(pTarget->GetEntity()->EntIndex()).SetPlayerEntry(pTarget->GetEntity(), TEST_INDEX);
+								pUserCmd->tick_count = pApp->LagCompensation()->GetLCList(pTargetEntity->EntIndex())->m_pPlayerEntries[iIsBacktracked].m_iTickCount + 1;
+							}
 						}
 					}
 				}
-
-				int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
-				if (iTick != -1)
+				else
 				{
-					pUserCmd->tick_count = iTick + 1;
+					int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
+					if (iTick != -1)
+					{
+						pUserCmd->tick_count = iTick + 1;
+					}
 				}
 			}
 
@@ -144,7 +146,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 				*pApp->m_bSendPackets && !pApp->AntiAim()->IsFakeYaw() ||
 				pApp->m_bLbyUpdate ||
 				!pApp->AntiAim()->GetEnabled() ||
-				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->DoingAutoRevolver() ||
+				(pUserCmd->buttons & IN_ATTACK) && !pApp->Ragebot()->IsDoingAutoRevolver() ||
 				!bIsSniper && pUserCmd->buttons & IN_ATTACK2 ||
 				pUserCmd->buttons & IN_USE)
 			{

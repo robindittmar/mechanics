@@ -187,7 +187,7 @@ void CAntiAim::Think(void* pParameters)
 		return;
 
 	// Allow us to use (open doors, defuse bomb) and shoot normally
-	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK && !m_pApp->Ragebot()->DoingAutoRevolver())
+	if (pUserCmd->buttons & IN_USE || pUserCmd->buttons & IN_ATTACK && !m_pApp->Ragebot()->IsDoingAutoRevolver())
 		return;
 
 	IClientEntity* pLocalEntity = m_pApp->EntityList()->GetClientEntity(m_pApp->EngineClient()->GetLocalPlayer());

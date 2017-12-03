@@ -68,23 +68,23 @@ void CMenu::ApplySettings()
 	m_pAimbotAutoshoot->SetChecked(m_pApp->Ragebot()->GetAutoshoot());
 	m_pAimbotAutoscope->SetChecked(m_pApp->Ragebot()->GetAutoscope());
 	m_pAimbotAutoReload->SetChecked(m_pApp->Ragebot()->GetAutoReload());
-	m_pAimbotMultipoint->SetChecked(m_pApp->TargetSelector()->GetMultipoint());
-	m_pAimbotMultipointScale->SetValue(m_pApp->TargetSelector()->GetMultipointScale());
+	m_pAimbotMultipoint->SetChecked(m_pApp->Ragebot()->GetMultipoint());
+	m_pAimbotMultipointScale->SetValue(m_pApp->Ragebot()->GetMultipointScale());
 	m_pAimbotHitchanceEnabled->SetChecked(m_pApp->Ragebot()->GetCalculateHitchance());
 	m_pAimbotHitchanceSlider->SetValue(m_pApp->Ragebot()->GetHitchance());
 	m_pAimbotTargetCriteria->SetValue(m_pApp->Ragebot()->GetTargetCriteria());
-	m_pAimbotVisibleMode->SetValue(m_pApp->TargetSelector()->GetVisibleMode());
+	m_pAimbotVisibleMode->SetValue(m_pApp->Ragebot()->GetVisibleMode());
 
 	m_pRageNoRecoilEnabled->SetChecked(m_pApp->GunAccuracy()->GetNoRecoil());
 	m_pRageNoSpreadEnabled->SetChecked(m_pApp->GunAccuracy()->GetNoSpread());
 
-	m_pRageHitboxHead->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
-	m_pRageHitboxChest->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
-	m_pRageHitboxPelvis->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
-	m_pRageHitboxRForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
-	m_pRageHitboxLForearm->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
-	m_pRageHitboxRCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
-	m_pRageHitboxLCalf->SetChecked(m_pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
+	m_pRageHitboxHead->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_HEAD));
+	m_pRageHitboxChest->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_CHEST));
+	m_pRageHitboxPelvis->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
+	m_pRageHitboxRForearm->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+	m_pRageHitboxLForearm->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+	m_pRageHitboxRCalf->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+	m_pRageHitboxLCalf->SetChecked(m_pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
 
 	m_pRageOthersAutoZeusEnabled->SetChecked(m_pApp->Ragebot()->GetAutoZeus());
 	m_pRageOthersAutoRevolverEnabled->SetChecked(m_pApp->Ragebot()->GetAutoRevolver());
@@ -136,6 +136,7 @@ void CMenu::ApplySettings()
 
 	// Triggerbot
 	m_pTriggerbotEnabled->SetChecked(m_pApp->Triggerbot()->GetEnabled());
+	m_pTriggerbotKey->SetKey(m_pApp->Triggerbot()->GetTriggerKey());
 	m_pTriggerbotDelayValue->SetValue(m_pApp->Triggerbot()->GetShootDelay());
 	m_pTriggerbotDelayJitterValue->SetValue(m_pApp->Triggerbot()->GetShootDelayJitter());
 	m_pTriggerbotBurst->SetChecked(m_pApp->Triggerbot()->GetTriggerBurst());
@@ -220,7 +221,9 @@ void CMenu::ApplySettings()
 	m_pVisualsOthersCrosshairEnabled->SetChecked(m_pApp->GunHud()->GetCrosshair());
 	m_pVisualsOthersRecoilCrosshairEnabled->SetChecked(m_pApp->GunHud()->GetCrosshairShowRecoil());
 	m_pVisualsOthersSpreadConeEnabled->SetChecked(m_pApp->GunHud()->GetSpreadCone());
-	// TODO: SpreadConeShowRecoil & SpreadConeColor
+	m_pVisualsOthersRecoilSpreadConeEnabled->SetChecked(m_pApp->GunHud()->GetSpreadConeShowRecoil());
+	m_pVisualsOtherSpreadConeStyle->SetSelection(m_pApp->GunHud()->GetSpreadConeStyle());
+	m_pVisualsOtherSpreadConeColor->SetValue(m_pApp->GunHud()->GetSpreadConeColor());
 
 	m_pVisualsOthersNightmode->SetValue(m_pApp->MaterialVisuals()->GetNightmodeValue());
 	m_pVisualsOthersAsuswalls->SetValue(m_pApp->MaterialVisuals()->GetAsuswallsValue());
@@ -268,10 +271,6 @@ void CMenu::ApplySettings()
 	m_pSkinChangerWeaponStattrakCount->SetValue(-1);
 	m_pSkinChangerWeaponSeed->SetValue(0);
 	m_pSkinChangerWeaponWear->SetValue(0.01f);
-
-	// TODO: <Remove pls>
-	m_pColorPicker->SetValue(m_pApp->GunHud()->GetSpreadConeColor());
-	// TODO </Remove pls>
 }
 
 void CMenu::HandleInput()
@@ -367,11 +366,11 @@ void CMenu::CreateRageTab()
 	m_pAimbotAutoReload->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipoint = new CCheckbox(4, 100, 128, 16, "Multipoint");
-	m_pAimbotMultipoint->SetEventHandler(std::bind(&CTargetSelector::SetMultipoint, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotMultipoint->SetEventHandler(std::bind(&CRagebot::SetMultipoint, m_pApp->Ragebot(), std::placeholders::_1));
 	m_pAimbotMultipoint->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipointScale = new CSlider(4, 122, 128, 16, 0.01f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f);
-	m_pAimbotMultipointScale->SetEventHandler(std::bind(&CTargetSelector::SetMultipointScale, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotMultipointScale->SetEventHandler(std::bind(&CRagebot::SetMultipointScale, m_pApp->Ragebot(), std::placeholders::_1));
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotEnabled);
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotMultipoint);
 
@@ -401,7 +400,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_IGNORE, "Ignore");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
-	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CTargetSelector::SetVisibleMode, m_pApp->TargetSelector(), std::placeholders::_1));
+	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CRagebot::SetVisibleMode, m_pApp->Ragebot(), std::placeholders::_1));
 	m_pAimbotVisibleMode->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
@@ -420,31 +419,31 @@ void CMenu::CreateRageTab()
 	m_pAimbotGroup->AddChild(m_pAimbotVisibleMode);
 
 	m_pRageHitboxHead = new CCheckbox(4, 0, 128, 16, "Head");
-	m_pRageHitboxHead->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_HEAD, std::placeholders::_1));
+	m_pRageHitboxHead->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_HEAD, std::placeholders::_1));
 	m_pRageHitboxHead->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxChest = new CCheckbox(4, 20, 128, 16, "Chest");
-	m_pRageHitboxChest->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_CHEST, std::placeholders::_1));
+	m_pRageHitboxChest->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_CHEST, std::placeholders::_1));
 	m_pRageHitboxChest->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxPelvis = new CCheckbox(4, 40, 128, 16, "Pelvis");
-	m_pRageHitboxPelvis->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
+	m_pRageHitboxPelvis->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_PELVIS, std::placeholders::_1));
 	m_pRageHitboxPelvis->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxRForearm = new CCheckbox(4, 60, 128, 16, "Right forearm");
-	m_pRageHitboxRForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxRForearm->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_RIGHT_FOREARM, std::placeholders::_1));
 	m_pRageHitboxRForearm->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxLForearm = new CCheckbox(4, 80, 128, 16, "Left forearm");
-	m_pRageHitboxLForearm->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
+	m_pRageHitboxLForearm->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_LEFT_FOREARM, std::placeholders::_1));
 	m_pRageHitboxLForearm->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxRCalf = new CCheckbox(4, 100, 128, 16, "Right calf");
-	m_pRageHitboxRCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
+	m_pRageHitboxRCalf->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_RIGHT_CALF, std::placeholders::_1));
 	m_pRageHitboxRCalf->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxLCalf = new CCheckbox(4, 120, 128, 16, "Left calf");
-	m_pRageHitboxLCalf->SetEventHandler(std::bind(&CTargetSelector::SetCheckHitbox, m_pApp->TargetSelector(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
+	m_pRageHitboxLCalf->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
 	m_pRageHitboxLCalf->AddDependency(m_pAimbotEnabled);
 
 	m_pRageHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
@@ -707,11 +706,15 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pTriggerbotEnabled->SetEventHandler(std::bind(&CTriggerbot::SetEnabled, m_pApp->Triggerbot(), std::placeholders::_1));
 
-	m_pTriggerbotDelayValue = new CSlider(4, 48, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 50.0f, "Delay (milliseconds)");
+	m_pTriggerbotKey = new CKeyBinder(4, 20, 128, 16, EVENT_BTN_TRIGGERKEY);
+	m_pTriggerbotKey->SetEventHandler(std::bind(&CTriggerbot::SetTriggerKey, m_pApp->Triggerbot(), std::placeholders::_1));
+	m_pTriggerbotKey->AddDependency(m_pTriggerbotEnabled);
+
+	m_pTriggerbotDelayValue = new CSlider(4, 60, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 40.0f, "Delay (milliseconds)");
 	m_pTriggerbotDelayValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelay, m_pApp->Triggerbot(), std::placeholders::_1));
 	m_pTriggerbotDelayValue->AddDependency(m_pTriggerbotEnabled);
 
-	m_pTriggerbotDelayJitterValue = new CSlider(4, 84, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 50.0f, "Delay Jitter (milliseconds)");
+	m_pTriggerbotDelayJitterValue = new CSlider(4, 100, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 30.0f, "Delay Jitter (milliseconds)");
 	m_pTriggerbotDelayJitterValue->SetEventHandler(std::bind(&CTriggerbot::SetShootDelayJitter, m_pApp->Triggerbot(), std::placeholders::_1));
 	m_pTriggerbotDelayJitterValue->AddDependency(m_pTriggerbotEnabled);
 
@@ -719,28 +722,24 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotBurst->SetEventHandler(std::bind(&CTriggerbot::SetTriggerBurst, m_pApp->Triggerbot(), std::placeholders::_1));
 	m_pTriggerbotBurst->AddDependency(m_pTriggerbotEnabled);
 
-	m_pTriggerbotMinShots = new CSlider(4, 140, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Min shots");
+	m_pTriggerbotMinShots = new CSlider(4, 160, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Min shots");
 	m_pTriggerbotMinShots->SetEventHandler(std::bind(&CTriggerbot::SetMinShots, m_pApp->Triggerbot(), std::placeholders::_1));
 	m_pTriggerbotMinShots->AddDependency(m_pTriggerbotEnabled);
 	m_pTriggerbotMinShots->AddDependency(m_pTriggerbotBurst);
 
-	m_pTriggerbotMaxShots = new CSlider(4, 160, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Max shots");
+	m_pTriggerbotMaxShots = new CSlider(4, 200, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f, "Max shots");
 	m_pTriggerbotMaxShots->SetEventHandler(std::bind(&CTriggerbot::SetMaxShots, m_pApp->Triggerbot(), std::placeholders::_1));
 	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotEnabled);
 	m_pTriggerbotMaxShots->AddDependency(m_pTriggerbotBurst);
 
-	m_pTriggerbotKey = new CKeyBinder(4, 180, 128, 16, EVENT_BTN_TRIGGERKEY);
-	m_pTriggerbotKey->SetEventHandler(std::bind(&CTriggerbot::SetTriggerKey, m_pApp->Triggerbot(), std::placeholders::_1));
-	m_pTriggerbotKey->AddDependency(m_pTriggerbotEnabled);
-
 	m_pTriggerbotGroup = new CGroupbox(352, 16, 152, 308, "Triggerbot");
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotEnabled);
+	m_pTriggerbotGroup->AddChild(m_pTriggerbotKey);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayValue);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotDelayJitterValue);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotBurst);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMinShots);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMaxShots);
-	m_pTriggerbotGroup->AddChild(m_pTriggerbotKey);
 
 	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
@@ -1144,18 +1143,26 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersSpreadConeEnabled = new CCheckbox(4, 156, 128, 16, "Show Spread Cone");
 	m_pVisualsOthersSpreadConeEnabled->SetEventHandler(std::bind(&CGunHud::SetSpreadCone, m_pApp->GunHud(), std::placeholders::_1));
 
+	m_pVisualsOthersRecoilSpreadConeEnabled = new CCheckbox(4, 176, 128, 16, "Show Recoil Spread Cone");
+	m_pVisualsOthersRecoilSpreadConeEnabled->SetEventHandler(std::bind(&CGunHud::SetSpreadConeShowRecoil, m_pApp->GunHud(), std::placeholders::_1));
+	m_pVisualsOthersRecoilSpreadConeEnabled->AddDependency(m_pVisualsOthersSpreadConeEnabled);
 
-	m_pVisualsOthersNightmodeLabel = new CLabel(4, 180, 128, 16, "Nightmode", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pVisualsOtherSpreadConeStyle = new CSelectbox(4, 206, 128, 16, "Spread Cone Style");
+	m_pVisualsOtherSpreadConeStyle->AddOption(SPREADCONE_STYLE_OUTLINE, "Outline");
+	m_pVisualsOtherSpreadConeStyle->AddOption(SPREADCONE_STYLE_FILLED, "Filled");
+	m_pVisualsOtherSpreadConeStyle->SetEventHandler(std::bind(&CGunHud::SetSpreadConeStyle, m_pApp->GunHud(), std::placeholders::_1));
+	m_pVisualsOtherSpreadConeStyle->AddDependency(m_pVisualsOthersSpreadConeEnabled);
 
-	m_pVisualsOthersNightmode = new CSlider(4, 202, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pVisualsOtherSpreadConeColor = new CColorPicker(136, 206, 16, 16);
+	m_pVisualsOtherSpreadConeColor->SetEventHandler(std::bind(&CGunHud::SetSpreadConeColor, m_pApp->GunHud(), std::placeholders::_1));
+
+	m_pVisualsOthersNightmode = new CSlider(156, 110, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f, "Nightmode");
 	m_pVisualsOthersNightmode->SetEventHandler(std::bind(&CMaterialVisuals::Nightmode, m_pApp->MaterialVisuals(), std::placeholders::_1));
 
-	m_pVisualsOthersAsuswallsLabel = new CLabel(4, 214, 128, 16, "Asuswalls", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
-
-	m_pVisualsOthersAsuswalls = new CSlider(4, 236, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pVisualsOthersAsuswalls = new CSlider(156, 140, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f, "Asuswalls");
 	m_pVisualsOthersAsuswalls->SetEventHandler(std::bind(&CMaterialVisuals::Asuswalls, m_pApp->MaterialVisuals(), std::placeholders::_1));
 
-	m_pVisualsOthersSkychanger = new CSelectbox(4, 260, 128, 16, "Skychanger");
+	m_pVisualsOthersSkychanger = new CSelectbox(156, 170, 128, 16, "Skychanger");
 	m_pVisualsOthersSkychanger->AddOption(SKY_NOCHANGE, "No Change");
 	m_pVisualsOthersSkychanger->AddOption(SKY_BAGGAGE, "cs_baggage_skybox_");
 	m_pVisualsOthersSkychanger->AddOption(SKY_TIBET, "cs_tibet");
@@ -1248,9 +1255,10 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmodeLabel);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilSpreadConeEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeStyle);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeColor);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmode);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswallsLabel);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswalls);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSkychanger);
 	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);

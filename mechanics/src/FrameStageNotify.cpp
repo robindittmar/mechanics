@@ -6,7 +6,7 @@ FrameStageNotify_t g_pFrameStageNotify;
 void __fastcall hk_FrameStageNotify(void* ecx, void* edx, ClientFrameStage_t curStage)
 {
 	CApplication* pApp = CApplication::Instance();
-	IClientEntity* pLocalEntity = pApp->EntityList()->GetClientEntity(pApp->EngineClient()->GetLocalPlayer());
+	IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
 
 	if (curStage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 	{

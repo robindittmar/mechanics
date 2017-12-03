@@ -17,14 +17,14 @@ const Color g_clrKeyBinderText(255, 255, 255, 255);
 class CKeyBinder : public IControlTooltip
 {
 public:
-	CKeyBinder(int x = 0, int y = 0, int w = 0, int h = 0, int iEventBtn = -1);
+	CKeyBinder(int x = 0, int y = 0, int w = 0, int h = 0, int iEventBtn = -1, const char* pText = "Key");
 	virtual ~CKeyBinder();
 
 	virtual void OnClicked() override;
-
 	virtual bool ShouldDependentOnesBeEnabled(void* pParam) override;
-
 	virtual void SetEnabled(bool bIsEnabled) override;
+
+	void SetText(const char* pText);
 
 	void SetKey(unsigned short nKey);
 	unsigned short GetKey() { return m_nKey; }
@@ -36,6 +36,7 @@ private:
 	bool m_bPopupInitialized;
 	CKeyBinderPopup* m_pPopup;
 
+	char* m_pText;
 	CLabel* m_pLabel;
 
 	int m_iEventButton;

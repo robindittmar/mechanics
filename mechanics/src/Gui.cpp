@@ -64,6 +64,11 @@ void CGui::SetEnableGameInput(bool bEnableGameInput)
 {
 	m_bEnableGameInput = bEnableGameInput;
 	m_pMouseEnable->SetValue(bEnableGameInput);
+	
+	if (!m_bEnableGameInput)
+	{
+		m_pApp->InputSystem()->ResetInputState();
+	}
 }
 
 bool CGui::IsMouseInRect(int x, int y, int w, int h)

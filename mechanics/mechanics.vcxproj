@@ -185,6 +185,7 @@
     <ClCompile Include="src\IDependable.cpp" />
     <ClCompile Include="src\IControlPopup.cpp" />
     <ClCompile Include="src\IControlTooltip.cpp" />
+    <ClCompile Include="src\IInputSystem.cpp" />
     <ClCompile Include="src\KeyBinder.cpp" />
     <ClCompile Include="src\KeyBinderPopup.cpp" />
     <ClCompile Include="src\LagCompensation.cpp" />
@@ -253,7 +254,6 @@
     <ClCompile Include="src\TabContainer.cpp" />
     <ClCompile Include="src\TabPage.cpp" />
     <ClCompile Include="src\Target.cpp" />
-    <ClCompile Include="src\TargetSelector.cpp" />
     <ClCompile Include="src\Textbox.cpp" />
     <ClCompile Include="src\Tooltip.cpp" />
     <ClCompile Include="src\Triggerbot.cpp" />
@@ -395,7 +395,6 @@
     <ClInclude Include="src\TabContainer.h" />
     <ClInclude Include="src\TabPage.h" />
     <ClInclude Include="src\Target.h" />
-    <ClInclude Include="src\TargetSelector.h" />
     <ClInclude Include="src\Textbox.h" />
     <ClInclude Include="src\Tooltip.h" />
     <ClInclude Include="src\Triggerbot.h" />

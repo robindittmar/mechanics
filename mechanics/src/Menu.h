@@ -155,12 +155,12 @@ private:
 
 	CGroupbox* m_pTriggerbotGroup;
 	CCheckbox* m_pTriggerbotEnabled;
+	CKeyBinder* m_pTriggerbotKey;
 	CSlider* m_pTriggerbotDelayValue;
 	CSlider* m_pTriggerbotDelayJitterValue;
 	CCheckbox* m_pTriggerbotBurst;
 	CSlider* m_pTriggerbotMinShots; // TODO: CRangeSlider, instead of 2 sliders
 	CSlider* m_pTriggerbotMaxShots;
-	CKeyBinder* m_pTriggerbotKey;
 
 	CGroupbox* m_pLegitLagCompensationGroup;
 	CCheckbox* m_pLegitLagCompensationEnabled;
@@ -296,10 +296,11 @@ private:
 	CCheckbox* m_pVisualsOthersCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersRecoilCrosshairEnabled;
 	CCheckbox* m_pVisualsOthersSpreadConeEnabled;
+	CCheckbox* m_pVisualsOthersRecoilSpreadConeEnabled;
+	CSelectbox* m_pVisualsOtherSpreadConeStyle;
+	CColorPicker* m_pVisualsOtherSpreadConeColor;
 
-	CLabel* m_pVisualsOthersNightmodeLabel;
 	CSlider* m_pVisualsOthersNightmode;
-	CLabel* m_pVisualsOthersAsuswallsLabel;
 	CSlider* m_pVisualsOthersAsuswalls;
 	CSelectbox* m_pVisualsOthersSkychanger;
 

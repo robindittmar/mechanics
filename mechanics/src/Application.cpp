@@ -243,7 +243,6 @@ void CApplication::Setup()
 	m_pGui->Setup();
 
 	// Setups
-	this->m_targetSelector.Setup(this);
 	this->m_ragebot.Setup();
 	this->m_gunAccuracy.Setup();
 	this->m_legitbot.Setup();

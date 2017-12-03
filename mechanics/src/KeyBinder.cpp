@@ -3,15 +3,18 @@
 bool CKeyBinder::m_bKeyTranslationMapInitialized = false;
 std::unordered_map<unsigned short, wchar_t*> CKeyBinder::m_mapKeys;
 
-CKeyBinder::CKeyBinder(int x, int y, int w, int h, int iEventBtn)
+CKeyBinder::CKeyBinder(int x, int y, int w, int h, int iEventBtn, const char* pText)
 	: IControlTooltip(x, y, w, h), m_bPopupInitialized(false), m_pPopup(false),
-	m_iEventButton(iEventBtn)
+	m_iEventButton(iEventBtn), m_pText(nullptr)
 {
 	m_pPopup = new CKeyBinderPopup(this);
 
-	m_pLabel = new CLabel(0, 0, w, h, "Key:", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pLabel = new CLabel(0, 0, w, h, m_pText, RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
 	this->AddChild(m_pLabel);
 
+	this->SetText(pText);
+
+	// Initialize static [Virtual Key Code -> Wide Text] map
 	if (!m_bKeyTranslationMapInitialized)
 	{
 		m_mapKeys[VK_LBUTTON] = L"Mouse 1";
@@ -19,7 +22,6 @@ CKeyBinder::CKeyBinder(int x, int y, int w, int h, int iEventBtn)
 		m_mapKeys[VK_MBUTTON] = L"Mouse 3";
 		m_mapKeys[VK_XBUTTON1] = L"Mouse 4";
 		m_mapKeys[VK_XBUTTON2] = L"Mouse 5";
-		//m_mapKeys[VK_MENU] = L"Menu";
 
 		m_bKeyTranslationMapInitialized = true;
 	}
@@ -27,6 +29,9 @@ CKeyBinder::CKeyBinder(int x, int y, int w, int h, int iEventBtn)
 
 CKeyBinder::~CKeyBinder()
 {
+	if (m_pText)
+		delete[] m_pText;
+
 	if (m_pPopup)
 		delete m_pPopup;
 }
@@ -62,6 +67,16 @@ void CKeyBinder::SetEnabled(bool bIsEnabled)
 	{
 		m_pLabel->SetTextColor(g_clrControlDisabled);
 	}
+}
+
+void CKeyBinder::SetText(const char* pText)
+{
+	if (m_pText)
+		delete[] m_pText;
+
+	int iLen = strlen(pText) + 1;
+	m_pText = new char[iLen];
+	memcpy(m_pText, pText, iLen);
 }
 
 void CKeyBinder::SetKey(unsigned short nKey)
@@ -101,6 +116,6 @@ void CKeyBinder::GenerateLabelText()
 		wcscpy(pKeyBuffer, it->second);
 	}
 
-	swprintf(pBuffer, 64, L"Key: %ls", pKeyBuffer);
+	swprintf(pBuffer, 64, L"%S: %s", m_pText, pKeyBuffer);
 	m_pLabel->SetContentTextW(pBuffer);
 }

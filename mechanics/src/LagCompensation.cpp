@@ -191,8 +191,11 @@ void CLagCompensation::DrawLagCompensationIndicator()
 {
 	if (m_bRageLagCompensationEnabled && m_pApp->Ragebot()->GetEnabled())
 	{
+		if (m_pApp->Ragebot()->GetSelectedTargetIdx() == -1)
+			return;
+
 		m_pApp->Surface()->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_HEADER));
-		CTarget* pTarget = m_pApp->TargetSelector()->GetTarget(m_pApp->Ragebot()->GetTargetCriteria());
+		CTarget* pTarget = m_pApp->Ragebot()->GetSelectedTarget();
 
 		static IClientEntity* pTargetEntity = nullptr;
 		if (!pTargetEntity)

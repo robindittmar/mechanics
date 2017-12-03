@@ -15,8 +15,11 @@
 namespace Utils
 {
 	QAngle CalcAngle(Vector& vStartPos, Vector& vEndPos);
+
+	float GetOriginDist(Vector& a, Vector& b);
 	float GetViewangleDist(QAngle& qSource, QAngle& qTarget/*, float fOriginDistance*/);
 
+	void GetHitBoxCenter(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector& hitBoxVector);
 	void GetHitBoxVectors(mstudiobbox_t* hitBox, matrix3x4_t* boneMatrix, Vector* hitBoxVectors, float fPointScale);
 
 	float GetTraceFractionWorldProps(Vector start, Vector end);

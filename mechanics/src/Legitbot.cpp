@@ -10,7 +10,7 @@ CLegitbot::CLegitbot()
 	m_bDrawPath(false), m_clrPath(Color(255, 255, 128, 0)), m_bHasTarget(false),
 	m_bHasDrawTarget(false)
 {
-	m_bCheckHitbox[0] = false; m_iHitboxes[0] = HITBOX_HEAD;
+	m_bCheckHitbox[0] = true; m_iHitboxes[0] = HITBOX_HEAD;
 	m_bCheckHitbox[1] = false; m_iHitboxes[1] = HITBOX_CHEST;
 	m_bCheckHitbox[2] = false; m_iHitboxes[2] = HITBOX_PELVIS;
 	m_bCheckHitbox[3] = false; m_iHitboxes[3] = HITBOX_RIGHT_FOREARM;

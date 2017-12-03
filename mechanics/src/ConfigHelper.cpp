@@ -7,18 +7,6 @@ namespace ConfigHelper
 	{
 		CApplication* pApp = CApplication::Instance();
 
-		// Target Selector
-		pApp->TargetSelector()->SetMultipoint(pConfig->GetBool("targetselector", "multipoint"));
-		pApp->TargetSelector()->SetMultipointScale(pConfig->GetFloat("targetselector", "multipointscale"));
-		pApp->TargetSelector()->SetVisibleMode(pConfig->GetInt("targetselector", "visiblemode"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_HEAD, pConfig->GetBool("targetselector", "checkhead"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_CHEST, pConfig->GetBool("targetselector", "checkchest"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_PELVIS, pConfig->GetBool("targetselector", "checkpelvis"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM, pConfig->GetBool("targetselector", "checkrightforearm"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, pConfig->GetBool("targetselector", "checkleftforearm"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, pConfig->GetBool("targetselector", "checkrightcalf"));
-		pApp->TargetSelector()->SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, pConfig->GetBool("targetselector", "checkleftcalf"));
-
 		// Ragebot
 		pApp->Ragebot()->SetEnabled(pConfig->GetBool("ragebot", "enabled"));
 		pApp->Ragebot()->SetAutoshoot(pConfig->GetBool("ragebot", "autoshoot"));
@@ -30,6 +18,16 @@ namespace ConfigHelper
 		pApp->Ragebot()->SetCalculateHitchance(pConfig->GetBool("ragebot", "hitchanceenabled"));
 		pApp->Ragebot()->SetHitchance(pConfig->GetFloat("ragebot", "hitchance"));
 		pApp->Ragebot()->SetAutoRevolver(pConfig->GetBool("ragebot", "autorevolver"));
+		pApp->Ragebot()->SetMultipoint(pConfig->GetBool("ragebot", "multipoint"));
+		pApp->Ragebot()->SetMultipointScale(pConfig->GetFloat("ragebot", "multipointscale"));
+		pApp->Ragebot()->SetVisibleMode(pConfig->GetInt("ragebot", "visiblemode"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_HEAD, pConfig->GetBool("ragebot", "checkhead"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_CHEST, pConfig->GetBool("ragebot", "checkchest"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_PELVIS, pConfig->GetBool("ragebot", "checkpelvis"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM, pConfig->GetBool("ragebot", "checkrightforearm"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM, pConfig->GetBool("ragebot", "checkleftforearm"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_RIGHT_CALF, pConfig->GetBool("ragebot", "checkrightcalf"));
+		pApp->Ragebot()->SetCheckHitbox(TARGET_HITBOX_LEFT_CALF, pConfig->GetBool("ragebot", "checkleftcalf"));
 
 		pApp->GunAccuracy()->SetNoRecoil(pConfig->GetBool("accuracy", "norecoil"));
 		pApp->GunAccuracy()->SetNoSpread(pConfig->GetBool("accuracy", "nospread"));
@@ -57,12 +55,14 @@ namespace ConfigHelper
 		
 		// Triggerbot
 		pApp->Triggerbot()->SetEnabled(pConfig->GetBool("triggerbot", "enabled"));
+		pApp->Triggerbot()->SetTriggerKey(pConfig->GetInt("triggerbot", "key"));
+		pApp->Triggerbot()->SetShootDelay(pConfig->GetInt("triggerbot", "shootdelay"));
+		pApp->Triggerbot()->SetShootDelayJitter(pConfig->GetInt("triggerbot", "shootdelayjitter"));
 		pApp->Triggerbot()->SetTriggerBurst(pConfig->GetBool("triggerbot", "burst"));
 		pApp->Triggerbot()->SetMinShots(pConfig->GetInt("triggerbot", "minshots"));
 		pApp->Triggerbot()->SetMaxShots(pConfig->GetInt("triggerbot", "maxshots"));
 		pApp->Triggerbot()->SetMaxFlashPercentage(pConfig->GetFloat("triggerbot", "maxflashalpha"));
-		pApp->Triggerbot()->SetShootDelay(pConfig->GetInt("triggerbot", "shootdelay"));
-		pApp->Triggerbot()->SetShootDelayJitter(pConfig->GetInt("triggerbot", "shootdelayjitter"));
+		
 
 		// Legit Lag Compensation
 
@@ -185,6 +185,7 @@ namespace ConfigHelper
 		pApp->GunHud()->SetCrosshairShowRecoil(pConfig->GetBool("visuals", "recoilcrosshair"));
 		pApp->GunHud()->SetSpreadCone(pConfig->GetBool("visuals", "spreadcone"));
 		pApp->GunHud()->SetSpreadConeShowRecoil(pConfig->GetBool("visuals", "recoilspreadcone"));
+		pApp->GunHud()->SetSpreadConeStyle(pConfig->GetInt("visuals", "spreadconestyle"));
 		pApp->GunHud()->SetSpreadConeColor(pConfig->GetColor("visuals", "spreadconecolor"));
 		pApp->GunHud()->SetHitmarker(pConfig->GetBool("visuals", "hitmarker"));
 		pApp->GunHud()->SetHitmarkerSound(pConfig->GetBool("visuals", "hitmarkersound"));
@@ -236,18 +237,6 @@ namespace ConfigHelper
 	{
 		CApplication* pApp = CApplication::Instance();
 
-		// Target Selector
-		pConfig->SetBool("targetselector", "multipoint", pApp->TargetSelector()->GetMultipoint());
-		pConfig->SetFloat("targetselector", "multipointscale", pApp->TargetSelector()->GetMultipointScale());
-		pConfig->SetInt("targetselector", "visiblemode", pApp->TargetSelector()->GetVisibleMode());
-		pConfig->SetBool("targetselector", "checkhead", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_HEAD));
-		pConfig->SetBool("targetselector", "checkchest", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_CHEST));
-		pConfig->SetBool("targetselector", "checkpelvis", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
-		pConfig->SetBool("targetselector", "checkrightforearm", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
-		pConfig->SetBool("targetselector", "checkleftforearm", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
-		pConfig->SetBool("targetselector", "checkrightcalf", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
-		pConfig->SetBool("targetselector", "checkleftcalf", pApp->TargetSelector()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
-
 		// Ragebot
 		pConfig->SetBool("ragebot", "enabled", pApp->Ragebot()->GetEnabled());
 		pConfig->SetBool("ragebot", "autoshoot", pApp->Ragebot()->GetAutoshoot());
@@ -259,6 +248,16 @@ namespace ConfigHelper
 		pConfig->SetBool("ragebot", "hitchanceenabled", pApp->Ragebot()->GetCalculateHitchance());
 		pConfig->SetFloat("ragebot", "hitchance", pApp->Ragebot()->GetHitchance());
 		pConfig->SetBool("ragebot", "autorevolver", pApp->Ragebot()->GetAutoRevolver());
+		pConfig->SetBool("ragebot", "multipoint", pApp->Ragebot()->GetMultipoint());
+		pConfig->SetFloat("ragebot", "multipointscale", pApp->Ragebot()->GetMultipointScale());
+		pConfig->SetInt("ragebot", "visiblemode", pApp->Ragebot()->GetVisibleMode());
+		pConfig->SetBool("ragebot", "checkhead", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_HEAD));
+		pConfig->SetBool("ragebot", "checkchest", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_CHEST));
+		pConfig->SetBool("ragebot", "checkpelvis", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_PELVIS));
+		pConfig->SetBool("ragebot", "checkrightforearm", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_FOREARM));
+		pConfig->SetBool("ragebot", "checkleftforearm", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_LEFT_FOREARM));
+		pConfig->SetBool("ragebot", "checkrightcalf", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_RIGHT_CALF));
+		pConfig->SetBool("ragebot", "checkleftcalf", pApp->Ragebot()->GetCheckHitbox(TARGET_HITBOX_LEFT_CALF));
 
 		pConfig->SetBool("accuracy", "norecoil", pApp->GunAccuracy()->GetNoRecoil());
 		pConfig->SetBool("accuracy", "nospread", pApp->GunAccuracy()->GetNoSpread());
@@ -286,12 +285,13 @@ namespace ConfigHelper
 
 		// Triggerbot
 		pConfig->SetBool("triggerbot", "enabled", pApp->Triggerbot()->GetEnabled());
+		pConfig->SetInt("triggerbot", "key", pApp->Triggerbot()->GetTriggerKey());
+		pConfig->SetInt("triggerbot", "shootdelay", pApp->Triggerbot()->GetShootDelay());
+		pConfig->SetInt("triggerbot", "shootdelayjitter", pApp->Triggerbot()->GetShootDelayJitter());
 		pConfig->SetBool("triggerbot", "burst", pApp->Triggerbot()->GetTriggerBurst());
 		pConfig->SetInt("triggerbot", "minshots", pApp->Triggerbot()->GetMinShots());
 		pConfig->SetInt("triggerbot", "maxshots", pApp->Triggerbot()->GetMaxShots());
 		pConfig->SetFloat("triggerbot", "maxflashalpha", pApp->Triggerbot()->GetMaxFlashPercentage());
-		pConfig->SetInt("triggerbot", "shootdelay", pApp->Triggerbot()->GetShootDelay());
-		pConfig->SetInt("triggerbot", "shootdelayjitter", pApp->Triggerbot()->GetShootDelayJitter());
 		
 		// Antiaim
 		pConfig->SetBool("antiaim", "enabled", pApp->AntiAim()->GetEnabled());
@@ -407,6 +407,7 @@ namespace ConfigHelper
 		pConfig->SetBool("visuals", "spreadcone", pApp->GunHud()->GetSpreadCone());
 		pConfig->SetBool("visuals", "recoilspreadcone", pApp->GunHud()->GetSpreadConeShowRecoil());
 		pConfig->SetColor("visuals", "spreadconecolor", pApp->GunHud()->GetSpreadConeColor());
+		pConfig->SetInt("visuals", "spreadconestyle", pApp->GunHud()->GetSpreadConeStyle());
 		pConfig->SetBool("visuals", "hitmarker", pApp->GunHud()->GetHitmarker());
 		pConfig->SetBool("visuals", "hitmarkersound", pApp->GunHud()->GetHitmarkerSound());
 		pConfig->SetBool("visuals", "hitmarkerhitpoint", pApp->GunHud()->GetHitmarkerHitpoint());
