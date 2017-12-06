@@ -22,6 +22,7 @@
 #define SETFONTGLYPHSET_INDEX		72
 #define GETTEXTSIZE_INDEX			79
 #define DRAWOUTLINEDCIRCLE_INDEX	103
+#define DRAWTEXTUREDPOLYLINE_INDEX	104
 #define DRAWTEXTUREDPOLYGON_INDEX	106
 #define DRAWTEXTUREDRECTEX_INDEX	148
 
@@ -137,6 +138,12 @@ void ISurface::DrawTexturedRectEx(DrawTexturedRectParms_t* pDrawParms)
 {
 	typedef void(__thiscall *DrawTexturedRectEx_t)(void*, DrawTexturedRectParms_t*);
 	((DrawTexturedRectEx_t)(*(void***)this)[DRAWTEXTUREDRECTEX_INDEX])(this, pDrawParms);
+}
+
+void ISurface::DrawTexturedPolyLine(const Vertex_t* pVertices, int n)
+{
+	typedef void(__thiscall *DrawTexturedPolyLine_t)(void*, const Vertex_t*, int);
+	((DrawTexturedPolyLine_t)(*(void***)this)[DRAWTEXTUREDPOLYLINE_INDEX])(this, pVertices, n);
 }
 
 void ISurface::DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices)

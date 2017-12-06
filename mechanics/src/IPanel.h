@@ -6,6 +6,7 @@
 #endif
 
 #include "IBaseInterface.h"
+#include "CUtlVector.h"
 
 class KeyValues;
 
@@ -14,10 +15,6 @@ class IClientPanel;
 
 //!! must be removed
 class Panel;
-template< class T, class I = int >
-class CUtlMemory;
-template<class T, class A = CUtlMemory<T>>
-class CUtlVector;
 class HScheme;
 
 typedef unsigned int VPANEL;

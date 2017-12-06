@@ -63,7 +63,8 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 	float fViewangleDist = 99999.0f;
 	int iCurTickcount = -1;
 
-	for (int i = 0; i < MAX_PLAYERS; i++)
+	int iPlayerCount = m_pApp->GlobalVars()->maxClients;
+	for (int i = 0; i < iPlayerCount; i++)
 	{
 		IClientEntity* pCurEnt = m_pApp->EntityList()->GetClientEntity(i);
 		if (!pCurEnt)

@@ -20,10 +20,8 @@ void CGui::Setup()
 {
 	m_pApp = CApplication::Instance();
 
+	this->GetScreenSize();
 	this->GetWorldToScreenMatrix();
-
-	// Screen size
-	m_pApp->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
 
 	// cl_mouseenable
 	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
@@ -52,6 +50,11 @@ void CGui::Cleanup()
 		SetWindowLongPtr(m_hGameWindow, GWL_WNDPROC, (LONG_PTR)m_wndProc);
 		m_bHookedWindowProc = false;
 	}
+}
+
+void CGui::GetScreenSize()
+{
+	m_pApp->EngineClient()->GetScreenSize(m_iScreenWidth, m_iScreenHeight);
 }
 
 void CGui::GetWorldToScreenMatrix()
@@ -97,7 +100,6 @@ void CGui::DrawMouse(ISurface* pSurface)
 {
 	if(m_bDrawMouse)
 	{
-		pSurface->DrawSetColor(255, 255, 128, 0);
 		pSurface->DrawSetTexture(g_pResourceManager->GetWhiteTexture());
 
 		// TODO:
@@ -106,7 +108,12 @@ void CGui::DrawMouse(ISurface* pSurface)
 		v[1].Init(Vector2D((float)m_iMouseX + 20.0f, (float)m_iMouseY + 10.0f));
 		v[2].Init(Vector2D((float)m_iMouseX + 7.5f, (float)m_iMouseY + 10.0f));
 		v[3].Init(Vector2D((float)m_iMouseX, (float)m_iMouseY + 20.0f));
+
+		pSurface->DrawSetColor(255, 255, 128, 0);
 		pSurface->DrawTexturedPolygon(4, v, false);
+		
+		pSurface->DrawSetColor(255, 50, 50, 50);
+		pSurface->DrawTexturedPolyLine(v, 4);
 
 		/*pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX, m_iMouseY + 10);
 		pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX + 10, m_iMouseY);
@@ -114,7 +121,7 @@ void CGui::DrawMouse(ISurface* pSurface)
 	}
 }
 
-bool CGui::WorldToScreen(const Vector &origin, Vector &screen)
+bool CGui::WorldToScreen(const Vector& origin, Vector &screen)
 {
 	if (!ScreenTransform(origin, screen))
 	{
@@ -201,7 +208,7 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_LBUTTONUP:
 		pInputHandler->OnMouseUp(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-
+		
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:

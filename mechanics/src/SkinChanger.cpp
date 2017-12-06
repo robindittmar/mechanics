@@ -242,7 +242,7 @@ void CSkinChanger::ParseSkinFile()
 		}
 	}
 
-	strcat(pFilepathSkins, "scripts\\items\\items_game.txt");
+	strcat(pFilepathSkins, /*scripts\\items\\items_game.txt*/CXorString("dh˜´gˆûKbÒßzxŸû~‡ØdT‚£zn´∂o"));
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "Parsing skin file (%s)\n", pFilepathSkins);
@@ -258,6 +258,21 @@ void CSkinChanger::ParseSkinFile()
 		return;
 	}
 
+	CXorString xorName(/*name*/"yjËß");
+	CXorString xorPhase(/*phase*/"gc‰±r");
+	CXorString xorEmerald(/*emerald*/"rf‡∞vg·");
+	CXorString xorRuby(/*ruby*/"e~Áª");
+	CXorString xorSapphire(/*sapphire*/"djı≤b˜ß");
+	CXorString xorBlackPearl(/*blackpearl*/"ug‰°|{‡£eg");
+	CXorString xorDescriptionTag(/*description_tag*/"snˆ°ebı∂~dÎùcj‚");
+	CXorString xorWeaponUnderscore(/*weapon_*/"`n‰≤xe⁄");
+	CXorString xorUnderscoreLight(/*_light*/"HgÏ•");
+	CXorString xorWeaponKnife(/*weapon_knife*/"`n‰≤xe⁄©yb„ß");
+	CXorString xorWeaponBayonet(/*weapon_bayonet*/"`n‰≤xe⁄†vrÍ¨r");
+	CXorString xorPaintKits(/*paint_kits*/"gjÏ¨cTÓ´cx");
+	CXorString xorClientLootLists(/*client_loot_lists*/"tgÏßy⁄ÆxdÒù{bˆ∂d");
+	CXorString xorAlternateIcons2(/*alternate_icons2*/"vgÒßee‰∂rTÏ°xeˆ");
+
 	uint32_t iHash;
 	int iCurPaintKit = 0;
 
@@ -270,7 +285,6 @@ void CSkinChanger::ParseSkinFile()
 	int iLevels = 0;
 	bool bInPaintKits = false;
 	bool bInClientLootList = false;
-	//bool bInItemSets = false;
 	bool bInAlternateIcons = false;
 	char pBuffer[1024];
 	std::vector<const char*> iconpaths;
@@ -313,9 +327,9 @@ void CSkinChanger::ParseSkinFile()
 					char* pKey = strtok(pBuffer, "\"\t \n");
 					char* pValue = strtok(NULL, "\"\t \n");
 
-					if (!strcmp(pKey, "name"))
+					if (!strcmp(pKey, xorName))
 					{
-						char* pPhase = strstr(pValue, "phase");
+						char* pPhase = strstr(pValue, xorPhase);
 						if (pPhase)
 						{
 							iCurPhase = *(pPhase + 5) - '0';
@@ -325,15 +339,15 @@ void CSkinChanger::ParseSkinFile()
 							iCurPhase = -1;
 						}
 						
-						bEmerald = strstr(pValue, "emerald") != nullptr;
-						bRuby = strstr(pValue, "ruby") != nullptr;
-						bSapphire = strstr(pValue, "sapphire") != nullptr;
-						bBlackPearl = strstr(pValue, "blackpearl") != nullptr;
+						bEmerald = strstr(pValue, xorEmerald) != nullptr;
+						bRuby = strstr(pValue, xorRuby) != nullptr;
+						bSapphire = strstr(pValue, xorSapphire) != nullptr;
+						bBlackPearl = strstr(pValue, xorBlackPearl) != nullptr;
 
 						iHash = murmurhash(pValue, strlen(pValue), 0xB16B00B5);
 						m_mapPaintKits[iHash] = iCurPaintKit;
 					}
-					else if (!strcmp(pKey, "description_tag"))
+					else if (!strcmp(pKey, xorDescriptionTag))
 					{
 						wchar_t* pTranslation = m_pApp->Localize()->Find(pValue + 1);
 
@@ -342,7 +356,7 @@ void CSkinChanger::ParseSkinFile()
 						if (bEmerald)
 						{
 							p = new wchar_t[8];
-							wcscpy(p, L"Emerald");
+							wcscpy(p, L"Emerald"); // TODO: CXorWString?
 						}
 						else if (bRuby)
 						{
@@ -376,7 +390,7 @@ void CSkinChanger::ParseSkinFile()
 				}
 			}
 		}
-		else if (bInClientLootList/* || bInItemSets*/)
+		else if (bInClientLootList)
 		{
 			if (strstr(pBuffer, "{"))
 			{
@@ -388,18 +402,16 @@ void CSkinChanger::ParseSkinFile()
 				if (--iLevels == 0)
 				{
 					bInClientLootList = false;
-					//bInItemSets = false;
 					continue;
 				}
 			}
 
-			if (bInClientLootList && iLevels == 2/* ||
-				bInItemSets && iLevels == 3*/)
+			if (iLevels == 2)
 			{
 				char* pPaintName = strtok(pBuffer, "\"\n\t \n[]");
 				char* pWeaponName = strtok(NULL, "\"\n\t \n[]");
 
-				if (strncmp(pWeaponName, "weapon_", 7))
+				if (strncmp(pWeaponName, xorWeaponUnderscore, 7))
 				{
 					continue;
 				}
@@ -429,11 +441,11 @@ void CSkinChanger::ParseSkinFile()
 				char* pKey = strtok(pBuffer, "\"\t \n");
 				char* pValue = strtok(NULL, "\"\t \n");
 
-				char* temp = strstr(pValue, "weapon_knife");
+				char* temp = strstr(pValue, xorWeaponKnife);
 				if (!temp)
-					temp = strstr(pValue, "weapon_bayonet");
+					temp = strstr(pValue, xorWeaponBayonet);
 
-				if (temp && strstr(pValue, "_light"))
+				if (temp && strstr(pValue, xorUnderscoreLight))
 				{
 					int iLen = strlen(temp) + 1;
 					char* p = new char[iLen];
@@ -443,22 +455,17 @@ void CSkinChanger::ParseSkinFile()
 				}
 			}
 		}
-		else if (strstr(pBuffer, "paint_kits"))
+		else if (strstr(pBuffer, xorPaintKits))
 		{
 			bInPaintKits = true;
 			iLevels = 0;
 		}
-		else if (strstr(pBuffer, "client_loot_lists"))
+		else if (strstr(pBuffer, xorClientLootLists))
 		{
 			bInClientLootList = true;
 			iLevels = 0;
 		}
-		/*else if (strstr(pBuffer, "item_sets"))
-		{
-			bInItemSets = true;
-			iLevels = 0;
-		}*/
-		else if (strstr(pBuffer, "alternate_icons2"))
+		else if (strstr(pBuffer, xorAlternateIcons2))
 		{
 			bInAlternateIcons = true;
 			iLevels = 0;
@@ -467,7 +474,7 @@ void CSkinChanger::ParseSkinFile()
 
 	fclose(pFile);
 
-	const int iLenUnderscoreLight = strlen("_light");
+	const int iLenUnderscoreLight = strlen(xorUnderscoreLight);
 	const char* p;
 	for (std::vector<const char*>::iterator it = iconpaths.begin(); it != iconpaths.end(); it++)
 	{

@@ -91,7 +91,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->SoundEsp()->Think();
 
 			// Visuals
-			pApp->GunHud()->Think((void*)pLocalEntity);
+			pApp->GunHud()->Think();
 			pApp->Radar()->Think();
 
 			// Apply NoRecoil/NoSpread
@@ -117,13 +117,11 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 						}
 					}
 				}
-				else
+				
+				int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
+				if (iTick != -1)
 				{
-					int iTick = pApp->LagCompensation()->RestorePlayerClosestToCrosshair();
-					if (iTick != -1)
-					{
-						pUserCmd->tick_count = iTick + 1;
-					}
+					pUserCmd->tick_count = iTick + 1;
 				}
 			}
 
@@ -150,7 +148,8 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 				!bIsSniper && pUserCmd->buttons & IN_ATTACK2 ||
 				pUserCmd->buttons & IN_USE)
 			{
-				pApp->SetLastTickViewAngles(QAngle(pUserCmd->viewangles));
+				QAngle cmdAngles(pUserCmd->viewangles);
+				pApp->SetLastTickViewAngles(cmdAngles);
 			}
 		}
 		else

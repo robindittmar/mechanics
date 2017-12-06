@@ -210,6 +210,7 @@ public:
 	void DrawGetTextureSize(int id, int& wide, int& tall);
 	void DrawTexturedRect(int x0, int y0, int x1, int y1);
 	void DrawTexturedRectEx(DrawTexturedRectParms_t* pDrawParms);
+	void DrawTexturedPolyLine(const Vertex_t* pVertices, int n);
 	void DrawTexturedPolygon(int n, Vertex_t* pVertices, bool bClipVertices);
 	bool DeleteTextureByID(int id);
 

@@ -610,7 +610,8 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	pEntity->GetPlayerInfo(&pInfo);
 
 	wchar_t name[256];
-	int iLen = pInfo.GetName(name, 256);
+	//int iLen = pInfo.GetName(name, 256);
+	int iLen = mbstowcs(name, pInfo.guid, 33);
 
 	int w, h;
 	pSurface->GetTextSize(m_iFont, name, w, h);

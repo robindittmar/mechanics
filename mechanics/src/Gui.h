@@ -20,6 +20,7 @@ public:
 	void Setup();
 	void Cleanup();
 
+	void GetScreenSize();
 	void GetWorldToScreenMatrix();
 
 	int GetScreenWidth() const { return m_iScreenWidth; }
@@ -40,7 +41,7 @@ public:
 
 	void DrawMouse(ISurface* pSurface);
 
-	bool WorldToScreen(const Vector &origin, Vector &screen);
+	bool WorldToScreen(const Vector& origin, Vector &screen);
 private:
 	bool ScreenTransform(const Vector& point, Vector& screen);
 	
@@ -66,5 +67,7 @@ private:
 	CGui(const CGui&) = delete;
 	~CGui();
 };
+
+LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam);
 
 #endif // __GUI_H__

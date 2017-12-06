@@ -1,4 +1,4 @@
-#include "Antiaim.h"
+#include "AntiAim.h"
 #include "Application.h"
 #include "Console.h"
 #include "Autowall.h"
@@ -290,9 +290,9 @@ int CAntiAim::CheckHeadPoint(IClientEntity* pEnemy, int iIndex)
 	Vector vEnemyHeadPos = *pEnemy->GetOrigin() + *pEnemy->GetEyeOffset();
 
 	rayRight.Init(vEnemyHeadPos, vRight->vPoint);
-	m_pApp->EngineTrace()->TraceRay(rayRight, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceRight);
+	m_pApp->EngineTrace()->TraceRay(rayRight, (MASK_SHOT_HULL | CONTENTS_HITBOX), &filter, &traceRight);
 	rayLeft.Init(vEnemyHeadPos, vLeft->vPoint);
-	m_pApp->EngineTrace()->TraceRay(rayLeft, (MASK_SHOT_HULL || CONTENTS_HITBOX), &filter, &traceLeft);
+	m_pApp->EngineTrace()->TraceRay(rayLeft, (MASK_SHOT_HULL | CONTENTS_HITBOX), &filter, &traceLeft);
 
 	float damageRight, damageLeft;
 	Autowall::CanHit(vEnemyHeadPos, &damageRight, &vRight->vPoint, pEnemy);

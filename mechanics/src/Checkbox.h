@@ -1,5 +1,5 @@
 #ifndef __CHECKBOX_H__
-#define __CHECKBOX__H__
+#define __CHECKBOX_H__
 
 // Std lib
 #include <functional>

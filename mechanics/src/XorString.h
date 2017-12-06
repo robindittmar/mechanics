@@ -6,7 +6,7 @@
 class CXorString
 {
 public:
-	CXorString(const char* p = "", unsigned long xor = 0x51E64E17, bool xorInstantly = true);
+	CXorString(const char* p = "", unsigned long key = 0x51E64E17, bool xorInstantly = true);
 	~CXorString();
 
 	/// <summary>

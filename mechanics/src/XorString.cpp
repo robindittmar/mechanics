@@ -1,11 +1,11 @@
 #include "XorString.h"
 
-CXorString::CXorString(const char* p, unsigned long xor, bool xorInstantly)
+CXorString::CXorString(const char* p, unsigned long key, bool xorInstantly)
 {
-	m_pBuffer = NULL;
+	m_pBuffer = nullptr;
 
 	this->String(p);
-	m_iXorKey = xor;
+	m_iXorKey = key;
 
 	if (xorInstantly)
 	{

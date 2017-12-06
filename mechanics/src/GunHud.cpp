@@ -28,12 +28,14 @@ void CGunHud::Setup()
 
 void CGunHud::Think(void* pParameters)
 {
-	assert(pParameters != NULL);
-	IClientEntity* pLocalEntity = (IClientEntity*)pParameters;
-
 	// Get current middle
 	m_iMiddleX = m_pGui->GetScreenWidth() / 2.0f;
 	m_iMiddleY = m_pGui->GetScreenHeight() / 2.0f;
+
+	// Current entity for recoil displaying
+	IClientEntity* pLocalEntity = m_pApp->GetLocalPlayer(true);
+	if (!pLocalEntity)
+		return;
 
 	// If we want to display something corresponding to recoil
 	// calculate the point on screen our recoil is "aiming" at

@@ -13,19 +13,22 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 	{
 		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
 		const char* szName = pApp->Panel()->GetName(vguiPanel);
-		if (stricmp(szName, matSystemTopPanel.ToCharArray()) == 0)
+		// stricmp
+		if (strcmp(szName, matSystemTopPanel.ToCharArray()) == 0)
 		{
 			vguiMatSystemTopPanel = vguiPanel;
 		}
 	}
 
-	if (pApp->EngineClient()->IsInGame())
+	if (vguiMatSystemTopPanel == vguiPanel)
 	{
-		if (pApp->Visuals()->NoScope(vguiPanel))
-			return;
+		pApp->Gui()->GetScreenSize();
 
-		if (vguiMatSystemTopPanel == vguiPanel)
+		if (pApp->EngineClient()->IsInGame())
 		{
+			if (pApp->Visuals()->NoScope(vguiPanel))
+				return;
+
 			pApp->Gui()->GetWorldToScreenMatrix();
 
 			// Draw NoScope
@@ -68,10 +71,7 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 			pApp->LagCompensation()->DrawLagCompensationEntries();
 			pApp->LagCompensation()->DrawLagCompensationIndicator();
 		}
-	}
 
-	if (vguiMatSystemTopPanel == vguiPanel)
-	{
 		// Draw Menu least ;)
 		pApp->Menu()->Draw(pSurface);
 	}

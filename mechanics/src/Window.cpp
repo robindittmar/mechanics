@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Application.h" // Remove pls
 
 CWindow::CWindow(int x, int y, int w, int h, const char* pTitle)
 	: IControlClickable(x, y, w, h + TITLEBAR_HEIGHT)
@@ -36,14 +37,14 @@ void CWindow::OnMouseMove(int mx, int my)
 	{
 		m_iX = mx - m_iDragOffsetX;
 		m_iY = my - m_iDragOffsetY;
-
-		// Prevent clipping X
+		
+		// Clamp X
 		if (m_iX < 0)
 			m_iX = 0;
 		else if (m_iX + m_iWidth > pGui->GetScreenWidth())
 			m_iX = pGui->GetScreenWidth() - m_iWidth;
 
-		// Prevent clipping Y
+		// Clamp Y
 		if (m_iY < 0)
 			m_iY = 0;
 		else if (m_iY + m_iHeight > pGui->GetScreenHeight())
