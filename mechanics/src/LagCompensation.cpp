@@ -95,6 +95,8 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 
 			QAngle qCurAngle = Utils::CalcAngle(vLocalHeadPos, lcCurList.m_pPlayerEntries[x].m_vHeadPos);
 			float fCurDist = (qLocalAngles - qCurAngle).Length();
+			if (fCurDist > 15.0f) // TODO: Find good min angle
+				continue;
 
 			if (fCurDist < fViewangleDist)
 			{
