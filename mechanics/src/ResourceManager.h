@@ -17,7 +17,7 @@
 #include "Utils.h"
 
 #define RM_TEXTURE_COLORFADE	1
-#define RM_TEXTURE_SLFADE		2
+#define RM_TEXTURE_SVFADE		2
 #define RM_TEXTURE_BACKGROUND	100
 
 #define RM_FONT_NORMAL			0

@@ -146,7 +146,7 @@ void CResourceManager::BuildSaturationValueTexture(int iHue)
 		}
 	}
 
-	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_SLFADE), pTexture, iWidth, iHeight);
+	m_pApp->Surface()->DrawSetTextureRGBA(this->GetTexture(RM_TEXTURE_SVFADE), pTexture, iWidth, iHeight);
 }
 
 void CResourceManager::CreateTextures()
@@ -158,7 +158,7 @@ void CResourceManager::CreateTextures()
 
 	m_iTextureWhite = pSurface->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
 	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
-	m_mapTextures[RM_TEXTURE_SLFADE] = textureSLFade;
+	m_mapTextures[RM_TEXTURE_SVFADE] = textureSLFade;
 	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");
 
 	this->BuildFadeTexture();

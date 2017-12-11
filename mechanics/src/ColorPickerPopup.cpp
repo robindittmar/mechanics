@@ -163,7 +163,7 @@ void CColorPickerPopup::Draw(ISurface* pSurface)
 	pVertices[2].Init(Vector2D(x + COLORPICKER_SVMAP_X + COLORPICKER_SVMAP_W, y + COLORPICKER_SVMAP_Y + COLORPICKER_SVMAP_H), Vector2D(1.0f, 1.0f));
 	pVertices[3].Init(Vector2D(x + COLORPICKER_SVMAP_X, y + COLORPICKER_SVMAP_Y + COLORPICKER_SVMAP_H), Vector2D(0.0f, 1.0f));
 
-	pSurface->DrawSetTexture(g_pResourceManager->GetTexture(RM_TEXTURE_SLFADE));
+	pSurface->DrawSetTexture(g_pResourceManager->GetTexture(RM_TEXTURE_SVFADE));
 	pSurface->DrawTexturedPolygon(4, pVertices, false);
 	// =======================
 

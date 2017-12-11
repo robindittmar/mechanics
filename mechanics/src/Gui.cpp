@@ -100,6 +100,20 @@ void CGui::DrawMouse(ISurface* pSurface)
 {
 	if(m_bDrawMouse)
 	{
+#ifdef _DEBUG
+		pSurface->DrawSetColor(255, 255, 0, 0);
+
+		pSurface->DrawLine(m_iMouseX, 0, m_iMouseX, m_iScreenHeight);
+		pSurface->DrawLine(0, m_iMouseY, m_iScreenWidth, m_iMouseY);
+
+		wchar_t pMousePos[32];
+		int iLen = swprintf(pMousePos, L"(%d|%d)", m_iMouseX, m_iMouseY);
+
+		pSurface->DrawSetTextColor(255, 255, 255, 255);
+		pSurface->DrawSetTextFont(g_pResourceManager->GetFont(RM_FONT_NORMAL));
+		pSurface->DrawSetTextPos(m_iMouseX + 15, m_iMouseY + 15);
+		pSurface->DrawPrintText(pMousePos, iLen);
+#else // _DEBUG
 		pSurface->DrawSetTexture(g_pResourceManager->GetWhiteTexture());
 
 		// TODO:
@@ -114,10 +128,7 @@ void CGui::DrawMouse(ISurface* pSurface)
 		
 		pSurface->DrawSetColor(255, 50, 50, 50);
 		pSurface->DrawTexturedPolyLine(v, 4);
-
-		/*pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX, m_iMouseY + 10);
-		pSurface->DrawLine(m_iMouseX, m_iMouseY, m_iMouseX + 10, m_iMouseY);
-		pSurface->DrawLine(m_iMouseX + 10, m_iMouseY, m_iMouseX, m_iMouseY + 10);*/
+#endif // _DEBUG
 	}
 }
 
