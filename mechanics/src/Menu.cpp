@@ -54,7 +54,7 @@ void CMenu::CreateMenu()
 	m_pMainContainer->AddChild(m_pConfigTab);
 	//m_pMainContainer->SelectTab(0);
 
-	m_pWindow = new CWindow(30, 30, 1020, 550, ".mechanics");
+	m_pWindow = new CWindow(30, 30, 692, 400, ".mechanics");
 	m_pWindow->AddChild(m_pMainContainer);
 
 	m_pWindowMirror = new CWindow(100, 100, MIRROR_WIDTH, MIRROR_HEIGHT, "Mirror");
@@ -446,7 +446,7 @@ void CMenu::CreateRageTab()
 	m_pRageHitboxLCalf->SetEventHandler(std::bind(&CRagebot::SetCheckHitbox, m_pApp->Ragebot(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
 	m_pRageHitboxLCalf->AddDependency(m_pAimbotEnabled);
 
-	m_pRageHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
+	m_pRageHitboxGroup = new CGroupbox(184, 16, 152, 154, "Hitboxes");
 	m_pRageHitboxGroup->AddChild(m_pRageHitboxHead);
 	m_pRageHitboxGroup->AddChild(m_pRageHitboxChest);
 	m_pRageHitboxGroup->AddChild(m_pRageHitboxPelvis);
@@ -474,6 +474,13 @@ void CMenu::CreateRageTab()
 	m_pRageOthersResolverType->SetEventHandler(std::bind(&CResolver::SetResolverType, m_pApp->Resolver(), std::placeholders::_1));
 	m_pRageOthersResolverType->AddDependency(m_pAimbotEnabled);
 
+	m_pRageOthersGroup = new CGroupbox(184, 186, 152, 138, "Others");
+	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersAutoRevolverEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersLagCompensationEnabled);
+	m_pRageOthersGroup->AddChild(m_pRageOthersResolverType);
+
+	// AntiAim
 	m_pAntiaimEnabled = new CCheckbox(4, 0, 60, 16, "Enabled");
 	m_pAntiaimEnabled->SetEventHandler(std::bind(&CAntiAim::SetEnabled, m_pApp->AntiAim(), std::placeholders::_1));
 
@@ -598,13 +605,7 @@ void CMenu::CreateRageTab()
 	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimDrawPoints);
 	m_pAntiaimEdgeAntiaimGroup->AddChild(m_pAntiaimEdgeAntiaimDrawLines);
 
-	m_pRageOthersGroup = new CGroupbox(352, 16, 152, 308, "Others");
-	m_pRageOthersGroup->AddChild(m_pRageOthersAutoZeusEnabled);
-	m_pRageOthersGroup->AddChild(m_pRageOthersAutoRevolverEnabled);
-	m_pRageOthersGroup->AddChild(m_pRageOthersLagCompensationEnabled);
-	m_pRageOthersGroup->AddChild(m_pRageOthersResolverType);
-
-	m_pAntiaimGroup = new CGroupbox(520, 16, 324, 308, "AntiAim");
+	m_pAntiaimGroup = new CGroupbox(352, 16, 324, 308, "AntiAim");
 	m_pAntiaimGroup->AddChild(m_pAntiaimEnabled);
 	m_pAntiaimGroup->AddChild(m_pAntiaimLbyIndicator);
 	m_pAntiaimGroup->AddChild(m_pAntiaimStandingGroup);
@@ -694,7 +695,7 @@ void CMenu::CreateLegitTab()
 	m_pLegitHitboxLCalf->SetEventHandler(std::bind(&CLegitbot::SetCheckHitbox, m_pApp->Legitbot(), TARGET_HITBOX_LEFT_CALF, std::placeholders::_1));
 	m_pLegitHitboxLCalf->AddDependency(m_pLegitbotEnabled);
 
-	m_pLegitHitboxGroup = new CGroupbox(184, 16, 152, 308, "Hitboxes");
+	m_pLegitHitboxGroup = new CGroupbox(184, 16, 152, 154, "Hitboxes");
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxHead);
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxChest);
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxPelvis);
@@ -702,6 +703,17 @@ void CMenu::CreateLegitTab()
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxLForearm);
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxRCalf);
 	m_pLegitHitboxGroup->AddChild(m_pLegitHitboxLCalf);
+
+	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f, "Duration");
+	m_pLegitLagCompensationDuration->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationDuration, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pLegitLagCompensationDuration->AddDependency(m_pLegitLagCompensationEnabled);
+
+	m_pLegitLagCompensationGroup = new CGroupbox(184, 186, 152, 138, "Lag Compensation");
+	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationEnabled);
+	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDuration);
 
 	m_pTriggerbotEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pTriggerbotEnabled->SetEventHandler(std::bind(&CTriggerbot::SetEnabled, m_pApp->Triggerbot(), std::placeholders::_1));
@@ -741,26 +753,16 @@ void CMenu::CreateLegitTab()
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMinShots);
 	m_pTriggerbotGroup->AddChild(m_pTriggerbotMaxShots);
 
-	m_pLegitLagCompensationEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pLegitLagCompensationEnabled->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationEnabled, m_pApp->LagCompensation(), std::placeholders::_1));
-
-	m_pLegitLagCompensationDuration = new CSlider(4, 44, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 200.0f, "Duration");
-	m_pLegitLagCompensationDuration->SetEventHandler(std::bind(&CLagCompensation::SetLegitLagCompensationDuration, m_pApp->LagCompensation(), std::placeholders::_1));
-	m_pLegitLagCompensationDuration->AddDependency(m_pLegitLagCompensationEnabled);
-
-	m_pLegitLagCompensationGroup = new CGroupbox(520, 16, 152, 308, "Lag Compensation");
-	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationEnabled);
-	m_pLegitLagCompensationGroup->AddChild(m_pLegitLagCompensationDuration);
-
 	m_pLegitTab = new CTabPage("Legit");
 	m_pLegitTab->AddChild(m_pLegitbotGroup);
 	m_pLegitTab->AddChild(m_pLegitHitboxGroup);
-	m_pLegitTab->AddChild(m_pTriggerbotGroup);
 	m_pLegitTab->AddChild(m_pLegitLagCompensationGroup);
+	m_pLegitTab->AddChild(m_pTriggerbotGroup);
 }
 
 void CMenu::CreateVisualsTab()
 {
+	// ==================================================================================================================
 	m_pEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pEspEnabled->SetEventHandler(std::bind(&CEsp::SetEnabled, m_pApp->Esp(), std::placeholders::_1));
 
@@ -889,72 +891,9 @@ void CMenu::CreateVisualsTab()
 	m_pEspGroup->AddChild(m_pEspBarrelEnabled);
 	m_pEspGroup->AddChild(m_pEspBarrelLabel);
 	m_pEspGroup->AddChild(m_pEspBarrelValue);
+	// ==================================================================================================================
 
-
-	m_pWeaponEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
-
-	m_pWeaponEspWeaponLabel = new CLabel(4, 20, 128, 16, "Weapon");
-	m_pWeaponEspWeaponLabel->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 34, 128, 16, "Names");
-	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspWeaponNameEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 54, 128, 16, "Bounding Box");
-	m_pWeaponEspWeaponBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspWeaponBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspGrenadeLabel = new CLabel(4, 74, 128, 16, "Grenade");
-	m_pWeaponEspGrenadeLabel->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspGrenadeNameEnabled = new CCheckbox(4, 88, 128, 16, "Names");
-	m_pWeaponEspGrenadeNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeName, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspGrenadeNameEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspGrenadeBoundingBoxEnabled = new CCheckbox(4, 108, 128, 16, "Bounding Box");
-	m_pWeaponEspGrenadeBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspGrenadeBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombLabel = new CLabel(4, 128, 128, 16, "Bomb");
-	m_pWeaponEspBombLabel->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombNameEnabled = new CCheckbox(4, 142, 128, 16, "Name");
-	m_pWeaponEspBombNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombName, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspBombNameEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombBoundingBoxEnabled = new CCheckbox(4, 162, 128, 16, "Bounding Box");
-	m_pWeaponEspBombBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspBombBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombTimerEnabled = new CCheckbox(4, 182, 128, 16, "Timer");
-	m_pWeaponEspBombTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspBombTimerEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombDefuseTimerEnabled = new CCheckbox(4, 202, 128, 16, "Defuse Timer");
-	m_pWeaponEspBombDefuseTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDefuseTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspBombDefuseTimerEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspBombDamageIndicatorEnabled = new CCheckbox(4, 222, 128, 16, "Damage Indicator");
-	m_pWeaponEspBombDamageIndicatorEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDamageIndicator, m_pApp->WeaponEsp(), std::placeholders::_1));
-	m_pWeaponEspBombDamageIndicatorEnabled->AddDependency(m_pWeaponEspEnabled);
-
-	m_pWeaponEspGroup = new CGroupbox(336, 16, 152, 308, "Weapon Esp");
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponLabel);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponBoundingBoxEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponNameEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeLabel);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeBoundingBoxEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeNameEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombLabel);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombNameEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombBoundingBoxEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombTimerEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDefuseTimerEnabled);
-	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDamageIndicatorEnabled);
-
-
+	// ==================================================================================================================
 	m_pChamsEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pChamsEnabled->SetEventHandler(std::bind(&CChams::SetEnabled, m_pApp->Chams(), std::placeholders::_1));
 
@@ -1010,7 +949,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsColorHiddenT->SetEventHandler(std::bind(&CChams::SetColorHiddenT, m_pApp->Chams(), std::placeholders::_1));
 	m_pChamsColorHiddenT->AddDependency(m_pChamsEnabled);
 
-	m_pChamsGroup = new CGroupbox(504, 16, 152, 308, "Chams");
+	m_pChamsGroup = new CGroupbox(336, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
 	m_pChamsGroup->AddChild(m_pChamsStyle);
 	m_pChamsGroup->AddChild(m_pChamsDrawOwnTeam);
@@ -1022,7 +961,119 @@ void CMenu::CreateVisualsTab()
 	m_pChamsGroup->AddChild(m_pChamsColorHiddenCT);
 	m_pChamsGroup->AddChild(m_pChamsColorVisibleT);
 	m_pChamsGroup->AddChild(m_pChamsColorHiddenT);
+	// ==================================================================================================================
 
+	// ==================================================================================================================
+	// Lag Compensation
+	m_pDrawLagCompensationStyle = new CSelectbox(4, 10, 128, 20, "Draw Style");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_NONE, "None");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_CROSS, "Cross");
+	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_BONES, "Bones");
+	m_pDrawLagCompensationStyle->SetEventHandler(std::bind(&CLagCompensation::SetDrawStyle, m_pApp->LagCompensation(), std::placeholders::_1));
+
+	m_pDrawLagCompensationFrequencyLabel = new CLabel(4, 28, 128, 20, "Draw Frequency");
+	m_pDrawLagCompensationFrequencyLabel->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
+
+	m_pDrawLagCompensationFrequency = new CSlider(4, 54, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
+	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pDrawLagCompensationFrequency->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
+
+	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 68, 128, 16, "Only Visible");
+	m_pDrawLagCompensationOnlyVisible->SetEventHandler(std::bind(&CLagCompensation::SetDrawOnlyVisible, m_pApp->LagCompensation(), std::placeholders::_1));
+	m_pDrawLagCompensationOnlyVisible->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
+
+	m_pDrawLagCompensationGroup = new CGroupbox(16, 16, 152, 120, "Lag Compensation");
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequencyLabel);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequency);
+	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationOnlyVisible);
+	// ==================================================================================================================
+
+	// ==================================================================================================================
+	// Bullet Tracer
+	m_pBulletTracerEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pBulletTracerEnabled->SetEventHandler(std::bind(&CVisuals::SetBulletTracer, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pBulletTracerSelf = new CCheckbox(4, 20, 128, 16, "Show mine");
+	m_pBulletTracerSelf->SetEventHandler(std::bind(&CVisuals::SetBulletTracerSelf, m_pApp->Visuals(), std::placeholders::_1));
+	m_pBulletTracerSelf->AddDependency(m_pBulletTracerEnabled);
+
+	m_pBulletTracerTeam = new CCheckbox(4, 40, 128, 16, "Own Team");
+	m_pBulletTracerTeam->SetEventHandler(std::bind(&CVisuals::SetBulletTracerTeam, m_pApp->Visuals(), std::placeholders::_1));
+	m_pBulletTracerTeam->AddDependency(m_pBulletTracerEnabled);
+
+	m_pBulletTracerGroup = new CGroupbox(16, 152, 152, 172, "Bullet Tracer");
+	m_pBulletTracerGroup->AddChild(m_pBulletTracerEnabled);
+	m_pBulletTracerGroup->AddChild(m_pBulletTracerSelf);;
+	m_pBulletTracerGroup->AddChild(m_pBulletTracerTeam);
+	// ==================================================================================================================
+
+	// ==================================================================================================================
+	m_pWeaponEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
+	m_pWeaponEspEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetEnabled, m_pApp->WeaponEsp(), std::placeholders::_1));
+
+	m_pWeaponEspWeaponLabel = new CLabel(4, 20, 128, 16, "Weapon");
+	m_pWeaponEspWeaponLabel->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspWeaponNameEnabled = new CCheckbox(4, 34, 128, 16, "Names");
+	m_pWeaponEspWeaponNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspWeaponNameEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspWeaponBoundingBoxEnabled = new CCheckbox(4, 54, 128, 16, "Bounding Box");
+	m_pWeaponEspWeaponBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawWeaponBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspWeaponBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspGrenadeLabel = new CLabel(4, 74, 128, 16, "Grenade");
+	m_pWeaponEspGrenadeLabel->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspGrenadeNameEnabled = new CCheckbox(4, 88, 128, 16, "Names");
+	m_pWeaponEspGrenadeNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspGrenadeNameEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspGrenadeBoundingBoxEnabled = new CCheckbox(4, 108, 128, 16, "Bounding Box");
+	m_pWeaponEspGrenadeBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawGrenadeBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspGrenadeBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombLabel = new CLabel(4, 128, 128, 16, "Bomb");
+	m_pWeaponEspBombLabel->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombNameEnabled = new CCheckbox(4, 142, 128, 16, "Name");
+	m_pWeaponEspBombNameEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombName, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombNameEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombBoundingBoxEnabled = new CCheckbox(4, 162, 128, 16, "Bounding Box");
+	m_pWeaponEspBombBoundingBoxEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombBoundingBox, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombBoundingBoxEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombTimerEnabled = new CCheckbox(4, 182, 128, 16, "Timer");
+	m_pWeaponEspBombTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombTimerEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombDefuseTimerEnabled = new CCheckbox(4, 202, 128, 16, "Defuse Timer");
+	m_pWeaponEspBombDefuseTimerEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDefuseTimer, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombDefuseTimerEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspBombDamageIndicatorEnabled = new CCheckbox(4, 222, 128, 16, "Damage Indicator");
+	m_pWeaponEspBombDamageIndicatorEnabled->SetEventHandler(std::bind(&CWeaponEsp::SetDrawBombDamageIndicator, m_pApp->WeaponEsp(), std::placeholders::_1));
+	m_pWeaponEspBombDamageIndicatorEnabled->AddDependency(m_pWeaponEspEnabled);
+
+	m_pWeaponEspGroup = new CGroupbox(184, 16, 152, 308, "Weapon Esp");
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponLabel);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponBoundingBoxEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspWeaponNameEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeLabel);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeBoundingBoxEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspGrenadeNameEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombLabel);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombNameEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombBoundingBoxEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombTimerEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDefuseTimerEnabled);
+	m_pWeaponEspGroup->AddChild(m_pWeaponEspBombDamageIndicatorEnabled);
+	// ==================================================================================================================
+
+	// ==================================================================================================================
 	m_pSoundEspEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
 	m_pSoundEspEnabled->SetEventHandler(std::bind(&CSoundEsp::SetEnabled, m_pApp->SoundEsp(), std::placeholders::_1));
 
@@ -1052,7 +1103,7 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspOnlyNotVisible->SetEventHandler(std::bind(&CSoundEsp::SetDrawOnlyNotVisible, m_pApp->SoundEsp(), std::placeholders::_1));
 	m_pSoundEspOnlyNotVisible->AddDependency(m_pSoundEspEnabled);
 
-	m_pSoundEspGroup = new CGroupbox(672, 16, 152, 308, "Sound Esp");
+	m_pSoundEspGroup = new CGroupbox(352, 16, 152, 308, "Sound Esp");
 	m_pSoundEspGroup->AddChild(m_pSoundEspEnabled);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTimeLabel);
 	m_pSoundEspGroup->AddChild(m_pSoundEspShowTime);
@@ -1061,62 +1112,9 @@ void CMenu::CreateVisualsTab()
 	m_pSoundEspGroup->AddChild(m_pSoundEspFadeoutTime);
 	m_pSoundEspGroup->AddChild(m_pSoundEspDrawOwnTeam);
 	m_pSoundEspGroup->AddChild(m_pSoundEspOnlyNotVisible);
+	// ==================================================================================================================
 
-	// Lag Compensation
-	m_pDrawLagCompensationStyle = new CSelectbox(4, 10, 128, 20, "Draw Style");
-	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_NONE, "None");
-	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_CROSS, "Cross");
-	m_pDrawLagCompensationStyle->AddOption(LC_DRAWSTYLE_BONES, "Bones");
-	m_pDrawLagCompensationStyle->SetEventHandler(std::bind(&CLagCompensation::SetDrawStyle, m_pApp->LagCompensation(), std::placeholders::_1));
-
-	m_pDrawLagCompensationFrequencyLabel = new CLabel(4, 28, 128, 20, "Draw Frequency");
-	m_pDrawLagCompensationFrequencyLabel->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
-
-	m_pDrawLagCompensationFrequency = new CSlider(4, 54, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 1.0f, 5.0f);
-	m_pDrawLagCompensationFrequency->SetEventHandler(std::bind(&CLagCompensation::SetDrawFrequency, m_pApp->LagCompensation(), std::placeholders::_1));
-	m_pDrawLagCompensationFrequency->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
-
-	m_pDrawLagCompensationOnlyVisible = new CCheckbox(4, 68, 128, 16, "Only Visible");
-	m_pDrawLagCompensationOnlyVisible->SetEventHandler(std::bind(&CLagCompensation::SetDrawOnlyVisible, m_pApp->LagCompensation(), std::placeholders::_1));
-	m_pDrawLagCompensationOnlyVisible->AddDependency(m_pDrawLagCompensationStyle, (void*)LC_DRAWSTYLE_NONE, true);
-
-	m_pDrawLagCompensationGroup = new CGroupbox(840, 16, 152, 308, "Lag Compensation");
-	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationStyle);
-	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequencyLabel);
-	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationFrequency);
-	m_pDrawLagCompensationGroup->AddChild(m_pDrawLagCompensationOnlyVisible);
-
-	m_pPlayerVisualsTab = new CTabPage("Player Visuals");
-	m_pPlayerVisualsTab->AddChild(m_pEspGroup);
-	m_pPlayerVisualsTab->AddChild(m_pWeaponEspGroup);
-	m_pPlayerVisualsTab->AddChild(m_pChamsGroup);
-	m_pPlayerVisualsTab->AddChild(m_pSoundEspGroup);
-	m_pPlayerVisualsTab->AddChild(m_pDrawLagCompensationGroup);
-
-
-	// EffectsGroup
-	m_pEffectsNoVisualRecoil = new CCheckbox(4, 0, 128, 16, "Remove Visual Recoil");
-	m_pEffectsNoVisualRecoil->SetEventHandler(std::bind(&CVisuals::SetNoVisualRecoil, m_pApp->Visuals(), std::placeholders::_1));
-
-	m_pEffectsNoSmoke = new CCheckbox(4, 20, 128, 16, "Remove Smoke");
-	m_pEffectsNoSmoke->SetEventHandler(std::bind(&CVisuals::NoSmoke, m_pApp->Visuals(), std::placeholders::_1));
-
-	m_pEffectsNoScope = new CCheckbox(4, 40, 128, 16, "Remove Scope");
-	m_pEffectsNoScope->SetEventHandler(std::bind(&CVisuals::SetNoScope, m_pApp->Visuals(), std::placeholders::_1));
-
-	m_pEffectsDisablePostprocessing = new CCheckbox(4, 60, 128, 16, "Disable PostProcessing");
-	m_pEffectsDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));
-
-	m_pEffectsNoFlash = new CCheckbox(4, 88, 128, 16, "Remove Flash");
-	m_pEffectsNoFlash->SetEventHandler(std::bind(&CVisuals::SetNoFlash, m_pApp->Visuals(), std::placeholders::_1));
-
-	m_pEffectsNoFlashLabel = new CLabel(4, 102, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
-	m_pEffectsNoFlashLabel->AddDependency(m_pEffectsNoFlash);
-
-	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
-	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
-	m_pEffectsNoFlashValue->AddDependency(m_pEffectsNoFlash);
-
+	// ==================================================================================================================
 	// OthersGroup
 	m_pVisualsOthersHandsDrawStyle = new CSelectbox(4, 12, 128, 16, "Hands Drawstyle");
 	m_pVisualsOthersHandsDrawStyle->AddOption(HANDSDRAWSTYLE_NONE, "None");
@@ -1199,18 +1197,61 @@ void CMenu::CreateVisualsTab()
 	m_pVisualsOthersMirror = new CCheckbox(156, 64, 128, 16, "Mirror");
 	m_pVisualsOthersMirror->SetEventHandler(std::bind(&CMirror::SetEnabled, m_pApp->Mirror(), std::placeholders::_1));
 
-	// Bullet Tracer
-	m_pBulletTracerEnabled = new CCheckbox(4, 0, 128, 16, "Enabled");
-	m_pBulletTracerEnabled->SetEventHandler(std::bind(&CVisuals::SetBulletTracer, m_pApp->Visuals(), std::placeholders::_1));
+	m_pVisualsOthersGroup = new CGroupbox(16, 16, 304, 308, "Others");
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHandsDrawStyle);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerSoundEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerHitpointEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilSpreadConeEnabled);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeStyle);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeColor);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmode);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswalls);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSkychanger);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonLabel);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonDistance);
+	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersMirror);
+	// ==================================================================================================================
 
-	m_pBulletTracerSelf = new CCheckbox(4, 20, 128, 16, "Show mine");
-	m_pBulletTracerSelf->SetEventHandler(std::bind(&CVisuals::SetBulletTracerSelf, m_pApp->Visuals(), std::placeholders::_1));
-	m_pBulletTracerSelf->AddDependency(m_pBulletTracerEnabled);
+	// ==================================================================================================================
+	// EffectsGroup
+	m_pEffectsNoVisualRecoil = new CCheckbox(4, 0, 128, 16, "Remove Visual Recoil");
+	m_pEffectsNoVisualRecoil->SetEventHandler(std::bind(&CVisuals::SetNoVisualRecoil, m_pApp->Visuals(), std::placeholders::_1));
 
-	m_pBulletTracerTeam = new CCheckbox(4, 40, 128, 16, "Own Team");
-	m_pBulletTracerTeam->SetEventHandler(std::bind(&CVisuals::SetBulletTracerTeam, m_pApp->Visuals(), std::placeholders::_1));
-	m_pBulletTracerTeam->AddDependency(m_pBulletTracerEnabled);
+	m_pEffectsNoSmoke = new CCheckbox(4, 20, 128, 16, "Remove Smoke");
+	m_pEffectsNoSmoke->SetEventHandler(std::bind(&CVisuals::NoSmoke, m_pApp->Visuals(), std::placeholders::_1));
 
+	m_pEffectsNoScope = new CCheckbox(4, 40, 128, 16, "Remove Scope");
+	m_pEffectsNoScope->SetEventHandler(std::bind(&CVisuals::SetNoScope, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pEffectsDisablePostprocessing = new CCheckbox(4, 60, 128, 16, "Disable PostProcessing");
+	m_pEffectsDisablePostprocessing->SetEventHandler(std::bind(&CVisuals::DisablePostProcessing, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pEffectsNoFlash = new CCheckbox(4, 88, 128, 16, "Remove Flash");
+	m_pEffectsNoFlash->SetEventHandler(std::bind(&CVisuals::SetNoFlash, m_pApp->Visuals(), std::placeholders::_1));
+
+	m_pEffectsNoFlashLabel = new CLabel(4, 102, 128, 16, "Flash Percentage", RM_FONT_NORMAL, LABEL_ORIENTATION_LEFT);
+	m_pEffectsNoFlashLabel->AddDependency(m_pEffectsNoFlash);
+
+	m_pEffectsNoFlashValue = new CSlider(4, 124, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
+	m_pEffectsNoFlashValue->SetEventHandler(std::bind(&CVisuals::NoFlash, m_pApp->Visuals(), std::placeholders::_1));
+	m_pEffectsNoFlashValue->AddDependency(m_pEffectsNoFlash);
+
+	m_pEffectsGroup = new CGroupbox(336, 16, 152, 308, "Effects");
+	m_pEffectsGroup->AddChild(m_pEffectsNoVisualRecoil);
+	m_pEffectsGroup->AddChild(m_pEffectsNoSmoke);
+	m_pEffectsGroup->AddChild(m_pEffectsNoScope);
+	m_pEffectsGroup->AddChild(m_pEffectsDisablePostprocessing);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlash);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlashLabel);
+	m_pEffectsGroup->AddChild(m_pEffectsNoFlashValue);
+	// ==================================================================================================================
+
+	// ==================================================================================================================
 	// FovChangerGroup
 	m_pFovChangerFovEnabled = new CCheckbox(4, 0, 128, 16, "FOV");
 	m_pFovChangerFovEnabled->SetEventHandler(std::bind(&CVisuals::SetFovChange, m_pApp->Visuals(), std::placeholders::_1));
@@ -1236,36 +1277,6 @@ void CMenu::CreateVisualsTab()
 	m_pFovChangerViewmodelFovValue->SetEventHandler(std::bind(&CVisuals::SetViewmodelFovValue, m_pApp->Visuals(), std::placeholders::_1));
 	m_pFovChangerViewmodelFovValue->AddDependency(m_pFovChangerViewmodelFovEnabled);
 
-
-	// Groups
-	m_pEffectsGroup = new CGroupbox(16, 16, 152, 308, "Effects");
-	m_pEffectsGroup->AddChild(m_pEffectsNoVisualRecoil);
-	m_pEffectsGroup->AddChild(m_pEffectsNoSmoke);
-	m_pEffectsGroup->AddChild(m_pEffectsNoScope);
-	m_pEffectsGroup->AddChild(m_pEffectsDisablePostprocessing);
-	m_pEffectsGroup->AddChild(m_pEffectsNoFlash);
-	m_pEffectsGroup->AddChild(m_pEffectsNoFlashLabel);
-	m_pEffectsGroup->AddChild(m_pEffectsNoFlashValue);
-
-	m_pVisualsOthersGroup = new CGroupbox(184, 16, 304, 308, "Others");
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHandsDrawStyle);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerSoundEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersHitmarkerHitpointEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersCrosshairEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilCrosshairEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSpreadConeEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersRecoilSpreadConeEnabled);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeStyle);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOtherSpreadConeColor);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersNightmode);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersAsuswalls);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersSkychanger);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdperson);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonLabel);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersThirdpersonDistance);
-	m_pVisualsOthersGroup->AddChild(m_pVisualsOthersMirror);
-
 	m_pFovChangerGroup = new CGroupbox(504, 16, 152, 308, "Fov Changer");
 	m_pFovChangerGroup->AddChild(m_pFovChangerFovEnabled);
 	m_pFovChangerGroup->AddChild(m_pFovChangerFovScopeEnabled);
@@ -1274,21 +1285,28 @@ void CMenu::CreateVisualsTab()
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovEnabled);
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovLabel);
 	m_pFovChangerGroup->AddChild(m_pFovChangerViewmodelFovValue);
+	// ==================================================================================================================
 
-	m_pBulletTracer = new CGroupbox(672, 16, 152, 308, "Bullet Tracer");
-	m_pBulletTracer->AddChild(m_pBulletTracerEnabled);
-	m_pBulletTracer->AddChild(m_pBulletTracerSelf);
-	m_pBulletTracer->AddChild(m_pBulletTracerTeam);
+	m_pVisualsOneTab = new CTabPage("Visuals I");
+	m_pVisualsOneTab->AddChild(m_pEspGroup);
+	m_pVisualsOneTab->AddChild(m_pChamsGroup);
+	// TODO: GlowGroup?
+	
+	m_pVisualsTwoTab = new CTabPage("Visuals II");
+	m_pVisualsTwoTab->AddChild(m_pDrawLagCompensationGroup);
+	m_pVisualsTwoTab->AddChild(m_pBulletTracerGroup);
+	m_pVisualsTwoTab->AddChild(m_pWeaponEspGroup);
+	m_pVisualsTwoTab->AddChild(m_pSoundEspGroup);
 
-	m_pOtherVisualsTab = new CTabPage("Other Visuals");
-	m_pOtherVisualsTab->AddChild(m_pEffectsGroup);
-	m_pOtherVisualsTab->AddChild(m_pVisualsOthersGroup);
-	m_pOtherVisualsTab->AddChild(m_pFovChangerGroup);
-	m_pOtherVisualsTab->AddChild(m_pBulletTracer);
+	m_pVisualsThreeTab = new CTabPage("Visuals III");
+	m_pVisualsThreeTab->AddChild(m_pVisualsOthersGroup);
+	m_pVisualsThreeTab->AddChild(m_pEffectsGroup);
+	m_pVisualsThreeTab->AddChild(m_pFovChangerGroup);
 
 	m_pVisualsTabContainer = new CTabContainer();
-	m_pVisualsTabContainer->AddChild(m_pPlayerVisualsTab);
-	m_pVisualsTabContainer->AddChild(m_pOtherVisualsTab);
+	m_pVisualsTabContainer->AddChild(m_pVisualsOneTab);
+	m_pVisualsTabContainer->AddChild(m_pVisualsTwoTab);
+	m_pVisualsTabContainer->AddChild(m_pVisualsThreeTab);
 	m_pVisualsTabContainer->SelectTab(0);
 
 	m_pVisualsTab = new CTabPage("Visuals");
@@ -1456,7 +1474,7 @@ void CMenu::CreateSkinChangerTab()
 	m_pSkinChangerSaveCfg = new CButton(400, 28, 128, 20, "Save Cfg");
 	m_pSkinChangerSaveCfg->SetEventHandler(std::bind(&CSkinChanger::WriteToConfig, m_pApp->SkinChanger(), "skins.cfg"));
 
-	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 1008, 300, "Skins");
+	m_pSkinChangerSkinsGroup = new CGroupbox(4, 10, 684, 300, "Skins");
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerKnife);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerGlove);
 	m_pSkinChangerSkinsGroup->AddChild(m_pSkinChangerWeapon);

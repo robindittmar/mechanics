@@ -171,7 +171,9 @@ private:
 	CTabPage* m_pVisualsTab;
 	CTabContainer* m_pVisualsTabContainer;
 
-	CTabPage* m_pPlayerVisualsTab;
+	CTabPage* m_pVisualsOneTab;
+	CTabPage* m_pVisualsTwoTab;
+	CTabPage* m_pVisualsThreeTab;
 	
 	// Esp
 	CGroupbox* m_pEspGroup;
@@ -259,10 +261,8 @@ private:
 	CSlider* m_pDrawLagCompensationFrequency;
 	CCheckbox* m_pDrawLagCompensationOnlyVisible;
 
-	CTabPage* m_pOtherVisualsTab;
-
 	// Bullet Tracer
-	CGroupbox* m_pBulletTracer;
+	CGroupbox* m_pBulletTracerGroup;
 	CCheckbox* m_pBulletTracerEnabled;
 	CCheckbox* m_pBulletTracerSelf;
 	CCheckbox* m_pBulletTracerTeam;

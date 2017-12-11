@@ -256,6 +256,9 @@ void CEsp::DrawArmorBar(ISurface* pSurface, int posX, int posY, int height, int 
 
 void CEsp::DrawBoundingBox(ISurface* pSurface, int posX, int posY, int height, int width, Color color)
 {
+	if (m_iDrawBoundingBox == ESP_STYLE_NONE)
+		return;
+
 	int x1 = posX - width / 2 - 1;	// left
 	int y1 = posY - height - 5;		// up
 	int x2 = posX + width / 2 + 1;	// right
@@ -610,8 +613,8 @@ void CEsp::DrawName(ISurface* pSurface, IClientEntity* pEntity, int posX, int po
 	pEntity->GetPlayerInfo(&pInfo);
 
 	wchar_t name[256];
-	//int iLen = pInfo.GetName(name, 256);
-	int iLen = mbstowcs(name, pInfo.guid, 33);
+	int iLen = pInfo.GetName(name, 256);
+	//int iLen = mbstowcs(name, pInfo.guid, 33);
 
 	int w, h;
 	pSurface->GetTextSize(m_iFont, name, w, h);
