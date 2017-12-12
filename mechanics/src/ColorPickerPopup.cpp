@@ -40,6 +40,9 @@ void CColorPickerPopup::OnOpen()
 	m_fSaturation = s;
 	m_fValue = v;
 
+	if (m_fSaturation <= 0.0f)
+		m_fSaturation = FLT_MIN;
+
 	m_pAlphaSlider->SetValue(m_iAlpha);
 	m_pHueSlider->SetValue((float)m_iHue);
 }

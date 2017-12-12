@@ -28,6 +28,12 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 	if (pApp->EngineClient()->IsInGame())
 	{
 		IClientEntity* pLocalEntity = pApp->GetLocalPlayer();
+
+		// Visuals
+		pApp->SoundEsp()->Think();
+		pApp->GunHud()->Think();
+		pApp->Radar()->Think();
+
 		if (pLocalEntity->IsAlive())
 		{
 			//todo: ghetto !
@@ -87,12 +93,6 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->Misc()->NoRecoil(pUserCmd);
 			pApp->Fakelag()->Think((void*)pUserCmd);
 			pApp->Misc()->JumpScout(pUserCmd);
-
-			pApp->SoundEsp()->Think();
-
-			// Visuals
-			pApp->GunHud()->Think();
-			pApp->Radar()->Think();
 
 			// Apply NoRecoil/NoSpread
 			pApp->GunAccuracy()->Think((void*)&createMoveParam);
