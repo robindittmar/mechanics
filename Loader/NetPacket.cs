@@ -8,6 +8,13 @@ namespace Loader
 {
     public class NetPacket
     {
+        public const int PacketIdOk = 0;
+        public const int PacketIdError = 1;
+
+        public const int PacketIdLogin = 100;
+        public const int PacketIdRequestPwReset = 101;
+        // HWID Reset? -> Loader könnte direkt neue HWID mitschicken; 5x automatisiert danach wir bestätigen?
+
         public NetPacket(int iMaxSize = 256)
         {
             m_iMaxSize = iMaxSize;
@@ -29,7 +36,9 @@ namespace Loader
 
             data.CopyTo(m_pData, 0);
 
-            // TODO: Read Header
+            StreamPos = 0;
+            m_iPacketSize = this.ReadInt();
+            PacketId = this.ReadInt();
         }
 
         public byte[] ToDataStream()
@@ -49,15 +58,15 @@ namespace Loader
 
         public void WriteShort(short s)
         {
-            m_pData[StreamPos++] = (byte)((s << 8) & 0xFF);
+            m_pData[StreamPos++] = (byte)((s >> 8) & 0xFF);
             m_pData[StreamPos++] = (byte)(s & 0xFF);
         }
 
         public void WriteInt(int i)
         {
-            m_pData[StreamPos++] = (byte)((i << 24) & 0xFF);
-            m_pData[StreamPos++] = (byte)((i << 16) & 0xFF);
-            m_pData[StreamPos++] = (byte)((i << 8) & 0xFF);
+            m_pData[StreamPos++] = (byte)((i >> 24) & 0xFF);
+            m_pData[StreamPos++] = (byte)((i >> 16) & 0xFF);
+            m_pData[StreamPos++] = (byte)((i >> 8) & 0xFF);
             m_pData[StreamPos++] = (byte)(i & 0xFF);
         }
 
@@ -73,27 +82,37 @@ namespace Loader
 
         public byte ReadByte()
         {
-            return 0;
+            return m_pData[StreamPos++];
         }
 
         public char ReadChar()
         {
-            return ' ';
+            return (char)m_pData[StreamPos++];
         }
 
         public short ReadShort()
         {
-            return 0;
+            StreamPos += 2;
+            return (short)((m_pData[StreamPos - 2] << 8) |
+                           (m_pData[StreamPos - 1]));
         }
 
         public int ReadInt()
         {
-            return 0;
+            StreamPos += 4;
+            return (int)((m_pData[StreamPos - 4] << 24) |
+                         (m_pData[StreamPos - 3] << 16) |
+                         (m_pData[StreamPos - 2] << 8) |
+                         (m_pData[StreamPos - 1]));
         }
 
         public string ReadString()
         {
-            return "";
+            int iLen = this.ReadInt();
+            string s = Encoding.ASCII.GetString(m_pData, StreamPos, iLen);
+
+            StreamPos += iLen;
+            return s;
         }
 
         public void Prepare()

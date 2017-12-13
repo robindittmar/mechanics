@@ -7,32 +7,47 @@ namespace Loader
 {
     public partial class Login : Form
     {
-        TcpClient m_tcpClient;
+        NetConnection m_connection;
         public Login()
         {
             InitializeComponent();
 
-            m_tcpClient = new TcpClient("wpy.ddns.net", 50504);
+            m_connection = new NetConnection("wpy.ddns.net", 50504);
         }
 
         private void btnLogin_Click(object sender, System.EventArgs e)
         {
-            NetPacket loginPacket = new NetPacket();
-            loginPacket.PacketId = 100;
+            NetPacket loginPacket = new NetPacket
+            {
+                PacketId = NetPacket.PacketIdLogin
+            };
+            loginPacket.WriteInt((int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds); // TODO: WriteLong (8-byte, ASAP)
             loginPacket.WriteString(txtId.Text);
             loginPacket.WriteString(txtPw.Text);
             loginPacket.Prepare();
+            m_connection.SendPacket(loginPacket);
 
-            m_tcpClient.GetStream().Write(loginPacket.ToDataStream(), 0, loginPacket.PacketSize);
-
-            // TODO: Receive response & check wether it was ok or not
-            if (txtId.Text == "admin" &&
-                txtPw.Text == "admin")
+            NetPacket ackPacket = new NetPacket();
+            m_connection.RecvPacket(ackPacket);
+            
+            if (ackPacket.PacketId == NetPacket.PacketIdOk)
             {
-                m_tcpClient.Close();
-
+                // Login successful
                 DialogResult = DialogResult.OK;
             }
+            else
+            {
+                int errorCode = ackPacket.ReadInt(); // unused, but need to read so we can access the error msg
+                MessageBox.Show($"Error: {ackPacket.ReadString()}");
+            }
+            
+            /*if (txtId.Text == "admin" &&
+                txtPw.Text == "admin")
+            {
+                m_connection.Disconnect();
+
+                DialogResult = DialogResult.OK;
+            }*/
         }
     }
 }
