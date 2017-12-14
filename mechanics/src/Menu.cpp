@@ -355,37 +355,46 @@ void CMenu::CreateRageTab()
 
 	m_pAimbotAutoshoot = new CCheckbox(4, 40, 128, 16, "Auto Shoot");
 	m_pAimbotAutoshoot->SetEventHandler(std::bind(&CRagebot::SetAutoshoot, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoshoot->SetTooltipText("Automatically shoot as soon as possible (by configuration)");
 	m_pAimbotAutoshoot->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotAutoscope = new CCheckbox(4, 60, 128, 16, "Auto Scope");
 	m_pAimbotAutoscope->SetEventHandler(std::bind(&CRagebot::SetAutoscope, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoscope->SetTooltipText("Scope with sniper rifles before shooting");
 	m_pAimbotAutoscope->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotAutoReload = new CCheckbox(4, 80, 128, 16, "Auto Reload");
 	m_pAimbotAutoReload->SetEventHandler(std::bind(&CRagebot::SetAutoReload, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotAutoReload->SetTooltipText("Automatically reload as soon as you're out of ammo");
 	m_pAimbotAutoReload->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipoint = new CCheckbox(4, 100, 128, 16, "Multipoint");
 	m_pAimbotMultipoint->SetEventHandler(std::bind(&CRagebot::SetMultipoint, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotMultipoint->SetTooltipText("If checked, the aimbot will check 9 different points of the hitbox, instead of the middle");
 	m_pAimbotMultipoint->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotMultipointScale = new CSlider(4, 122, 128, 16, 0.01f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 1.0f);
 	m_pAimbotMultipointScale->SetEventHandler(std::bind(&CRagebot::SetMultipointScale, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotMultipointScale->SetTooltipText("Defines how far the points are away from the middle (0 = middle, 1 = most outter)");
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotEnabled);
 	m_pAimbotMultipointScale->AddDependency(m_pAimbotMultipoint);
 
 	m_pRageNoRecoilEnabled = new CCheckbox(4, 142, 64, 16, "Remove Recoil");
 	m_pRageNoRecoilEnabled->SetEventHandler(std::bind(&CGunAccuracy::SetNoRecoil, m_pApp->GunAccuracy(), std::placeholders::_1));
+	m_pRageNoRecoilEnabled->SetTooltipText("Removes gun recoil (not visible to you)");
 
 	m_pRageNoSpreadEnabled = new CCheckbox(72, 142, 64, 16, "Remove Spread");
 	m_pRageNoSpreadEnabled->SetEventHandler(std::bind(&CGunAccuracy::SetNoSpread, m_pApp->GunAccuracy(), std::placeholders::_1));
+	m_pRageNoSpreadEnabled->SetTooltipText("Removes gun spread (not visible to you), but only on nospread servers!");
 
 	m_pAimbotHitchanceEnabled = new CCheckbox(4, 162, 128, 16, "Hitchance");
 	m_pAimbotHitchanceEnabled->SetEventHandler(std::bind(&CRagebot::SetCalculateHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotHitchanceEnabled->SetTooltipText("Check how high the percentage is of hitting your enemy");
 	m_pAimbotHitchanceEnabled->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotHitchanceSlider = new CSlider(4, 184, 128, 16, 1.0f, SLIDER_ORIENTATION_HORIZONTAL, false, 0.0f, 100.0f);
 	m_pAimbotHitchanceSlider->SetEventHandler(std::bind(&CRagebot::SetHitchance, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotHitchanceSlider->SetTooltipText("Define at which minimum percentage to shoot");
 	m_pAimbotHitchanceSlider->AddDependency(m_pAimbotEnabled);
 	m_pAimbotHitchanceSlider->AddDependency(m_pAimbotHitchanceEnabled);
 
@@ -394,6 +403,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_ORIGIN, "Closest to position");
 	m_pAimbotTargetCriteria->AddOption(TARGETCRITERIA_VIEWANGLES, "Closest to crosshair");
 	m_pAimbotTargetCriteria->SetEventHandler(std::bind(&CRagebot::SetTargetCriteria, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotTargetCriteria->SetTooltipText("Specify how the aimbot target is selected");
 	m_pAimbotTargetCriteria->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotVisibleMode = new CSelectbox(4, 252, 128, 20, "Visible mode");
@@ -401,6 +411,7 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_CANHIT, "Can Hit (Autowall)");
 	m_pAimbotVisibleMode->AddOption(VISIBLEMODE_FULLVISIBLE, "Full Visible");
 	m_pAimbotVisibleMode->SetEventHandler(std::bind(&CRagebot::SetVisibleMode, m_pApp->Ragebot(), std::placeholders::_1));
+	m_pAimbotVisibleMode->SetTooltipText("Additional filter for targets (shoot whenever, as soon as you can do damage, etc)");
 	m_pAimbotVisibleMode->AddDependency(m_pAimbotEnabled);
 
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");

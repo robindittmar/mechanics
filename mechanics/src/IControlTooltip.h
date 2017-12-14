@@ -22,7 +22,8 @@ public:
 
 	/// <summary>
 	/// Sets the tooltip text (creates CTooltip instance & takes care of displaying)
-	/// ==> Only invoke this method to set the text, everything else is done by IControlTooltip
+	/// 
+	/// Only invoke this method to set the text, everything else is done by IControlTooltip
 	/// </summary>
 	/// <param name="p">The text to display inside the Tooltip</param>
 	void SetTooltipText(const char* pTooltipText);
