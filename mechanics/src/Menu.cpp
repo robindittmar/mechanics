@@ -414,6 +414,8 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->SetTooltipText("Additional filter for targets (shoot whenever, as soon as you can do damage, etc)");
 	m_pAimbotVisibleMode->AddDependency(m_pAimbotEnabled);
 
+	// DIS IS A TEST COMMENT, IF YOU COME ACROSS THIS; THIS !MUST! BE DELETED
+
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotSilentAim);
