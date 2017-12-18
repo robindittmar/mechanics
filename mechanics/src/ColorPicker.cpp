@@ -47,12 +47,20 @@ void CColorPicker::Draw(ISurface* pSurface)
 	pSurface->DrawSetColor(m_clrValue);
 	pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
 
-	if (m_bIsEnabled)
-		pSurface->DrawSetColor(255, 0, 0, 0);
-	else
-		pSurface->DrawSetColor(g_clrControlDisabled);
-	pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
+	if (!m_bIsEnabled)
+	{
+		Color clrDisabledTransparent = g_clrControlDisabled;
+		clrDisabledTransparent.SetAlpha(200); // TODO: Higher value!
 
+		pSurface->DrawSetColor(clrDisabledTransparent);
+		pSurface->DrawFilledRect(x, y, x + m_iWidth, y + m_iHeight);
+	}
+	else
+	{
+		pSurface->DrawSetColor(255, 0, 0, 0);
+		pSurface->DrawOutlinedRect(x, y, x + m_iWidth, y + m_iHeight);
+	}
+	
 	IControlTooltip::Draw(pSurface);
 }
 

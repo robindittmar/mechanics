@@ -414,8 +414,6 @@ void CMenu::CreateRageTab()
 	m_pAimbotVisibleMode->SetTooltipText("Additional filter for targets (shoot whenever, as soon as you can do damage, etc)");
 	m_pAimbotVisibleMode->AddDependency(m_pAimbotEnabled);
 
-	// DIS IS A TEST COMMENT, IF YOU COME ACROSS THIS; THIS !MUST! BE DELETED
-
 	m_pAimbotGroup = new CGroupbox(16, 16, 152, 308, "Aimbot");
 	m_pAimbotGroup->AddChild(m_pAimbotEnabled);
 	m_pAimbotGroup->AddChild(m_pAimbotSilentAim);
@@ -951,6 +949,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsColorHiddenCT->SetTooltipText("CT - Hidden");
 	m_pChamsColorHiddenCT->SetEventHandler(std::bind(&CChams::SetColorHiddenCT, m_pApp->Chams(), std::placeholders::_1));
 	m_pChamsColorHiddenCT->AddDependency(m_pChamsEnabled);
+	m_pChamsColorHiddenCT->AddDependency(m_pChamsIgnoreZ, nullptr, true);
 
 	m_pChamsColorVisibleT = new CColorPicker(72, 190);
 	m_pChamsColorVisibleT->SetTooltipText("T - Visible");
@@ -961,6 +960,7 @@ void CMenu::CreateVisualsTab()
 	m_pChamsColorHiddenT->SetTooltipText("T - Hidden");
 	m_pChamsColorHiddenT->SetEventHandler(std::bind(&CChams::SetColorHiddenT, m_pApp->Chams(), std::placeholders::_1));
 	m_pChamsColorHiddenT->AddDependency(m_pChamsEnabled);
+	m_pChamsColorHiddenT->AddDependency(m_pChamsIgnoreZ, nullptr, true);
 
 	m_pChamsGroup = new CGroupbox(336, 16, 152, 308, "Chams");
 	m_pChamsGroup->AddChild(m_pChamsEnabled);
