@@ -3,6 +3,7 @@
 namespace Offsets
 {
 	int m_nModelIndex;
+	int m_nWorldModel;
 	int m_hMyWeapons;
 	int m_hViewModel;
 	int m_flSimulationTime;

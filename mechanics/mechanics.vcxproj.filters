@@ -366,6 +366,9 @@
     <ClCompile Include="src\IInputSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LockCursor.cpp">
+      <Filter>Source Files\Hooks</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\AntiAim.h">
@@ -790,6 +793,9 @@
     </ClInclude>
     <ClInclude Include="src\KeyBinderPopup.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LockCursor.h">
+      <Filter>Header Files\Hooks</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

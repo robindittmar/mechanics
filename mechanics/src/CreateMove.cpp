@@ -37,7 +37,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 		if (pLocalEntity->IsAlive())
 		{
 			//todo: ghetto !
-			static int bNoFlashTriggered = 0;
+			/*static int bNoFlashTriggered = 0;
 			if (bNoFlashTriggered < 2)
 			{
 				if (bNoFlashTriggered == 0 ||
@@ -46,7 +46,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 					pApp->Visuals()->NoFlash(pApp->Visuals()->GetFlashPercentage());
 					bNoFlashTriggered++;
 				}
-			}
+			}*/
 
 			// Setting every lby update prediction
 			for (int i = 0; i < MAX_PLAYERS; i++)
@@ -80,7 +80,7 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			if (GetAsyncKeyState(VK_MENU))
 			{
 				bIsFakewalk = true;
-				pApp->Fakewalk()->Update((void*)pUserCmd);
+				pApp->Fakewalk()->Think((void*)pUserCmd);
 			}
 			else
 			{*/

@@ -2,7 +2,7 @@
 
 bool ClientClass::IsWeapon()
 {
-	if (this->m_ClassID >= 204 && this->m_ClassID <= 244 ||
+	if (this->m_ClassID >= 231 && this->m_ClassID <= 272 ||
 		this->m_ClassID == CAK47 ||
 		this->m_ClassID == CDEagle ||
 		this->m_ClassID == CC4 ||

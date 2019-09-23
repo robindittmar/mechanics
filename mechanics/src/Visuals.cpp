@@ -20,7 +20,7 @@ void CVisuals::Setup()
 	IFeature::Setup();
 
 	m_pApp->EngineClient()->GetScreenSize(m_iSurfaceWidth, m_iSurfaceHeight);
-	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD**)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
+	m_dwOverridePostProcessingDisable = (bool*)(*(DWORD * *)(CPattern::FindPattern((BYTE*)m_pApp->ClientDll(), 0x50E5000, (BYTE*)"\x80\x3D\x00\x00\x00\x00\x00\x53\x56\x57\x0F\x85", "ag-----zrhli") + 0x2));
 }
 
 void CVisuals::Think(void* pParameters)
@@ -56,7 +56,7 @@ void CVisuals::NoFlash(float fFlashPercentage)
 void CVisuals::NoSmoke(bool bNoSmoke)
 {
 	static CXorString smoke_materials[] = {
-		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"),
+		/*CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"), */ // this creates awesome little circle smoke effect
 		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú±zdî§pyà¬voà"),
 		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±"),
 		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±Hbè²vhñ¦bxñ")
@@ -148,6 +148,7 @@ void CVisuals::Thirdperson()
 	}
 
 	m_pApp->EngineClient()->GetViewAngles(vecAngles);
+	static float fAdjDist = m_iThirdpersonDistance;
 	if (!m_pApp->Input()->m_fCameraInThirdPerson || m_iThirdpersonDistance != m_pApp->Input()->m_vecCameraOffset.z)
 	{
 		m_pApp->Input()->m_fCameraInThirdPerson = true;
@@ -155,7 +156,6 @@ void CVisuals::Thirdperson()
 		Ray_t ray;
 		trace_t trace;
 		CTraceFilterWorldAndPropsOnly filter;
-		float fAdjDist = m_iThirdpersonDistance;
 
 		Vector vMyHeadPos = *pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset();
 
@@ -184,6 +184,10 @@ void CVisuals::Thirdperson()
 		if (fAdjDist > CAM_MAX_DIST)
 			fAdjDist = CAM_MAX_DIST;
 
+		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, fAdjDist);
+	}
+	else
+	{
 		m_pApp->Input()->m_vecCameraOffset = Vector(vecAngles.x, vecAngles.y, fAdjDist);
 	}
 }
@@ -264,6 +268,7 @@ bool CVisuals::NoScope(unsigned int vguiPanel)
 		return false;
 
 	static CXorString hudZoom("_~á˜xdè");
+	const char* a = m_pApp->Panel()->GetName(vguiPanel);
 	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
 		return true;
 	return false;

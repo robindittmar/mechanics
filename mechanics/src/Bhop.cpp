@@ -49,8 +49,8 @@ void CBhop::AutoStrafe(IClientEntity* pLocalEntity, CUserCmd* pUserCmd)
 
 	DWORD moveType = pLocalEntity->GetMoveType();
 	if (!(pLocalEntity->GetFlags() & FL_ONGROUND) &&
-		!(moveType & MOVETYPE_NOCLIP) &&
-		!(moveType & MOVETYPE_LADDER))
+		!(moveType & MOVETYPE_NOCLIP) /*&&
+		!(moveType & MOVETYPE_LADDER)*/) // TODO: ON_LADDER CHECK NOT WORKING!!
 	{
 		switch (m_iAutoStrafeMode)
 		{

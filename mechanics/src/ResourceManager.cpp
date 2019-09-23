@@ -53,7 +53,7 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 
 	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 	m_pApp->InitKeyValues()(pKeyValues, pBaseType);
-	m_pApp->LoadFromBuffer()(pKeyValues, pName, pMaterial, NULL, NULL, NULL);
+	m_pApp->LoadFromBuffer()(pKeyValues, pName, pMaterial, NULL, NULL, NULL, NULL);
 
 	IMaterial* pMat = m_pApp->MaterialSystem()->CreateMaterial(pName, pKeyValues);
 	pMat->IncrementReferenceCount();
@@ -90,7 +90,7 @@ void CResourceManager::CreateMirror()
 		KeyValues* pKeyValues;
 		pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 		m_pApp->InitKeyValues()(pKeyValues, m_xorUnlitGeneric.ToCharArray());
-		m_pApp->LoadFromBuffer()(pKeyValues, xorMatMechanicsMirr.ToCharArray(), /*\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}*/CXorString("5^ë®~Â§yn÷«t)¹\x1d\x2§æujö§cný¶byàà7)è§tcä¬~hözb÷°5\x1ø").ToCharArray(), NULL, NULL, NULL);
+		m_pApp->LoadFromBuffer()(pKeyValues, xorMatMechanicsMirr.ToCharArray(), /*\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}*/CXorString("5^ë®~Â§yn÷«t)¹\x1d\x2§æujö§cný¶byàà7)è§tcä¬~hözb÷°5\x1ø").ToCharArray(), NULL, NULL, NULL, NULL);
 
 		m_pMatMirror = m_pApp->MaterialSystem()->CreateMaterial(xorMatMechanicsMirr.ToCharArray(), pKeyValues);
 		m_pMatMirror->IncrementReferenceCount();

@@ -106,7 +106,7 @@ private:
 		startsolid = other.startsolid;
 	}
 
-	CGameTrace& CGameTrace::operator=(const CGameTrace& other)
+	/*CGameTrace& CGameTrace::operator=(const CGameTrace& other)
 	{
 		startpos = other.startpos;
 		endpos = other.endpos;
@@ -124,7 +124,7 @@ private:
 		hit_entity = other.hit_entity;
 		hitbox = other.hitbox;
 		return *this;
-	}
+	}*/
 };
 
 typedef CGameTrace trace_t;

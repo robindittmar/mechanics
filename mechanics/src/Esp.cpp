@@ -511,7 +511,7 @@ void CEsp::DrawActiveWeapon(ISurface * pSurface, IClientEntity* pEntity, int pos
 	}
 
 	wchar_t wcWeaponName[256];
-	mbstowcs(wcWeaponName, pActiveWeapon->GetWeaponInfo()->szWeaponName, 256);
+	mbstowcs(wcWeaponName, pActiveWeapon->GetWeaponInfo()->m_WeaponName, 256);
 
 	DrawWeaponText(pSurface, wcWeaponName + iWeaponUnderscoreLen, posX, posY, alpha);
 }
@@ -537,7 +537,7 @@ void CEsp::DrawAmmoBar(ISurface* pSurface, IClientEntity* pEntity, int posX, int
 	if (!pWeaponInfo)
 		return;
 
-	float ammopercentage = (pWeaponInfo->iMaxClip1 - iClip1) / (float)pWeaponInfo->iMaxClip1;
+	float ammopercentage = (pWeaponInfo->m_MaxClip - iClip1) / (float)pWeaponInfo->m_MaxClip;
 	int x1 = posX - width / 2;
 	int x2 = posX + width / 2;
 
@@ -585,7 +585,7 @@ void CEsp::DrawAmmoNumber(ISurface* pSurface, IClientEntity* pEntity, int posX, 
 		return;
 
 	wchar_t wAmmoNumber[256];
-	swprintf(wAmmoNumber, 16, L"%d / %d", iClip1, pWeaponInfo->iMaxClip1);
+	swprintf(wAmmoNumber, 16, L"%d / %d", iClip1, pWeaponInfo->m_MaxClip);
 
 	DrawWeaponText(pSurface, wAmmoNumber, posX, posY, alpha);
 }

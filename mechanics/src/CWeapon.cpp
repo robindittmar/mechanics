@@ -1,8 +1,13 @@
 #include "CWeapon.h"
 
-int CWeapon::GetWeaponId()
+#define GETWEAPONINFO_INDEX				454
+#define UPDATEACCURACYPENALTY_INDEX		477 // before 470
+#define GETINACCURACY_INDEX				476 // before 469
+#define GETSPREAD_INDEX					446 // before 439
+
+short CWeapon::GetWeaponId()
 {
-	return *(int*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
+	return *(short*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
 }
 
 bool CWeapon::IsWeaponX(int weaponId)
@@ -12,7 +17,7 @@ bool CWeapon::IsWeaponX(int weaponId)
 
 bool CWeapon::IsKnife()
 {
-	int weaponId = this->GetWeaponId();
+	short weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_KNIFE ||
 		weaponId == WEAPON_KNIFE_BAYONET ||
 		weaponId == WEAPON_KNIFE_FLIP ||
@@ -31,7 +36,7 @@ bool CWeapon::IsKnife()
 
 bool CWeapon::IsSniper()
 {
-	int weaponId = this->GetWeaponId();
+	short weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_AWP ||
 		weaponId == WEAPON_SSG08 ||
 		weaponId == WEAPON_G3SG1 ||
@@ -42,7 +47,7 @@ bool CWeapon::IsSniper()
 
 bool CWeapon::IsNade()
 {
-	int weaponId = this->GetWeaponId();
+	short weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_HEGRENADE ||
 		weaponId == WEAPON_INCGRENADE ||
 		weaponId == WEAPON_DECOY ||
@@ -60,7 +65,7 @@ bool CWeapon::IsC4()
 
 bool CWeapon::IsPistol()
 {
-	int weaponId = this->GetWeaponId();
+	short weaponId = this->GetWeaponId();
 	if (weaponId == WEAPON_DEAGLE ||
 		weaponId == WEAPON_REVOLVER ||
 		weaponId == WEAPON_FIVESEVEN ||
@@ -108,7 +113,7 @@ float CGrenade::GetThrowTime()
 CWeaponInfo* CWeapon::GetWeaponInfo()
 {
 	typedef CWeaponInfo*(__thiscall* GetWeaponData_t)(void*);
-	return ((GetWeaponData_t)(*(void***)this)[446])(this);
+	return ((GetWeaponData_t)(*(void***)this)[GETWEAPONINFO_INDEX])(this);
 }
 
 float CWeapon::GetAccuracyPenalty()
@@ -134,17 +139,17 @@ Vector CWeapon::GetVecMax()
 void CWeapon::UpdateAccuracyPenalty()
 {
 	typedef void(__thiscall *UpdateAccuracyPenalty_t)(void*);
-	((UpdateAccuracyPenalty_t)(*(void***)this)[470])(this);
+	((UpdateAccuracyPenalty_t)(*(void***)this)[UPDATEACCURACYPENALTY_INDEX])(this);
 }
 
 float CWeapon::GetInaccuracy()
 {
 	typedef float(__thiscall *GetInaccuracy_t)(void*);
-	return ((GetInaccuracy_t)(*(void***)this)[469])(this);
+	return ((GetInaccuracy_t)(*(void***)this)[GETINACCURACY_INDEX])(this);
 }
 
 float CWeapon::GetSpread()
 {
 	typedef float(__thiscall* GetSpread_t)(void*);
-	return ((GetSpread_t)(*(void***)this)[439])(this);
+	return ((GetSpread_t)(*(void***)this)[GETSPREAD_INDEX])(this);
 }

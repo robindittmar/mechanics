@@ -207,7 +207,7 @@ void CSkinChanger::Think(void* pParameters)
 		if (!pWeapon)
 			continue;
 
-		int iWeaponId = *pWeapon->GetItemDefinitionIndex();
+		short iWeaponId = *pWeapon->GetItemDefinitionIndex();
 
 		this->ApplyCustomModel(pLocalEntity, pWeapon);
 
@@ -520,9 +520,9 @@ void CSkinChanger::SortWeaponsAndSkinsByName()
 		m_vWeapons.emplace_back(mIt->second);
 	}
 
-	std::sort(m_vWeapons.begin(), m_vWeapons.end(), [](const WeaponMetadata_t& a, const WeaponMetadata_t& b) {
+	/*std::sort(m_vWeapons.begin(), m_vWeapons.end(), [](const WeaponMetadata_t& a, const WeaponMetadata_t& b) {
 		return strcmp(a.readableName, b.readableName) < 0;
-	});
+	});*/
 	sortWeaps.FinishBenchmark();
 	sortWeaps.PrintBenchmark("Sorting Weapons");
 

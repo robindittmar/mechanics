@@ -8,20 +8,20 @@ class CUserCmd;
 class CInput
 {
 public:
-	void*               pvftable;                     //0x00
+	char				pad_0x00[0x0C]; // 0x00
 	bool                m_fTrackIRAvailable;          //0x04
 	bool                m_fMouseInitialized;          //0x05
 	bool                m_fMouseActive;               //0x06
 	bool                m_fJoystickAdvancedInit;      //0x07
 	char                pad_0x08[0x2C];               //0x08
-	void*               m_pKeys;                      //0x34
+	void*				m_pKeys;                      //0x34
 	char                pad_0x38[0x64];               //0x38
-	int					pad_0x41;
-	int					pad_0x42;
+	int                 pad_0x41;
+	int                 pad_0x42;
 	bool                m_fCameraInterceptingMouse;   //0x9C
 	bool                m_fCameraInThirdPerson;       //0x9D
 	bool                m_fCameraMovingWithMouse;     //0x9E
-	Vector				m_vecCameraOffset;            //0xA0
+	Vector              m_vecCameraOffset;            //0xA0
 	bool                m_fCameraDistanceMove;        //0xAC
 	int                 m_nCameraOldX;                //0xB0
 	int                 m_nCameraOldY;                //0xB4
@@ -33,8 +33,8 @@ public:
 	float               m_flLastForwardMove;          //0xDC
 	int                 m_nClearInputState;           //0xE0
 	char                pad_0xE4[0x8];                //0xE4
-	CUserCmd*           m_pCommands;                  //0xEC
-	CVerifiedUserCmd*   m_pVerifiedCommands;          //0xF0
+	CUserCmd*			m_pCommands;                  //0xEC
+	CVerifiedUserCmd*	m_pVerifiedCommands;          //0xF0
 };
 
 #endif // __CINPUT_H__

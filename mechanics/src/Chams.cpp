@@ -318,7 +318,7 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 		bool bIsLocalPlayer = pLocalEntity == pModelEntity;
 		int iLocalTeam = pLocalEntity->GetTeamNum();
 		int iModelTeamNum = pModelEntity->GetTeamNum();
-
+		
 		if (!(bIsLocalPlayer && m_pApp->Visuals()->GetThirdperson() && m_bRenderLocalplayer ||
 			!bIsLocalPlayer && m_bRenderTeam && iModelTeamNum == iLocalTeam ||
 			iModelTeamNum != iLocalTeam) ||

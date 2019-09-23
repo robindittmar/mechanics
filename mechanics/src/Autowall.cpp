@@ -35,11 +35,11 @@ namespace Autowall
 		data.penetrate_count = 4;
 		data.trace_length = 0.0f;
 		CWeaponInfo* wpn_data = weapon->GetWeaponInfo();
-		data.current_damage = (float)wpn_data->iDamage;
+		data.current_damage = (float)wpn_data->m_WeaponDamage;
 
 		while ((data.penetrate_count > 0) && (data.current_damage >= 1.0f))
 		{
-			data.trace_length_remaining = wpn_data->flRange - data.trace_length;
+			data.trace_length_remaining = wpn_data->m_WeaponRange - data.trace_length;
 			Vector End_Point = data.src + data.direction * data.trace_length_remaining;
 
 			TraceLine(data.src, End_Point, MASK_SHOT, &data.enter_trace);
@@ -51,8 +51,8 @@ namespace Autowall
 			if ((data.enter_trace.hitgroup <= 7) && (data.enter_trace.hitgroup > 0) && (local->GetTeamNum() != data.enter_trace.hit_entity->GetTeamNum()))
 			{
 				data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
-				data.current_damage *= pow(wpn_data->flRangeModifier, data.trace_length * 0.002);
-				ScaleDamage(data.enter_trace.hitgroup, data.enter_trace.hit_entity, wpn_data->flArmorRatio, data.current_damage);
+				data.current_damage *= pow(wpn_data->m_RangeModifier, data.trace_length * 0.002);
+				ScaleDamage(data.enter_trace.hitgroup, data.enter_trace.hit_entity, wpn_data->m_ArmorRatio, data.current_damage);
 				return true;
 			}
 
@@ -191,7 +191,7 @@ namespace Autowall
 		float enter_surf_penetration_mod = enter_surface_data->game.flPenetrationModifier;
 
 		data.trace_length += data.enter_trace.fraction * data.trace_length_remaining;
-		data.current_damage *= pow(wpn_data->flRangeModifier, (data.trace_length * 0.002));
+		data.current_damage *= pow(wpn_data->m_RangeModifier, (data.trace_length * 0.002));
 
 		if ((data.trace_length > 3000.f) || (enter_surf_penetration_mod < 0.1f))
 			data.penetrate_count = 0;
@@ -230,7 +230,7 @@ namespace Autowall
 		}
 
 		float v34 = fmaxf(0.f, 1.0f / combined_penetration_modifier);
-		float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.f, (3.0f / wpn_data->flPenetration) * 1.25f);
+		float v35 = (data.current_damage * final_damage_modifier) + v34 * 3.0f * fmaxf(0.f, (3.0f / wpn_data->m_Penetration) * 1.25f);
 		float thickness = (trace_exit.endpos - data.enter_trace.endpos).Length();
 		thickness *= thickness;
 		thickness *= v34;

@@ -267,7 +267,7 @@ void CWeaponEsp::DrawWeaponName(CWeapon* pCurEntity, int posX, int posY)
 	static int iWeaponUnderscoreLen = strlen("weapon_");
 
 	wchar_t wcWeaponName[256];
-	mbstowcs(wcWeaponName, pCurEntity->GetWeaponInfo()->szWeaponName, 256);
+	mbstowcs(wcWeaponName, pCurEntity->GetWeaponInfo()->m_WeaponName, 256);
 	DrawWeaponName(wcWeaponName + iWeaponUnderscoreLen, posX, posY);
 }
 

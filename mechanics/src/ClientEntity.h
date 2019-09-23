@@ -100,19 +100,22 @@
 
 enum MoveType_t
 {
-	MOVETYPE_NONE = 0,
-	MOVETYPE_ISOMETRIC,
-	MOVETYPE_WALK,
-	MOVETYPE_STEP,
-	MOVETYPE_FLY,
-	MOVETYPE_FLYGRAVITY,
-	MOVETYPE_VPHYSICS,
-	MOVETYPE_PUSH,
-	MOVETYPE_NOCLIP,
-	MOVETYPE_LADDER,
-	MOVETYPE_OBSERVER,
-	MOVETYPE_CUSTOM,
+	MOVETYPE_NONE = 0,			// never moves
+	MOVETYPE_ISOMETRIC,			// For players -- in TF2 commander view, etc.
+	MOVETYPE_WALK,				// Player only - moving on the ground
+	MOVETYPE_STEP,				// gravity, special edge handling -- monsters use this
+	MOVETYPE_FLY,				// No gravity, but still collides with stuff
+	MOVETYPE_FLYGRAVITY,		// flies through the air + is affected by gravity
+	MOVETYPE_VPHYSICS,			// uses VPHYSICS for simulation
+	MOVETYPE_PUSH,				// no clip to world, push and crush
+	MOVETYPE_NOCLIP,			// No gravity, no collisions, still do velocity/avelocity
+	MOVETYPE_LADDER,			// Used by players only when going onto a ladder
+	MOVETYPE_OBSERVER,			// Observer movement, depends on player's observer mode
+	MOVETYPE_CUSTOM,			// Allows the entity to describe its own physics
+
+	// should always be defined as the last item in the list
 	MOVETYPE_LAST = MOVETYPE_CUSTOM,
+
 	MOVETYPE_MAX_BITS = 4
 };
 
@@ -130,7 +133,7 @@ class IClientUnknown;
 
 class IClientThinkable {
 public:
-	virtual IClientUnknown*		GetIClientUnknown() = 0;
+	virtual IClientUnknown* GetIClientUnknown() = 0;
 	virtual void				ClientThink() = 0;
 	virtual ClientThinkHandle_t	GetThinkHandle() = 0;
 	virtual void				SetThinkHandle(ClientThinkHandle_t hThink) = 0;
@@ -139,9 +142,9 @@ public:
 
 class IClientNetworkable {
 public:
-	virtual IClientUnknown*  GetIClientUnknown() = 0;
+	virtual IClientUnknown* GetIClientUnknown() = 0;
 	virtual void             Release() = 0;
-	virtual ClientClass*     GetClientClass() = 0;
+	virtual ClientClass* GetClientClass() = 0;
 	virtual void             NotifyShouldTransmit(int state) = 0;
 	virtual void             OnPreDataChanged(int updateType) = 0;
 	virtual void             OnDataChanged(int updateType) = 0;
@@ -151,7 +154,7 @@ public:
 	virtual bool             IsDormant(void) = 0;
 	virtual int              EntIndex(void) const = 0;
 	virtual void             ReceiveMessage(int classID, bf_read& msg) = 0;
-	virtual void*            GetDataTableBasePtr() = 0;
+	virtual void* GetDataTableBasePtr() = 0;
 	virtual void             SetDestroyedOnRecreateEntities(void) = 0;
 };
 
@@ -167,42 +170,42 @@ class matrix3x4_t;
 
 class IClientRenderable {
 public:
-	virtual IClientUnknown*            GetIClientUnknown() = 0;
-	virtual Vector const&              GetRenderOrigin(void) = 0;
-	virtual QAngle const&              GetRenderAngles(void) = 0;
+	virtual IClientUnknown* GetIClientUnknown() = 0;
+	virtual Vector const& GetRenderOrigin(void) = 0;
+	virtual QAngle const& GetRenderAngles(void) = 0;
 	virtual bool                       ShouldDraw(void) = 0;
 	virtual int                        GetRenderFlags(void) = 0; // ERENDERFLAGS_xxx
 	virtual void                       Unused(void) const {}
 	virtual ClientShadowHandle_t       GetShadowHandle() const = 0;
-	virtual ClientRenderHandle_t&      RenderHandle() = 0;
-	virtual const model_t*             GetModel() const = 0;
-	virtual int                        DrawModel(int flags, const int /*RenderableInstance_t*/ &instance) = 0;
+	virtual ClientRenderHandle_t& RenderHandle() = 0;
+	virtual const model_t* GetModel() const = 0;
+	virtual int                        DrawModel(int flags, const int /*RenderableInstance_t*/& instance) = 0;
 	virtual int                        GetBody() = 0;
 	virtual void                       GetColorModulation(float* color) = 0;
 	virtual bool                       LODTest() = 0;
-	virtual bool                       SetupBones(matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime) = 0;
-	virtual void                       SetupWeights(const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights) = 0;
+	virtual bool                       SetupBones(matrix3x4_t* pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime) = 0;
+	virtual void                       SetupWeights(const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights) = 0;
 	virtual void                       DoAnimationEvents(void) = 0;
 	virtual void* /*IPVSNotify*/       GetPVSNotifyInterface() = 0;
 	virtual void                       GetRenderBounds(Vector& mins, Vector& maxs) = 0;
 	virtual void                       GetRenderBoundsWorldspace(Vector& mins, Vector& maxs) = 0;
-	virtual void                       GetShadowRenderBounds(Vector &mins, Vector &maxs, int /*ShadowType_t*/ shadowType) = 0;
+	virtual void                       GetShadowRenderBounds(Vector& mins, Vector& maxs, int /*ShadowType_t*/ shadowType) = 0;
 	virtual bool                       ShouldReceiveProjectedTextures(int flags) = 0;
-	virtual bool                       GetShadowCastDistance(float *pDist, int /*ShadowType_t*/ shadowType) const = 0;
-	virtual bool                       GetShadowCastDirection(Vector *pDirection, int /*ShadowType_t*/ shadowType) const = 0;
+	virtual bool                       GetShadowCastDistance(float* pDist, int /*ShadowType_t*/ shadowType) const = 0;
+	virtual bool                       GetShadowCastDirection(Vector* pDirection, int /*ShadowType_t*/ shadowType) const = 0;
 	virtual bool                       IsShadowDirty() = 0;
 	virtual void                       MarkShadowDirty(bool bDirty) = 0;
-	virtual IClientRenderable*         GetShadowParent() = 0;
-	virtual IClientRenderable*         FirstShadowChild() = 0;
-	virtual IClientRenderable*         NextShadowPeer() = 0;
+	virtual IClientRenderable* GetShadowParent() = 0;
+	virtual IClientRenderable* FirstShadowChild() = 0;
+	virtual IClientRenderable* NextShadowPeer() = 0;
 	virtual int /*ShadowType_t*/       ShadowCastType() = 0;
 	virtual void                       CreateModelInstance() = 0;
 	virtual ModelInstanceHandle_t      GetModelInstance() = 0;
-	virtual const matrix3x4_t&         RenderableToWorldTransform() = 0;
-	virtual int                        LookupAttachment(const char *pAttachmentName) = 0;
-	virtual   bool                     GetAttachment(int number, Vector &origin, QAngle &angles) = 0;
-	virtual bool                       GetAttachment(int number, matrix3x4_t &matrix) = 0;
-	virtual float*                     GetRenderClipPlane(void) = 0;
+	virtual const matrix3x4_t& RenderableToWorldTransform() = 0;
+	virtual int                        LookupAttachment(const char* pAttachmentName) = 0;
+	virtual   bool                     GetAttachment(int number, Vector& origin, QAngle& angles) = 0;
+	virtual bool                       GetAttachment(int number, matrix3x4_t& matrix) = 0;
+	virtual float* GetRenderClipPlane(void) = 0;
 	virtual int                        GetSkin() = 0;
 	virtual void                       OnThreadedDrawSetup() = 0;
 	virtual bool                       UsesFlexDelayedWeights() = 0;
@@ -216,21 +219,21 @@ class CBaseHandle;
 class IHandleEntity {
 public:
 	virtual ~IHandleEntity() {}
-	virtual void SetRefEHandle(const CBaseHandle &handle) = 0;
+	virtual void SetRefEHandle(const CBaseHandle& handle) = 0;
 	virtual const CBaseHandle& GetRefEHandle() const = 0;
 };
 
 
 class IClientUnknown : public IHandleEntity {
 public:
-	virtual ICollideable*              GetCollideable() = 0;
-	virtual IClientNetworkable*        GetClientNetworkable() = 0;
-	virtual IClientRenderable*         GetClientRenderable() = 0;
-	virtual void*                      GetIClientEntity() = 0;
-	virtual C_BaseEntity*              GetBaseEntity() = 0;
-	virtual IClientThinkable*          GetClientThinkable() = 0;
+	virtual ICollideable* GetCollideable() = 0;
+	virtual IClientNetworkable* GetClientNetworkable() = 0;
+	virtual IClientRenderable* GetClientRenderable() = 0;
+	virtual void* GetIClientEntity() = 0;
+	virtual C_BaseEntity* GetBaseEntity() = 0;
+	virtual IClientThinkable* GetClientThinkable() = 0;
 	//virtual IClientModelRenderable*  GetClientModelRenderable() = 0;
-	virtual IClientAlphaProperty*      GetClientAlphaProperty() = 0;
+	virtual IClientAlphaProperty* GetClientAlphaProperty() = 0;
 };
 
 class CBaseViewModel;
@@ -246,7 +249,7 @@ public:
 	float m_flWeightDeltaRate; //0x0024
 	float m_flPlaybackRate; //0x0028
 	float m_flCycle; //0x002C
-	void *m_pOwner; //0x0030 // player's thisptr
+	void* m_pOwner; //0x0030 // player's thisptr
 	char  pad_0038[4]; //0x0034
 }; //Size: 0x0038
 
@@ -262,7 +265,7 @@ public:
 	virtual void             Release(void) = 0;
 	virtual const Vector     GetAbsOrigin(void) const = 0;
 	virtual const QAngle     GetAbsAngles(void) const = 0;
-	virtual void*            GetMouth(void) = 0;
+	virtual void* GetMouth(void) = 0;
 	virtual bool             GetSoundSpatialization(SpatializationInfo_t info) = 0;
 	virtual bool             IsBlurred(void) = 0;
 
@@ -320,9 +323,9 @@ public:
 class CBaseAttributableItem : public IClientEntity
 {
 public:
-	inline int* GetItemDefinitionIndex() {
+	inline short* GetItemDefinitionIndex() {
 		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemDefinitionIndex
-		return (int*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
+		return (short*)((unsigned long)this + Offsets::m_iItemDefinitionIndex);
 	}
 	inline int* GetItemIDHigh() {
 		// DT_BaseAttributableItem -> m_AttributeManager -> m_Item -> m_iItemIDHigh
@@ -365,7 +368,8 @@ public:
 		return (int*)((unsigned long)this + Offsets::m_nFallbackStatTrak);
 	}
 	inline void* GetWorldModel() {
-		return *(void**)((unsigned long)this + OFFSET_WORLDMODEL);
+		//return *(void**)((unsigned long)this + OFFSET_WORLDMODEL);
+		return *(void**)((unsigned long)this + Offsets::m_hWeaponWorldModel);
 	}
 };
 
@@ -381,7 +385,7 @@ public:
 		return *(void**)((unsigned long)this + Offsets::DT_BaseViewModel::m_hWeapon);
 	}
 	inline void SetWeaponModel(const char* pFilename, IClientUnknown* pWeapon) {
-		typedef void(__thiscall *SetWeaponModel_t)(void*, char const*, IClientUnknown*);
+		typedef void(__thiscall * SetWeaponModel_t)(void*, char const*, IClientUnknown*);
 		return ((SetWeaponModel_t)(*(void***)this)[242])(this, pFilename, pWeapon);
 	}
 };

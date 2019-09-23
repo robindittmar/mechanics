@@ -93,7 +93,7 @@ void CTriggerbot::Think(void* pParameters)
 
 		// Get trace positions
 		Vector vStartPos = (*pLocalEntity->GetOrigin() + *pLocalEntity->GetEyeOffset()) + (*pLocalEntity->GetVelocity() * fInputSampleTime);
-		Vector vEndPos = vStartPos + (vForward * pWeaponInfo->flRange);
+		Vector vEndPos = vStartPos + (vForward * pWeaponInfo->m_WeaponRange);
 
 		// Tracing
 		Ray_t ray;
@@ -113,6 +113,7 @@ void CTriggerbot::Think(void* pParameters)
 		if (pHitEntity->IsDormant())
 			return;
 
+		int a = pHitEntity->GetClientClass()->m_ClassID;
 		if (pHitEntity->GetClientClass()->m_ClassID != CCSPlayer)
 			return;
 

@@ -574,7 +574,7 @@ bool CRagebot::CalculateHitchance(IClientEntity* pLocalEntity, CWeapon* pActiveW
 
 		AngleVectors(qCurAngles, &vForward);
 
-		ray.Init(vHeadPos, vHeadPos + (vForward * pWeaponInfo->flRange));
+		ray.Init(vHeadPos, vHeadPos + (vForward * pWeaponInfo->m_WeaponRange));
 		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
 		if (trace.DidHitEntity(pTarget))
 		{

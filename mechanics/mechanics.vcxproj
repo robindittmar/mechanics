@@ -23,33 +23,33 @@
     <ProjectGuid>{B75186D0-9571-4AE3-A692-774F0DB75184}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>mechanics</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>mechanics</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -193,6 +193,7 @@
     <ClCompile Include="src\LagCompensationPlayerList.cpp" />
     <ClCompile Include="src\Legitbot.cpp" />
     <ClCompile Include="src\ConVar.cpp" />
+    <ClCompile Include="src\LockCursor.cpp" />
     <ClCompile Include="src\lodepng.cpp" />
     <ClCompile Include="src\LowerBodyYawProxy.cpp" />
     <ClCompile Include="src\MaterialVisuals.cpp" />
@@ -311,6 +312,7 @@
     <ClInclude Include="src\Legitbot.h" />
     <ClInclude Include="src\ConVar.h" />
     <ClInclude Include="src\ICVar.h" />
+    <ClInclude Include="src\LockCursor.h" />
     <ClInclude Include="src\lodepng.h" />
     <ClInclude Include="src\LowerBodyYawProxy.h" />
     <ClInclude Include="src\MaterialVisuals.h" />

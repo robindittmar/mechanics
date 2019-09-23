@@ -29,6 +29,9 @@
 #define SETCLIPRECT_INDEX			147
 #define GETCLIPRECT_INDEX			146
 
+#define UNLOCKCURSOR_INDEX			66
+#define LOCKCURSOR_INDEX			67
+
 void ISurface::SetClipRect(int x0, int y0, int x1, int y1)
 {
 	typedef void(__thiscall *SetClipRect_t)(void*, int, int, int, int);
@@ -205,4 +208,16 @@ void ISurface::GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall
 {
 	typedef void(__thiscall *TextSize_t)(void*, HFont, const wchar_t*, int&, int&);
 	((TextSize_t)(*(void***)this)[GETTEXTSIZE_INDEX])(this, font, text, wide, tall);
+}
+
+void ISurface::UnlockCursor()
+{
+	typedef void(__thiscall *UnlockCursor_t)(void*);
+	((UnlockCursor_t)(*(void***)this)[UNLOCKCURSOR_INDEX])(this);
+}
+
+void ISurface::LockCursor()
+{
+	typedef void(__thiscall *LockCursor_t)(void*);
+	((LockCursor_t)(*(void***)this)[LOCKCURSOR_INDEX])(this);
 }

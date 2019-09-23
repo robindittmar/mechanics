@@ -311,27 +311,30 @@ void CApplication::Hook()
 	g_pDrawModelExecute = (DrawModelExecute_t)m_pModelRenderHook->Hook(21, (DWORD*)hk_DrawModelExecute);
 
 	m_pClientHook = new VMTHook((DWORD*)this->m_pClient);
-	g_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(36, (DWORD*)hk_FrameStageNotify);
+	g_pFrameStageNotify = (FrameStageNotify_t)m_pClientHook->Hook(37, (DWORD*)hk_FrameStageNotify);
 
 	m_pPanelHook = new VMTHook((DWORD*)this->m_pPanel);
 	g_pPaintTraverse = (PaintTraverse_t)m_pPanelHook->Hook(41, (DWORD*)hk_PaintTraverse);
 
 	m_pSurfaceHook = new VMTHook((DWORD*)this->m_pSurface);
 	g_pPlaySound = (PlaySound_t)m_pSurfaceHook->Hook(82, (DWORD*)hk_PlaySound);
+	g_pLockCursor = (LockCursor_t)m_pSurfaceHook->Hook(67, (DWORD*)hk_LockCursor);
 
 	m_pGameEventManagerHook = new VMTHook((DWORD*)this->m_pGameEventManager);
 	g_pFireEventClientSide = (FireEventClientSide_t)m_pGameEventManagerHook->Hook(9, (DWORD*)hk_FireEventClientSide);
 
 	m_pViewRenderHook = new VMTHook((DWORD*)m_pViewRender);
 	g_pRenderView = (RenderView_t)m_pViewRenderHook->Hook(6, (DWORD*)hk_RenderView);
-	g_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(40, (DWORD*)hk_RenderSmokeOverlay);
+	g_pRenderSmokeOverlay = (RenderSmokeOverlay_t)m_pViewRenderHook->Hook(41 /*before 40*/, (DWORD*)hk_RenderSmokeOverlay);
 
 	m_pEngineSoundHook = new VMTHook((DWORD*)m_pEngineSound);
 	g_pEmitSound1 = (EmitSound1_t)m_pEngineSoundHook->Hook(5, (DWORD*)hk_EmitSound1);
-	g_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
+	//g_pEmitSound2 = (EmitSound2_t)m_pEngineSoundHook->Hook(6, (DWORD*)hk_EmitSound2);
 
 	m_pMdlHook = new VMTHook((DWORD*)m_pMdlCache);
 	g_pFindMdl = (FindMdl_t)m_pMdlHook->Hook(10, (DWORD*)hk_FindMDL);
+
+
 
 	// Proxy functions
 	g_pSequenceProxy = m_pNetVarSequence->HookProxy(hk_SetViewModelSequence);
@@ -386,7 +389,9 @@ void CApplication::GetLibrarys()
 {
 	// Grab engine addresses
 	this->m_dwTier0Dll = (DWORD)GetModuleHandle(/*tier0.dll*/"tier0.dll");
-	this->m_dwClientDll = (DWORD)GetModuleHandle(/*client.dll*/CXorString("tgì§y«¦{g"));
+	//this->m_dwClientDll = (DWORD)GetModuleHandle(/*client.dll*/CXorString("tgì§y«¦{g"));
+	//todo: xorn
+	this->m_dwClientDll = (DWORD)GetModuleHandle("client_panorama.dll");
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(/*engine.dll*/CXorString("reâ«yn«¦{g"));
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(/*materialsystem.dll*/CXorString("zjñ§ebä®drö¶rf«¦{g"));
 	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("alð«%%á®{"));
@@ -456,7 +461,7 @@ void CApplication::GetInterfaces()
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
 	// CInput
-	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[15] + 0x01);
+	this->m_pInput = *(CInput**)((*(DWORD**)(m_pClient))[18] + 0x01);
 
 	// IClientMode
 	m_pClientMode = (IClientMode*)(**(DWORD***)((*(DWORD**)(m_pClient))[10] + 0x05));
@@ -656,6 +661,7 @@ void CApplication::GetNetVars()
 	Offsets::m_flNextPrimaryAttack = m_pNetVarMgr->GetOffset(2, xorBaseCombatWeapon,
 		/*DT_LocalActiveWeaponData*/CXorString("S_ÚŽxhä®Vhñ«anÒ§v{ê¬Sjñ£").ToCharArray(),
 		/*m_flNextPrimaryAttack*/CXorString("zTã®Yný¶Gyì¯vyüƒcä¡|").ToCharArray());
+	Offsets::m_hWeaponWorldModel = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hWeaponWorldModel*/"m_hWeaponWorldModel"); //TODO: XOR
 
 	Offsets::m_fAccuracyPenalty = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_fAccuracyPenalty*/CXorString("zTãƒthð°vhü’reä®cr"));
 	Offsets::m_flPostponeFireReadyTime = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r"));

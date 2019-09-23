@@ -36,6 +36,7 @@
 #include "RenderSmokeOverlay.h"
 #include "EmitSound.h"
 #include "FindMdl.h"
+#include "LockCursor.h"
 
 // Proxies
 #include "SequenceProxy.h"
@@ -117,7 +118,7 @@ typedef int(__cdecl *RandomInt_t)(int, int);
 typedef float(__cdecl *RandomFloat_t)(float, float);
 
 typedef void(__thiscall *InitKeyValues_t)(KeyValues*, const char*);
-typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*);
+typedef void(__thiscall *LoadFromBuffer_t)(KeyValues*, const char*, const char*, void*, const char*, void*, void*);
 
 void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);

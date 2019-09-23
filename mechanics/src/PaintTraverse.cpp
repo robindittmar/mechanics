@@ -20,15 +20,23 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 		}
 	}
 
+	if (pApp->EngineClient()->IsInGame())
+	{
+		if (pApp->Visuals()->NoScope(vguiPanel))
+			return;
+
+		if (!pApp->Gui()->GetEnableGameInput())
+		{
+			pApp->InputSystem()->ResetInputState();
+		}
+	}
+
 	if (vguiMatSystemTopPanel == vguiPanel)
 	{
 		pApp->Gui()->GetScreenSize();
 
 		if (pApp->EngineClient()->IsInGame())
 		{
-			if (pApp->Visuals()->NoScope(vguiPanel))
-				return;
-
 			pApp->Gui()->GetWorldToScreenMatrix();
 
 			// Draw NoScope

@@ -222,6 +222,9 @@ public:
 	void DrawSetTextPos(int x, int y);
 	void DrawPrintText(const wchar_t *text, int textLen, FontDrawType_t drawType = FONT_DRAW_DEFAULT);
 	void GetTextSize(HFont font, const wchar_t *text, int &wide, int &tall);
+
+	void UnlockCursor();
+	void LockCursor();
 };
 
 #endif // __ISURFACE_H__

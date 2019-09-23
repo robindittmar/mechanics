@@ -459,6 +459,7 @@ public:
 
 	// Returns name of model
 	virtual const char				*GetModelName(const model_t *model) const = 0;
+	virtual void					UNUSED() {};
 	virtual vcollide_t				*GetVCollide(const model_t *model) const = 0;
 	virtual vcollide_t				*GetVCollide(int modelindex) const = 0;
 	virtual void					GetModelBounds(const model_t *model, Vector& mins, Vector& maxs) const = 0;
@@ -491,6 +492,7 @@ public:
 		QAngle const& angles, Vector* pLightingCenter) = 0;
 
 	virtual int						GetModelContents(int modelIndex) const = 0;
+	virtual void					UNUSED2() {};
 	virtual void					PADDING_001() = 0;
 	virtual studiohdr_t				*GetStudiomodel(const model_t *mod) = 0;
 	virtual int						GetModelSpriteWidth(const model_t *model) const = 0;

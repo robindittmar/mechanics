@@ -33,7 +33,7 @@ void CGui::Setup()
 		Sleep(1000);
 		m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
 	}
-	
+
 	if (!m_bHookedWindowProc)
 	{
 		// Install window procedure hook
@@ -66,12 +66,6 @@ void CGui::GetWorldToScreenMatrix()
 void CGui::SetEnableGameInput(bool bEnableGameInput)
 {
 	m_bEnableGameInput = bEnableGameInput;
-	m_pMouseEnable->SetValue(bEnableGameInput);
-	
-	if (!m_bEnableGameInput)
-	{
-		m_pApp->InputSystem()->ResetInputState();
-	}
 }
 
 bool CGui::IsMouseInRect(int x, int y, int w, int h)
@@ -98,7 +92,7 @@ void CGui::SetMousePos(int iX, int iY)
 
 void CGui::DrawMouse(ISurface* pSurface)
 {
-	if(m_bDrawMouse)
+	if (m_bDrawMouse)
 	{
 #ifdef _DEBUG
 		pSurface->DrawSetColor(255, 255, 0, 0);
@@ -125,14 +119,14 @@ void CGui::DrawMouse(ISurface* pSurface)
 
 		pSurface->DrawSetColor(255, 255, 128, 0);
 		pSurface->DrawTexturedPolygon(4, v, false);
-		
+
 		pSurface->DrawSetColor(255, 50, 50, 50);
 		pSurface->DrawTexturedPolyLine(v, 4);
 #endif // _DEBUG
 	}
 }
 
-bool CGui::WorldToScreen(const Vector& origin, Vector &screen)
+bool CGui::WorldToScreen(const Vector& origin, Vector& screen)
 {
 	if (!ScreenTransform(origin, screen))
 	{
@@ -219,7 +213,7 @@ LRESULT CALLBACK hk_WndProc(HWND hWnd, UINT nCode, WPARAM wParam, LPARAM lParam)
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_LBUTTONUP:
 		pInputHandler->OnMouseUp(VK_LBUTTON, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
-		
+
 		WNDPROC_RETURN_OR_BREAK;
 	case WM_RBUTTONDOWN:
 	case WM_RBUTTONDBLCLK:

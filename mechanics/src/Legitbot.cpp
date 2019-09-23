@@ -133,7 +133,7 @@ void CLegitbot::Think(void* pParameters)
 		// to check if we already aim on an enemy (if so, do nothing pls)
 		Vector vForward, vTraceEnd;
 		AngleVectors(qLocalAngles, &vForward);
-		vTraceEnd = vLocalHeadPos + vForward * pWeaponInfo->flRange;
+		vTraceEnd = vLocalHeadPos + vForward * pWeaponInfo->m_WeaponRange;
 
 		ray.Init(vLocalHeadPos, vTraceEnd);
 		m_pApp->EngineTrace()->TraceRay(ray, (MASK_SHOT_HULL | CONTENTS_HITBOX), &traceFilter, &trace);
