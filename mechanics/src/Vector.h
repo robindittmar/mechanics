@@ -5,7 +5,11 @@
 #define __VECTOR_H__
 
 #include <cmath>
+#ifdef __MINGW32__
+#include <x86intrin.h>
+#else
 #include <intrin.h>
+#endif
 #include "MathDefs.h"
 
 typedef float vec_t;

@@ -10,7 +10,9 @@
 #include "INetChannelInfo.h"
 
 // include file instead?
+#ifndef NULL
 #define NULL 0
+#endif
 
 class CAudioSource;
 class client_textmessage_t;

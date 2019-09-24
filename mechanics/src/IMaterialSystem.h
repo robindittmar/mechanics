@@ -6,7 +6,9 @@
 #include "IMatRenderContext.h"
 #include "KeyValues.h"
 
+#ifndef NULL
 #define NULL 0
+#endif
 
 // NOTE: All size modes will force the render target to be smaller than or equal to
 // the size of the framebuffer.

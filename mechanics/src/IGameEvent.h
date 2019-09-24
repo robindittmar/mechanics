@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -46,7 +46,9 @@ data field should not be broadcasted to clients, use the type "local".
 #define MAX_EVENT_NUMBER		(1<<MAX_EVENT_BITS)		// max number of events allowed
 #define MAX_EVENT_BYTES			1024	// max size in bytes for a serialized event
 
+#ifndef NULL
 #define NULL					0
+#endif
 
 typedef unsigned long long uint64;
 
