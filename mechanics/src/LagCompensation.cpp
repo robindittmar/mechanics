@@ -87,7 +87,11 @@ int CLagCompensation::RestorePlayerClosestToCrosshair()
 
 		CLagCompensationPlayerList lcCurList = m_pPlayerList[i];
 		//lcCurList.RemoveInvalidPlayerEntries();
-		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
+#ifdef __MINGW32__
+		for (int x = 0; x < std::min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
+#else
+        for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x++)
+#endif
 		{
 			// End of list -> should never be the case!!
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)
@@ -154,7 +158,11 @@ void CLagCompensation::DrawLagCompensationEntries()
 		CLagCompensationPlayerList lcCurList = m_pPlayerList[i];
 		lcCurList.RemoveInvalidPlayerEntries();
 
-		for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
+#ifdef __MINGW32__
+        for (int x = 0; x < std::min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
+#else
+        for (int x = 0; x < min(lcCurList.m_iEntryCount, LC_MAXSAVEDTICKS); x += m_iDrawFrequency)
+#endif
 		{
 			// End of list -> should never be the case!!
 			if (lcCurList.m_pPlayerEntries[x].m_bIsEndOfList)

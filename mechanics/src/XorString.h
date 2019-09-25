@@ -2,6 +2,7 @@
 #define __XORSTRING_H__
 
 #include <string>
+#include <cstring>
 
 class CXorString
 {

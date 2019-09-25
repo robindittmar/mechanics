@@ -6,7 +6,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
 	switch (fdwReason) {
 	case DLL_PROCESS_ATTACH:
-		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)ThreadProc, (void*)hinstDLL, NULL, NULL);
+		CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)ThreadProc, (void*)hinstDLL, 0, 0);
 	}
 	return true;
 }

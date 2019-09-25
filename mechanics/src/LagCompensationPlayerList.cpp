@@ -12,7 +12,11 @@ void CLagCompensationPlayerList::RemoveInvalidPlayerEntries()
 	int iTempCount = 0;
 	CLagCompensationPlayerEntry pTempList[LC_MAXSAVEDTICKS];
 
-	for (int i = 0; i < min(m_iEntryCount, LC_MAXSAVEDTICKS - 1); i++)
+#ifdef __MINGW32__
+	for (int i = 0; i < std::min(m_iEntryCount, LC_MAXSAVEDTICKS - 1); i++)
+#else
+    for (int i = 0; i < min(m_iEntryCount, LC_MAXSAVEDTICKS - 1); i++)
+#endif
 	{
 		// End of list -> should never be the case!!
 		if (m_pPlayerEntries[i].m_bIsEndOfList)
@@ -64,7 +68,7 @@ void CLagCompensationPlayerList::AddPlayerEntry(IClientEntity* pCurEnt, int tick
 	if ((!pApp->Ragebot()->GetEnabled() || !pApp->LagCompensation()->GetRageLagCompensationEnabled()) && !pApp->LagCompensation()->GetLegitLagCompensationEnabled())
 		return;
 
-	static CXorString pHeadZero("nä¦H;");
+	static CXorString pHeadZero("nï¿½H;");
 
 	float intervalPerTick = CApplication::Instance()->GlobalVars()->interval_per_tick;
 

@@ -4,7 +4,7 @@ bool CKeyBinder::m_bKeyTranslationMapInitialized = false;
 std::unordered_map<unsigned short, wchar_t*> CKeyBinder::m_mapKeys;
 
 CKeyBinder::CKeyBinder(int x, int y, int w, int h, int iEventBtn, const char* pText)
-	: IControlTooltip(x, y, w, h), m_bPopupInitialized(false), m_pPopup(false),
+	: IControlTooltip(x, y, w, h), m_bPopupInitialized(false), m_pPopup(nullptr),
 	m_iEventButton(iEventBtn), m_pText(nullptr)
 {
 	m_pPopup = new CKeyBinderPopup(this);
@@ -116,6 +116,10 @@ void CKeyBinder::GenerateLabelText()
 		wcscpy(pKeyBuffer, it->second);
 	}
 
+#ifdef __MINGW32__
+	swprintf(pBuffer, L"%S: %s", m_pText, pKeyBuffer);
+#else
 	swprintf(pBuffer, 64, L"%S: %s", m_pText, pKeyBuffer);
+#endif
 	m_pLabel->SetContentTextW(pBuffer);
 }

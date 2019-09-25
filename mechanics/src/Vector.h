@@ -297,7 +297,11 @@ public:
 	void NormalizeAngles();
 };
 
+#ifdef __MINGW32__
+class __declspec(aligned(16)) VectorAligned : public Vector {
+#else
 class __declspec(align(16)) VectorAligned : public Vector {
+#endif
 public:
 	inline VectorAligned(void) {};
 	inline VectorAligned(vec_t X, vec_t Y, vec_t Z) {
@@ -969,12 +973,16 @@ fltx4 AndSIMD(const fltx4 & a, const fltx4 & b);
 #define RESTRICT __restrict
 void StoreUnalignedSIMD(float * RESTRICT pSIMD, const fltx4 & a);
 
+#ifdef __MINGW32__
+#define DECL_ALIGN(x) __declspec(aligned(x))
+#else
 #define DECL_ALIGN(x) __declspec(align(x))
+#endif
 #define ALIGN16 DECL_ALIGN(16)
 #define ALIGN16_POST
 const int ALIGN16 g_SIMD_ComponentMask[4][4] ALIGN16_POST =
 {
-	{ 0xFFFFFFFF, 0, 0, 0 },{ 0, 0xFFFFFFFF, 0, 0 },{ 0, 0, 0xFFFFFFFF, 0 },{ 0, 0, 0, 0xFFFFFFFF }
+	{ (int)0xFFFFFFFF, 0, 0, 0 },{ 0, (int)0xFFFFFFFF, 0, 0 },{ 0, 0, (int)0xFFFFFFFF, 0 },{ 0, 0, 0, (int)0xFFFFFFFF }
 };
 
 void ConcatTransforms(const matrix3x4_t& in1, const matrix3x4_t& in2, matrix3x4_t& out);

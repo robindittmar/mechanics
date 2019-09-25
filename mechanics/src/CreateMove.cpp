@@ -20,7 +20,11 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 	if (!pApp->m_bGotSendPackets)
 	{
 		uintptr_t* fp;
+#ifdef __MINGW32__
+		asm("mov %%ebp, a" : /* no output */ : "a"(fp) : "cc"/*??*/ );
+#else
 		__asm mov fp, ebp;
+#endif
 		pApp->m_bSendPackets = (bool*)(*fp - 0x1C);
 		pApp->m_bGotSendPackets = true;
 	}

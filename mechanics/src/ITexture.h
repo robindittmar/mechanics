@@ -1,13 +1,14 @@
 #ifndef __ITEXTURE_H__
 #define __ITEXTURE_H__
 
+#include <cstddef>
 #include <cstdint>
 
 class ITexture;
 class IVTFTexture;
 struct Rect_t;
 
-enum ImageFormat
+enum ImageFormat : int
 {
 	IMAGE_FORMAT_UNKNOWN = -1,
 	IMAGE_FORMAT_RGBA8888 = 0,

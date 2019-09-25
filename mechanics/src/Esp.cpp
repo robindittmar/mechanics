@@ -2,7 +2,7 @@
 #include "Application.h"
 
 CEsp::CEsp() :
-	m_xorHeadZero("nä¦H;"), m_bFillBoundingBox(false), m_iDrawBoundingBox(ESP_STYLE_NONE),
+	m_xorHeadZero("nï¿½H;"), m_bFillBoundingBox(false), m_iDrawBoundingBox(ESP_STYLE_NONE),
 	m_bDrawSkeleton(false), m_bDrawHealthBar(false), m_bDrawHealthNumber(false),
 	m_bDrawArmorBar(false), m_bDrawArmorNumber(false), m_bDrawActiveWeapon(false),
 	m_bDrawAmmoBar(false), m_bDrawAmmoNumber(false), m_bDrawOwnTeam(false),
@@ -471,8 +471,8 @@ void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, 
 	{
 		x1 -= 6;
 	}
-	static unsigned long font = NULL;
-	if (font == NULL)
+	static unsigned long font = 0;
+	if (!font)
 	{
 		font = m_pApp->Surface()->SCreateFont();
 		pSurface->SetFontGlyphSet(font, "Arial Black", 12, 255, 0, 0, 0x200);
@@ -480,7 +480,11 @@ void CEsp::DrawHealthNumber(ISurface* pSurface, int posX, int posY, int height, 
 	pSurface->DrawSetTextFont(font);
 
 	wchar_t sHealth[16];
+#ifdef __MINGW32__
+	int iLen = swprintf(sHealth, L"%d HP", health);
+#else
 	int iLen = swprintf(sHealth, 16, L"%d HP", health);
+#endif
 
 	int w, h;
 	pSurface->GetTextSize(font, sHealth, w, h);
@@ -499,7 +503,7 @@ void CEsp::DrawActiveWeapon(ISurface * pSurface, IClientEntity* pEntity, int pos
 	if (!pActiveWeapon)
 		return;
 
-	static int iWeaponUnderscoreLen = strlen(/*weapon_*/CXorString("`nä²xeÚ").ToCharArray());
+	static int iWeaponUnderscoreLen = strlen(/*weapon_*/CXorString("`nï¿½xeï¿½").ToCharArray());
 
 	bool bIsFireableWeapon = !(pActiveWeapon->IsKnife() || pActiveWeapon->IsNade() || pActiveWeapon->IsTaser() || pActiveWeapon->IsC4());
 	if (bIsFireableWeapon && (m_bDrawAmmoNumber || m_bDrawAmmoBar))
@@ -585,7 +589,11 @@ void CEsp::DrawAmmoNumber(ISurface* pSurface, IClientEntity* pEntity, int posX, 
 		return;
 
 	wchar_t wAmmoNumber[256];
+#ifdef __MINGW32__
+	swprintf(wAmmoNumber, L"%d / %d", iClip1, pWeaponInfo->m_MaxClip);
+#else
 	swprintf(wAmmoNumber, 16, L"%d / %d", iClip1, pWeaponInfo->m_MaxClip);
+#endif
 
 	DrawWeaponText(pSurface, wAmmoNumber, posX, posY, alpha);
 }

@@ -2,7 +2,7 @@
 #define __MATERIAL_H__
 
 class PreviewImageRetVal_t;
-enum ImageFormat;
+enum ImageFormat : int;
 typedef unsigned long VertexFormat_t;
 class IMaterialVar;
 class KeyValues;

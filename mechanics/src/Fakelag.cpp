@@ -35,8 +35,13 @@ void CFakelag::CalcAdaptiveChokeAmount()
 	fIntervalPerTickSqr = powf(m_pApp->GlobalVars()->interval_per_tick, 2);
 	fVelocitySqr = pLocalEntity->GetVelocity()->Length2DSqr();
 
-	iUnclampedTicks = min(m_iChokeAmount, (int)(ceilf(sqrt(4096.0f / (fVelocitySqr * fIntervalPerTickSqr)))));
-	m_iAdaptiveChokeAmount = (max(0, min(iUnclampedTicks, m_iChokeAmount - 1)) ? iUnclampedTicks : m_iChokeAmount - 1);
+#ifdef __MINGW32__
+	iUnclampedTicks = std::min(m_iChokeAmount, (int)(ceilf(sqrt(4096.0f / (fVelocitySqr * fIntervalPerTickSqr)))));
+	m_iAdaptiveChokeAmount = (std::max(0, std::min(iUnclampedTicks, m_iChokeAmount - 1)) ? iUnclampedTicks : m_iChokeAmount - 1);
+#else
+    iUnclampedTicks = min(m_iChokeAmount, (int)(ceilf(sqrt(4096.0f / (fVelocitySqr * fIntervalPerTickSqr)))));
+    m_iAdaptiveChokeAmount = (max(0, min(iUnclampedTicks, m_iChokeAmount - 1)) ? iUnclampedTicks : m_iChokeAmount - 1);
+#endif
 }
 
 void CFakelag::Think(void* pParameters)

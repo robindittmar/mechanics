@@ -2,8 +2,17 @@
 #define __GUI_H__
 
 // Std Lib
+#ifdef __MINGW32__
+#include <windows.h>
+#include <windowsx.h>
+
+#ifndef GET_XBUTTON_WPARAM
+#define GET_XBUTTON_WPARAM(wParam) (HIWORD(wParam))
+#endif
+#else
 #include <Windows.h>
 #include <Windowsx.h>
+#endif
 
 // Source SDK
 #include "Vector.h"

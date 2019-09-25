@@ -62,7 +62,7 @@ CNetVar* CNetVar::GetChild(const char* pNetVarName)
 RecvVarProxy_t CNetVar::HookProxy(RecvVarProxy_t pHookFunc)
 {
 	m_pOrigProxyFn = (RecvVarProxy_t)*m_pProxyFn;
-	*m_pProxyFn = pHookFunc;
+	*m_pProxyFn = (void*)pHookFunc;
 	m_bProxyHooked = true;
 
 	return m_pOrigProxyFn;
@@ -72,7 +72,7 @@ void CNetVar::UnhookProxy()
 {
 	if (m_bProxyHooked)
 	{
-		*m_pProxyFn = m_pOrigProxyFn;
+		*m_pProxyFn = (void*)m_pOrigProxyFn;
 		m_bProxyHooked = false;
 	}
 }

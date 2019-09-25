@@ -192,8 +192,14 @@ namespace Utils
 
 	void RgbToHsv(int r, int g, int b, float& h, float& s, float& v)
 	{
-		v = max(r, max(g, b));
-		float cmin = min(r, min(g, b));
+#ifdef __MINGW32__
+        v = std::max(r, std::max(g, b));
+		float cmin = std::min(r, std::min(g, b));
+#else
+        v = max(r, max(g, b));
+        float cmin = min(r, min(g, b));
+#endif
+
 		float cdelta = v - cmin;
 
 		if (v == 0.0f)

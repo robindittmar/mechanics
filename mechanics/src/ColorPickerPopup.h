@@ -3,6 +3,7 @@
 
 // Std lib
 #include <cstring>
+#include <cfloat>
 
 // Custom
 #include "Gui.h"

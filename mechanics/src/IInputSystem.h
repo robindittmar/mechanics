@@ -9,8 +9,8 @@
 
 #define INVALID_USER_ID		-1
 
-enum ButtonCode_t;
-enum AnalogCode_t;
+enum ButtonCode_t : int;
+enum AnalogCode_t : int;
 
 struct InputEvent_t
 {
