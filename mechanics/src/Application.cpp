@@ -397,9 +397,9 @@ void CApplication::GetLibrarys()
 	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("\x61\x6C\xF0\xAB\x25\x25\xE1\xAE\x7B"));
 	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("\x61\x6C\xF0\xAB\x7A\x6A\xF1\xB1\x62\x79\xE3\xA3\x74\x6E\xAB\xA6\x7B\x67"));
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("\x61\x7B\xED\xBB\x64\x62\xE6\xB1\x39\x6F\xE9\xAE"));
-	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("\x61\x78\xF1\xA6\x7B\x62\xE7\xEC\x73\x67\xE9"));
-	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("\x73\x6A\xF1\xA3\x74\x6A\xE6\xAA\x72\x25\xE1\xAE\x7B"));
-	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("\x7B\x64\xE6\xA3\x7B\x62\xFF\xA7\x39\x6F\xE9\xAE"));
+	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé"));
+	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjñ£tjæªr%á®{"));
+	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("{dæ£{bÿ§9oé®"));
 	this->m_dwInputSystemDll = (DWORD)GetModuleHandle(/*inputsystem.dll*/"inputsystem.dll");
 
 #ifdef _DEBUG
@@ -546,7 +546,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::Init\t\t=>\t0x%08X\n", m_pInitKeyValues);
-	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::LoadFromBuffer\=>\t0x%08X\n", m_pLoadFromBuffer);
+	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::LoadFromBuffer\t=>\t0x%08X\n", m_pLoadFromBuffer);
 	g_pConsole->WritePlain("\n");
 #endif // _DEBUG
 }
@@ -555,19 +555,19 @@ void CApplication::GetNetVars()
 {
 	CBenchmark benchmark(true);
 
-	CXorString xorBaseEntity("S_Úvxàyì¶n"); // DT_BaseEntity
-	CXorString xorBasePlayer("S_Úvxà{jü§e"); // DT_BasePlayer
-	CXorString xorCollisionProperty("S_Úxgé«dbê¬Gyê²ryñ»");
-	CXorString xorCSPlayer("S_ÚD[é£nn÷"); // DT_CSPlayer
-	CXorString xorLocalPlayerExclusive("S_Úxhä®Ggä»ryÀºtgð±~}à"); // DT_LocalPlayerExclusive
-	CXorString xorBaseCombatWeapon("S_Úvxàxfç£c\\à£gdë"); // DT_BaseCombatWeapon
-	CXorString xorWeaponCSBase("S_Úrjõ­yHÖvxà"); // DT_WeaponCSBase
-	CXorString xorBaseCSGrenade("S_ÚvxàDL÷§yjá§"); // DT_BaseCSGrenade
-	CXorString xorBaseCombatCharacter("S_Úvxàxfç£cHí£ejæ¶ry"); // DT_BaseCombatCharacter
-	CXorString xorBaseViewModel("S_Úvxà~nòxoà®"); // DT_BaseViewModel
-	CXorString xorPlantedC4("S_Ú{jë¶roÆö");
-	CXorString xorBaseAttributableItem("S_Úvxàc÷«u~ñ£ugàcnè"); // DT_BaseAttributableItem
-	CXorString xorBaseAnimating("S_Úvxàybè£cbë¥"); // DT_BaseAnimating
+	CXorString xorBaseEntity("\x53\x5F\xDA\x80\x76\x78\xE0\x87\x79\x7F\xEC\xB6\x6E"); // DT_BaseEntity
+	CXorString xorBasePlayer("\x53\x5F\xDA\x80\x76\x78\xE0\x92\x7B\x6A\xFC\xA7\x65"); // DT_BasePlayer
+	CXorString xorCollisionProperty("\x53\x5F\xDA\x81\x78\x67\xE9\xAB\x64\x62\xEA\xAC\x47\x79\xEA\xB2\x72\x79\xF1\xBB"); // DT_CollisionProperty
+	CXorString xorCSPlayer("\x53\x5F\xDA\x81\x44\x5B\xE9\xA3\x6E\x6E\xF7"); // DT_CSPlayer
+	CXorString xorLocalPlayerExclusive("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE\x47\x67\xE4\xBB\x72\x79\xC0\xBA\x74\x67\xF0\xB1\x7E\x7D\xE0"); // DT_LocalPlayerExclusive
+	CXorString xorBaseCombatWeapon("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x5C\xE0\xA3\x67\x64\xEB"); // DT_BaseCombatWeapon
+	CXorString xorWeaponCSBase("\x53\x5F\xDA\x95\x72\x6A\xF5\xAD\x79\x48\xD6\x80\x76\x78\xE0"); // DT_WeaponCSBase
+	CXorString xorBaseCSGrenade("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x44\x4C\xF7\xA7\x79\x6A\xE1\xA7"); // DT_BaseCSGrenade
+	CXorString xorBaseCombatCharacter("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x48\xED\xA3\x65\x6A\xE6\xB6\x72\x79"); // DT_BaseCombatCharacter
+	CXorString xorBaseViewModel("\x53\x5F\xDA\x80\x76\x78\xE0\x94\x7E\x6E\xF2\x8F\x78\x6F\xE0\xAE"); // DT_BaseViewModel
+	CXorString xorPlantedC4("\x53\x5F\xDA\x92\x7B\x6A\xEB\xB6\x72\x6F\xC6\xF6"); // DT_PlantedC4
+	CXorString xorBaseAttributableItem("\x53\x5F\xDA\x80\x76\x78\xE0\x83\x63\x7F\xF7\xAB\x75\x7E\xF1\xA3\x75\x67\xE0\x8B\x63\x6E\xE8"); // DT_BaseAttributableItem
+	CXorString xorBaseAnimating("\x53\x5F\xDA\x80\x76\x78\xE0\x83\x79\x62\xE8\xA3\x63\x62\xEB\xA5"); // DT_BaseAnimating
 
 	m_pNetVarMgr = new CNetVarManager();
 	m_pNetVarMgr->AddTable(xorBaseEntity);
@@ -593,74 +593,74 @@ void CApplication::GetNetVars()
 	g_pConsole->Write(LOGLEVEL_INFO, "Loading Offsets... ");
 #endif
 
-	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_angRotation*/CXorString("zTä¬pYê¶vì­y"));
-	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_nModelIndex*/CXorString("zTëxoà®^eá§o"));
-	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter, /*m_hMyWeapons*/CXorString("zTín\\à£gdë±"));
-	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_hViewModel[0]*/CXorString("zTí~nòxoà®L;Ø"));
-	Offsets::m_flSimulationTime = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_flSimulationTime*/CXorString("zTã®Dbè·{jñ«xeÑ«zn"));
+	Offsets::m_angRotation = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_angRotation*/CXorString("\x7A\x54\xE4\xAC\x70\x59\xEA\xB6\x76\x7F\xEC\xAD\x79"));
+	Offsets::m_nModelIndex = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_nModelIndex*/CXorString("\x7A\x54\xEB\x8F\x78\x6F\xE0\xAE\x5E\x65\xE1\xA7\x6F"));
+	Offsets::m_hMyWeapons = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter, /*m_hMyWeapons*/CXorString("\x7A\x54\xED\x8F\x6E\x5C\xE0\xA3\x67\x64\xEB\xB1"));
+	Offsets::m_hViewModel = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_hViewModel[0]*/CXorString(""));
+	Offsets::m_flSimulationTime = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_flSimulationTime*/CXorString("\x7A\x54\xE3\xAE\x44\x62\xE8\xB7\x7B\x6A\xF1\xAB\x78\x65\xD1\xAB\x7A\x6E"));
 	m_pNetVarMgr->SetSummarizeOffsets(true);
-	Offsets::m_vecMins = m_pNetVarMgr->GetOffset(2, xorBaseEntity, xorCollisionProperty.ToCharArray(), /*m_vecMins*/CXorString("zTó§tFì¬d").ToCharArray());
-	Offsets::m_vecMaxs = m_pNetVarMgr->GetOffset(2, xorBaseEntity, xorCollisionProperty.ToCharArray(), /*m_vecMaxs*/CXorString("zTó§tFäºd").ToCharArray());
+	Offsets::m_vecMins = m_pNetVarMgr->GetOffset(2, xorBaseEntity, xorCollisionProperty.ToCharArray(), /*m_vecMins*/CXorString("\x7A\x54\xF3\xA7\x74\x46\xEC\xAC\x64").ToCharArray());
+	Offsets::m_vecMaxs = m_pNetVarMgr->GetOffset(2, xorBaseEntity, xorCollisionProperty.ToCharArray(), /*m_vecMaxs*/CXorString("\x7A\x54\xF3\xA7\x74\x46\xE4\xBA\x64").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
-	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_vecOrigin*/CXorString("zTó§tD÷«pbë"));
-	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("zTó§t]ì§`Dã¤dnñ'V").ToCharArray());
-	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_angEyeAngles*/CXorString("zTä¬pNü§Veâ®rx"));
+	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_vecOrigin*/CXorString("\x7A\x54\xF3\xA7\x74\x44\xF7\xAB\x70\x62\xEB"));
+	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("").ToCharArray());
+	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_angEyeAngles*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78"));
 
 	m_pNetVarEyeAngles0 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[0]*/CXorString("zTä¬pNü§Veâ®rxÞòJ"));
 	m_pNetVarEyeAngles1 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[1]*/CXorString("zTä¬pNü§Veâ®rxÞóJ"));
 
-	Offsets::m_bHasHeavyArmor = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bHasHeavyArmor*/CXorString("zTçvxÍ§v}üefê°"));
-	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_flLowerBodyYawTarget*/CXorString("zTã®[dò§eIê¦nRäµCj÷¥r"));
+	Offsets::m_bHasHeavyArmor = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bHasHeavyArmor*/CXorString("\x7A\x54\xE7\x8A\x76\x78\xCD\xA7\x76\x7D\xFC\x83\x65\x66\xEA\xB0"));
+	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_flLowerBodyYawTarget*/CXorString("\x7A\x54\xE3\xAE\x5B\x64\xF2\xA7\x65\x49\xEA\xA6\x6E\x52\xE4\xB5\x43\x6A\xF7\xA5\x72\x7F"));
 	Offsets::m_flLowerBodyYawTarget = m_pNetVarLowerBodyYaw->GetOffset();
 	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµ").ToCharArray());
-	Offsets::m_iTeamNum = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_iTeamNum*/CXorString("zTìrjèbf"));
-	Offsets::m_lifeState = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_lifeState*/CXorString("zTé«qnÖ¶và"));
-	Offsets::m_iHealth = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_iHealth*/CXorString("zTìrjé¶"));
-	Offsets::m_ArmorValue = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_ArmorValue*/CXorString("zTÄ°zd÷vgð§"));
-	Offsets::m_bHasHelmet = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bHasHelmet*/CXorString("zTçvxÍ§{fà¶"));
-	Offsets::m_fFlags = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_fFlags*/CXorString("zTã{jâ±"));
-	Offsets::m_bSpotted = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_bSpotted*/CXorString("zTçgdñ¶ro"));
-	Offsets::m_bGunGameImmunity = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bGunGameImmunity*/CXorString("zTçbeÂ£znÌ¯z~ë«cr"));
-	Offsets::m_flFlashDuration = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_flFlashDuration*/CXorString("zTã®Qgä±Oð°vì­y"));
-	Offsets::m_flFlashMaxAlpha = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_flFlashMaxAlpha*/CXorString("zTã®Qgä±FäºVgõªv"));
+	Offsets::m_iTeamNum = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_iTeamNum*/CXorString("\x7A\x54\xEC\x96\x72\x6A\xE8\x8C\x62\x66"));
+	Offsets::m_lifeState = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_lifeState*/CXorString("\x7A\x54\xE9\xAB\x71\x6E\xD6\xB6\x76\x7F\xE0"));
+	Offsets::m_iHealth = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_iHealth*/CXorString("\x7A\x54\xEC\x8A\x72\x6A\xE9\xB6\x7F"));
+	Offsets::m_ArmorValue = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_ArmorValue*/CXorString("\x7A\x54\xC4\xB0\x7A\x64\xF7\x94\x76\x67\xF0\xA7"));
+	Offsets::m_bHasHelmet = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bHasHelmet*/CXorString("\x7A\x54\xE7\x8A\x76\x78\xCD\xA7\x7B\x66\xE0\xB6"));
+	Offsets::m_fFlags = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_fFlags*/CXorString("\x7A\x54\xE3\x84\x7B\x6A\xE2\xB1"));
+	Offsets::m_bSpotted = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_bSpotted*/CXorString("\x7A\x54\xE7\x91\x67\x64\xF1\xB6\x72\x6F"));
+	Offsets::m_bGunGameImmunity = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bGunGameImmunity*/CXorString("\x7A\x54\xE7\x85\x62\x65\xC2\xA3\x7A\x6E\xCC\xAF\x7A\x7E\xEB\xAB\x63\x72"));
+	Offsets::m_flFlashDuration = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_flFlashDuration*/CXorString("\x7A\x54\xE3\xAE\x51\x67\xE4\xB1\x7F\x4F\xF0\xB0\x76\x7F\xEC\xAD\x79"));
+	Offsets::m_flFlashMaxAlpha = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_flFlashMaxAlpha*/CXorString("\x7A\x54\xE3\xAE\x51\x67\xE4\xB1\x7F\x46\xE4\xBA\x56\x67\xF5\xAA\x76"));
 	//Offsets::m_bMoveType = m_pNetVarMgr->GetOffset("DT_BaseEntity", "m_bMoveType"); <= Not existant :/
-	Offsets::m_bIsScoped = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bIsScoped*/CXorString("zTçdXæ­gná"));
+	Offsets::m_bIsScoped = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bIsScoped*/CXorString("\x7A\x54\xE7\x8B\x64\x58\xE6\xAD\x67\x6E\xE1"));
 	Offsets::m_iShotsFired = m_pNetVarMgr->GetOffset(2, xorCSPlayer,
-		/*DT_CSLocalPlayerExclusive*/CXorString("S_ÚDGê¡vgÕ®vrà°Rsæ®bxì´r").ToCharArray(),
-		/*m_iShotsFired*/CXorString("zTìdñ±Qb÷§s").ToCharArray());
-	Offsets::m_hActiveWeapon = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter, /*m_hActiveWeapon*/CXorString("zTítì´r\\à£gdë"));
-	Offsets::m_hObserverTarget = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_hObserverTarget*/CXorString("zTíuxà°an÷vyâ§c"));
+		/*DT_CSLocalPlayerExclusive*/CXorString("\x53\x5F\xDA\x81\x44\x47\xEA\xA1\x76\x67\xD5\xAE\x76\x72\xE0\xB0\x52\x73\xE6\xAE\x62\x78\xEC\xB4\x72").ToCharArray(),
+		/*m_iShotsFired*/CXorString("\x7A\x54\xEC\x91\x7F\x64\xF1\xB1\x51\x62\xF7\xA7\x73").ToCharArray());
+	Offsets::m_hActiveWeapon = m_pNetVarMgr->GetOffset(xorBaseCombatCharacter, /*m_hActiveWeapon*/CXorString("\x7A\x54\xED\x83\x74\x7F\xEC\xB4\x72\x5C\xE0\xA3\x67\x64\xEB"));
+	Offsets::m_hObserverTarget = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_hObserverTarget*/CXorString("\x7A\x54\xED\x8D\x75\x78\xE0\xB0\x61\x6E\xF7\x96\x76\x79\xE2\xA7\x63"));
 	m_pNetVarMgr->SetSummarizeOffsets(true);
 	Offsets::deadflag = m_pNetVarMgr->GetOffset(2, xorBasePlayer,
-		/*DT_PlayerState*/CXorString("S_Ú{jü§eXñ£cn").ToCharArray(),
-		/*deadflag*/CXorString("snä¦qgä¥").ToCharArray());
+		/*DT_PlayerState*/CXorString("\x53\x5F\xDA\x92\x7B\x6A\xFC\xA7\x65\x58\xF1\xA3\x63\x6E").ToCharArray(),
+		/*deadflag*/CXorString("\x73\x6E\xE4\xA6\x71\x67\xE4\xA5").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
-	Offsets::m_nTickBase = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("zTë~hîvxà").ToCharArray());
-	Offsets::m_bIsDefusing = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bIsDefusing*/CXorString("zTçdOà¤bxì¬p"));
-	Offsets::m_flC4Blow = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flC4Blow*/CXorString("zTã®T?Ç®x|"));
-	Offsets::m_flDefuseCountDown = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flDefuseCountDown*/CXorString("zTã®Snã·dnÆ­beñx|ë"));
-	Offsets::m_hBombDefuser = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_hBombDefuser*/CXorString("zTíxfçrmð±ry"));
+	Offsets::m_nTickBase = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_nTickBase*/CXorString("\x7A\x54\xEB\x96\x7E\x68\xEE\x80\x76\x78\xE0").ToCharArray());
+	Offsets::m_bIsDefusing = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bIsDefusing*/CXorString("\x7A\x54\xE7\x8B\x64\x4F\xE0\xA4\x62\x78\xEC\xAC\x70"));
+	Offsets::m_flC4Blow = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flC4Blow*/CXorString("\x7A\x54\xE3\xAE\x54\x3F\xC7\xAE\x78\x7C"));
+	Offsets::m_flDefuseCountDown = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flDefuseCountDown*/CXorString("\x7A\x54\xE3\xAE\x53\x6E\xE3\xB7\x64\x6E\xC6\xAD\x62\x65\xF1\x86\x78\x7C\xEB"));
+	Offsets::m_hBombDefuser = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_hBombDefuser*/CXorString("\x7A\x54\xED\x80\x78\x66\xE7\x86\x72\x6D\xF0\xB1\x72\x79"));
 
-	CNetVar* pDtLocal = m_pNetVarMgr->GetNetVar(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("S_Úxhä®").ToCharArray());
-	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("zTëbfõ~fàdnæ±"))->GetOffset();
-	Offsets::m_flFallVelocity = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_flFallVelocity*/CXorString("zTã®Qjé®Ané­tbñ»"))->GetOffset();
-	Offsets::m_viewPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_viewPunchAngle*/CXorString("zTó«r|Õ·yhíylé§"))->GetOffset();
-	Offsets::m_aimPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngle*/CXorString("zTä«z[ð¬tcÄ¬pgà"))->GetOffset();
-	Offsets::m_aimPunchAngleVel = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngleVel*/CXorString("zTä«z[ð¬tcÄ¬pgàrg"))->GetOffset();
+	CNetVar* pDtLocal = m_pNetVarMgr->GetNetVar(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE").ToCharArray());
+	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("\x7A\x54\xEB\x88\x62\x66\xF5\x96\x7E\x66\xE0\x8F\x64\x6E\xE6\xB1"))->GetOffset();
+	Offsets::m_flFallVelocity = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_flFallVelocity*/CXorString("\x7A\x54\xE3\xAE\x51\x6A\xE9\xAE\x41\x6E\xE9\xAD\x74\x62\xF1\xBB"))->GetOffset();
+	Offsets::m_viewPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_viewPunchAngle*/CXorString("\x7A\x54\xF3\xAB\x72\x7C\xD5\xB7\x79\x68\xED\x83\x79\x6C\xE9\xA7"))->GetOffset();
+	Offsets::m_aimPunchAngle = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngle*/CXorString("\x7A\x54\xE4\xAB\x7A\x5B\xF0\xAC\x74\x63\xC4\xAC\x70\x67\xE0"))->GetOffset();
+	Offsets::m_aimPunchAngleVel = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_aimPunchAngleVel*/CXorString("\x7A\x54\xE4\xAB\x7A\x5B\xF0\xAC\x74\x63\xC4\xAC\x70\x67\xE0\x94\x72\x67"))->GetOffset();
 
 	m_pNetVarMgr->SetSummarizeOffsets(true);
 	Offsets::m_iItemDefinitionIndex = m_pNetVarMgr->GetOffset(4, xorBaseCombatWeapon,
-		/*DT_EconEntity*/CXorString("S_Útdëyì¶n").ToCharArray(),
-		/*DT_AttributeContainer*/CXorString("S_Úc÷«u~ñ§Tdë¶vbë§e").ToCharArray(),
-		/*DT_ScriptCreatedItem*/CXorString("S_Útyì²cH÷§và¦^à¯").ToCharArray(),
-		/*m_iItemDefinitionIndex*/CXorString("zTìcnèrmì¬~ì­yBë¦rs").ToCharArray());
+		/*DT_EconEntity*/CXorString("\x53\x5F\xDA\x87\x74\x64\xEB\x87\x79\x7F\xEC\xB6\x6E").ToCharArray(),
+		/*DT_AttributeContainer*/CXorString("\x53\x5F\xDA\x83\x63\x7F\xF7\xAB\x75\x7E\xF1\xA7\x54\x64\xEB\xB6\x76\x62\xEB\xA7\x65").ToCharArray(),
+		/*DT_ScriptCreatedItem*/CXorString("\x53\x5F\xDA\x91\x74\x79\xEC\xB2\x63\x48\xF7\xA7\x76\x7F\xE0\xA6\x5E\x7F\xE0\xAF").ToCharArray(),
+		/*m_iItemDefinitionIndex*/CXorString("\x7A\x54\xEC\x8B\x63\x6E\xE8\x86\x72\x6D\xEC\xAC\x7E\x7F\xEC\xAD\x79\x42\xEB\xA6\x72\x73").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
-	Offsets::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hOwner*/CXorString("zTí`eà°"));
-	Offsets::m_iClip1 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_iClip1*/CXorString("zTì{bõó"));
-	Offsets::m_iClip2 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_iClip2*/CXorString("zTì{bõð"));
+	Offsets::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hOwner*/CXorString("\x7A\x54\xED\x8D\x60\x65\xE0\xB0"));
+	Offsets::m_iClip1 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_iClip1*/CXorString("\x7A\x54\xEC\x81\x7B\x62\xF5\xF3"));
+	Offsets::m_iClip2 = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_iClip2*/CXorString("\x7A\x54\xEC\x81\x7B\x62\xF5\xF0"));
 	Offsets::m_flNextPrimaryAttack = m_pNetVarMgr->GetOffset(2, xorBaseCombatWeapon,
-		/*DT_LocalActiveWeaponData*/CXorString("S_Úxhä®Vhñ«anÒ§v{ê¬Sjñ£").ToCharArray(),
-		/*m_flNextPrimaryAttack*/CXorString("zTã®Yný¶Gyì¯vyücä¡|").ToCharArray());
+		/*DT_LocalActiveWeaponData*/CXorString("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE\x56\x68\xF1\xAB\x61\x6E\xD2\xA7\x76\x7B\xEA\xAC\x53\x6A\xF1\xA3").ToCharArray(),
+		/*m_flNextPrimaryAttack*/CXorString("\x7A\x54\xE3\xAE\x59\x6E\xFD\xB6\x47\x79\xEC\xAF\x76\x79\xFC\x83\x63\x7F\xE4\xA1\x7C").ToCharArray());
 	Offsets::m_hWeaponWorldModel = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hWeaponWorldModel*/"m_hWeaponWorldModel"); //TODO: XOR
 
 	Offsets::m_fAccuracyPenalty = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_fAccuracyPenalty*/CXorString("zTãthð°vhüreä®cr"));
