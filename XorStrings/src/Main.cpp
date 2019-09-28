@@ -1,6 +1,8 @@
 #include "..\..\mechanics\src\XorString.h"
 #include "..\..\mechanics\src\murmurhash.h"
 
+#include <iostream>
+
 void printByteString(FILE* pFile, const char* p, int len)
 {
 	for (int i = 0; i < len; i++)
@@ -14,9 +16,9 @@ int main(int argc, char** argv)
 	CXorString strings[]{
 		CXorString("\"%s\"\n{\n\t\"$basetexture\" \"vgui/white\"\n\t\"$envmap\" \"\"\n\t\"$model\" \"1\"\n\t\"$flat\" \"%d\"\n\t\"$nocull\" \"0\"\n\t\"$selfillum\" \"1\"\n\t\"$halflambert\" \"1\"\n\t\"$nofog\" \"0\"\n\t\"$ignorez\" \"%d\"\n\t\"$znearer\" \"0\"\n\t\"$wireframe\" \"%d\"\n}"),
 		CXorString("VEngineCvar007"),
-		CXorString("ü˜…‘Ï¹£›Ìº©™Ã°„šåÞ", 0x1235AFAA),
+		CXorString("Ã¼Â˜Â…Â‘ÃÂ¹Â£Â›ÃŒÂºÂ©Â™ÃƒÂ°Â„ÂÂšÃ¥Ãž", 0x1235AFAA),
 		CXorString("_cajthRq{nc@vdcmn=67", 0x1A),
-		CXorString("“ ‘¹Ÿ““Ÿœ”¯Ÿ–‘‹µ–‹", 0xAFFEAFFE)
+		CXorString("Â“Â Â‘Â¹ÂŸÂ“Â“ÂÂŸÂœÂ”Â¯ÂŸÂ–Â‘Â‹ÂµÂ–Â‹", 0xAFFEAFFE)
 	};
 	
 	CXorString byteStrings[]{
@@ -30,11 +32,11 @@ int main(int argc, char** argv)
 	};
 	
 	int iLen;
-	char pBuffer[1024];
+	char pBuffer[2048];
 	FILE* pFileRead = fopen("plain.txt", "r");
 	FILE* pFileWrite = fopen("xor.txt", "w");
 	//int countstr = sizeof(strings) / sizeof(CXorString);
-	while(fgets(pBuffer, 1024, pFileRead))
+	while(fgets(pBuffer, 2048, pFileRead))
 	{
 		iLen = strlen(pBuffer);
 		for(int i = 0; i < iLen; i++)
@@ -46,7 +48,8 @@ int main(int argc, char** argv)
 			}
 		}
 
-		fprintf(pFileWrite, "%s\n", CXorString(pBuffer).ToCharArray());
+		fprintf(pFileWrite, "%s: ", pBuffer);
+		printByteString(pFileWrite, CXorString(pBuffer).ToCharArray(), strlen(pBuffer));
 	}
 	fclose(pFileRead);
 	fclose(pFileWrite);

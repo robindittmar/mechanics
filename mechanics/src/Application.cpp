@@ -392,14 +392,14 @@ void CApplication::GetLibrarys()
 	//this->m_dwClientDll = (DWORD)GetModuleHandle(/*client.dll*/CXorString("tgì§y«¦{g"));
 	//todo: xorn
 	this->m_dwClientDll = (DWORD)GetModuleHandle("client_panorama.dll");
-	this->m_dwEngineDll = (DWORD)GetModuleHandle(/*engine.dll*/CXorString("reâ«yn«¦{g"));
-	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(/*materialsystem.dll*/CXorString("zjñ§ebä®drö¶rf«¦{g"));
-	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("alð«%%á®{"));
-	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("alð«zjñ±byã£tn«¦{g"));
-	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("a{í»dbæ±9oé®"));
-	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé"));
-	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjñ£tjæªr%á®{"));
-	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("{dæ£{bÿ§9oé®"));
+	this->m_dwEngineDll = (DWORD)GetModuleHandle(/*engine.dll*/CXorString("\x72\x65\xE2\xAB\x79\x6E\xAB\xA6\x7B\x67"));
+	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(/*materialsystem.dll*/CXorString("\x7A\x6A\xF1\xA7\x65\x62\xE4\xAE\x64\x72\xF6\xB6\x72\x66\xAB\xA6\x7B\x67"));
+	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("\x61\x6C\xF0\xAB\x25\x25\xE1\xAE\x7B"));
+	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("\x61\x6C\xF0\xAB\x7A\x6A\xF1\xB1\x62\x79\xE3\xA3\x74\x6E\xAB\xA6\x7B\x67"));
+	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("\x61\x7B\xED\xBB\x64\x62\xE6\xB1\x39\x6F\xE9\xAE"));
+	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("\x61\x78\xF1\xA6\x7B\x62\xE7\xEC\x73\x67\xE9"));
+	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("\x73\x6A\xF1\xA3\x74\x6A\xE6\xAA\x72\x25\xE1\xAE\x7B"));
+	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("\x7B\x64\xE6\xA3\x7B\x62\xFF\xA7\x39\x6F\xE9\xAE"));
 	this->m_dwInputSystemDll = (DWORD)GetModuleHandle(/*inputsystem.dll*/"inputsystem.dll");
 
 #ifdef _DEBUG
@@ -421,7 +421,7 @@ void CApplication::GetLibrarys()
 void CApplication::GetInterfaces()
 {
 	// Setup strings
-	CXorString xorCreateInterface("Tyà£cnÌ¬cn÷¤vhà");
+	CXorString xorCreateInterface(/*CreateInterface*/"\x54\x79\xE0\xA3\x63\x6E\xCC\xAC\x63\x6E\xF7\xA4\x76\x68\xE0");
 
 	CreateInterfaceFn ClientFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwClientDll, xorCreateInterface);
 	CreateInterfaceFn EngineFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwEngineDll, xorCreateInterface);
@@ -434,29 +434,29 @@ void CApplication::GetInterfaces()
 	CreateInterfaceFn LocalizeFacory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwLocalizeDll, xorCreateInterface);
 	CreateInterfaceFn InputSystemFactory = (CreateInterfaceFn)GetProcAddress((HMODULE)this->m_dwInputSystemDll, xorCreateInterface);
 
-	m_pConColorMsg = (ConColorMsg_t)GetProcAddress((HMODULE)this->m_dwTier0Dll, /*?ConColorMsg@@YAXABVColor@@PBDZZ*/"?ConColorMsg@@YAXABVColor@@PBDZZ");
+	m_pConColorMsg = (ConColorMsg_t)GetProcAddress((HMODULE)this->m_dwTier0Dll, /*?ConColorMsg@@YAXABVColor@@PBDZZ*/CXorString("\x28\x48\xEA\xAC\x54\x64\xE9\xAD\x65\x46\xF6\xA5\x57\x4B\xDC\x83\x4F\x4A\xC7\x94\x54\x64\xE9\xAD\x65\x4B\xC5\x92\x55\x4F\xDF\x98"));
 
-	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("Ejë¦xfÖ§ro"));
-	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("Ejë¦xfÌ¬c"));
-	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomFloat*/CXorString("Ejë¦xfÃ®xjñ"));
+	m_pRandomSeed = (RandomSeed_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomSeed*/CXorString("\x45\x6A\xEB\xA6\x78\x66\xD6\xA7\x72\x6F"));
+	m_pRandomInt = (RandomInt_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomInt*/CXorString("\x45\x6A\xEB\xA6\x78\x66\xCC\xAC\x63"));
+	m_pRandomFloat = (RandomFloat_t)GetProcAddress((HMODULE)this->m_dwVStdLibDll, /*RandomFloat*/CXorString("\x45\x6A\xEB\xA6\x78\x66\xC3\xAE\x78\x6A\xF1"));
 
-	m_pEngineClient = (IVEngineClient*)EngineFactory(/*VEngineClient014*/CXorString("ANë¥~eà{bà¬c;´ö"), nullptr);
-	m_pClient = (IBaseClientDLL*)ClientFactory(/*VClient018*/CXorString("AHé«reñò&3"), nullptr);
-	m_pEntityList = (IClientEntityList*)ClientFactory(/*VClientEntityList003*/CXorString("AHé«reñyì¶nGì±c;µñ"), nullptr);
-	m_pModelInfo = (IVModelInfo*)EngineFactory(/*VModelInfoClient004*/CXorString("AFê¦rgÌ¬qdÆ®~në¶';±"), nullptr);
-	m_pModelRender = (IVModelRender*)EngineFactory(/*VEngineModel016*/CXorString("ANë¥~eàxoà®':³"), nullptr);
-	m_pRenderView = (IVRenderView*)EngineFactory(/*VEngineRenderView014*/CXorString("ANë¥~eàreá§e]ì§`;´ö"), nullptr);
-	m_pEngineTrace = (IEngineTrace*)EngineFactory(/*EngineTraceClient004*/CXorString("Reâ«ynÑ°vhà{bà¬c;µö"), nullptr);
-	m_pMaterialSystem = (IMaterialSystem*)MaterialSystemFactory(/*VMaterialSystem080*/CXorString("AFä¶ryì£{Xü±cnèò/;"), nullptr);
-	m_pCVar = (ICVar*)VStdLibFactory(/*VEngineCvar007*/CXorString("ANë¥~eàaj÷ò'<"), nullptr);
-	m_pPanel = (IPanel*)VGui2Factory(/*VGUI_Panel009*/CXorString("ALÐH[ä¬rgµò."), nullptr);
-	m_pSurface = (ISurface*)VGuiSurfaceFactory(/*VGUI_Surface031*/CXorString("ALÐHXð°qjæ§'8´"), nullptr);
-	m_pGameEventManager = (IGameEventManager2*)EngineFactory(/*GAMEEVENTSMANAGER002*/CXorString("PJÈR]ÀCXÈYJÂE;µð"), nullptr);
-	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("A[í»dbæ±D~÷¤vhàedõ±';´"), nullptr);
-	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("^Në¥~eàx~ë¦Tgì§yµò$"), nullptr);
-	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("ZOÉvhí§';±"), nullptr);
-	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/CXorString("[dæ£{bÿ§H;µó"), nullptr);
-	m_pInputSystem = (IInputSystem*)InputSystemFactory(/*InputSystemVersion001*/"InputSystemVersion001", nullptr);
+	m_pEngineClient = (IVEngineClient*)EngineFactory(/*VEngineClient014*/CXorString("\x41\x4E\xEB\xA5\x7E\x65\xE0\x81\x7B\x62\xE0\xAC\x63\x3B\xB4\xF6"), nullptr);
+	m_pClient = (IBaseClientDLL*)ClientFactory(/*VClient018*/CXorString("\x41\x48\xE9\xAB\x72\x65\xF1\xF2\x26\x33"), nullptr);
+	m_pEntityList = (IClientEntityList*)ClientFactory(/*VClientEntityList003*/CXorString("\x41\x48\xE9\xAB\x72\x65\xF1\x87\x79\x7F\xEC\xB6\x6E\x47\xEC\xB1\x63\x3B\xB5\xF1"), nullptr);
+	m_pModelInfo = (IVModelInfo*)EngineFactory(/*VModelInfoClient004*/CXorString("\x41\x46\xEA\xA6\x72\x67\xCC\xAC\x71\x64\xC6\xAE\x7E\x6E\xEB\xB6\x27\x3B\xB1"), nullptr);
+	m_pModelRender = (IVModelRender*)EngineFactory(/*VEngineModel016*/CXorString("\x41\x4E\xEB\xA5\x7E\x65\xE0\x8F\x78\x6F\xE0\xAE\x27\x3A\xB3"), nullptr);
+	m_pRenderView = (IVRenderView*)EngineFactory(/*VEngineRenderView014*/CXorString("\x41\x4E\xEB\xA5\x7E\x65\xE0\x90\x72\x65\xE1\xA7\x65\x5D\xEC\xA7\x60\x3B\xB4\xF6"), nullptr);
+	m_pEngineTrace = (IEngineTrace*)EngineFactory(/*EngineTraceClient004*/CXorString("\x52\x65\xE2\xAB\x79\x6E\xD1\xB0\x76\x68\xE0\x81\x7B\x62\xE0\xAC\x63\x3B\xB5\xF6"), nullptr);
+	m_pMaterialSystem = (IMaterialSystem*)MaterialSystemFactory(/*VMaterialSystem080*/CXorString("\x41\x46\xE4\xB6\x72\x79\xEC\xA3\x7B\x58\xFC\xB1\x63\x6E\xE8\xF2\x2F\x3B"), nullptr);
+	m_pCVar = (ICVar*)VStdLibFactory(/*VEngineCvar007*/CXorString("\x41\x4E\xEB\xA5\x7E\x65\xE0\x81\x61\x6A\xF7\xF2\x27\x3C"), nullptr);
+	m_pPanel = (IPanel*)VGui2Factory(/*VGUI_Panel009*/CXorString("\x41\x4C\xD0\x8B\x48\x5B\xE4\xAC\x72\x67\xB5\xF2\x2E"), nullptr);
+	m_pSurface = (ISurface*)VGuiSurfaceFactory(/*VGUI_Surface031*/CXorString("\x41\x4C\xD0\x8B\x48\x58\xF0\xB0\x71\x6A\xE6\xA7\x27\x38\xB4"), nullptr);
+	m_pGameEventManager = (IGameEventManager2*)EngineFactory(/*GAMEEVENTSMANAGER002*/CXorString("\x50\x4A\xC8\x87\x52\x5D\xC0\x8C\x43\x58\xC8\x83\x59\x4A\xC2\x87\x45\x3B\xB5\xF0"), nullptr);
+	m_pPhysicsSurfaceProps = (IPhysicsSurfaceProps*)VPhysicsFactory(/*VPhysicsSurfaceProps001*/CXorString("\x41\x5B\xED\xBB\x64\x62\xE6\xB1\x44\x7E\xF7\xA4\x76\x68\xE0\x92\x65\x64\xF5\xB1\x27\x3B\xB4"), nullptr);
+	m_pEngineSound = (IEngineSound*)EngineFactory(/*IEngineSoundClient003*/CXorString("\x5E\x4E\xEB\xA5\x7E\x65\xE0\x91\x78\x7E\xEB\xA6\x54\x67\xEC\xA7\x79\x7F\xB5\xF2\x24"), nullptr);
+	m_pMdlCache = (IMDLCache*)DatacacheFactory(/*MDLCache004*/CXorString("\x5A\x4F\xC9\x81\x76\x68\xED\xA7\x27\x3B\xB1"), nullptr);
+	m_pLocalize = (ILocalize*)LocalizeFacory(/*Localize_001*/CXorString("\x5B\x64\xE6\xA3\x7B\x62\xFF\xA7\x48\x3B\xB5\xF3"), nullptr);
+	m_pInputSystem = (IInputSystem*)InputSystemFactory(/*InputSystemVersion001*/CXorString("\x5E\x65\xF5\xB7\x63\x58\xFC\xB1\x63\x6E\xE8\x94\x72\x79\xF6\xAB\x78\x65\xB5\xF2\x26"), nullptr);
 
 	m_pGlobalVars = **(CGlobalVars***)((*(DWORD**)(m_pClient))[0] + OFFSET_GLOBALS); // GlobalVar
 
