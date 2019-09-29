@@ -300,8 +300,8 @@ void CChams::RenderPlayerChams(const char* pszModelName, void* ecx, IMatRenderCo
 	if (m_iPlayerChamsStyle == PLAYER_CHAMSSTYLE_NONE)
 		return;
 
-	//static CXorString pModelTextures("Zdá§{+ñ§oğ°rx");
-	static CXorString pModelsSlashPlayers("zdá§{xª²{jü§e");
+	//static CXorString pModelTextures(/*Model textures*/"\x5A\x64\xE1\xA7\x7B\x2B\xF1\xA7\x6F\x7F\xF0\xB0\x72\x78");
+	static CXorString pModelsSlashPlayers(/*models/player*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB2\x7B\x6A\xFC\xA7\x65");
 
 	// models/player
 	if (strstr(pszModelName, pModelsSlashPlayers) != NULL)
@@ -354,13 +354,13 @@ void CChams::RenderWeaponChams(const char* pszModelName, void* ecx, IMatRenderCo
 	if (m_iWeaponChamsStyle == WEAPON_CHAMSSTYLE_NONE)
 		return;
 
-	static CXorString xorWeaponsV("`nä²xeöía");
-	static CXorString xorWeaponsVModels("zdá§{xªµrjõ­yxª´Hfê¦rgöí");
-	static CXorString xorOtherTextures("Xí§e+ñ§oğ°rx");
-	static CXorString xorGoldMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8lê®s");
-	static CXorString xorCrystalMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8h÷»dä®Hié·r");
-	static CXorString xorPlatMat("zdá§{xª²{jü§e$æ¶Hmç«8hñqiìpgä±d");
-	static CXorString xorGlassMat("zdá§{xª«y}à¬cd÷»Hbñ§zxª¶edõªnTè£}d÷±8h÷»dä®Hhé§vy");
+	static CXorString xorWeaponsV(/*weapons/v*/"\x60\x6E\xE4\xB2\x78\x65\xF6\xED\x61");
+	static CXorString xorWeaponsVModels(/*models/weapons/v_models/*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x66\xEA\xA6\x72\x67\xF6\xED");
+	static CXorString xorOtherTextures(/*Other textures*/"\x58\x7F\xED\xA7\x65\x2B\xF1\xA7\x6F\x7F\xF0\xB0\x72\x78");
+	static CXorString xorGoldMat(/*models/inventory_items/trophy_majors/gold*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xAB\x79\x7D\xE0\xAC\x63\x64\xF7\xBB\x48\x62\xF1\xA7\x7A\x78\xAA\xB6\x65\x64\xF5\xAA\x6E\x54\xE8\xA3\x7D\x64\xF7\xB1\x38\x6C\xEA\xAE\x73");
+	static CXorString xorCrystalMat(/*models/inventory_items/trophy_majors/crystal_blue*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xAB\x79\x7D\xE0\xAC\x63\x64\xF7\xBB\x48\x62\xF1\xA7\x7A\x78\xAA\xB6\x65\x64\xF5\xAA\x6E\x54\xE8\xA3\x7D\x64\xF7\xB1\x38\x68\xF7\xBB\x64\x7F\xE4\xAE\x48\x69\xE9\xB7\x72");
+	static CXorString xorPlatMat(/*models/player/ct_fbi/ct_fbi_glass*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB2\x7B\x6A\xFC\xA7\x65\x24\xE6\xB6\x48\x6D\xE7\xAB\x38\x68\xF1\x9D\x71\x69\xEC\x9D\x70\x67\xE4\xB1\x64");
+	static CXorString xorGlassMat(/*models/inventory_items/trophy_majors/crystal_clear*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xAB\x79\x7D\xE0\xAC\x63\x64\xF7\xBB\x48\x62\xF1\xA7\x7A\x78\xAA\xB6\x65\x64\xF5\xAA\x6E\x54\xE8\xA3\x7D\x64\xF7\xB1\x38\x68\xF7\xBB\x64\x7F\xE4\xAE\x48\x68\xE9\xA7\x76\x79");
 
 
 	if (strstr(pszModelName, xorWeaponsV) != NULL &&

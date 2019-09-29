@@ -11,7 +11,7 @@ void __fastcall hk_PaintTraverse(void* ecx, void* edx, unsigned int vguiPanel, b
 	static unsigned int vguiMatSystemTopPanel;
 	if (vguiMatSystemTopPanel == NULL)
 	{
-		static CXorString matSystemTopPanel("Zjñ‘nxñ§z_ê²Gjë§{");
+		static CXorString matSystemTopPanel(/*MatSystemTopPanel*/"\x5A\x6A\xF1\x91\x6E\x78\xF1\xA7\x7A\x5F\xEA\xB2\x47\x6A\xEB\xA7\x7B");
 		const char* szName = pApp->Panel()->GetName(vguiPanel);
 		// stricmp
 		if (strcmp(szName, matSystemTopPanel.ToCharArray()) == 0)

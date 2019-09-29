@@ -2,21 +2,21 @@
 #include "Application.h"
 
 CGameEventListener::CGameEventListener() :
-	m_xorUserId("bxà°~o"),
-	m_xorAttacker("vñ£t`à°"),
-	m_xorDmgHealth("sfânä®cc"),
-	m_xorDmgArmor("sfâvyè­e"),
-	m_xorHitgroup("bñ¥edð²"),
-	m_xorHeadshot("nä¦dcê¶"),
-	m_xorDominated("sdè«yjñ§s"),
-	m_xorRevenge("enó§ylà"),
-	m_xorPenetrated("gnë§cyä¶ro"),
-	m_xorTimelimit("hì¯rgì¯~"),
-	m_xorFraglimit("qyä¥{bè«c"),
-	m_xorObjective("xiï§tì´r"),
-	m_xorWinner("`bë¬ry"),
-	m_xorReason("enä±xe"),
-	m_xorMessage("znö±vlà")
+	m_xorUserId(/*userid*/"\x62\x78\xE0\xB0\x7E\x6F"),
+	m_xorAttacker(/*attacker*/"\x76\x7F\xF1\xA3\x74\x60\xE0\xB0"),
+	m_xorDmgHealth(/*dmg_health*/"\x73\x66\xE2\x9D\x7F\x6E\xE4\xAE\x63\x63"),
+	m_xorDmgArmor(/*dmg_armor*/"\x73\x66\xE2\x9D\x76\x79\xE8\xAD\x65"),
+	m_xorHitgroup(/*hitgroup*/"\x7F\x62\xF1\xA5\x65\x64\xF0\xB2"),
+	m_xorHeadshot("nï¿½dcï¿½"), //TODO: xor gibt was falsches aus
+	m_xorDominated(/*dominated*/"\x73\x64\xE8\xAB\x79\x6A\xF1\xA7\x73"),
+	m_xorRevenge(/*revenge*/"\x65\x6E\xF3\xA7\x79\x6C\xE0"),
+	m_xorPenetrated(/*penetrated*/"\x67\x6E\xEB\xA7\x63\x79\xE4\xB6\x72\x6F"),
+	m_xorTimelimit("hï¿½rgï¿½~"), //TODO: xor gibt was falsches aus
+	m_xorFraglimit(/*fraglimit*/"\x71\x79\xE4\xA5\x7B\x62\xE8\xAB\x63"),
+	m_xorObjective(/*objective*/"\x78\x69\xEF\xA7\x74\x7F\xEC\xB4\x72"),
+	m_xorWinner(/*winner*/"\x60\x62\xEB\xAC\x72\x79"),
+	m_xorReason(/*reason*/"\x65\x6E\xE4\xB1\x78\x65"),
+	m_xorMessage(/*message*/"\x7A\x6E\xF6\xB1\x76\x6C\xE0")
 {
 	m_bNewGame = true;
 }
@@ -78,7 +78,7 @@ void CGameEventListener::game_newmap(IGameEvent* pEvent)
 {
 	CApplication* pApp = CApplication::Instance();
 
-	static CXorString xorRecoilCompensation("`nä²xeÚ°rhê«{Tö¡vgà");
+	static CXorString xorRecoilCompensation(/*weapon_recoil_scale*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB0\x72\x68\xEA\xAB\x7B\x54\xF6\xA1\x76\x67\xE0");
 
 	pApp->Gui()->Setup();
 	pApp->SkinChanger()->ApplyDesiredKnife(TEAMNUM_CT, pApp->SkinChanger()->GetDesiredKnifeModelIndexCT());
@@ -187,7 +187,7 @@ void CGameEventListener::player_hurt(IGameEvent* pEvent)
 			if (sayTaunt) // TODO
 			{
 				// "say +1"
-				pApp->EngineClient()->ExecuteClientCmd(CXorString("djüâ<:").ToCharArray());
+				pApp->EngineClient()->ExecuteClientCmd(CXorString(/*say + 1*/"\x64\x6A\xFC\xE2\x3C\x2B\xB4").ToCharArray());
 			}
 		}
 
@@ -234,7 +234,7 @@ void CGameEventListener::player_death(IGameEvent* pEvent)
 	if (headshot && sayTaunt)
 	{
 		// "say SIEG HEIL"
-		pApp->EngineClient()->ClientCmd(CXorString("djüâDBÀ…7CÀ‹[").ToCharArray());
+		pApp->EngineClient()->ClientCmd(CXorString(/*say SIEG HEIL*/"\x64\x6A\xFC\xE2\x44\x42\xC0\x85\x37\x43\xC0\x8B\x5B").ToCharArray());
 	}
 }
 
@@ -251,7 +251,7 @@ void CGameEventListener::round_start(IGameEvent* pEvent)
 	if (roundSay)
 	{
 		// "say > powered by .mechanics"
-		pApp->EngineClient()->ClientCmd(CXorString("djüâ)+õ­`n÷§s+ç»7%è§tcä¬~hö").ToCharArray());
+		pApp->EngineClient()->ClientCmd(CXorString(/*say > powered by .mechanics*/"\x64\x6A\xFC\xE2\x29\x2B\xF5\xAD\x60\x6E\xF7\xA7\x73\x2B\xE7\xBB\x37\x25\xE8\xA7\x74\x63\xE4\xAC\x7E\x68\xF6").ToCharArray());
 	}
 }
 

@@ -24,7 +24,7 @@ void CSoundEsp::AddSound(CSoundInfo* pSound)
 	if (!m_bIsEnabled)
 		return;
 
-	static CXorString footstep("qdê¶dà²");
+	static CXorString footstep(/*footstep*/"\x71\x64\xEA\xB6\x64\x7F\xE0\xB2");
 	if (!strstr(pSound->GetSample(), footstep.ToCharArray()))
 		return;
 
@@ -52,7 +52,7 @@ void CSoundEsp::AddSound(CSoundInfo* pSound)
 			return;
 	}
 
-	static CXorString step("dà²");
+	static CXorString step(/*step*/"\x64\x7F\xE0\xB2");
 	pSound->SetSample(step);
 	m_vecSounds.push_back(pSound);
 }

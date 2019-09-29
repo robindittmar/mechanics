@@ -68,7 +68,7 @@ void CLagCompensationPlayerList::AddPlayerEntry(IClientEntity* pCurEnt, int tick
 	if ((!pApp->Ragebot()->GetEnabled() || !pApp->LagCompensation()->GetRageLagCompensationEnabled()) && !pApp->LagCompensation()->GetLegitLagCompensationEnabled())
 		return;
 
-	static CXorString pHeadZero("n�H;");
+	static CXorString pHeadZero("n�H;"); //TODO: xor gibt was falsches aus
 
 	float intervalPerTick = CApplication::Instance()->GlobalVars()->interval_per_tick;
 

@@ -338,7 +338,7 @@ void CMisc::AutoAccept(const char* filename)
 	if (m_pApp->EngineClient()->IsInGame())
 		return;
 	static int count = 0;
-	static CXorString acceptBeep("6^��td�r�~}��vh�gڠrn��`j�");
+	static CXorString acceptBeep(/*!UI/competitive_accept_beep.wav*/"\x36\x5E\xCC\xED\x74\x64\xE8\xB2\x72\x7F\xEC\xB6\x7E\x7D\xE0\x9D\x76\x68\xE6\xA7\x67\x7F\xDA\xA0\x72\x6E\xF5\xEC\x60\x6A\xF3");
 	if (strcmp(filename, acceptBeep.ToCharArray()) != 0)
 		return;
 	else

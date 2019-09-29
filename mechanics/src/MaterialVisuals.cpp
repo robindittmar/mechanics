@@ -19,11 +19,11 @@ void CMaterialVisuals::SetDefaultSky()
 
 void CMaterialVisuals::Nightmode(float fValue)
 {
-	static CXorString xorSkyname("d}Ú±|rë£zn");
-	static CXorString xorDrawSpecificStaticProp("eTÁ°v|Ö²rhì¤~hÖ¶vì¡Gyê²");
-	static CXorString xorWorld("@d÷®s");
-	static CXorString xorStaticProp("Dä¶~hÕ°x{");
-	static CXorString xorSkyNight("d`ütxâ­Heì¥µð");
+	static CXorString xorSkyname(/*sv_skyname*/"\x64\x7D\xDA\xB1\x7C\x72\xEB\xA3\x7A\x6E");
+	static CXorString xorDrawSpecificStaticProp(/*r_DrawSpecificStaticProp*/"\x64\x7D\xDA\xB1\x7C\x72\xEB\xA3\x7A\x6E");
+	static CXorString xorWorld(/*World*/"\x40\x64\xF7\xAE\x73");
+	static CXorString xorStaticProp(/*StaticProp*/"\x44\x7F\xE4\xB6\x7E\x68\xD5\xB0\x78\x7B");
+	static CXorString xorSkyNight(/*sky_csgo_night02*/"\x64\x60\xFC\x9D\x74\x78\xE2\xAD\x48\x65\xEC\xA5\x7F\x7F\xB5\xF0");
 
 	//static ConVar* r_drawspecificstaticprop = m_pApp->CVar()->FindVar(xorDrawSpecificStaticProp.ToCharArray());
 	//r_drawspecificstaticprop->SetValue(0); // needed?
@@ -44,7 +44,7 @@ void CMaterialVisuals::Nightmode(float fValue)
 
 void CMaterialVisuals::Asuswalls(float fValue)
 {
-	static CXorString xorWorld("@d÷®s");
+	static CXorString xorWorld("\x40\x64\xF7\xAE\x73");
 
 	m_fAsuswallsValue = fValue;
 

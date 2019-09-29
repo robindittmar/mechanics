@@ -503,7 +503,7 @@ void CEsp::DrawActiveWeapon(ISurface * pSurface, IClientEntity* pEntity, int pos
 	if (!pActiveWeapon)
 		return;
 
-	static int iWeaponUnderscoreLen = strlen(/*weapon_*/CXorString("`n�xe�").ToCharArray());
+	static int iWeaponUnderscoreLen = strlen(CXorString(/*weapon_*/"\x60\x6E\xE4\xB2\x78\x65\xDA").ToCharArray());
 
 	bool bIsFireableWeapon = !(pActiveWeapon->IsKnife() || pActiveWeapon->IsNade() || pActiveWeapon->IsTaser() || pActiveWeapon->IsC4());
 	if (bIsFireableWeapon && (m_bDrawAmmoNumber || m_bDrawAmmoBar))

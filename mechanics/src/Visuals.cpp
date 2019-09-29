@@ -56,12 +56,12 @@ void CVisuals::NoFlash(float fFlashPercentage)
 void CVisuals::NoSmoke(bool bNoSmoke)
 {
 	static CXorString smoke_materials[] = {
-		/*CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú¤~yà"), */ // this creates awesome little circle smoke effect
-		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú±zdî§pyà¬voà"),
-		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±"),
-		CXorString("gj÷¶~hé§8}ì±cjö¯x`à´&$ó«dä±zdî§a:Ú§zdá±Hbè²vhñ¦bxñ")
+		//CXorString(/*particle/vistasmokev1/vistasmokev1_fire*/"\x67\x6A\xF7\xB6\x7E\x68\xE9\xA7\x38\x7D\xEC\xB1\x63\x6A\xF6\xAF\x78\x60\xE0\xB4\x26\x24\xF3\xAB\x64\x7F\xE4\xB1\x7A\x64\xEE\xA7\x61\x3A\xDA\xA4\x7E\x79\xE0"), // this creates awesome little circle smoke effect
+		CXorString(/*particle/vistasmokev1/vistasmokev1_smokegrenade*/"\x67\x6A\xF7\xB6\x7E\x68\xE9\xA7\x38\x7D\xEC\xB1\x63\x6A\xF6\xAF\x78\x60\xE0\xB4\x26\x24\xF3\xAB\x64\x7F\xE4\xB1\x7A\x64\xEE\xA7\x61\x3A\xDA\xB1\x7A\x64\xEE\xA7\x70\x79\xE0\xAC\x76\x6F\xE0"),
+		CXorString(/*particle/vistasmokev1/vistasmokev1_emods*/"\x67\x6A\xF7\xB6\x7E\x68\xE9\xA7\x38\x7D\xEC\xB1\x63\x6A\xF6\xAF\x78\x60\xE0\xB4\x26\x24\xF3\xAB\x64\x7F\xE4\xB1\x7A\x64\xEE\xA7\x61\x3A\xDA\xA7\x7A\x64\xE1\xB1"),
+		CXorString(/*particle/vistasmokev1/vistasmokev1_emods_impactdust*/"\x67\x6A\xF7\xB6\x7E\x68\xE9\xA7\x38\x7D\xEC\xB1\x63\x6A\xF6\xAF\x78\x60\xE0\xB4\x26\x24\xF3\xAB\x64\x7F\xE4\xB1\x7A\x64\xEE\xA7\x61\x3A\xDA\xA7\x7A\x64\xE1\xB1\x48\x62\xE8\xB2\x76\x68\xF1\xA6\x62\x78\xF1")
 	};
-	static CXorString pOtherTextures("Xí§e+ñ§oð°rx");
+	static CXorString pOtherTextures(/*Other textures*/"\x58\x7F\xED\xA7\x65\x2B\xF1\xA7\x6F\x7F\xF0\xB0\x72\x78");
 
 	m_bNoSmoke = bNoSmoke;
 
@@ -88,8 +88,8 @@ IMaterial* CVisuals::HandsDrawStyle(const char* pszModelName, void* ecx, IMatRen
 	if (m_iHandsDrawStyle == HANDSDRAWSTYLE_NONE)
 		return NULL;
 
-	static CXorString pArms("vyè±");
-	static CXorString pModelTextures("Zdá§{+ñ§oð°rx");
+	static CXorString pArms(/*arms*/"\x76\x79\xE8\xB1");
+	static CXorString pModelTextures(/*Model textures*/"\x5A\x64\xE1\xA7\x7B\x2B\xF1\xA7\x6F\x7F\xF0\xB0\x72\x78");
 
 	IMaterial* pMat = NULL;
 
@@ -210,7 +210,7 @@ void CVisuals::FovChange(CViewSetup* pViewSetup)
 		return;
 
 	static bool bChangedZoomSensitivity = false;
-	static ConVar* pZoomSensitivity = m_pApp->CVar()->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
+	static ConVar* pZoomSensitivity = m_pApp->CVar()->FindVar(CXorString(/*zoom_sensitivity_ratio_mouse*/"\x6D\x64\xEA\xAF\x48\x78\xE0\xAC\x64\x62\xF1\xAB\x61\x62\xF1\xBB\x48\x79\xE4\xB6\x7E\x64\xDA\xAF\x78\x7E\xF6\xA7").ToCharArray());
 	IClientEntity* pLocalEntity = this->m_pApp->EntityList()->GetClientEntity(this->m_pApp->EngineClient()->GetLocalPlayer());
 	bool bChangeScopedFov = m_bFovChangeScoped && pLocalEntity->IsScoped();
 	if (bChangeScopedFov)
@@ -267,7 +267,7 @@ bool CVisuals::NoScope(unsigned int vguiPanel)
 	if (!m_bNoScope)
 		return false;
 
-	static CXorString hudZoom("_~á˜xdè");
+	static CXorString hudZoom(/*HudZoom*/"\x5F\x7E\xE1\x98\x78\x64\xE8");
 	const char* a = m_pApp->Panel()->GetName(vguiPanel);
 	if (!strcmp(hudZoom.ToCharArray(), m_pApp->Panel()->GetName(vguiPanel)))
 		return true;

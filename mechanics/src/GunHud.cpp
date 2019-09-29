@@ -23,7 +23,7 @@ void CGunHud::Setup()
 	m_pGui = CGui::Instance();
 	m_pSurface = m_pApp->Surface();
 
-	sprintf(m_pHitmarkerSound, CXorString("2xè§sbäžK.ö").ToCharArray(), m_pApp->GetWorkingDirectory(), CXorString("bñ±x~ë¦9|ä´").ToCharArray());
+	sprintf(m_pHitmarkerSound, CXorString(/*%smedia\\\\%s*/"\x32\x78\xE8\xA7\x73\x62\xE4\x9E\x4B\x57\xD9\xE7\x64").ToCharArray(), m_pApp->GetWorkingDirectory(), CXorString("/*hitsound.wav*/\x7F\x62\xF1\xB1\x78\x7E\xEB\xA6\x39\x7C\xE4\xB4").ToCharArray());
 }
 
 void CGunHud::Think(void* pParameters)

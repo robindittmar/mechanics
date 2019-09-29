@@ -89,7 +89,7 @@ void CApplication::Detach()
 	// FovChanger
 	if (m_visuals.GetFovChangeScoped())
 	{
-		ConVar* pZoomSensitivity = m_pCVar->FindVar(CXorString("mdê¯Hxà¬dbñ«abñ»Hyä¶~dÚ¯x~ö§").ToCharArray());
+		ConVar* pZoomSensitivity = m_pCVar->FindVar(/*zoom_sensitivity_ratio_mouse*/CXorString("\x6D\x64\xEA\xAF\x48\x78\xE0\xAC\x64\x62\xF1\xAB\x61\x62\xF1\xBB\x48\x79\xE4\xB6\x7E\x64\xDA\xAF\x78\x7E\xF6\xA7").ToCharArray());
 		pZoomSensitivity->SetValue(m_visuals.GetZoomSensitivity());
 	}
 

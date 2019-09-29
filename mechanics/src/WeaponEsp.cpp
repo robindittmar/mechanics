@@ -18,16 +18,16 @@ void CWeaponEsp::Setup()
 
 	m_iFont = g_pResourceManager->GetFont(RM_FONT_NORMAL);
 
-	mbstowcs(m_pSmokeGrenade, CXorString("Dfê©r&Â°reä¦r").ToCharArray(), 64);
-	mbstowcs(m_pDecoy, CXorString("Snæ­n").ToCharArray(), 64);
-	mbstowcs(m_pFlashbang, CXorString("Qgä±iä¬p").ToCharArray(), 64);
-	mbstowcs(m_pHeGrenade, CXorString("_N¨…enë£sn").ToCharArray(), 64);
-	mbstowcs(m_pMolotov, CXorString("Zdé­cdó").ToCharArray(), 64);
+	mbstowcs(m_pSmokeGrenade, CXorString(/*Smoke-Grenade*/"\x44\x66\xEA\xA9\x72\x26\xC2\xB0\x72\x65\xE4\xA6\x72").ToCharArray(), 64);
+	mbstowcs(m_pDecoy, CXorString(/*Decoy*/"\x53\x6E\xE6\xAD\x6E").ToCharArray(), 64);
+	mbstowcs(m_pFlashbang, CXorString(/*Flashbang*/"\x51\x67\xE4\xB1\x7F\x69\xE4\xAC\x70").ToCharArray(), 64);
+	mbstowcs(m_pHeGrenade, CXorString(/*HE-Grenade*/"\x5F\x4E\xA8\x85\x65\x6E\xEB\xA3\x73\x6E").ToCharArray(), 64);
+	mbstowcs(m_pMolotov, CXorString(/*Molotov*/"\x5A\x64\xE9\xAD\x63\x64\xF3").ToCharArray(), 64);
 
-	mbstowcs(m_pC4Planted, CXorString("Ggä¬cnáâT?").ToCharArray(), 64);
-	mbstowcs(m_pC4Time, CXorString("Cbè§-+ ì%mö").ToCharArray(), 64);
-	mbstowcs(m_pC4DefuseCountDown, CXorString("Snã·dnáâ~e¿â2%·¤").ToCharArray(), 64);
-	mbstowcs(m_pC4DamageIndicator, CXorString("Sjè£pn¿âi.ì").ToCharArray(), 64);
+	mbstowcs(m_pC4Planted, CXorString(/*Planted C4*/"\x47\x67\xE4\xAC\x63\x6E\xE1\xE2\x54\x3F").ToCharArray(), 64);
+	mbstowcs(m_pC4Time, CXorString(/*Time: %.2fs*/"\x43\x62\xE8\xA7\x2D\x2B\xA0\xEC\x25\x6D\xF6").ToCharArray(), 64);
+	mbstowcs(m_pC4DefuseCountDown, CXorString(/*Defused in: %.2f*/"\x53\x6E\xE3\xB7\x64\x6E\xE1\xE2\x7E\x65\xBF\xE2\x32\x25\xB7\xA4").ToCharArray(), 64);
+	mbstowcs(m_pC4DamageIndicator, CXorString(/*Damage: ~%i*/"\x53\x6A\xE8\xA3\x70\x6E\xBF\xE2\x69\x2E\xEC").ToCharArray(), 64);
 }
 
 void CWeaponEsp::Think(void* pParameters)
@@ -84,7 +84,7 @@ void CWeaponEsp::GrenadeEsp(IClientEntity* pCurEntity)
 			wchar_t* pGrenadeName;
 			const char* pModelName;
 
-			static CXorString xorFlashbang("qgä±iä¬p");
+			static CXorString xorFlashbang(/*flashbang*/"\x71\x67\xE4\xB1\x7F\x69\xE4\xAC\x70");
 			switch (pCurEntity->GetClientClass()->m_ClassID)
 			{
 			case CSmokeGrenadeProjectile:

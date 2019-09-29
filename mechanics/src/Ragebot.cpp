@@ -500,12 +500,12 @@ void inline CRagebot::Aim(CUserCmd* pUserCmd)
 
 bool CRagebot::IsAbleToApplyNoSpread()
 {
-	static ConVar* pCustomRandomSeed = m_pApp->CVar()->FindVar(CXorString("d}Ú·dn÷¡zoÚ¡bxñ­zT÷£yoê¯Hxà§s").ToCharArray());
+	static ConVar* pCustomRandomSeed = m_pApp->CVar()->FindVar(/*sv_usercmd_custom_random_seed*/CXorString("\x64\x7D\xDA\xB7\x64\x6E\xF7\xA1\x7A\x6F\xDA\xA1\x62\x78\xF1\xAD\x7A\x54\xF7\xA3\x79\x6F\xEA\xAF\x48\x78\xE0\xA7\x73").ToCharArray());
 	return atoi(pCustomRandomSeed->value) == 0;
 }
 bool CRagebot::IsNoSpread()
 {
-	static ConVar* pWeaponAccuracity = m_pApp->CVar()->FindVar(CXorString("`nä²xeÚ£thð°vhüydö²enä¦").ToCharArray());
+	static ConVar* pWeaponAccuracity = m_pApp->CVar()->FindVar(/*weapon_accuracy_nospread*/CXorString("\x60\x6E\xE4\xB2\x78\x65\xDA\xA3\x74\x68\xF0\xB0\x76\x68\xFC\x9D\x79\x64\xF6\xB2\x65\x6E\xE4\xA6").ToCharArray());
 	return atoi(pWeaponAccuracity->value) == 1;
 }
 
