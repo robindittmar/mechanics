@@ -16,8 +16,8 @@
 #include "SkinMetadata.h"
 #include "murmurhash.h"
 
-#define SKINCHANGER_CONFIG_FOLDER_FULL_RELATIVE		CXorString(/*cfg\\skins\\*/"tmâžd`ì¬dW").ToCharArray()
-#define SKINCHANGER_CONFIG_FOLDER					CXorString(/*skins\\*/"d`ì¬dW").ToCharArray()
+#define SKINCHANGER_CONFIG_FOLDER_FULL_RELATIVE		/*cfg\\skins\\*/CXorString("\x74\x6D\xE2\x9E\x4B\x78\xEE\xAB\x79\x78\xD9\x9E").ToCharArray()
+#define SKINCHANGER_CONFIG_FOLDER					/*skins\\*/CXorString("\x64\x60\xEC\xAC\x64\x57\xD9").ToCharArray()
 
 #define GLOVE_NONE				0
 #define GLOVE_BLOODHOUND		1

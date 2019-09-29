@@ -5,19 +5,17 @@ std::vector<HitmarkerEntry> CApplication::m_pHitmarker;
 
 CApplication::CApplication()
 {
-	// TODO: Der konstruktor muss *ALLE* pointer auf NULL setzen, der destruktor
-	//		 alle ptr != NULL löschen
-	m_pNetVarMgr = NULL;
+	m_pNetVarMgr = nullptr;
 
-	m_pClientModeHook = NULL;
-	m_pModelRenderHook = NULL;
-	m_pClientHook = NULL;
-	m_pPanelHook = NULL;
-	m_pSurfaceHook = NULL;
-	m_pGameEventManagerHook = NULL;
-	m_pViewRenderHook = NULL;
-	m_pEngineSoundHook = NULL;
-	m_pMdlHook = NULL;
+	m_pClientModeHook = nullptr;
+	m_pModelRenderHook = nullptr;
+	m_pClientHook = nullptr;
+	m_pPanelHook = nullptr;
+	m_pSurfaceHook = nullptr;
+	m_pGameEventManagerHook = nullptr;
+	m_pViewRenderHook = nullptr;
+	m_pEngineSoundHook = nullptr;
+	m_pMdlHook = nullptr;
 
 	m_bGotSendPackets = false;
 
@@ -27,35 +25,16 @@ CApplication::CApplication()
 
 CApplication::~CApplication()
 {
-	if (m_pMdlHook)
-		delete m_pMdlHook;
-
-	if (m_pEngineSoundHook)
-		delete m_pEngineSoundHook;
-
-	if (m_pViewRenderHook)
-		delete m_pViewRenderHook;
-
-	if (m_pGameEventManagerHook)
-		delete m_pGameEventManagerHook;
-
-	if (m_pSurfaceHook)
-		delete m_pSurfaceHook;
-
-	if (m_pPanelHook)
-		delete m_pPanelHook;
-
-	if (m_pClientHook)
-		delete m_pClientHook;
-
-	if (m_pModelRenderHook)
-		delete m_pModelRenderHook;
-
-	if (m_pClientModeHook)
-		delete m_pClientModeHook;
-
-	if (m_pNetVarMgr)
-		delete m_pNetVarMgr;
+    delete m_pMdlHook;
+    delete m_pEngineSoundHook;
+    delete m_pViewRenderHook;
+    delete m_pGameEventManagerHook;
+    delete m_pSurfaceHook;
+    delete m_pPanelHook;
+    delete m_pClientHook;
+    delete m_pModelRenderHook;
+    delete m_pClientModeHook;
+    delete m_pNetVarMgr;
 }
 
 CApplication* CApplication::Instance()
@@ -90,12 +69,12 @@ void CApplication::Detach()
 
 	// Free ResourceManager
 	delete g_pResourceManager;
-	g_pResourceManager = NULL;
+	g_pResourceManager = nullptr;
 
 #ifdef _DEBUG
 	// Free console
 	delete g_pConsole;
-	g_pConsole = NULL;
+	g_pConsole = nullptr;
 #endif
 
 	// TODO: Stimmt, das andere ist ja nicht von uns.. Cleanups *MÜSSEN* immer andersrum passieren als das initialisieren
@@ -124,7 +103,7 @@ void CApplication::Detach()
 	// ClanTag
 	if (m_misc.GetIsCustomClanTag())
 	{
-		m_misc.SetClanTag(NULL);
+		m_misc.SetClanTag(nullptr);
 		m_misc.ApplyClanTag();
 	}
 
@@ -134,7 +113,7 @@ void CApplication::Detach()
 	m_materialvisuals.Skychanger(0);
 
 	// Free & Exit
-	CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, 0, 0);
+	CreateThread(nullptr, 0, (LPTHREAD_START_ROUTINE)ThreadFreeLibrary, this->m_hModule, 0, nullptr);
 }
 
 bool CApplication::CreateFolder(const char* pName)
@@ -142,7 +121,7 @@ bool CApplication::CreateFolder(const char* pName)
 	char pBuffer[MAX_PATH];
 	snprintf(pBuffer, MAX_PATH, "%s%s", this->GetWorkingDirectory(), pName);
 
-	if (!CreateDirectory(pBuffer, NULL))
+	if (!CreateDirectory(pBuffer, nullptr))
 	{
 		DWORD dwErr = GetLastError();
 		if (GetLastError() != ERROR_ALREADY_EXISTS)
@@ -243,39 +222,26 @@ void CApplication::Setup()
 	m_pGui->Setup();
 
 	// Setups
-	this->m_ragebot.Setup();
-	this->m_gunAccuracy.Setup();
-	this->m_legitbot.Setup();
-	this->m_triggerbot.Setup();
-	this->m_resolver.Setup();
-	this->m_antiAim.Setup();
-	this->m_bhop.Setup();
-	this->m_esp.Setup();
-	this->m_weaponesp.Setup();
-	this->m_soundEsp.Setup();
-	this->m_chams.Setup();
-	this->m_misc.Setup();
-	this->m_fakelag.Setup();
-	this->m_fakewalk.Setup();
-	this->m_skinchanger.Setup();
-	this->m_visuals.Setup();
-	this->m_materialvisuals.Setup();
-	this->m_gunHud.Setup();
-	this->m_mirror.Setup();
-	this->m_radar.Setup();
-	this->m_lagcompensation.Setup();
+	std::vector<IFeature*> features = { &m_ragebot, &m_gunAccuracy, &m_legitbot, &m_triggerbot, &m_resolver, &m_antiAim,
+                                        &m_bhop, &m_esp, &m_weaponesp, &m_soundEsp, &m_chams, &m_misc, &m_fakelag,
+                                        &m_fakewalk, &m_skinchanger, &m_visuals, &m_materialvisuals, &m_gunHud,
+                                        &m_mirror, &m_radar, &m_lagcompensation };
+	for (auto& feature : features)
+    {
+	    feature->Setup();
+    }
 
 	// Register Event Handlers
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("pjè§Heàµzjõ").ToCharArray(), false); // game_newmap
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("txÚ¥vfàsbö¡xeë§tà¦").ToCharArray(), false); // cs_game_disconnected
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("d|ì¶tcÚ¶rjè").ToCharArray(), false); // switch_team
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ±gjò¬ro").ToCharArray(), false); // player_spawned
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚªbyñ").ToCharArray(), false); // player_hurt
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("ggä»ryÚ¦rjñª").ToCharArray(), false); // player_death
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTö¶vyñ").ToCharArray(), false); // round_start
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("edð¬sTà¬s").ToCharArray(), false); // round_end
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("`nä²xeÚ¤~yà").ToCharArray(), false); // weapon_fire
-	m_pGameEventManager->AddListener(&m_gameEventListener, CXorString("u~é®rÚ«z{ä¡c").ToCharArray(), false); // bullet_impact
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*game_newmap*/CXorString("\x70\x6A\xE8\xA7\x48\x65\xE0\xB5\x7A\x6A\xF5").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*cs_game_disconnected*/CXorString("\x74\x78\xDA\xA5\x76\x66\xE0\x9D\x73\x62\xF6\xA1\x78\x65\xEB\xA7\x74\x7F\xE0\xA6").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*switch_team*/CXorString("\x64\x7C\xEC\xB6\x74\x63\xDA\xB6\x72\x6A\xE8").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*player_spawned*/CXorString("\x67\x67\xE4\xBB\x72\x79\xDA\xB1\x67\x6A\xF2\xAC\x72\x6F").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*player_hurt*/CXorString("\x67\x67\xE4\xBB\x72\x79\xDA\xAA\x62\x79\xF1").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*player_death*/CXorString("\x67\x67\xE4\xBB\x72\x79\xDA\xA6\x72\x6A\xF1\xAA").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*round_start*/CXorString("\x65\x64\xF0\xAC\x73\x54\xF6\xB6\x76\x79\xF1").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*round_end*/CXorString("\x65\x64\xF0\xAC\x73\x54\xE0\xAC\x73").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*weapon_fire*/CXorString("\x60\x6E\xE4\xB2\x78\x65\xDA\xA4\x7E\x79\xE0").ToCharArray(), false);
+	m_pGameEventManager->AddListener(&m_gameEventListener, /*bullet_impact*/CXorString("\x75\x7E\xE9\xAE\x72\x7F\xDA\xAB\x7A\x7B\xE4\xA1\x63").ToCharArray(), false);
 
 	// Load config
 	CConfig config;
@@ -296,7 +262,7 @@ void CApplication::Setup()
 
 	if (m_pEngineClient->IsInGame())
 	{
-		m_gunAccuracy.SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("`nä²xeÚ°rhê«{Tö¡vgà"))->value));
+		m_gunAccuracy.SetRecoilCompensation(atof(m_pCVar->FindVar(/*weapon_recoil_scale*/CXorString("\x60\x6E\xE4\xB2\x78\x65\xDA\xB0\x72\x68\xEA\xAB\x7B\x54\xF6\xA1\x76\x67\xE0"))->value));
 	}
 }
 
@@ -388,19 +354,19 @@ void CApplication::GetModuleInfo()
 void CApplication::GetLibrarys()
 {
 	// Grab engine addresses
-	this->m_dwTier0Dll = (DWORD)GetModuleHandle(/*tier0.dll*/"tier0.dll");
+	this->m_dwTier0Dll = (DWORD)GetModuleHandle(/*tier0.dll*/CXorString("\x63\x62\xE0\xB0\x27\x25\xE1\xAE\x7B"));
 	//this->m_dwClientDll = (DWORD)GetModuleHandle(/*client.dll*/CXorString("tgì§y«¦{g"));
 	//todo: xorn
-	this->m_dwClientDll = (DWORD)GetModuleHandle("client_panorama.dll");
+	this->m_dwClientDll = (DWORD)GetModuleHandle(/*client_panorama.dll*/CXorString("\x74\x67\xEC\xA7\x79\x7F\xDA\xB2\x76\x65\xEA\xB0\x76\x66\xE4\xEC\x73\x67\xE9"));
 	this->m_dwEngineDll = (DWORD)GetModuleHandle(/*engine.dll*/CXorString("\x72\x65\xE2\xAB\x79\x6E\xAB\xA6\x7B\x67"));
 	this->m_dwMaterialSystemDll = (DWORD)GetModuleHandle(/*materialsystem.dll*/CXorString("\x7A\x6A\xF1\xA7\x65\x62\xE4\xAE\x64\x72\xF6\xB6\x72\x66\xAB\xA6\x7B\x67"));
 	this->m_dwVGui2Dll = (DWORD)GetModuleHandle(/*vgui2.dll*/CXorString("\x61\x6C\xF0\xAB\x25\x25\xE1\xAE\x7B"));
 	this->m_dwVGuiSurfaceDll = (DWORD)GetModuleHandle(/*vguimatsurface.dll*/CXorString("\x61\x6C\xF0\xAB\x7A\x6A\xF1\xB1\x62\x79\xE3\xA3\x74\x6E\xAB\xA6\x7B\x67"));
 	this->m_dwVPhysicsDll = (DWORD)GetModuleHandle(/*vphysics.dll*/CXorString("\x61\x7B\xED\xBB\x64\x62\xE6\xB1\x39\x6F\xE9\xAE"));
-	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("axñ¦{bçìsgé"));
-	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("sjñ£tjæªr%á®{"));
-	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("{dæ£{bÿ§9oé®"));
-	this->m_dwInputSystemDll = (DWORD)GetModuleHandle(/*inputsystem.dll*/"inputsystem.dll");
+	this->m_dwVStdLibDll = (DWORD)GetModuleHandle(/*vstdlib.dll*/CXorString("\x61\x78\xF1\xA6\x7B\x62\xE7\xEC\x73\x67\xE9"));
+	this->m_dwDatacacheDll = (DWORD)GetModuleHandle(/*datacache.dll*/CXorString("\x73\x6A\xF1\xA3\x74\x6A\xE6\xAA\x72\x25\xE1\xAE\x7B"));
+	this->m_dwLocalizeDll = (DWORD)GetModuleHandle(/*localize.dll*/CXorString("\x7B\x64\xE6\xA3\x7B\x62\xFF\xA7\x39\x6F\xE9\xAE"));
+	this->m_dwInputSystemDll = (DWORD)GetModuleHandle(/*inputsystem.dll*/CXorString("\x7E\x65\xF5\xB7\x63\x78\xFC\xB1\x63\x6E\xE8\xEC\x73\x67\xE9"));
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "tier0.dll\t\t=>\t0x%08X\n", m_dwTier0Dll);
@@ -555,19 +521,19 @@ void CApplication::GetNetVars()
 {
 	CBenchmark benchmark(true);
 
-	CXorString xorBaseEntity("\x53\x5F\xDA\x80\x76\x78\xE0\x87\x79\x7F\xEC\xB6\x6E"); // DT_BaseEntity
-	CXorString xorBasePlayer("\x53\x5F\xDA\x80\x76\x78\xE0\x92\x7B\x6A\xFC\xA7\x65"); // DT_BasePlayer
-	CXorString xorCollisionProperty("\x53\x5F\xDA\x81\x78\x67\xE9\xAB\x64\x62\xEA\xAC\x47\x79\xEA\xB2\x72\x79\xF1\xBB"); // DT_CollisionProperty
-	CXorString xorCSPlayer("\x53\x5F\xDA\x81\x44\x5B\xE9\xA3\x6E\x6E\xF7"); // DT_CSPlayer
-	CXorString xorLocalPlayerExclusive("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE\x47\x67\xE4\xBB\x72\x79\xC0\xBA\x74\x67\xF0\xB1\x7E\x7D\xE0"); // DT_LocalPlayerExclusive
-	CXorString xorBaseCombatWeapon("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x5C\xE0\xA3\x67\x64\xEB"); // DT_BaseCombatWeapon
-	CXorString xorWeaponCSBase("\x53\x5F\xDA\x95\x72\x6A\xF5\xAD\x79\x48\xD6\x80\x76\x78\xE0"); // DT_WeaponCSBase
-	CXorString xorBaseCSGrenade("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x44\x4C\xF7\xA7\x79\x6A\xE1\xA7"); // DT_BaseCSGrenade
-	CXorString xorBaseCombatCharacter("\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x48\xED\xA3\x65\x6A\xE6\xB6\x72\x79"); // DT_BaseCombatCharacter
-	CXorString xorBaseViewModel("\x53\x5F\xDA\x80\x76\x78\xE0\x94\x7E\x6E\xF2\x8F\x78\x6F\xE0\xAE"); // DT_BaseViewModel
-	CXorString xorPlantedC4("\x53\x5F\xDA\x92\x7B\x6A\xEB\xB6\x72\x6F\xC6\xF6"); // DT_PlantedC4
-	CXorString xorBaseAttributableItem("\x53\x5F\xDA\x80\x76\x78\xE0\x83\x63\x7F\xF7\xAB\x75\x7E\xF1\xA3\x75\x67\xE0\x8B\x63\x6E\xE8"); // DT_BaseAttributableItem
-	CXorString xorBaseAnimating("\x53\x5F\xDA\x80\x76\x78\xE0\x83\x79\x62\xE8\xA3\x63\x62\xEB\xA5"); // DT_BaseAnimating
+	CXorString xorBaseEntity(/*DT_BaseEntity*/"\x53\x5F\xDA\x80\x76\x78\xE0\x87\x79\x7F\xEC\xB6\x6E");
+	CXorString xorBasePlayer(/*DT_BasePlayer*/"\x53\x5F\xDA\x80\x76\x78\xE0\x92\x7B\x6A\xFC\xA7\x65");
+	CXorString xorCollisionProperty(/*DT_CollisionProperty*/"\x53\x5F\xDA\x81\x78\x67\xE9\xAB\x64\x62\xEA\xAC\x47\x79\xEA\xB2\x72\x79\xF1\xBB");
+	CXorString xorCSPlayer(/*DT_CSPlayer*/"\x53\x5F\xDA\x81\x44\x5B\xE9\xA3\x6E\x6E\xF7");
+	CXorString xorLocalPlayerExclusive(/*DT_LocalPlayerExclusive*/"\x53\x5F\xDA\x8E\x78\x68\xE4\xAE\x47\x67\xE4\xBB\x72\x79\xC0\xBA\x74\x67\xF0\xB1\x7E\x7D\xE0");
+	CXorString xorBaseCombatWeapon(/*DT_BaseCombatWeapon*/"\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x5C\xE0\xA3\x67\x64\xEB");
+	CXorString xorWeaponCSBase(/*DT_WeaponCSBase*/"\x53\x5F\xDA\x95\x72\x6A\xF5\xAD\x79\x48\xD6\x80\x76\x78\xE0");
+	CXorString xorBaseCSGrenade(/*DT_BaseCSGrenade*/"\x53\x5F\xDA\x80\x76\x78\xE0\x81\x44\x4C\xF7\xA7\x79\x6A\xE1\xA7");
+	CXorString xorBaseCombatCharacter(/*DT_BaseCombatCharacter*/"\x53\x5F\xDA\x80\x76\x78\xE0\x81\x78\x66\xE7\xA3\x63\x48\xED\xA3\x65\x6A\xE6\xB6\x72\x79");
+	CXorString xorBaseViewModel(/*DT_BaseViewModel*/"\x53\x5F\xDA\x80\x76\x78\xE0\x94\x7E\x6E\xF2\x8F\x78\x6F\xE0\xAE");
+	CXorString xorPlantedC4(/*DT_PlantedC4*/"\x53\x5F\xDA\x92\x7B\x6A\xEB\xB6\x72\x6F\xC6\xF6");
+	CXorString xorBaseAttributableItem(/*DT_BaseAttributableItem*/"\x53\x5F\xDA\x80\x76\x78\xE0\x83\x63\x7F\xF7\xAB\x75\x7E\xF1\xA3\x75\x67\xE0\x8B\x63\x6E\xE8");
+	CXorString xorBaseAnimating(/*DT_BaseAnimating*/"\x53\x5F\xDA\x80\x76\x78\xE0\x83\x79\x62\xE8\xA3\x63\x62\xEB\xA5");
 
 	m_pNetVarMgr = new CNetVarManager();
 	m_pNetVarMgr->AddTable(xorBaseEntity);
@@ -606,13 +572,13 @@ void CApplication::GetNetVars()
 	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_angEyeAngles*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78"));
 
-	m_pNetVarEyeAngles0 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[0]*/CXorString("zTä¬pNü§Veâ®rxÞòJ"));
-	m_pNetVarEyeAngles1 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[1]*/CXorString("zTä¬pNü§Veâ®rxÞóJ"));
+	m_pNetVarEyeAngles0 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[0]*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78\xDE\xF2\x4A"));
+	m_pNetVarEyeAngles1 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[1]*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78\xDE\xF3\x4A"));
 
 	Offsets::m_bHasHeavyArmor = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_bHasHeavyArmor*/CXorString("\x7A\x54\xE7\x8A\x76\x78\xCD\xA7\x76\x7D\xFC\x83\x65\x66\xEA\xB0"));
 	m_pNetVarLowerBodyYaw = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_flLowerBodyYawTarget*/CXorString("\x7A\x54\xE3\xAE\x5B\x64\xF2\xA7\x65\x49\xEA\xA6\x6E\x52\xE4\xB5\x43\x6A\xF7\xA5\x72\x7F"));
 	Offsets::m_flLowerBodyYawTarget = m_pNetVarLowerBodyYaw->GetOffset();
-	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("zTó§t]à®xhì¶nPµ").ToCharArray());
+	Offsets::m_vecVelocity = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecVelocity[0]*/CXorString("\x7A\x54\xF3\xA7\x74\x5D\xE0\xAE\x78\x68\xEC\xB6\x6E\x50\xB5\x9F").ToCharArray());
 	Offsets::m_iTeamNum = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_iTeamNum*/CXorString("\x7A\x54\xEC\x96\x72\x6A\xE8\x8C\x62\x66"));
 	Offsets::m_lifeState = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_lifeState*/CXorString("\x7A\x54\xE9\xAB\x71\x6E\xD6\xB6\x76\x7F\xE0"));
 	Offsets::m_iHealth = m_pNetVarMgr->GetOffset(xorBasePlayer, /*m_iHealth*/CXorString("\x7A\x54\xEC\x8A\x72\x6A\xE9\xB6\x7F"));
@@ -661,45 +627,45 @@ void CApplication::GetNetVars()
 	Offsets::m_flNextPrimaryAttack = m_pNetVarMgr->GetOffset(2, xorBaseCombatWeapon,
 		/*DT_LocalActiveWeaponData*/CXorString("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE\x56\x68\xF1\xAB\x61\x6E\xD2\xA7\x76\x7B\xEA\xAC\x53\x6A\xF1\xA3").ToCharArray(),
 		/*m_flNextPrimaryAttack*/CXorString("\x7A\x54\xE3\xAE\x59\x6E\xFD\xB6\x47\x79\xEC\xAF\x76\x79\xFC\x83\x63\x7F\xE4\xA1\x7C").ToCharArray());
-	Offsets::m_hWeaponWorldModel = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hWeaponWorldModel*/"m_hWeaponWorldModel"); //TODO: XOR
+	Offsets::m_hWeaponWorldModel = m_pNetVarMgr->GetOffset(xorBaseCombatWeapon, /*m_hWeaponWorldModel*/CXorString("\x7A\x54\xED\x95\x72\x6A\xF5\xAD\x79\x5C\xEA\xB0\x7B\x6F\xC8\xAD\x73\x6E\xE9"));
 
-	Offsets::m_fAccuracyPenalty = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_fAccuracyPenalty*/CXorString("zTãthð°vhüreä®cr"));
-	Offsets::m_flPostponeFireReadyTime = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_flPostponeFireReadyTime*/CXorString("zTã®Gdö¶gdë§Qb÷§Enä¦n_ì¯r"));
+	Offsets::m_fAccuracyPenalty = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_fAccuracyPenalty*/CXorString("\x7A\x54\xE3\x83\x74\x68\xF0\xB0\x76\x68\xFC\x92\x72\x65\xE4\xAE\x63\x72"));
+	Offsets::m_flPostponeFireReadyTime = m_pNetVarMgr->GetOffset(xorWeaponCSBase, /*m_flPostponeFireReadyTime*/CXorString("\x7A\x54\xE3\xAE\x47\x64\xF6\xB6\x67\x64\xEB\xA7\x51\x62\xF7\xA7\x45\x6E\xE4\xA6\x6E\x5F\xEC\xAF\x72"));
 
-	Offsets::m_fThrowTime = m_pNetVarMgr->GetOffset(xorBaseCSGrenade, /*m_fThrowTime*/CXorString("zTãyêµCbè§"));
+	Offsets::m_fThrowTime = m_pNetVarMgr->GetOffset(xorBaseCSGrenade, /*m_fThrowTime*/CXorString("\x7A\x54\xE3\x96\x7F\x79\xEA\xB5\x43\x62\xE8\xA7"));
 
-	CNetVar* pDtAttributeManager = m_pNetVarMgr->GetNetVar(xorBaseAttributableItem, /*DT_AttributeContainer*/CXorString("S_Úc÷«u~ñ§Tdë¶vbë§e"));
-	CNetVar* pDtItem = pDtAttributeManager->GetChild(/*DT_ScriptCreatedItem*/CXorString("S_Útyì²cH÷§và¦^à¯"));
+	CNetVar* pDtAttributeManager = m_pNetVarMgr->GetNetVar(xorBaseAttributableItem, /*DT_AttributeContainer*/CXorString("\x53\x5F\xDA\x83\x63\x7F\xF7\xAB\x75\x7E\xF1\xA7\x54\x64\xEB\xB6\x76\x62\xEB\xA7\x65"));
+	CNetVar* pDtItem = pDtAttributeManager->GetChild(/*DT_ScriptCreatedItem*/CXorString("\x53\x5F\xDA\x91\x74\x79\xEC\xB2\x63\x48\xF7\xA7\x76\x7F\xE0\xA6\x5E\x7F\xE0\xAF"));
 	int iOffset = pDtAttributeManager->GetOffset() + pDtItem->GetOffset();
 
-	Offsets::m_iItemIDHigh = iOffset + pDtItem->GetChild(/*m_iItemIDHigh*/CXorString("zTìcnèSCì¥"))->GetOffset();
-	Offsets::m_iItemIDLow = iOffset + pDtItem->GetChild(/*m_iItemIDLow*/CXorString("zTìcnèSGêµ"))->GetOffset();
-	Offsets::m_iAccountID = iOffset + pDtItem->GetChild(/*m_iAccountID*/CXorString("zTìthê·yÌ"))->GetOffset();
-	Offsets::m_iEntityQuality = iOffset + pDtItem->GetChild(/*m_iEntityQuality*/CXorString("zTìyì¶nZð£{bñ»"))->GetOffset();
-	Offsets::m_szCustomName = iOffset + pDtItem->GetChild(/*m_szCustomName*/CXorString("zTö¸T~ö¶xfË£zn"))->GetOffset();
+	Offsets::m_iItemIDHigh = iOffset + pDtItem->GetChild(/*m_iItemIDHigh*/CXorString("\x7A\x54\xEC\x8B\x63\x6E\xE8\x8B\x53\x43\xEC\xA5\x7F"))->GetOffset();
+	Offsets::m_iItemIDLow = iOffset + pDtItem->GetChild(/*m_iItemIDLow*/CXorString("\x7A\x54\xEC\x8B\x63\x6E\xE8\x8B\x53\x47\xEA\xB5"))->GetOffset();
+	Offsets::m_iAccountID = iOffset + pDtItem->GetChild(/*m_iAccountID*/CXorString("\x7A\x54\xEC\x83\x74\x68\xEA\xB7\x79\x7F\xCC\x86"))->GetOffset();
+	Offsets::m_iEntityQuality = iOffset + pDtItem->GetChild(/*m_iEntityQuality*/CXorString("\x7A\x54\xEC\x87\x79\x7F\xEC\xB6\x6E\x5A\xF0\xA3\x7B\x62\xF1\xBB"))->GetOffset();
+	Offsets::m_szCustomName = iOffset + pDtItem->GetChild(/*m_szCustomName*/CXorString("\x7A\x54\xF6\xB8\x54\x7E\xF6\xB6\x78\x66\xCB\xA3\x7A\x6E"))->GetOffset();
 
-	Offsets::m_OriginalOwnerXuidLow = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_OriginalOwnerXuidLow*/CXorString("zTÊ°~lì¬vgÊµyn÷bbáx|"));
-	Offsets::m_OriginalOwnerXuidHigh = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_OriginalOwnerXuidHigh*/CXorString("zTÊ°~lì¬vgÊµyn÷bbá~lí"));
-	Offsets::m_nFallbackPaintKit = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackPaintKit*/CXorString(" ¹¯µ", 0xAFFEAFFE));
-	Offsets::m_nFallbackSeed = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackSeed*/CXorString("zTëvgé vhîrná"));
-	Offsets::m_flFallbackWear = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_flFallbackWear*/CXorString("zTã®Qjé®ujæ©@nä°"));
-	Offsets::m_nFallbackStatTrak = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackStatTrak*/CXorString("zTëvgé vhîcjñejî"));
+	Offsets::m_OriginalOwnerXuidLow = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_OriginalOwnerXuidLow*/CXorString("\x7A\x54\xCA\xB0\x7E\x6C\xEC\xAC\x76\x67\xCA\xB5\x79\x6E\xF7\x9A\x62\x62\xE1\x8E\x78\x7C"));
+	Offsets::m_OriginalOwnerXuidHigh = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_OriginalOwnerXuidHigh*/CXorString("\x7A\x54\xCA\xB0\x7E\x6C\xEC\xAC\x76\x67\xCA\xB5\x79\x6E\xF7\x9A\x62\x62\xE1\x8A\x7E\x6C\xED"));
+	Offsets::m_nFallbackPaintKit = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackPaintKit*/CXorString("\x7A\x54\xEB\x84\x76\x67\xE9\xA0\x76\x68\xEE\x92\x76\x62\xEB\xB6\x5C\x62\xF1"));
+	Offsets::m_nFallbackSeed = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackSeed*/CXorString("\x7A\x54\xEB\x84\x76\x67\xE9\xA0\x76\x68\xEE\x91\x72\x6E\xE1"));
+	Offsets::m_flFallbackWear = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_flFallbackWear*/CXorString("\x7A\x54\xE3\xAE\x51\x6A\xE9\xAE\x75\x6A\xE6\xA9\x40\x6E\xE4\xB0"));
+	Offsets::m_nFallbackStatTrak = m_pNetVarMgr->GetOffset(xorBaseAttributableItem, /*m_nFallbackStatTrak*/CXorString("\x7A\x54\xEB\x84\x76\x67\xE9\xA0\x76\x68\xEE\x91\x63\x6A\xF1\x96\x65\x6A\xEE"));
 
-	Offsets::DT_BaseViewModel::m_hWeapon = m_pNetVarMgr->GetOffset(xorBaseViewModel, /*m_hWeapon*/CXorString("zTírjõ­y"));
-	Offsets::DT_BaseViewModel::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseViewModel, /*m_hOwner*/CXorString("zTí`eà°"));
+	Offsets::DT_BaseViewModel::m_hWeapon = m_pNetVarMgr->GetOffset(xorBaseViewModel, /*m_hWeapon*/CXorString("\x7A\x54\xED\x95\x72\x6A\xF5\xAD\x79"));
+	Offsets::DT_BaseViewModel::m_hOwner = m_pNetVarMgr->GetOffset(xorBaseViewModel, /*m_hOwner*/CXorString("\x7A\x54\xED\x8D\x60\x65\xE0\xB0"));
 
-	Offsets::m_nSequence = m_pNetVarMgr->GetOffset(xorBaseAnimating, /*m_nSequence*/CXorString("zTërzð§yhà"));
-	Offsets::m_flPoseParameter = m_pNetVarMgr->GetOffset(xorBaseAnimating, /*m_flPoseParameter*/CXorString("zTã®Gdö§Gj÷£znñ§e"));
+	Offsets::m_nSequence = m_pNetVarMgr->GetOffset(xorBaseAnimating, /*m_nSequence*/CXorString("\x7A\x54\xEB\x91\x72\x7A\xF0\xA7\x79\x68\xE0"));
+	Offsets::m_flPoseParameter = m_pNetVarMgr->GetOffset(xorBaseAnimating, /*m_flPoseParameter*/CXorString("\x7A\x54\xE3\xAE\x47\x64\xF6\xA7\x47\x6A\xF7\xA3\x7A\x6E\xF1\xA7\x65"));
 	Offsets::m_flCycle = m_pNetVarMgr->GetOffset(2, xorBaseAnimating,
-		/*DT_ServerAnimationData*/CXorString("S_Úryó§eJë«zjñ«xeÁ£cj").ToCharArray(),
-		/*m_flCycle*/CXorString("zTã®Træ®r").ToCharArray());
+            /*DT_ServerAnimationData*/CXorString("\x53\x5F\xDA\x91\x72\x79\xF3\xA7\x65\x4A\xEB\xAB\x7A\x6A\xF1\xAB\x78\x65\xC1\xA3\x63\x6A").ToCharArray(),
+            /*m_flCycle*/CXorString("\x7A\x54\xE3\xAE\x54\x72\xE6\xAE\x72").ToCharArray());
 
 #ifdef _DEBUG
 	g_pConsole->WritePlain("Done\n\n");
 #endif
 
 	// Grab NetVars later required for hooking
-	m_pNetVarSequence = m_pNetVarMgr->GetNetVar(xorBaseViewModel, /*m_nSequence*/CXorString("zTërzð§yhà"));
+	m_pNetVarSequence = m_pNetVarMgr->GetNetVar(xorBaseViewModel, /*m_nSequence*/CXorString("\x7A\x54\xEB\x91\x72\x7A\xF0\xA7\x79\x68\xE0"));
 
 	m_misc.SetReadyCallback((IsReadyCallback_t)(CPattern::FindPattern(
 		(BYTE*)this->ClientDll(),
@@ -804,7 +770,7 @@ void ClampMovement(CUserCmd* pUserCmd)
 	}
 }
 
-DWORD ThreadFreeLibrary(void* pParam)
+DWORD __stdcall ThreadFreeLibrary(void* pParam)
 {
 	// Wait 1 sec for hooks to finish running
 	Sleep(1000);

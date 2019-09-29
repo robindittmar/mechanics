@@ -24,14 +24,14 @@ void CGui::Setup()
 	this->GetWorldToScreenMatrix();
 
 	// cl_mouseenable
-	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
+	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÃšÂ¯x~Ã¶Â§reÃ¤Â {n").ToCharArray());
 
 	// Game Window
-	m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+	m_hGameWindow = FindWindow(CXorString("AjÃ©Â´r;ÂµÃ³").ToCharArray(), NULL);
 	while (!m_hGameWindow)
 	{
 		Sleep(1000);
-		m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+		m_hGameWindow = FindWindow(CXorString("AjÃ©Â´r;ÂµÃ³").ToCharArray(), NULL);
 	}
 
 	if (!m_bHookedWindowProc)
@@ -70,13 +70,8 @@ void CGui::SetEnableGameInput(bool bEnableGameInput)
 
 bool CGui::IsMouseInRect(int x, int y, int w, int h)
 {
-	if (m_iMouseX >= x && m_iMouseX <= (x + w) &&
-		m_iMouseY >= y && m_iMouseY <= (y + h))
-	{
-		return true;
-	}
-
-	return false;
+    return m_iMouseX >= x && m_iMouseX <= (x + w) &&
+           m_iMouseY >= y && m_iMouseY <= (y + h);
 }
 
 bool CGui::IsMouseEnabled()

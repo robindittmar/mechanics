@@ -2,7 +2,7 @@
 #include "Application.h"
 
 CMisc::CMisc()
-	: m_xorName("yjè§"), m_bNoRecoil(false), m_bAutoPistol(false),
+	: m_xorName("yjï¿½"), m_bNoRecoil(false), m_bAutoPistol(false),
 	m_bSpectators(false), m_bOnlyMySpectators(false), m_bOnlyMyTeamSpectators(false),
 	m_bJumpScout(false), m_bIsCustomClanTag(false), m_bAutoAccept(false),
 	m_bNoName(false), m_bSpamName(false)
@@ -100,7 +100,7 @@ void CMisc::AutoPistol(CUserCmd* pUserCmd)
 	}
 }
 
-// TODO ÜBERARBEITEN!!!!
+// TODO ï¿½BERARBEITEN!!!!
 void CMisc::SpectatorList()
 {
 	if (!m_bSpectators)
@@ -207,7 +207,7 @@ void CMisc::SpectatorList()
 				wcscpy(end, observerName);
 				wcscat(end, text);
 				wcscat(end, observingName);
-				// @Nico: Performance? :D (strings dauern immer lange, weil mind. strlen(kürzererString) vergleiche
+				// @Nico: Performance? :D (strings dauern immer lange, weil mind. strlen(kï¿½rzererString) vergleiche
 				//		  einfach observing auf LocalEntity checken :) (ist auch besser wegen namechanger oder so)
 				//if (wcscmp(observingName, pLocalName) == 0)
 				if (observing == pLocalEntity)
@@ -233,16 +233,13 @@ void CMisc::SpectatorList()
 
 void CMisc::SetClanTag(const char* tag)
 {
-	if (tag == NULL)
+	if (tag == nullptr)
 	{
 		SetClanTag("");
 		return;
 	}
 
-	if (tag[0] == '\0')
-		m_bIsCustomClanTag = false;
-	else
-		m_bIsCustomClanTag = true;
+    m_bIsCustomClanTag = tag[0] != '\0';
 
 	int iLen = strlen(tag) + 1;
 	memcpy(m_pClanTag, tag, iLen < 128 ? iLen : 128);
@@ -341,7 +338,7 @@ void CMisc::AutoAccept(const char* filename)
 	if (m_pApp->EngineClient()->IsInGame())
 		return;
 	static int count = 0;
-	static CXorString acceptBeep("6^Ìítdè²rì¶~}àvhæ§gÚ rnõì`jó");
+	static CXorString acceptBeep("6^ï¿½ï¿½tdï¿½rï¿½~}ï¿½ï¿½vhï¿½gÚ rnï¿½ï¿½`jï¿½");
 	if (strcmp(filename, acceptBeep.ToCharArray()) != 0)
 		return;
 	else

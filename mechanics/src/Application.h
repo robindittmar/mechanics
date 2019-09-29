@@ -124,7 +124,7 @@ void CorrectMovement(CUserCmd* pUserCmd, QAngle& qOrigAngles);
 void NormalizeAngles(CUserCmd* pUserCmd);
 void ClampMovement(CUserCmd* pUserCmd);
 
-DWORD ThreadFreeLibrary(void* pParam);
+DWORD __stdcall ThreadFreeLibrary(void* pParam);
 
 // TODO
 class BulletTracerEntry
