@@ -1,9 +1,9 @@
 #include "CWeapon.h"
 
-#define GETWEAPONINFO_INDEX				454
-#define UPDATEACCURACYPENALTY_INDEX		477 // before 470
-#define GETINACCURACY_INDEX				476 // before 469
-#define GETSPREAD_INDEX					446 // before 439
+#define GETWEAPONINFO_INDEX				456
+#define UPDATEACCURACYPENALTY_INDEX		479
+#define GETINACCURACY_INDEX				478
+#define GETSPREAD_INDEX					448
 
 short CWeapon::GetWeaponId()
 {
@@ -18,44 +18,38 @@ bool CWeapon::IsWeaponX(int weaponId)
 bool CWeapon::IsKnife()
 {
 	short weaponId = this->GetWeaponId();
-	if (weaponId == WEAPON_KNIFE ||
-		weaponId == WEAPON_KNIFE_BAYONET ||
-		weaponId == WEAPON_KNIFE_FLIP ||
-		weaponId == WEAPON_KNIFE_GUT ||
-		weaponId == WEAPON_KNIFE_KARAMBIT ||
-		weaponId == WEAPON_KNIFE_M9_BAYONET ||
-		weaponId == WEAPON_KNIFE_BUTTERFLY ||
-		weaponId == WEAPON_KNIFE_FALCHION ||
-		weaponId == WEAPON_KNIFE_PUSH ||
-		weaponId == WEAPON_KNIFE_SURVIVAL_BOWIE ||
-		weaponId == WEAPON_KNIFE_T ||
-		weaponId == WEAPON_KNIFE_TACTICAL)
-		return true;
-	return false;
+    return weaponId == WEAPON_KNIFE ||
+           weaponId == WEAPON_KNIFE_BAYONET ||
+           weaponId == WEAPON_KNIFE_FLIP ||
+           weaponId == WEAPON_KNIFE_GUT ||
+           weaponId == WEAPON_KNIFE_KARAMBIT ||
+           weaponId == WEAPON_KNIFE_M9_BAYONET ||
+           weaponId == WEAPON_KNIFE_BUTTERFLY ||
+           weaponId == WEAPON_KNIFE_FALCHION ||
+           weaponId == WEAPON_KNIFE_PUSH ||
+           weaponId == WEAPON_KNIFE_SURVIVAL_BOWIE ||
+           weaponId == WEAPON_KNIFE_T ||
+           weaponId == WEAPON_KNIFE_TACTICAL;
 }
 
 bool CWeapon::IsSniper()
 {
 	short weaponId = this->GetWeaponId();
-	if (weaponId == WEAPON_AWP ||
-		weaponId == WEAPON_SSG08 ||
-		weaponId == WEAPON_G3SG1 ||
-		weaponId == WEAPON_SCAR20)
-		return true;
-	return false;
+    return weaponId == WEAPON_AWP ||
+           weaponId == WEAPON_SSG08 ||
+           weaponId == WEAPON_G3SG1 ||
+           weaponId == WEAPON_SCAR20;
 }
 
 bool CWeapon::IsNade()
 {
 	short weaponId = this->GetWeaponId();
-	if (weaponId == WEAPON_HEGRENADE ||
-		weaponId == WEAPON_INCGRENADE ||
-		weaponId == WEAPON_DECOY ||
-		weaponId == WEAPON_FLASHBANG ||
-		weaponId == WEAPON_MOLOTOV ||
-		weaponId == WEAPON_SMOKEGRENADE)
-		return true;
-	return false;
+    return weaponId == WEAPON_HEGRENADE ||
+           weaponId == WEAPON_INCGRENADE ||
+           weaponId == WEAPON_DECOY ||
+           weaponId == WEAPON_FLASHBANG ||
+           weaponId == WEAPON_MOLOTOV ||
+           weaponId == WEAPON_SMOKEGRENADE;
 }
 
 bool CWeapon::IsC4()
@@ -66,18 +60,16 @@ bool CWeapon::IsC4()
 bool CWeapon::IsPistol()
 {
 	short weaponId = this->GetWeaponId();
-	if (weaponId == WEAPON_DEAGLE ||
-		weaponId == WEAPON_REVOLVER ||
-		weaponId == WEAPON_FIVESEVEN ||
-		weaponId == WEAPON_USP_SILENCER ||
-		weaponId == WEAPON_GLOCK ||
-		weaponId == WEAPON_TEC9 ||
-		weaponId == WEAPON_CZ75A ||
-		weaponId == WEAPON_P250 ||
-		weaponId == WEAPON_HKP2000 ||
-		weaponId == WEAPON_ELITE)
-		return true;
-	return false;
+    return weaponId == WEAPON_DEAGLE ||
+           weaponId == WEAPON_REVOLVER ||
+           weaponId == WEAPON_FIVESEVEN ||
+           weaponId == WEAPON_USP_SILENCER ||
+           weaponId == WEAPON_GLOCK ||
+           weaponId == WEAPON_TEC9 ||
+           weaponId == WEAPON_CZ75A ||
+           weaponId == WEAPON_P250 ||
+           weaponId == WEAPON_HKP2000 ||
+           weaponId == WEAPON_ELITE;
 }
 
 bool CWeapon::IsTaser()

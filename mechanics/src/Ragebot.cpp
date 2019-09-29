@@ -500,12 +500,12 @@ void inline CRagebot::Aim(CUserCmd* pUserCmd)
 
 bool CRagebot::IsAbleToApplyNoSpread()
 {
-	static ConVar* pCustomRandomSeed = m_pApp->CVar()->FindVar(CXorString("d}ڷdn��zoڡbx�zT��yo�Hx�s").ToCharArray());
+	static ConVar* pCustomRandomSeed = m_pApp->CVar()->FindVar(CXorString("d}Ú·dn÷¡zoÚ¡bxñ­zT÷£yoê¯Hxà§s").ToCharArray());
 	return atoi(pCustomRandomSeed->value) == 0;
 }
 bool CRagebot::IsNoSpread()
 {
-	static ConVar* pWeaponAccuracity = m_pApp->CVar()->FindVar(CXorString("`n�xeڣth�vh��yd��en�").ToCharArray());
+	static ConVar* pWeaponAccuracity = m_pApp->CVar()->FindVar(CXorString("`nä²xeÚ£thð°vhüydö²enä¦").ToCharArray());
 	return atoi(pWeaponAccuracity->value) == 1;
 }
 

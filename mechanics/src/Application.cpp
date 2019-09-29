@@ -275,7 +275,7 @@ void CApplication::Setup()
 void CApplication::Hook()
 {
 #ifdef _DEBUG
-    g_pConsole->Write(LOGLEVEL_INFO, "Hooking engine functions...");
+    g_pConsole->Write(LOGLEVEL_INFO, "Hooking engine functions...\n");
 #endif
 
 	m_pClientModeHook = new VMTHook((DWORD*)m_pClientMode);
@@ -583,7 +583,7 @@ void CApplication::GetNetVars()
 	Offsets::m_vecMaxs = m_pNetVarMgr->GetOffset(2, xorBaseEntity, xorCollisionProperty.ToCharArray(), /*m_vecMaxs*/CXorString("\x7A\x54\xF3\xA7\x74\x46\xE4\xBA\x64").ToCharArray());
 	m_pNetVarMgr->SetSummarizeOffsets(false);
 	Offsets::m_vecOrigin = m_pNetVarMgr->GetOffset(xorBaseEntity, /*m_vecOrigin*/CXorString("\x7A\x54\xF3\xA7\x74\x44\xF7\xAB\x70\x62\xEB"));
-	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("").ToCharArray());
+	Offsets::m_vecViewOffset = m_pNetVarMgr->GetOffset(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*m_vecViewOffset[0]*/CXorString("\x7A\x54\xF3\xA7\x74\x5D\xEC\xA7\x60\x44\xE3\xA4\x64\x6E\xF1\x99\x27\x56").ToCharArray());
 	Offsets::m_angEyeAngles = m_pNetVarMgr->GetOffset(xorCSPlayer, /*m_angEyeAngles*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78"));
 
 	m_pNetVarEyeAngles0 = m_pNetVarMgr->GetNetVar(xorCSPlayer, /*m_angEyeAngles[0]*/CXorString("\x7A\x54\xE4\xAC\x70\x4E\xFC\xA7\x56\x65\xE2\xAE\x72\x78\xDE\xF2\x4A"));

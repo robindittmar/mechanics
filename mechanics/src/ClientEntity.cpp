@@ -231,7 +231,7 @@ float IClientEntity::GetCycle()
 void IClientEntity::UpdateClientSiteAnimation()
 {
 	typedef void(__thiscall *UpdateClientSiteAnimation_t)(void*);
-	((UpdateClientSiteAnimation_t)(*(void***)this)[218])(this);
+	((UpdateClientSiteAnimation_t)(*(void***)this)[223])(this);
 }
 
 int IClientEntity::GetBoneByName(const char* pBoneName)
