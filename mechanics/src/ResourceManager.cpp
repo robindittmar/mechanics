@@ -4,12 +4,12 @@
 CResourceManager* g_pResourceManager;
 
 CResourceManager::CResourceManager() :
-	/*VertexLitGeneric*/m_xorVertexLitGeneric("An÷¶rsÉ«cLà¬ryì¡"),
-	/*UnlitGeneric*/m_xorUnlitGeneric("Beé«cLà¬ryì¡"),
-	/*mechmat_%d.vmt*/m_xorMatName("znæªzjñ2o«´z")
+	/*VertexLitGeneric*/m_xorVertexLitGeneric("\x41\x6E\xF7\xB6\x72\x73\xC9\xAB\x63\x4C\xE0\xAC\x72\x79\xEC\xA1"),
+	/*UnlitGeneric*/m_xorUnlitGeneric("\x42\x65\xE9\xAB\x63\x4C\xE0\xAC\x72\x79\xEC\xA1"),
+	/*mechmat_%d.vmt*/m_xorMatName("\x7A\x6E\xE6\xAA\x7A\x6A\xF1\x9D\x32\x6F\xAB\xB4\x7A\x7F")
 {
 	m_iMaterialCount = 0;
-	m_pMirror = NULL;
+	m_pMirror = nullptr;
 }
 
 CResourceManager::~CResourceManager()
@@ -21,9 +21,9 @@ CResourceManager::~CResourceManager()
 		m_pMirror->DecrementReferenceCount();
 
 	ISurface* pSurface = m_pApp->Surface();
-	for(std::unordered_map<int, int>::iterator it = m_mapTextures.begin(); it != m_mapTextures.end(); it++)
+	for(auto& m_mapTexture : m_mapTextures)
 	{
-		pSurface->DeleteTextureByID(it->second);
+		pSurface->DeleteTextureByID(m_mapTexture.second);
 	}
 }
 
@@ -36,14 +36,15 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 {
 	// TODO: Try to set envmap in chams material
 	//		 (this one below should be it; behaves weird tho right now)
-	//static CXorString xorVmt("5.öà.p.à3iä±r.àºc~÷§5+§´p~ìí`cì¶rTä¦sbñ«an§È5/à¬afä.5+§§y}Ú¡bià¯v{§È5/è.snéà7)´à.)¡¤{jñà7)¦5.§æydæ·{g§â5;§È5/ö§{mì®{~èà7)´à.)¡ªvgã®vfç§e.§â5:§È5/ë.qdâà7)µà.)¡«peê°rq§â5.áà.)¡¸ynä°ry§â5;§È5/ò«enã°vfàà7) ¦5.ø.ýýýýÝÝÝÝc<Pj6m..À.K.øAK");
+	//static CXorString xorVmt("5.ï¿½ï¿½.p.ï¿½3iï¿½r.ï¿½c~ï¿½ï¿½5+ï¿½ï¿½p~ï¿½ï¿½`cï¿½rTï¿½sbï¿½anï¿½ï¿½5/ï¿½afï¿½.5+ï¿½ï¿½y}Ú¡biï¿½v{ï¿½ï¿½5/ï¿½.snï¿½ï¿½7)ï¿½ï¿½.)ï¿½ï¿½{jï¿½ï¿½7)ï¿½5.ï¿½ï¿½ydï¿½{gï¿½ï¿½5;ï¿½ï¿½5/ï¿½ï¿½{mï¿½{~ï¿½ï¿½7)ï¿½ï¿½.)ï¿½ï¿½vgï¿½vfï¿½e.ï¿½ï¿½5:ï¿½ï¿½5/ï¿½.qdï¿½ï¿½7)ï¿½ï¿½.)ï¿½ï¿½peï¿½rqï¿½ï¿½5.ï¿½ï¿½.)ï¿½ï¿½ynï¿½ryï¿½ï¿½5;ï¿½ï¿½5/ï¿½enï¿½vfï¿½ï¿½7)ï¿½ï¿½5.ï¿½.ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½c<Pj6m..ï¿½.K.ï¿½AK");
 	
 	// vgui/white_additive
-	//static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cnÚ£soì¶~}àà§æreó¯v{§â5)Ë5/è­snéà7)´à§æqgä¶5+§çs)Ë5/ë­t~é®5+§ò5Œà3xà®qbé®bf§â5:§È)¡ªvgã®vfç§e§â5:§È)¡¬xmê¥5+§ò5Œà3bâ¬xyà¸5+§çs)Ë5/ÿ¬rj÷§e)¥à')Ë5/ò«enã°vfàà7) ¦5øÈ");
+	//static CXorString xorVmt("5.ï¿½ï¿½pï¿½ï¿½5/ï¿½dnï¿½oï¿½r)ï¿½ï¿½alï¿½8|ï¿½cnÚ£soï¿½~}ï¿½ï¿½ï¿½ï¿½reï¿½v{ï¿½ï¿½5)ï¿½ï¿½5/ï¿½snï¿½ï¿½7)ï¿½ï¿½ï¿½ï¿½qgï¿½5+ï¿½ï¿½s)ï¿½ï¿½5/ï¿½t~ï¿½5+ï¿½ï¿½5ï¿½ï¿½3xï¿½qbï¿½bfï¿½ï¿½5:ï¿½ï¿½)ï¿½ï¿½vgï¿½vfï¿½eï¿½ï¿½5:ï¿½ï¿½)ï¿½ï¿½xmï¿½5+ï¿½ï¿½5ï¿½ï¿½3bï¿½xyï¿½5+ï¿½ï¿½s)ï¿½ï¿½5/ï¿½ï¿½rjï¿½ï¿½e)ï¿½ï¿½')ï¿½ï¿½5/ï¿½enï¿½vfï¿½ï¿½7)ï¿½ï¿½5ï¿½ï¿½");
 	// vgui/white
-	static CXorString xorVmt("5.öàpË5/ç£dnñ§oð°r)¥àalð«8|í«cn§È)¡§y}è£g)¥à5Œà3fê¦rg§â5:§È)¡¤{jñà7) ¦5Œà3eê¡bgéà7)µà§ædné¤~gé·z)¥à&)Ë5/í£{mé£zià°c)¥à&)Ë5/ë­qdâà7)µà§æ~lë­enÿà7) ¦5Œà3që§vyà°5+§ò5Œà3|ì°rm÷£zn§â5.áàv");
+	/// static CXorString xorVmt("5.ï¿½ï¿½pï¿½ï¿½5/ï¿½dnï¿½oï¿½r)ï¿½ï¿½alï¿½8|ï¿½cnï¿½ï¿½)ï¿½ï¿½y}ï¿½g)ï¿½ï¿½5ï¿½ï¿½3fï¿½rgï¿½ï¿½5:ï¿½ï¿½)ï¿½ï¿½{jï¿½ï¿½7)ï¿½ï¿½5ï¿½ï¿½3eï¿½bgï¿½ï¿½7)ï¿½ï¿½ï¿½ï¿½dnï¿½~gï¿½z)ï¿½ï¿½&)ï¿½ï¿½5/ï¿½{mï¿½ziï¿½c)ï¿½ï¿½&)ï¿½ï¿½5/ï¿½qdï¿½ï¿½7)ï¿½ï¿½ï¿½ï¿½~lï¿½enï¿½ï¿½7)ï¿½ï¿½5ï¿½ï¿½3qï¿½vyï¿½5+ï¿½ï¿½5ï¿½ï¿½3|ï¿½rmï¿½ï¿½znï¿½ï¿½5.ï¿½ï¿½v");
+    static CXorString xorVmt(/*vgui/white*/"\x61\x6C\xF0\xAB\x38\x7C\xED\xAB\x63\x6E");
 
-	const char* pBaseType = (bIsLit == true ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
+	const char* pBaseType = (bIsLit ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
 	char pMaterial[1024];
 	char pName[512];
 	KeyValues* pKeyValues;
@@ -53,7 +54,7 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 
 	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 	m_pApp->InitKeyValues()(pKeyValues, pBaseType);
-	m_pApp->LoadFromBuffer()(pKeyValues, pName, pMaterial, NULL, NULL, NULL, NULL);
+	m_pApp->LoadFromBuffer()(pKeyValues, pName, pMaterial, nullptr, nullptr, nullptr, nullptr);
 
 	IMaterial* pMat = m_pApp->MaterialSystem()->CreateMaterial(pName, pKeyValues);
 	pMat->IncrementReferenceCount();
@@ -77,7 +78,7 @@ void CResourceManager::CreateMirror()
 	bool bOrig = *pInitialized;
 	*pInitialized = false;
 	pMatSys->BeginRenderTargetAllocation();
-	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx(/*mechanics_mirr*/CXorString("znæªveì¡dTè«ey").ToCharArray(), MIRROR_WIDTH, MIRROR_HEIGHT, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
+	m_pMirror = pMatSys->CreateNamedRenderTargetTextureEx(/*mechanics_mirr*/CXorString("\x7A\x6E\xE6\xAA\x76\x65\xEC\xA1\x64\x54\xE8\xAB\x65\x79").ToCharArray(), MIRROR_WIDTH, MIRROR_HEIGHT, RT_SIZE_DEFAULT, IMAGE_FORMAT_RGBA8888);
 	pMatSys->EndRenderTargetAllocation();
 	*pInitialized = bOrig;
 
@@ -86,11 +87,13 @@ void CResourceManager::CreateMirror()
 		// Prevent it from getting cleaned up
 		m_pMirror->IncrementReferenceCount();
 		
-		CXorString xorMatMechanicsMirr("zjñznæªveì¡dTè«ey"); // mat_mechanics_mirr
+		CXorString xorMatMechanicsMirr(/*mat_mechanics_mirr*/"\x7A\x6A\xF1\x9D\x7A\x6E\xE6\xAA\x76\x65\xEC\xA1\x64\x54\xE8\xAB\x65\x79");
 		KeyValues* pKeyValues;
 		pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 		m_pApp->InitKeyValues()(pKeyValues, m_xorUnlitGeneric.ToCharArray());
-		m_pApp->LoadFromBuffer()(pKeyValues, xorMatMechanicsMirr.ToCharArray(), /*\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}*/CXorString("5^ë®~Â§yn÷«t)¹\x1d\x2§æujö§cný¶byàà7)è§tcä¬~hözb÷°5\x1ø").ToCharArray(), NULL, NULL, NULL, NULL);
+		m_pApp->LoadFromBuffer()(pKeyValues, xorMatMechanicsMirr.ToCharArray(),
+		        /*\"UnlitGeneric\"\n{\n\t\"$basetexture\" \"mechanics_mirr\"\n}*/CXorString("\x4B\x29\xD0\xAC\x7B\x62\xF1\x85\x72\x65\xE0\xB0\x7E\x68\xD9\xE0\x4B\x65\xFE\x9E\x79\x57\xF1\x9E\x35\x2F\xE7\xA3\x64\x6E\xF1\xA7\x6F\x7F\xF0\xB0\x72\x57\xA7\xE2\x4B\x29\xE8\xA7\x74\x63\xE4\xAC\x7E\x68\xF6\x9D\x7A\x62\xF7\xB0\x4B\x29\xD9\xAC\x6A").ToCharArray()
+		        , nullptr, nullptr, nullptr, nullptr);
 
 		m_pMatMirror = m_pApp->MaterialSystem()->CreateMaterial(xorMatMechanicsMirr.ToCharArray(), pKeyValues);
 		m_pMatMirror->IncrementReferenceCount();
@@ -156,7 +159,7 @@ void CResourceManager::CreateTextures()
 	int textureColorFade = pSurface->CreateNewTextureID(true);
 	int textureSLFade = pSurface->CreateNewTextureID(true);
 
-	m_iTextureWhite = pSurface->DrawGetTextureId(/*vgui/white*/CXorString("alð«8|í«cn"));
+	m_iTextureWhite = pSurface->DrawGetTextureId(/*vgui/white*/CXorString("\x61\x6C\xF0\xAB\x38\x7C\xED\xAB\x63\x6E"));
 	m_mapTextures[RM_TEXTURE_COLORFADE] = textureColorFade;
 	m_mapTextures[RM_TEXTURE_SVFADE] = textureSLFade;
 	m_mapTextures[RM_TEXTURE_BACKGROUND] = this->LoadPngToTexture(pSurface, "background.png");
@@ -172,7 +175,7 @@ int CResourceManager::GetTexture(int textureId)
 
 void CResourceManager::CreateFonts()
 {
-	static CXorString xorTahoma("Cjí­zj");
+	static CXorString xorTahoma(/*Tahoma*/"\x43\x6A\xED\xAD\x7A\x6A");
 
 	ISurface* pSurface = m_pApp->Surface();
 

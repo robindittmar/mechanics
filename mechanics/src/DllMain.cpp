@@ -1,6 +1,6 @@
 #include "Application.h"
 
-DWORD ThreadProc(void*);
+DWORD __stdcall ThreadProc(void*);
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -11,7 +11,7 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 	return true;
 }
 
-DWORD ThreadProc(void* pParam)
+DWORD __stdcall ThreadProc(void* pParam)
 {
 	CApplication* pApp = CApplication::Instance();
 	pApp->Run((HMODULE)pParam);

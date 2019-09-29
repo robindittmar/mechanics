@@ -255,10 +255,16 @@ void CApplication::Setup()
 	// </remove once implemented correctly>
 
 	// Initialize menu
+#ifdef _DEBUG
+    g_pConsole->Write(LOGLEVEL_INFO, "Creating menu... ");
+#endif
 	m_pMenu = CMenu::Instance();
 	m_pMenu->Init(this);
 	m_pMenu->CreateMenu();
 	m_pMenu->ApplySettings();
+#ifdef _DEBUG
+	g_pConsole->WritePlain("Done\n");
+#endif
 
 	if (m_pEngineClient->IsInGame())
 	{
@@ -268,6 +274,10 @@ void CApplication::Setup()
 
 void CApplication::Hook()
 {
+#ifdef _DEBUG
+    g_pConsole->Write(LOGLEVEL_INFO, "Hooking engine functions...");
+#endif
+
 	m_pClientModeHook = new VMTHook((DWORD*)m_pClientMode);
 	g_pOverrideView = (OverrideView_t)m_pClientModeHook->Hook(18, (DWORD*)hk_OverrideView);
 	g_pCreateMove = (CreateMove_t)m_pClientModeHook->Hook(24, (DWORD*)hk_CreateMove);
@@ -312,6 +322,10 @@ void CApplication::Hook()
 	
 	this->m_bIsHooked = true;
 	this->m_bInitialHookDone = true;
+
+#ifdef _DEBUG
+    g_pConsole->Write(LOGLEVEL_INFO, "Done hooking\n");
+#endif
 }
 
 void CApplication::CreateSubFolders()
@@ -512,7 +526,7 @@ void CApplication::GetInterfaces()
 	g_pConsole->WritePlain("\n");
 
 	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::Init\t\t=>\t0x%08X\n", m_pInitKeyValues);
-	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::LoadFromBuffer\t=>\t0x%08X\n", m_pLoadFromBuffer);
+	g_pConsole->Write(LOGLEVEL_INFO, "KeyValues::LoadFromBuffer=>\t0x%08X\n", m_pLoadFromBuffer);
 	g_pConsole->WritePlain("\n");
 #endif // _DEBUG
 }

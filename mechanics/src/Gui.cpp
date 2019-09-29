@@ -23,15 +23,14 @@ void CGui::Setup()
 	this->GetScreenSize();
 	this->GetWorldToScreenMatrix();
 
-	// cl_mouseenable
-	m_pMouseEnable = m_pApp->CVar()->FindVar(CXorString("tgÚ¯x~ö§reä {n").ToCharArray());
+	m_pMouseEnable = m_pApp->CVar()->FindVar(/*cl_mouseenable*/CXorString("\x74\x67\xDA\xAF\x78\x7E\xF6\xA7\x72\x65\xE4\xA0\x7B\x6E").ToCharArray());
 
 	// Game Window
-	m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+	m_hGameWindow = FindWindow(/*Valve001*/CXorString("\x41\x6A\xE9\xB4\x72\x3B\xB5\xF3").ToCharArray(), nullptr);
 	while (!m_hGameWindow)
 	{
 		Sleep(1000);
-		m_hGameWindow = FindWindow(CXorString("Ajé´r;µó").ToCharArray(), NULL);
+		m_hGameWindow = FindWindow(/*Valve001*/CXorString("\x41\x6A\xE9\xB4\x72\x3B\xB5\xF3").ToCharArray(), nullptr);
 	}
 
 	if (!m_bHookedWindowProc)
