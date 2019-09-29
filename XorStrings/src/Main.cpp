@@ -8,7 +8,7 @@ void printByteString(FILE* pFile, const char* p, int len)
 	for (int i = 0; i < len; i++)
 		fprintf(pFile, "\\x%02X", (unsigned char)p[i]);
 
-	fputs("\n", pFile);
+	//fputs("\n", pFile);
 }
 
 int main(int argc, char** argv)
@@ -48,8 +48,9 @@ int main(int argc, char** argv)
 			}
 		}
 
-		fprintf(pFileWrite, "%s: ", pBuffer);
+		fprintf(pFileWrite, "/*%s*/CXorString(\"", pBuffer);
 		printByteString(pFileWrite, CXorString(pBuffer).ToCharArray(), strlen(pBuffer));
+		fputs("\")\n", pFileWrite);
 	}
 	fclose(pFileRead);
 	fclose(pFileWrite);
@@ -59,6 +60,7 @@ int main(int argc, char** argv)
 	for (int i = 0; i < countbytestr; i++)
 	{
 		printByteString(pFileWrite, byteStrings[i].ToCharArray(), lenBytes[i]);
+		fputc('\n', pFileWrite);
 	}
 	fclose(pFileWrite);
 
