@@ -33,18 +33,18 @@ void CSkinChanger::Setup()
 	// which means if their memory is freed we'd run into problems.
 	//
 
-	static CXorString xorKnifeCTModel("zd�{x��rj��yx��H`�qnڦrm�{ڡc%�{");
-	static CXorString xorKnifeTModel("zd�{x��rj��yx��H`�qnڦrm�{ڶ9f�");
-	static CXorString xorKnifeBayonetModel("zd�{x��rj��yx��H`�qnڠvr�r��sg");
-	static CXorString xorKnifeButterflyModel("zd�{x��rj��yx��H`�qnڠb�em�9f�");
-	static CXorString xorKnifeFalchionModel("zd�{x��rj��yx��H`�qnڤvg�~d�vo�yh�9f�");
-	static CXorString xorKnifeFlipModel("zd�{x��rj��yx��H`�qnڤ{b��zo�");
-	static CXorString xorKnifeGutModel("zd�{x��rj��yx��H`�qnڥb��sg");
-	static CXorString xorKnifeM9BayonetModel("zd�{x��rj��yx��H`�qnگ.T�n%�{");
-	static CXorString xorKnifeKarambitModel("zd�{x��rj��yx��H`�qnکvy�9f�");
-	static CXorString xorKnifePushModel("zd�{x��rj��yx��H`�qnڲbx��zo�");
-	static CXorString xorKnifeSurvivalBowieModel("zd�{x��rj��yx��H`�qnڱby�aj�ud�r%�{");
-	static CXorString xorKnifeTacticalModel("zd�{x��rj��yx��H`�qnڶvh�tj��zo�");
+	static CXorString xorKnifeCTModel(/*models/weapons/v_knife_default_ct.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA6\x72\x6D\xE4\xB7\x7B\x7F\xDA\xA1\x63\x25\xE8\xA6\x7B");
+	static CXorString xorKnifeTModel(/*models/weapons/v_knife_t.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xB6\x39\x66\xE1\xAE");
+	static CXorString xorKnifeBayonetModel(/*models/weapons/v_knife_bayonet.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA0\x76\x72\xEA\xAC\x72\x7F\xAB\xAF\x73\x67");
+	static CXorString xorKnifeButterflyModel(/*models/weapons/v_knife_butterfly.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA0\x62\x7F\xF1\xA7\x65\x6D\xE9\xBB\x39\x66\xE1\xAE");
+	static CXorString xorKnifeFalchionModel(/*models/weapons/v_knife_falchion_advanced.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA4\x76\x67\xE6\xAA\x7E\x64\xEB\x9D\x76\x6F\xF3\xA3\x79\x68\xE0\xA6\x39\x66\xE1\xAE");
+	static CXorString xorKnifeFlipModel(/*models/weapons/v_knife_flip.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA4\x7B\x62\xF5\xEC\x7A\x6F\xE9");
+	static CXorString xorKnifeGutModel(/*models/weapons/v_knife_gut.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA5\x62\x7F\xAB\xAF\x73\x67");
+	static CXorString xorKnifeM9BayonetModel(/*models/weapons/v_knife_m9_bay.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xAF\x2E\x54\xE7\xA3\x6E\x25\xE8\xA6\x7B");
+	static CXorString xorKnifeKarambitModel(/*models/weapons/v_knife_karam.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xA9\x76\x79\xE4\xAF\x39\x66\xE1\xAE");
+	static CXorString xorKnifePushModel(/*models/weapons/v_knife_push.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xB2\x62\x78\xED\xEC\x7A\x6F\xE9");
+	static CXorString xorKnifeSurvivalBowieModel(/*models/weapons/v_knife_survival_bowie.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xB1\x62\x79\xF3\xAB\x61\x6A\xE9\x9D\x75\x64\xF2\xAB\x72\x25\xE8\xA6\x7B");
+	static CXorString xorKnifeTacticalModel(/*models/weapons/v_knife_tactical.mdl*/"\x7A\x64\xE1\xA7\x7B\x78\xAA\xB5\x72\x6A\xF5\xAD\x79\x78\xAA\xB4\x48\x60\xEB\xAB\x71\x6E\xDA\xB6\x76\x68\xF1\xAB\x74\x6A\xE9\xEC\x7A\x6F\xE9");
 
 	this->m_mapKnives[WEAPON_KNIFE] = xorKnifeCTModel;
 	this->m_mapKnives[WEAPON_KNIFE_T] = xorKnifeTModel;
@@ -59,84 +59,84 @@ void CSkinChanger::Setup()
 	this->m_mapKnives[WEAPON_KNIFE_SURVIVAL_BOWIE] = xorKnifeSurvivalBowieModel;
 	this->m_mapKnives[WEAPON_KNIFE_TACTICAL] = xorKnifeTacticalModel;
 
-	static CXorString xorDeagle(/*weapon_deagle*/"`n�xeڦrj�r");
-	static CXorString xorElite(/*weapon_elite*/"`n�xeڧ{b�");
-	static CXorString xorFiveseven(/*weapon_fiveseven*/"`n�xeڤ~}�r}�");
-	static CXorString xorGlock(/*weapon_glock*/"`n�xeڥ{d�");
-	static CXorString xorAk47(/*weapon_ak47*/"`n�xeڣ|?�");
-	static CXorString xorAug(/*weapon_aug*/"`n�xeڣbl");
-	static CXorString xorAwp(/*weapon_awp*/"`n�xeڣ`{");
-	static CXorString xorFamas(/*weapon_famas*/"`n�xeڤvf�");
-	static CXorString xorG3sg1(/*weapon_g3sg1*/"`n�xeڥ$x��");
-	static CXorString xorGalil(/*weapon_galilar*/"`n�xeڥvg�vy");
-	static CXorString xorM249(/*weapon_m249*/"`n�xeگ%?�");
-	static CXorString xorM4a1(/*weapon_m4a1*/"`n�xeگ#j�");
-	static CXorString xorMac10(/*weapon_mac10*/"`n�xeگvh��");
-	static CXorString xorP90(/*weapon_p90*/"`n�xeڲ.;");
-	static CXorString xorUmp45(/*weapon_ump45*/"`n�xeڷz{��");
-	static CXorString xorXm1014(/*weapon_xm1014*/"`n�xeںz:��#");
-	static CXorString xorBizon(/*weapon_bizon*/"`n�xeڠ~q�");
-	static CXorString xorMag7(/*weapon_mag7*/"`n�xeگvl�");
-	static CXorString xorNegev(/*weapon_negev*/"`n�xeڬrl�");
-	static CXorString xorSawedoff(/*weapon_sawedoff*/"`n�xeڱv|�xm�");
-	static CXorString xorTec9(/*weapon_tec9*/"`n�xeڶrh�");
-	static CXorString xorHkp2000(/*weapon_hkp2000*/"`n�xeڪ|{��';");
-	static CXorString xorMp7(/*weapon_mp7*/"`n�xeگg<");
-	static CXorString xorMp9(/*weapon_mp9*/"`n�xeگg2");
-	static CXorString xorNova(/*weapon_nova*/"`n�xeڬx}�");
-	static CXorString xorP250(/*weapon_p250*/"`n�xeڲ%>�");
-	static CXorString xorScar20(/*weapon_scar20*/"`n�xeڱtj��'");
-	static CXorString xorSg556(/*weapon_sg556*/"`n�xeڱp>��");
-	static CXorString xorSsg08(/*weapon_ssg08*/"`n�xeڱdl��");
-	static CXorString xorM4a1Silencer(/*weapon_m4a1_silencer*/"`n�xeگ#j��db�yh�");
-	static CXorString xorUspSilencer(/*weapon_usp_silencer*/"`n�xeڷd{ڱ~g�tn�");
-	static CXorString xorCz75(/*weapon_cz75a*/"`n�xeڡm<��");
-	static CXorString xorRevolver(/*weapon_revolver*/"`n�xeڰr}�an�");
+	static CXorString xorDeagle(/*weapon_deagle*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA6\x72\x6A\xE2\xAE\x72");
+	static CXorString xorElite(/*weapon_elite*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA7\x7B\x62\xF1\xA7");
+	static CXorString xorFiveseven(/*weapon_fiveseven*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA4\x7E\x7D\xE0\xB1\x72\x7D\xE0\xAC");
+	static CXorString xorGlock(/*weapon_glock*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA5\x7B\x64\xE6\xA9");
+	static CXorString xorAk47(/*weapon_ak47*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA3\x7C\x3F\xB2");
+	static CXorString xorAug(/*weapon_aug*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA3\x62\x6C");
+	static CXorString xorAwp(/*weapon_awp*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA3\x60\x7B");
+	static CXorString xorFamas(/*weapon_famas*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA4\x76\x66\xE4\xB1");
+	static CXorString xorG3sg1(/*weapon_g3sg1*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA5\x24\x78\xE2\xF3");
+	static CXorString xorGalil(/*weapon_galilar*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA5\x76\x67\xEC\xAE\x76\x79");
+	static CXorString xorM249(/*weapon_m249*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x25\x3F\xBC");
+	static CXorString xorM4a1(/*weapon_m4a1*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x23\x6A\xB4");
+	static CXorString xorMac10(/*weapon_mac10*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x76\x68\xB4\xF2");
+	static CXorString xorP90(/*weapon_p90*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB2\x2E\x3B");
+	static CXorString xorUmp45(/*weapon_ump45*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB7\x7A\x7B\xB1\xF7");
+	static CXorString xorXm1014(/*weapon_xm1014*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xBA\x7A\x3A\xB5\xF3\x23");
+	static CXorString xorBizon(/*weapon_bizon*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA0\x7E\x71\xEA\xAC");
+	static CXorString xorMag7(/*weapon_mag7*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x76\x6C\xB2");
+	static CXorString xorNegev(/*weapon_negev*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAC\x72\x6C\xE0\xB4");
+	static CXorString xorSawedoff(/*weapon_sawedoff*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB1\x76\x7C\xE0\xA6\x78\x6D\xE3");
+	static CXorString xorTec9(/*weapon_tec9*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB6\x72\x68\xBC");
+	static CXorString xorHkp2000(/*weapon_hkp2000*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAA\x7C\x7B\xB7\xF2\x27\x3B");
+	static CXorString xorMp7(/*weapon_mp7*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x67\x3C");
+	static CXorString xorMp9(/*weapon_mp9*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x67\x32");
+	static CXorString xorNova(/*weapon_nova*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAC\x78\x7D\xE4");
+	static CXorString xorP250(/*weapon_p250*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB2\x25\x3E\xB5");
+	static CXorString xorScar20(/*weapon_scar20*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB1\x74\x6A\xF7\xF0\x27");
+	static CXorString xorSg556(/*weapon_sg556*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB1\x70\x3E\xB0\xF4");
+	static CXorString xorSsg08(/*weapon_ssg08*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB1\x64\x6C\xB5\xFA");
+	static CXorString xorM4a1Silencer(/*weapon_m4a1_silencer*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xAF\x23\x6A\xB4\x9D\x64\x62\xE9\xA7\x79\x68\xE0\xB0");
+	static CXorString xorUspSilencer(/*weapon_usp_silencer*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB7\x64\x7B\xDA\xB1\x7E\x67\xE0\xAC\x74\x6E\xF7");
+	static CXorString xorCz75(/*weapon_cz75a*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA1\x6D\x3C\xB0\xA3");
+	static CXorString xorRevolver(/*weapon_revolver*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xB0\x72\x7D\xEA\xAE\x61\x6E\xF7");
 
-	static CXorString xorBayonet(/*weapon_bayonet*/"`n�xeڠvr�r");
-	static CXorString xorKnifeFlip(/*weapon_knife_flip*/"`n�xeکyb�Hm�g");
-	static CXorString xorKnifeGut(/*weapon_knife_gut*/"`n�xeکyb�Hl�");
-	static CXorString xorKnifeKarambit(/*weapon_knife_karambit*/"`n�xeکyb�H`�vf�c");
-	static CXorString xorKnifeM9Bayonet(/*weapon_knife_m9_bayonet*/"`n�xeکyb�Hf��uj��yn�");
-	static CXorString xorKnifeTactical(/*weapon_knife_tactical*/"`n�xeکyb�H�cb�{");
-	static CXorString xorKnifeFalchion(/*weapon_knife_falchion*/"`n�xeکyb�Hm�tc�y");
-	static CXorString xorKnifeSurvivalBowie(/*weapon_knife_survival_bowie*/"`n�xeکyb�Hx�ab�{T�`b�");
-	static CXorString xorKnifeButterfly(/*weapon_knife_butterfly*/"`n�xeکyb�Hi�cn��{r");
-	static CXorString xorKnifePush(/*weapon_knife_push*/"`n�xeکyb�H{�");
+	static CXorString xorBayonet(/*weapon_bayonet*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA0\x76\x72\xEA\xAC\x72\x7F");
+	static CXorString xorKnifeFlip(/*weapon_knife_flip*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x6D\xE9\xAB\x67");
+	static CXorString xorKnifeGut(/*weapon_knife_gut*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x6C\xF0\xB6");
+	static CXorString xorKnifeKarambit(/*weapon_knife_karambit*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x60\xE4\xB0\x76\x66\xE7\xAB\x63");
+	static CXorString xorKnifeM9Bayonet(/*weapon_knife_m9_bayonet*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x66\xBC\x9D\x75\x6A\xFC\xAD\x79\x6E\xF1");
+	static CXorString xorKnifeTactical(/*weapon_knife_tactical*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x7F\xE4\xA1\x63\x62\xE6\xA3\x7B");
+	static CXorString xorKnifeFalchion(/*weapon_knife_falchion*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x6D\xE4\xAE\x74\x63\xEC\xAD\x79");
+	static CXorString xorKnifeSurvivalBowie(/*weapon_knife_survival_bowie*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x78\xF0\xB0\x61\x62\xF3\xA3\x7B\x54\xE7\xAD\x60\x62\xE0");
+	static CXorString xorKnifeButterfly(/*weapon_knife_butterfly*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x69\xF0\xB6\x63\x6E\xF7\xA4\x7B\x72");
+	static CXorString xorKnifePush(/*weapon_knife_push*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7\x48\x7B\xF0\xB1\x7F");
 
-	static CXorString xorDeagleReadable(/*Deagle*/"Sn�{n");
-	static CXorString xorEliteReadable(/*Elite*/"Rg�r");
-	static CXorString xorFivesevenReadable(/*Fiveseven*/"Qb�dn�y");
-	static CXorString xorGlockReadable(/*Glock*/"Pg�|");
-	static CXorString xorAk47Readable(/*AK-47*/"V@�� ");
-	static CXorString xorAugReadable(/*AUG*/"V^�");
-	static CXorString xorAwpReadable(/*AWP*/"V\\�");
-	static CXorString xorFamasReadable(/*Famas*/"Qj�d");
-	static CXorString xorG3sg1Readable(/*G3SG1*/"P8օ&");
-	static CXorString xorGalilReadable(/*Galil AR*/"Pj�{+Đ");
-	static CXorString xorM249Readable(/*M249*/"Z9��");
-	static CXorString xorM4a1Readable(/*M4A1*/"Z?��");
-	static CXorString xorMac10Readable(/*Mac-10*/"Zj��&;");
-	static CXorString xorP90Readable(/*P90*/"G2�");
-	static CXorString xorUmp45Readable(/*UMP-45*/"BF��#>");
-	static CXorString xorXm1014Readable(/*XM1014*/"OF��&?");
-	static CXorString xorBizonReadable(/*Bizon*/"Ub��y");
-	static CXorString xorMag7Readable(/*Mag7*/"Zj��");
-	static CXorString xorNegevReadable(/*Negev*/"Yn�a");
-	static CXorString xorSawedoffReadable(/*Sawed off*/"Dj�s+�q");
-	static CXorString xorTec9Readable(/*Tec NEIN*/"Cn��YŇ"); // TODO: Tec-9 :D
-	static CXorString xorHkp2000Readable(/*HKP-2000*/"_@��%;��");
-	static CXorString xorMp7Readable(/*MP-7*/"Z[��");
-	static CXorString xorMp9Readable(/*MP-9*/"Z[��");
-	static CXorString xorNovaReadable(/*Nova*/"Yd�");
-	static CXorString xorP250Readable(/*P250*/"G9��");
-	static CXorString xorScar20Readable(/*SCAR-20*/"DHĐ:9�");
-	static CXorString xorSg556Readable(/*SG-556*/"DL��\"=");
-	static CXorString xorSsg08Readable(/*SSG-08*/"DX��'3");
-	static CXorString xorM4a1SilencerReadable(/*M4A1-Silencer*/"Z?��:X�re�e");
-	static CXorString xorUspSilencerReadable(/*USP-Silencer*/"BX��Db�yh�");
-	static CXorString xorCz75Readable(/*CZ75*/"TQ��");
-	static CXorString xorRevolverReadable(/*Revolver*/"En�{}�");
+	static CXorString xorDeagleReadable(/*Deagle*/"\x53\x6E\xE4\xA5\x7B\x6E");
+	static CXorString xorEliteReadable(/*Elite*/"\x52\x67\xEC\xB6\x72");
+	static CXorString xorFivesevenReadable(/*Fiveseven*/"\x51\x62\xF3\xA7\x64\x6E\xF3\xA7\x79");
+	static CXorString xorGlockReadable(/*Glock*/"\x50\x67\xEA\xA1\x7C");
+	static CXorString xorAk47Readable(/*AK-47*/"\x56\x40\xA8\xF6\x20");
+	static CXorString xorAugReadable(/*AUG*/"\x56\x5E\xC2");
+	static CXorString xorAwpReadable(/*AWP*/"\x56\x5C\xD5");
+	static CXorString xorFamasReadable(/*Famas*/"\x51\x6A\xE8\xA3\x64");
+	static CXorString xorG3sg1Readable(/*G3SG1*/"\x50\x38\xD6\x85\x26");
+	static CXorString xorGalilReadable(/*Galil AR*/"\x50\x6A\xE9\xAB\x7B\x2B\xC4\x90");
+	static CXorString xorM249Readable(/*M249*/"\x5A\x39\xB1\xFB");
+	static CXorString xorM4a1Readable(/*M4A1*/"\x5A\x3F\xC4\xF3");
+	static CXorString xorMac10Readable(/*Mac-10*/"\x5A\x6A\xE6\xEF\x26\x3B");
+	static CXorString xorP90Readable(/*P90*/"\x47\x32\xB5");
+	static CXorString xorUmp45Readable(/*UMP-45*/"\x42\x46\xD5\xEF\x23\x3E");
+	static CXorString xorXm1014Readable(/*XM1014*/"\x4F\x46\xB4\xF2\x26\x3F");
+	static CXorString xorBizonReadable(/*Bizon*/"\x55\x62\xFF\xAD\x79");
+	static CXorString xorMag7Readable(/*Mag7*/"\x5A\x6A\xE2\xF5");
+	static CXorString xorNegevReadable(/*Negev*/"\x59\x6E\xE2\xA7\x61");
+	static CXorString xorSawedoffReadable(/*Sawed off*/"\x44\x6A\xF2\xA7\x73\x2B\xEA\xA4\x71");
+	static CXorString xorTec9Readable(/*Tec-9*/"\x43\x6E\xE6\xEF\x2E");
+	static CXorString xorHkp2000Readable(/*HKP-2000*/"\x5F\x40\xD5\xEF\x25\x3B\xB5\xF2");
+	static CXorString xorMp7Readable(/*MP-7*/"\x5A\x5B\xA8\xF5");
+	static CXorString xorMp9Readable(/*MP-9*/"\x5A\x5B\xA8\xFB");
+	static CXorString xorNovaReadable(/*Nova*/"\x59\x64\xF3\xA3");
+	static CXorString xorP250Readable(/*P250*/"\x47\x39\xB0\xF2");
+	static CXorString xorScar20Readable(/*SCAR-20*/"\x44\x48\xC4\x90\x3A\x39\xB5");
+	static CXorString xorSg556Readable(/*SG-556*/"\x44\x4C\xA8\xF7\x22\x3D");
+	static CXorString xorSsg08Readable(/*SSG-08*/"\x44\x58\xC2\xEF\x27\x33");
+	static CXorString xorM4a1SilencerReadable(/*M4A1-Silencer*/"\x5A\x3F\xC4\xF3\x3A\x58\xEC\xAE\x72\x65\xE6\xA7\x65");
+	static CXorString xorUspSilencerReadable(/*USP-Silencer*/"\x42\x58\xD5\xEF\x44\x62\xE9\xA7\x79\x68\xE0\xB0");
+	static CXorString xorCz75Readable(/*CZ75*/"\x54\x51\xB2\xF7");
+	static CXorString xorRevolverReadable(/*Revolver*/"\x45\x6E\xF3\xAD\x7B\x7D\xE0\xB0");
 
 	this->m_mapWeapons[murmurhash(xorDeagle, strlen(xorDeagle), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_DEAGLE, xorDeagle, xorDeagleReadable);
 	this->m_mapWeapons[murmurhash(xorElite, strlen(xorElite), 0xB16B00B5)] = WeaponMetadata_t(WEAPON_ELITE, xorElite, xorEliteReadable);
@@ -242,7 +242,7 @@ void CSkinChanger::ParseSkinFile()
 		}
 	}
 
-	strcat(pFilepathSkins, /*scripts\\items\\items_game.txt*/CXorString("dh��g��Kb�zxٞ~�dT�zn��o"));
+	strcat(pFilepathSkins, CXorString(/*scripts\\items\\items_game.txt*/"\x64\x68\xF7\xAB\x67\x7F\xF6\x9E\x4B\x62\xF1\xA7\x7A\x78\xD9\x9E\x7E\x7F\xE0\xAF\x64\x54\xE2\xA3\x7A\x6E\xAB\xB6\x6F\x7F"));
 
 #ifdef _DEBUG
 	g_pConsole->Write(LOGLEVEL_INFO, "Parsing skin file (%s)\n", pFilepathSkins);
@@ -258,20 +258,20 @@ void CSkinChanger::ParseSkinFile()
 		return;
 	}
 
-	CXorString xorName(/*name*/"yj�");
-	CXorString xorPhase(/*phase*/"gc�r");
-	CXorString xorEmerald(/*emerald*/"rf�vg�");
-	CXorString xorRuby(/*ruby*/"e~�");
-	CXorString xorSapphire(/*sapphire*/"dj��b��");
-	CXorString xorBlackPearl(/*blackpearl*/"ug�|{�eg");
-	CXorString xorDescriptionTag(/*description_tag*/"sn��eb��~d�cj�");
-	CXorString xorWeaponUnderscore(/*weapon_*/"`n�xe�");
-	CXorString xorUnderscoreLight(/*_light*/"Hg�");
-	CXorString xorWeaponKnife(/*weapon_knife*/"`n�xeکyb�");
-	CXorString xorWeaponBayonet(/*weapon_bayonet*/"`n�xeڠvr�r");
-	CXorString xorPaintKits(/*paint_kits*/"gj�cT�cx");
-	CXorString xorClientLootLists(/*client_loot_lists*/"tg�yڮxd�{b��d");
-	CXorString xorAlternateIcons2(/*alternate_icons2*/"vg�ee�rT�xe��");
+	CXorString xorName(/*name*/"\x79\x6A\xE8\xA7");
+	CXorString xorPhase(/*phase*/"\x67\x63\xE4\xB1\x72");
+	CXorString xorEmerald(/*emerald*/"\x72\x66\xE0\xB0\x76\x67\xE1");
+	CXorString xorRuby(/*ruby*/"\x65\x7E\xE7\xBB");
+	CXorString xorSapphire(/*sapphire*/"\x64\x6A\xF5\xB2\x7F\x62\xF7\xA7");
+	CXorString xorBlackPearl(/*blackpearl*/"\x75\x67\xE4\xA1\x7C\x7B\xE0\xA3\x65\x67");
+	CXorString xorDescriptionTag(/*description_tag*/"\x73\x6E\xF6\xA1\x65\x62\xF5\xB6\x7E\x64\xEB\x9D\x63\x6A\xE2");
+	CXorString xorWeaponUnderscore(/*weapon_*/"\x60\x6E\xE4\xB2\x78\x65\xDA");
+	CXorString xorUnderscoreLight(/*_light*/"\x48\x67\xEC\xA5\x7F\x7F");
+	CXorString xorWeaponKnife(/*weapon_knife*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA9\x79\x62\xE3\xA7");
+	CXorString xorWeaponBayonet(/*weapon_bayonet*/"\x60\x6E\xE4\xB2\x78\x65\xDA\xA0\x76\x72\xEA\xAC\x72\x7F");
+	CXorString xorPaintKits(/*paint_kits*/"\x67\x6A\xEC\xAC\x63\x54\xEE\xAB\x63\x78");
+	CXorString xorClientLootLists(/*client_loot_lists*/"\x74\x67\xEC\xA7\x79\x7F\xDA\xAE\x78\x64\xF1\x9D\x7B\x62\xF6\xB6\x64");
+	CXorString xorAlternateIcons2(/*alternate_icons2*/"\x76\x67\xF1\xA7\x65\x65\xE4\xB6\x72\x54\xEC\xA1\x78\x65\xF6\xF0");
 
 	uint32_t iHash;
 	int iCurPaintKit = 0;
@@ -721,9 +721,9 @@ bool CSkinChanger::ApplyCustomKillIcon(IGameEvent* pEvent)
 
 	std::unordered_map<uint32_t, const char*>& map = iLocalTeam == TEAMNUM_CT ? m_mapKillIconCT : m_mapKillIconT;
 
-	static CXorString xorAttacker("v�t`�");
-	static CXorString xorPlayerDeath("gg�ryڦrj�");
-	static CXorString xorWeapon("`n�xe");
+	static CXorString xorAttacker(/*attacker*/"\x76\x7F\xF1\xA3\x74\x60\xE0\xB0");
+	static CXorString xorPlayerDeath(/*player_death*/"\x67\x67\xE4\xBB\x72\x79\xDA\xA6\x72\x6A\xF1\xAA");
+	static CXorString xorWeapon(/*weapon*/"\x60\x6E\xE4\xB2\x78\x65");
 
 	// Check if event is valid
 	if (!pEvent)
@@ -799,10 +799,10 @@ void CSkinChanger::ApplyDesiredKnife(int iTeamNum, int iDesiredKnifeModelIndex, 
 		);
 
 		// todo:
-		/*AddKillIconReplacement(
-			CXorString("|e�rT��Hi�xe�").ToCharArray(),
-			CXorString("uj��yn�").ToCharArray()
-		);*/
+		//AddKillIconReplacement(
+		//	CXorString(/*knife_m9_bayonet*/"\x7C\x65\xEC\xA4\x72\x54\xE8\xFB\x48\x69\xE4\xBB\x78\x65\xE0\xB6").ToCharArray(),
+		//	CXorString(/*bayonet*/"\x75\x6A\xFC\xAD\x79\x6E\xF1").ToCharArray()
+		//);
 	}
 
 	m_bForceFullUpdate = true;

@@ -2,7 +2,7 @@
 #include "Application.h"
 
 CEsp::CEsp() :
-	m_xorHeadZero("n�H;"), m_bFillBoundingBox(false), m_iDrawBoundingBox(ESP_STYLE_NONE),
+	m_xorHeadZero(/*head_0*/"\x7F\x6E\xE4\xA6\x48\x3B"), m_bFillBoundingBox(false), m_iDrawBoundingBox(ESP_STYLE_NONE),
 	m_bDrawSkeleton(false), m_bDrawHealthBar(false), m_bDrawHealthNumber(false),
 	m_bDrawArmorBar(false), m_bDrawArmorNumber(false), m_bDrawActiveWeapon(false),
 	m_bDrawAmmoBar(false), m_bDrawAmmoNumber(false), m_bDrawOwnTeam(false),

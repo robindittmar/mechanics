@@ -2,7 +2,7 @@
 #include "Application.h"
 
 CMisc::CMisc()
-	: m_xorName("yj�"), m_bNoRecoil(false), m_bAutoPistol(false),
+	: m_xorName(/*name*/"\x79\x6A\xE8\xA7"), m_bNoRecoil(false), m_bAutoPistol(false),
 	m_bSpectators(false), m_bOnlyMySpectators(false), m_bOnlyMyTeamSpectators(false),
 	m_bJumpScout(false), m_bIsCustomClanTag(false), m_bAutoAccept(false),
 	m_bNoName(false), m_bSpamName(false)
