@@ -258,6 +258,30 @@ class array
 {
 	T m_arr[N];
 };
+typedef float float_t;
+class IClientEntity;
+
+struct CAnimstate
+{
+    char			pad_0x0000[0x28];				//0x0000
+    float_t			time_moving;					//0x0028
+    char			pad_0x002C[0x30];				//0x002C
+    CWeapon*		weapon;							//0x005C
+    IClientEntity*	entity;							//0x0060
+    CWeapon*		active_weapon;					//0x0064
+    CWeapon*		last_active_weapon;				//0x0068
+    float_t			unknown_timer;					//0x006C
+    float			last_animation_sate_clear_time;
+    char			pad_0x0074[0x4];				//0x0074
+    float_t			eye_yaw;						//0x0078
+    float_t			eye_pitch;						//0x007C
+    float_t			goal_feet_yaw;					//0x0080
+    float_t			current_feet_yaw;				//0x0084
+    bool			current_feet_yaw_initialized;	//0x0088
+    float_t			last_move_yaw;					//0x008C
+    char			pad_0x0090[0x5C];				//0x0090
+    float			velocity;
+};
 
 class IClientEntity : public IClientUnknown, public IClientRenderable, public IClientNetworkable, public IClientThinkable
 {
@@ -313,6 +337,8 @@ public:
 	float GetPoseParameter(int index);
 	float GetCycle();
 	void UpdateClientSiteAnimation();
+    CAnimstate* GetAnimState();
+    float GetMaxDesyncDelta();
 
 	int GetBoneByName(const char* pBoneName);
 };

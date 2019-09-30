@@ -38,6 +38,21 @@ class Vector;
 typedef Vector QAngle;
 class VMatrix;
 
+typedef unsigned char uint8_t;
+
+class INetChannel
+{
+public:
+    uint8_t pad_0x0000[0x17];
+    bool	should_delete;
+    int		out_sequence_nr;
+    int		in_sequence_nr;
+    int		out_sequence_nr_ack;
+    int		out_reliable_state;
+    int		in_reliable_state;
+    int		choked_packets;
+};
+
 class IVEngineClient {
 public:
 	virtual int                   GetIntersectingSurfaces(const model_t *model, const Vector &vCenter, const float radius, const bool bOnlyVisibleSurfaces, SurfInfo *pInfos, const int nMaxInfos) = 0;
@@ -268,6 +283,7 @@ public:
 	virtual bool                  IsVoiceRecording(void) = 0;
 	virtual void                  ForceVoiceRecordOn(void) = 0;
 	virtual bool                  IsReplay(void) = 0;
+    INetChannel*				  GetNetChannel();
 };
 
 

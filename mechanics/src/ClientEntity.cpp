@@ -234,6 +234,31 @@ void IClientEntity::UpdateClientSiteAnimation()
 	((UpdateClientSiteAnimation_t)(*(void***)this)[223])(this);
 }
 
+CAnimstate* IClientEntity::GetAnimState()
+{
+    return *reinterpret_cast<CAnimstate**>(uintptr_t(this) + 0x3900); //TODO: offset iwie anders kriegen?
+}
+
+float IClientEntity::GetMaxDesyncDelta() {
+    auto animstate = uintptr_t(this->GetAnimState());
+
+    float duckamount = *(float *) (animstate + 0xA4);
+
+    float speedfraction = max(0, min(*reinterpret_cast<float *>(animstate + 0xF8), 1));
+    float speedfactor = max(0, min(1, *reinterpret_cast<float *> (animstate + 0xFC)));
+
+    float unk1 = ((*reinterpret_cast<float *> (animstate + 0x11C) * -0.30000001) - 0.19999999) * speedfraction;
+    float unk2 = unk1 + 1.f;
+    float unk3;
+
+    if (duckamount > 0)
+        unk2 += ((duckamount * speedfactor) * (0.5f - unk2));
+
+    unk3 = *(float *) (animstate + 0x334) * unk2;
+
+    return unk3;
+}
+
 int IClientEntity::GetBoneByName(const char* pBoneName)
 {
 	CApplication* pApp = CApplication::Instance();
