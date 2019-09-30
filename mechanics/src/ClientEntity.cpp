@@ -122,9 +122,9 @@ bool IClientEntity::HasHelmet()
 	return *(bool*)((DWORD)this + Offsets::m_bHasHelmet);
 }
 
-DWORD IClientEntity::GetMoveType()
+int IClientEntity::GetMoveType()
 {
-	return *(DWORD*)((DWORD)this + OFFSET_MOVETYPE);
+	return *(int*)((DWORD)this + OFFSET_MOVETYPE);
 }
 
 int IClientEntity::GetTickBase()

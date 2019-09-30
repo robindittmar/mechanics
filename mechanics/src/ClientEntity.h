@@ -14,7 +14,7 @@
 // TODO: Couldn't find the netvar :L
 //		 (Seems to be gone? idk, people say its in "BaseEntity" -> "m_bMoveType",
 //		  but there is no "BaseEntity" (only DT_BaseEntity, which only has "movetype" with offset 0)
-#define OFFSET_MOVETYPE			0x258
+#define OFFSET_MOVETYPE			0x25C
 
 // https://github.com/ValveSoftware/source-sdk-2013/blob/master/mp/src/public/const.h
 #define	FL_ONGROUND				(1<<0)	// At rest / on the ground
@@ -315,7 +315,7 @@ public:
 	int GetArmor();
 	bool HasHeavyArmor();
 	bool HasHelmet();
-	unsigned long GetMoveType();
+	int GetMoveType();
 	int GetTickBase();
 	bool IsDefusing();
 	float GetC4Blow();
