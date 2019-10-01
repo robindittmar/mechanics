@@ -63,6 +63,7 @@
 #include "LagCompensation.h"
 #include "Fakelag.h"
 #include "Fakewalk.h"
+#include "Fakeduck.h"
 #include "Radar.h"
 #include "GunAccuracy.h"
 
@@ -255,6 +256,7 @@ public:
 	CMisc*				Misc()						{ return &m_misc; }
 	CFakelag*			Fakelag()					{ return &m_fakelag; }
 	CFakewalk*			Fakewalk()					{ return &m_fakewalk; }
+	CFakeduck*          Fakeduck()                  { return &m_fakeduck; }
 	CResolver*			Resolver()					{ return &m_resolver; }
 	CSkinChanger*		SkinChanger()				{ return &m_skinchanger; }
 	CVisuals*			Visuals()					{ return &m_visuals; }
@@ -403,6 +405,7 @@ private:
 	CMisc m_misc;
 	CFakelag m_fakelag;
 	CFakewalk m_fakewalk;
+	CFakeduck m_fakeduck;
 	CSkinChanger m_skinchanger;
 	CVisuals m_visuals;
 	CMaterialVisuals m_materialvisuals;

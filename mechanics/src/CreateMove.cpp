@@ -89,6 +89,8 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			else
 			{*/
 			pApp->Fakelag()->CalcAdaptiveChokeAmount();
+			// FAKEWALK
+			pApp->Fakeduck()->Think(pUserCmd);
 			pApp->AntiAim()->Think(pUserCmd);
 			//}
 

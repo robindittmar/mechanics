@@ -224,8 +224,8 @@ void CApplication::Setup()
 	// Setups
 	std::vector<IFeature*> features = { &m_ragebot, &m_gunAccuracy, &m_legitbot, &m_triggerbot, &m_resolver, &m_antiAim,
                                         &m_bhop, &m_esp, &m_weaponesp, &m_soundEsp, &m_chams, &m_misc, &m_fakelag,
-                                        &m_fakewalk, &m_skinchanger, &m_visuals, &m_materialvisuals, &m_gunHud,
-                                        &m_mirror, &m_radar, &m_lagcompensation };
+                                        &m_fakewalk, &m_fakeduck, &m_skinchanger, &m_visuals, &m_materialvisuals,
+                                        &m_gunHud, &m_mirror, &m_radar, &m_lagcompensation };
 	for (auto& feature : features)
     {
 	    feature->Setup();
