@@ -620,6 +620,8 @@ void CApplication::GetNetVars()
 	Offsets::m_flC4Blow = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flC4Blow*/CXorString("\x7A\x54\xE3\xAE\x54\x3F\xC7\xAE\x78\x7C"));
 	Offsets::m_flDefuseCountDown = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_flDefuseCountDown*/CXorString("\x7A\x54\xE3\xAE\x53\x6E\xE3\xB7\x64\x6E\xC6\xAD\x62\x65\xF1\x86\x78\x7C\xEB"));
 	Offsets::m_hBombDefuser = m_pNetVarMgr->GetOffset(xorPlantedC4, /*m_hBombDefuser*/CXorString("\x7A\x54\xED\x80\x78\x66\xE7\x86\x72\x6D\xF0\xB1\x72\x79"));
+	Offsets::m_flDuckSpeed = m_pNetVarMgr->GetOffset(xorBasePlayer, CXorString(/*m_flDuckSpeed*/"\x7A\x54\xE3\xAE\x53\x7E\xE6\xA9\x44\x7B\xE0\xA7\x73"));
+    Offsets::m_flDuckAmount = m_pNetVarMgr->GetOffset(xorBasePlayer, CXorString(/*m_flDuckAmount*/"\x7A\x54\xE3\xAE\x53\x7E\xE6\xA9\x56\x66\xEA\xB7\x79\x7F"));
 
 	CNetVar* pDtLocal = m_pNetVarMgr->GetNetVar(2, xorBasePlayer, xorLocalPlayerExclusive.ToCharArray(), /*DT_Local*/CXorString("\x53\x5F\xDA\x8E\x78\x68\xE4\xAE").ToCharArray());
 	Offsets::m_nJumpTimeMsecs = pDtLocal->GetOffset() + pDtLocal->GetChild(/*m_nJumpTimeMsecs*/CXorString("\x7A\x54\xEB\x88\x62\x66\xF5\x96\x7E\x66\xE0\x8F\x64\x6E\xE6\xB1"))->GetOffset();

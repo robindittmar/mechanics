@@ -259,6 +259,16 @@ float IClientEntity::GetMaxDesyncDelta() {
     return unk3;
 }
 
+float IClientEntity::GetDuckSpeed()
+{
+    return *(float*)((DWORD)this + Offsets::m_flDuckSpeed);
+}
+
+float IClientEntity::GetDuckAmount()
+{
+    return *(float*)((DWORD)this + Offsets::m_flDuckAmount);
+}
+
 int IClientEntity::GetBoneByName(const char* pBoneName)
 {
 	CApplication* pApp = CApplication::Instance();

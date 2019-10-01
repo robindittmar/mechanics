@@ -339,6 +339,8 @@ public:
 	void UpdateClientSiteAnimation();
     CAnimstate* GetAnimState();
     float GetMaxDesyncDelta();
+    float GetDuckSpeed();
+    float GetDuckAmount();
 
 	int GetBoneByName(const char* pBoneName);
 };

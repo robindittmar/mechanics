@@ -80,14 +80,11 @@ bool __fastcall hk_CreateMove(void* ecx, void* edx, float fInputSampleTime, CUse
 			pApp->Bhop()->Think(pUserCmd);
 
 			// Update AntiAim
-			/*bool bIsFakewalk = false;
-			if (GetAsyncKeyState(VK_MENU))
-			{
-				bIsFakewalk = true;
-				pApp->Fakewalk()->Think((void*)pUserCmd);
-			}
-			else
-			{*/
+			// *m_pApp->m_bSendPacket = pUserCmd->command_number % 2;
+			// dann in Antiaim, fakeduck etc auf sendPacket false oder true checken
+			// nur beim lby break auf false setzen
+			// und fakelag als erstes direkt damit das entscheiden kann ob gechoked oder nicht
+			// zu sehen wv grad gechoked sind -> netchannel->choked_packets (oder so)
 			pApp->Fakelag()->CalcAdaptiveChokeAmount();
 			// FAKEWALK
 			pApp->Fakeduck()->Think(pUserCmd);
