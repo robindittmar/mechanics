@@ -41,8 +41,8 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 	// vgui/white_additive
 	//static CXorString xorVmt("5.��p��5/�dn�o�r)��al�8|�cnڣso�~}����re�v{��5)��5/�sn��7)����qg�5+��s)��5/�t~�5+��5��3x�qb�bf��5:��)��vg�vf�e��5:��)��xm�5+��5��3b�xy�5+��s)��5/��rj��e)��')��5/�en�vf��7)��5��");
 	// vgui/white
-	/// static CXorString xorVmt("5.��p��5/�dn�o�r)��al�8|�cn��)��y}�g)��5��3f�rg��5:��)��{j��7)��5��3e�bg��7)����dn�~g�z)��&)��5/�{m�zi�c)��&)��5/�qd��7)����~l�en��7)��5��3q�vy�5+��5��3|�rm��zn��5.��v");
-    static CXorString xorVmt(/*vgui/white*/"\x61\x6C\xF0\xAB\x38\x7C\xED\xAB\x63\x6E");
+    static CXorString xorVmt(/*"%s"\n{\n\t"$basetexture" "vgui/white"\n\t"$envmap" ""\n\t"$model" "1"\n\t"$flat" "%d"\n\t"$nocull" "0"\n\t"$selfillum" "1"\n\t"$halflambert" "1"\n\t"$nofog" "0"\n\t"$ignorez" "%d"\n\t"$znearer" "0"\n\t"$wireframe" "%d"\n}*/
+    "\x35\x2E\xF6\xE0\x1D\x70\x8F\xCB\x35\x2F\xE7\xA3\x64\x6E\xF1\xA7\x6F\x7F\xF0\xB0\x72\x29\xA5\xE0\x61\x6C\xF0\xAB\x38\x7C\xED\xAB\x63\x6E\xA7\xC8\x1E\x29\xA1\xA7\x79\x7D\xE8\xA3\x67\x29\xA5\xE0\x35\x01\x8C\xE0\x33\x66\xEA\xA6\x72\x67\xA7\xE2\x35\x3A\xA7\xC8\x1E\x29\xA1\xA4\x7B\x6A\xF1\xE0\x37\x29\xA0\xA6\x35\x01\x8C\xE0\x33\x65\xEA\xA1\x62\x67\xE9\xE0\x37\x29\xB5\xE0\x1D\x02\xA7\xE6\x64\x6E\xE9\xA4\x7E\x67\xE9\xB7\x7A\x29\xA5\xE0\x26\x29\x8F\xCB\x35\x2F\xED\xA3\x7B\x6D\xE9\xA3\x7A\x69\xE0\xB0\x63\x29\xA5\xE0\x26\x29\x8F\xCB\x35\x2F\xEB\xAD\x71\x64\xE2\xE0\x37\x29\xB5\xE0\x1D\x02\xA7\xE6\x7E\x6C\xEB\xAD\x65\x6E\xFF\xE0\x37\x29\xA0\xA6\x35\x01\x8C\xE0\x33\x71\xEB\xA7\x76\x79\xE0\xB0\x35\x2B\xA7\xF2\x35\x01\x8C\xE0\x33\x7C\xEC\xB0\x72\x6D\xF7\xA3\x7A\x6E\xA7\xE2\x35\x2E\xE1\xE0\x1D\x76\x00\xFD\xFD\xFD\xFD\x00\x00\x00\x00\x00\xC6\x09\x9B\xDD\x2A\xF6\x00\x0F\x58\x47\xD5\x00\x68\xDB");
 
 	const char* pBaseType = (bIsLit ? m_xorVertexLitGeneric.ToCharArray() : m_xorUnlitGeneric.ToCharArray());
 	char pMaterial[1024];
@@ -50,7 +50,7 @@ IMaterial* CResourceManager::CreateMaterial(bool bIsLit, bool bIsFlat, bool bIgn
 	KeyValues* pKeyValues;
 
 	sprintf(pMaterial, xorVmt.ToCharArray(), pBaseType, (bIsFlat ? 1 : 0), (bIgnoreZ ? 1 : 0), (bWireframe ? 1 : 0));
-	sprintf(pName, m_xorMatName.ToCharArray(), m_iMaterialCount++);
+    sprintf(pName, m_xorMatName.ToCharArray(), m_iMaterialCount++);
 
 	pKeyValues = (KeyValues*)malloc(sizeof(KeyValues));
 	m_pApp->InitKeyValues()(pKeyValues, pBaseType);
