@@ -1,5 +1,5 @@
-#include "..\..\mechanics\src\XorString.h"
-#include "..\..\mechanics\src\murmurhash.h"
+#include "../../mechanics/src/utils/XorString.h"
+#include "../../mechanics/src/third_party/murmurhash/murmurhash.h"
 
 #include <iostream>
 
