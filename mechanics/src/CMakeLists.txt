@@ -1,4 +1,28 @@
 
+set (VERSION_MAJOR 1 CACHE STRING "Major version number")
+set (VERSION_MINOR 0 CACHE STRING "Minor version number")
+set (VERSION_PATCH 0 CACHE STRING "Patch version number")
+set (VERSION_COMMIT git CACHE STRING "Git commit hash, will be fetched automatically if value is \"git\"")
+set (VERSION_BRANCH git CACHE STRING "Git branch, will be fetched automatically if value is \"git\"")
+
+if (VERSION_COMMIT STREQUAL "git")
+    execute_process(
+            COMMAND git log -1 --format=%h
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE VERSION_COMMIT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif(VERSION_COMMIT STREQUAL "git")
+
+if (VERSION_BRANCH STREQUAL "git")
+    execute_process(
+            COMMAND git rev-parse --abbrev-ref HEAD
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            OUTPUT_VARIABLE VERSION_BRANCH
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif(VERSION_BRANCH STREQUAL "git")
+
 file (GLOB MECHANICS_SOURCE_FILES "*.cpp")
 file (GLOB MECHANICS_HEADER_FILES "*.h")
 
@@ -26,6 +50,12 @@ file (GLOB MECHANICS_THIRDPARTY_HEADER_FILES "third_party/*/*.h")
 file (GLOB MECHANICS_UTILS_SOURCE_FILES "utils/*.cpp")
 file (GLOB MECHANICS_UTILS_HEADER_FILES "utils/*.h")
 
+configure_file(
+        version.h.in
+        "${PROJECT_BINARY_DIR}/include/version.h"
+)
+
+include_directories(${CMAKE_BINARY_DIR}/include)
 
 add_library(
         mechanics
@@ -48,5 +78,6 @@ add_library(
         ${MECHANICS_THIRDPARTY_HEADER_FILES}
         ${MECHANICS_UTILS_SOURCE_FILES}
         ${MECHANICS_UTILS_HEADER_FILES}
+        "${PROJECT_BINARY_DIR}/include/version.h"
 )
 

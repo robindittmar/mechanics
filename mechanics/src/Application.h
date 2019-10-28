@@ -5,6 +5,7 @@
 #include <cmath>
 
 // Custom
+#include "version.h"
 #include "utils/Console.h"
 #include "utils/Config.h"
 #include "utils/ConfigHelper.h"

@@ -192,7 +192,7 @@ void CApplication::Setup()
 #ifdef _DEBUG
 	// Setup console
 	g_pConsole = new CConsole();
-	g_pConsole->WritePlain(".mechanics\n > Build date: %s\n > Build time: %s\n\n", __DATE__, __TIME__);
+	g_pConsole->WritePlain(".mechanics\n > version %s\n > Build date: %s\n > Build time: %s\n\n", MECHANICS_VERSION_STRING, __DATE__, __TIME__);
 #endif
 
 	// Grab info about our own dll path etc
