@@ -4,23 +4,20 @@ std::vector<BulletTracerEntry> CApplication::m_pBulletTracer;
 std::vector<HitmarkerEntry> CApplication::m_pHitmarker;
 
 CApplication::CApplication()
+    : m_pNetVarMgr(nullptr)
+    , m_pClientModeHook(nullptr)
+    , m_pModelRenderHook(nullptr)
+    , m_pClientHook(nullptr)
+    , m_pPanelHook(nullptr)
+    , m_pSurfaceHook(nullptr)
+    , m_pGameEventManagerHook(nullptr)
+    , m_pViewRenderHook(nullptr)
+    , m_pEngineSoundHook(nullptr)
+    , m_pMdlHook(nullptr)
+    , m_bGotSendPackets(false)
+    , m_bInitialHookDone(false)
+    , m_bIsHooked(false)
 {
-	m_pNetVarMgr = nullptr;
-
-	m_pClientModeHook = nullptr;
-	m_pModelRenderHook = nullptr;
-	m_pClientHook = nullptr;
-	m_pPanelHook = nullptr;
-	m_pSurfaceHook = nullptr;
-	m_pGameEventManagerHook = nullptr;
-	m_pViewRenderHook = nullptr;
-	m_pEngineSoundHook = nullptr;
-	m_pMdlHook = nullptr;
-
-	m_bGotSendPackets = false;
-
-	m_bInitialHookDone = false;
-	m_bIsHooked = false;
 }
 
 CApplication::~CApplication()
