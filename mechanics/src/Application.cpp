@@ -752,34 +752,38 @@ void NormalizeAngles(CUserCmd* pUserCmd)
 
 void ClampMovement(CUserCmd* pUserCmd)
 {
+    constexpr float maxForwardMove = 450.0f;
+    constexpr float maxSideMove = 450.0f;
+    constexpr float maxUpMove = 320.0f;
+
 	// Clamp forward
-	if (pUserCmd->forwardmove > 450.0f)
+	if (pUserCmd->forwardmove > maxForwardMove)
 	{
-		pUserCmd->forwardmove = 450.0f;
+		pUserCmd->forwardmove = maxForwardMove;
 	}
-	else if (pUserCmd->forwardmove < -450.0f)
+	else if (pUserCmd->forwardmove < -maxForwardMove)
 	{
-		pUserCmd->forwardmove = -450.0f;
+		pUserCmd->forwardmove = -maxForwardMove;
 	}
 
 	// Clamp sidemove
-	if (pUserCmd->sidemove > 450.0f)
+	if (pUserCmd->sidemove > maxSideMove)
 	{
-		pUserCmd->sidemove = 450.0f;
+		pUserCmd->sidemove = maxSideMove;
 	}
-	else if (pUserCmd->sidemove < -450.0f)
+	else if (pUserCmd->sidemove < -maxSideMove)
 	{
-		pUserCmd->sidemove = -450.0f;
+		pUserCmd->sidemove = -maxSideMove;
 	}
 
 	// Clamp upmove
-	if (pUserCmd->sidemove > 320.0f)
+	if (pUserCmd->upmove > maxUpMove)
 	{
-		pUserCmd->sidemove = 320.0f;
+		pUserCmd->upmove = maxUpMove;
 	}
-	else if (pUserCmd->sidemove < -320.0f)
+	else if (pUserCmd->upmove < -maxUpMove)
 	{
-		pUserCmd->sidemove = -320.0f;
+		pUserCmd->upmove = -maxUpMove;
 	}
 }
 
